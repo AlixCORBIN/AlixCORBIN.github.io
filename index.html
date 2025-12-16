@@ -3,79 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon CV - Ingénieur FICSIT</title>
+    <title>Mon CV - Maître Constructeur</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Varela+Round&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <header class="ficsit-hud">
-        <div class="hud-left">PIONEER: <span>Ton Nom</span></div>
-        <div class="hud-right">STATUS: <span style="color: #4ade80;">EFFICIENT</span></div>
-    </header>
-
-
-    <section class="biome biome-hub">
-        <div class="container intro-box">
-            <h1>Initialisation du Pioneer</h1>
-            <p>Bienvenue sur mon portfolio FICSIT. Je suis un développeur spécialisé dans l'optimisation et la construction de solutions robustes. Mon objectif : L'efficacité maximale.</p>
-            <div class="tech-stack">
-                <span>[HTML5]</span> <span>[CSS3]</span> <span>[JavaScript]</span> <span>[GitHub]</span>
+    <header class="lego-hud">
+        <div class="hud-container header-bar">
+            <div class="character-stud">
+                <span>👤</span>
+            </div>
+            <div class="player-info">
+                <h1>Ton Nom</h1>
+                <p>Titre : Maître Constructeur Web</p>
+            </div>
+            <div class="stud-counter">
+                <span class="stud-coin">🟡</span>
+                <span>100% COMPLÉTÉ</span>
             </div>
         </div>
-    </section>
+    </header>
 
-
-    <section class="biome biome-factory">
-        <div class="container">
-            <h2><span class="ficsit-orange">//</span> Ligne de Production : MES PROJETS</h2>
-            <p class="subtitle">Attention : Trafic de convoyeurs Mk.5 en cours.</p>
-
-            <div class="conveyor-belt-container">
-                <div class="belt-surface"></div>
-
-                <div class="moving-items-track">
-
-                    <div class="project-item">
-                        <div class="item-visual">
-                            <div class="cube-placeholder" style="background-color: #ff6b6b;">PROJET A</div>
-                        </div>
-                        <div class="item-info">
-                            <h3>Site E-commerce</h3>
-                            <p>React / Node.js</p>
-                            <a href="#" class="ficsit-button">Inspecter</a>
-                        </div>
-                    </div>
-
-                     <div class="project-item">
-                        <div class="item-visual">
-                            <div class="cube-placeholder" style="background-color: #51cf66;">PROJET B</div>
-                        </div>
-                        <div class="item-info">
-                            <h3>Application Mobile</h3>
-                            <p>React Native</p>
-                            <a href="#" class="ficsit-button">Inspecter</a>
-                        </div>
-                    </div>
-
-                     <div class="project-item">
-                        <div class="item-visual">
-                            <div class="cube-placeholder" style="background-color: #339af0;">PROJET C</div>
-                        </div>
-                        <div class="item-info">
-                            <h3>Bot Discord</h3>
-                            <p>Python</p>
-                            <a href="#" class="ficsit-button">Inspecter</a>
-                        </div>
-                    </div>
-                    
-                    </div>
+    <main class="baseplate-world">
+        
+        <section class="container welcome-zone">
+            <div class="lego-panel white-brick">
+                <h2><span style="color: var(--lego-red);">>></span> Bienvenue dans mon Hub !</h2>
+                <p>Je suis un développeur passionné. J'assemble des blocs de code pour créer des expériences numériques solides et amusantes. Explorez ce niveau pour voir mes créations !</p>
             </div>
-            </div>
-    </section>
+        </section>
 
-    <footer>
-        <p>FICSIT Inc. // Propriété de Ton Nom © 2025. Construct More.</p>
+        <section class="container skills-zone">
+            <h3>Briques de Compétences Collectées</h3>
+            <div class="skills-grid">
+                <div class="skill-brick blue-brick">HTML5</div>
+                <div class="skill-brick yellow-brick">CSS3</div>
+                <div class="skill-brick red-brick">JavaScript</div>
+                <div class="skill-brick green-brick">React</div>
+            </div>
+        </section>
+
+        <section class="container projects-zone">
+            <h3>Niveaux Construits (Projets)</h3>
+            <div class="projects-grid">
+
+                <article class="project-brick red-brick-build">
+                    <div class="studs-top"><span></span><span></span><span></span><span></span></div>
+                    <div class="brick-content">
+                        <h4>Site E-commerce</h4>
+                        <p>Une boutique en ligne construite brique par brique.</p>
+                        <span class="tech-tag">Node.JS</span>
+                        <a href="#" class="lego-btn">Jouer le niveau ▶</a>
+                    </div>
+                </article>
+
+                 <article class="project-brick blue-brick-build">
+                    <div class="studs-top"><span></span><span></span><span></span><span></span></div>
+                    <div class="brick-content">
+                        <h4>App Météo</h4>
+                        <p>Application temps réel. Ne laissez pas la pluie gâcher la construction.</p>
+                        <span class="tech-tag">React Native</span>
+                        <a href="#" class="lego-btn">Jouer le niveau ▶</a>
+                    </div>
+                </article>
+
+                <article class="project-brick green-brick-build">
+                    <div class="studs-top"><span></span><span></span><span></span><span></span></div>
+                    <div class="brick-content">
+                        <h4>Portfolio v1</h4>
+                        <p>Mon premier grand assemblage.</p>
+                        <span class="tech-tag">HTML/CSS</span>
+                        <a href="#" class="lego-btn">Jouer le niveau ▶</a>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+    </main>
+
+    <footer class="lego-footer">
+        <p>© 2025 - Tout est super génial !</p>
     </footer>
 
 </body>
