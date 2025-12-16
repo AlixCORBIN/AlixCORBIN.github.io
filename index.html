@@ -3,87 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon CV - Maître Constructeur</title>
+    <title>CV Maître Constructeur</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Varela+Round&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <header class="lego-hud">
-        <div class="hud-container header-bar">
-            <div class="character-stud">
-                <span>👤</span>
+    <nav class="lego-navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="stud-icon"></span>
+                MY PORTOFOLIO
             </div>
-            <div class="player-info">
-                <h1>Ton Nom</h1>
-                <p>Titre : Maître Constructeur Web</p>
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-btn red-btn">Accueil</a></li>
+                <li><a href="#about" class="nav-btn blue-btn">À propos</a></li>
+                <li><a href="#experience" class="nav-btn yellow-btn">Parcours</a></li>
+                <li><a href="#projects" class="nav-btn green-btn">Projets</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header id="home" class="hero-section">
+        <div class="hero-content lego-card">
+            <div class="avatar-container">
+                <img src="https://ui-avatars.com/api/?name=John+Doe&background=fecb00&color=333&size=200" alt="Avatar" class="avatar">
             </div>
-            <div class="stud-counter">
-                <span class="stud-coin">🟡</span>
-                <span>100% COMPLÉTÉ</span>
+            <h1>John Doe</h1>
+            <h2 class="subtitle">Architecte Web & Maître Constructeur</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            
+            <div class="hero-actions">
+                <a href="#contact" class="lego-cta red-brick">Me Contacter</a>
+                <a href="#" class="lego-cta blue-brick"><i class="fab fa-github"></i> GitHub</a>
+                <a href="#" class="lego-cta blue-brick"><i class="fab fa-linkedin"></i> LinkedIn</a>
             </div>
         </div>
     </header>
 
-    <main class="baseplate-world">
+    <section id="about" class="container">
+        <div class="section-title-brick yellow-brick">
+            <h3><i class="fas fa-user"></i> À Propos</h3>
+        </div>
         
-        <section class="container welcome-zone">
-            <div class="lego-panel white-brick">
-                <h2><span style="color: var(--lego-red);">>></span> Bienvenue dans mon Hub !</h2>
-                <p>Je suis un développeur passionné. J'assemble des blocs de code pour créer des expériences numériques solides et amusantes. Explorez ce niveau pour voir mes créations !</p>
+        <div class="content-grid two-columns">
+            <div class="lego-card text-card">
+                <h4>Qui suis-je ?</h4>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum vestibulum. Cras venenatis euismod malesuada.</p>
+                <p>Nullam ac odio sed non ligula fringilla tristique. Praesent ac libero non massa blandit egestas.</p>
+                
+                <div class="hobbies">
+                    <span class="tag">🎮 Gaming</span>
+                    <span class="tag">🧱 LEGO</span>
+                    <span class="tag">💻 Code</span>
+                    <span class="tag">🍕 Pizza</span>
+                </div>
             </div>
-        </section>
 
-        <section class="container skills-zone">
-            <h3>Briques de Compétences Collectées</h3>
-            <div class="skills-grid">
-                <div class="skill-brick blue-brick">HTML5</div>
-                <div class="skill-brick yellow-brick">CSS3</div>
-                <div class="skill-brick red-brick">JavaScript</div>
-                <div class="skill-brick green-brick">React</div>
+            <div class="lego-card skills-card">
+                <h4>Mes Briques (Compétences)</h4>
+                
+                <div class="skill-bar">
+                    <span class="skill-name">HTML / CSS</span>
+                    <div class="progress-track">
+                        <div class="progress-fill red-fill" style="width: 90%;"></div>
+                    </div>
+                </div>
+
+                <div class="skill-bar">
+                    <span class="skill-name">JavaScript</span>
+                    <div class="progress-track">
+                        <div class="progress-fill yellow-fill" style="width: 75%;"></div>
+                    </div>
+                </div>
+
+                <div class="skill-bar">
+                    <span class="skill-name">React / Vue</span>
+                    <div class="progress-track">
+                        <div class="progress-fill blue-fill" style="width: 60%;"></div>
+                    </div>
+                </div>
+
+                <div class="skill-bar">
+                    <span class="skill-name">Python / Backend</span>
+                    <div class="progress-track">
+                        <div class="progress-fill green-fill" style="width: 80%;"></div>
+                    </div>
+                </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="container projects-zone">
-            <h3>Niveaux Construits (Projets)</h3>
-            <div class="projects-grid">
+    <section id="experience" class="container">
+        <div class="section-title-brick blue-brick">
+            <h3><i class="fas fa-history"></i> Mon Parcours</h3>
+        </div>
 
-                <article class="project-brick red-brick-build">
-                    <div class="studs-top"><span></span><span></span><span></span><span></span></div>
-                    <div class="brick-content">
-                        <h4>Site E-commerce</h4>
-                        <p>Une boutique en ligne construite brique par brique.</p>
-                        <span class="tech-tag">Node.JS</span>
-                        <a href="#" class="lego-btn">Jouer le niveau ▶</a>
-                    </div>
-                </article>
-
-                 <article class="project-brick blue-brick-build">
-                    <div class="studs-top"><span></span><span></span><span></span><span></span></div>
-                    <div class="brick-content">
-                        <h4>App Météo</h4>
-                        <p>Application temps réel. Ne laissez pas la pluie gâcher la construction.</p>
-                        <span class="tech-tag">React Native</span>
-                        <a href="#" class="lego-btn">Jouer le niveau ▶</a>
-                    </div>
-                </article>
-
-                <article class="project-brick green-brick-build">
-                    <div class="studs-top"><span></span><span></span><span></span><span></span></div>
-                    <div class="brick-content">
-                        <h4>Portfolio v1</h4>
-                        <p>Mon premier grand assemblage.</p>
-                        <span class="tech-tag">HTML/CSS</span>
-                        <a href="#" class="lego-btn">Jouer le niveau ▶</a>
-                    </div>
-                </article>
-
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-stud red-brick">2024</div>
+                <div class="lego-card timeline-content">
+                    <h4>Développeur Senior</h4>
+                    <h5 class="company">Entreprise Géniale Inc.</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ornare magna eros, eu pellentesque tortor vestibulum ut.</p>
+                </div>
             </div>
-        </section>
-    </main>
+
+            <div class="timeline-item">
+                <div class="timeline-stud yellow-brick">2022</div>
+                <div class="lego-card timeline-content">
+                    <h4>Développeur Junior</h4>
+                    <h5 class="company">Start-up Innovante</h5>
+                    <p>Suspendisse potenti. Cras mollis dignissim velit, vel euismod diam. Nulla facilisi. Curabitur sed lectus et.</p>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-stud green-brick">2020</div>
+                <div class="lego-card timeline-content">
+                    <h4>Diplôme d'Ingénieur</h4>
+                    <h5 class="company">École de Tech</h5>
+                    <p>Fusce vulputate, sem et ornare faucibus, felis nibh congue ligula, et sollicitudin massa eros ut sem.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="container">
+        <div class="section-title-brick green-brick">
+            <h3><i class="fas fa-cubes"></i> Mes Projets</h3>
+        </div>
+
+        <div class="projects-grid">
+            <article class="lego-card project-card">
+                <div class="project-image" style="background-color: #ff6b6b;">
+                    <span>PROJET 1</span>
+                </div>
+                <div class="project-info">
+                    <h4>Super Application</h4>
+                    <p>Lorem ipsum dolor sit amet. Un projet incroyable fait avec des briques de code.</p>
+                    <div class="project-tags">
+                        <span class="mini-brick blue-brick">React</span>
+                        <span class="mini-brick yellow-brick">Node</span>
+                    </div>
+                    <a href="#" class="lego-btn">Voir le code</a>
+                </div>
+            </article>
+
+            <article class="lego-card project-card">
+                <div class="project-image" style="background-color: #4ecdc4;">
+                    <span>PROJET 2</span>
+                </div>
+                <div class="project-info">
+                    <h4>Site E-Commerce</h4>
+                    <p>Consectetur adipiscing elit. Vendre des briques n'a jamais été aussi simple.</p>
+                    <div class="project-tags">
+                        <span class="mini-brick red-brick">PHP</span>
+                        <span class="mini-brick blue-brick">MySQL</span>
+                    </div>
+                    <a href="#" class="lego-btn">Voir le code</a>
+                </div>
+            </article>
+
+            <article class="lego-card project-card">
+                <div class="project-image" style="background-color: #ffe66d;">
+                    <span style="color: #333;">PROJET 3</span>
+                </div>
+                <div class="project-info">
+                    <h4>Jeu Vidéo Web</h4>
+                    <p>Sed do eiusmod tempor incididunt ut labore. Un jeu codé en JS pur.</p>
+                    <div class="project-tags">
+                        <span class="mini-brick green-brick">Canvas</span>
+                        <span class="mini-brick red-brick">JS</span>
+                    </div>
+                    <a href="#" class="lego-btn">Voir le code</a>
+                </div>
+            </article>
+        </div>
+    </section>
 
     <footer class="lego-footer">
-        <p>© 2025 - Tout est super génial !</p>
+        <div class="container footer-content">
+            <p>© 2025 - Construit brique par brique par <strong>John Doe</strong></p>
+            <p style="font-size: 0.8rem; opacity: 0.7;">Ce site n'est pas affilié au groupe LEGO.</p>
+        </div>
     </footer>
 
 </body>
