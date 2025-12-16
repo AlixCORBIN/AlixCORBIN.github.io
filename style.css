@@ -1,216 +1,215 @@
-/* --- CONFIGURATION GÉNÉRALE --- */
+/* --- VARIABLES LEGO --- */
 :root {
-    /* Palette de couleurs "Satisfactory" */
-    --ficsit-orange: #FA9C1D;
-    --ficsit-dark-grey: #2A2A2A;
-    --ficsit-metal: #4F4F4F;
-    --ficsit-light: #E0E0E0;
-    --bg-color: #1a1a1a;
+    --lego-red: #d60000;
+    --lego-blue: #0055bf;
+    --lego-yellow: #fecb00;
+    --lego-green: #23b14d;
+    --lego-white: #f4f4f4;
+    --lego-grey: #a1a5a6; /* Couleur des plaques de base */
+    --lego-dark: #333333;
+    
+    /* Ombres pour l'effet plastique 3D */
+    --plastic-shadow-inset: inset 0 -4px 0 rgba(0,0,0,0.2), inset 0 2px 2px rgba(255,255,255,0.4);
+    --plastic-shadow-drop: 0 6px 0 rgba(0,0,0,0.15);
 }
 
+/* --- CONFIGURATION GLOBALE --- */
 body {
     margin: 0;
     padding: 0;
-    background-color: var(--bg-color);
-    color: var(--ficsit-light);
-    font-family: 'Rajdhani', sans-serif; /* Police style industriel */
-    overflow-x: hidden;
+    font-family: 'Varela Round', sans-serif; /* Police texte courant */
+    background-color: var(--lego-grey);
+    color: var(--lego-dark);
 }
 
-.container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-h1, h2, h3 {
+h1, h2, h3, h4, .lego-btn {
+    font-family: 'Fredoka One', cursive; /* Police "titre de jeu" */
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-.ficsit-orange { color: var(--ficsit-orange); }
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
-/* --- LE HUD (En-tête) --- */
-.ficsit-hud {
-    background: var(--ficsit-dark-grey);
-    border-bottom: 3px solid var(--ficsit-orange);
-    padding: 15px 30px;
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
-    position: sticky;
+/* --- LE FOND PLAQUE DE BASE (Baseplate) --- */
+/* L'astuce pour faire le sol avec les petits ronds */
+.baseplate-world {
+    background-color: var(--lego-grey);
+    /* Création d'un motif répété de petits cercles pour simuler les tenons */
+    background-image: radial-gradient(circle at center, rgba(0,0,0,0.1) 3px, transparent 4px);
+    background-size: 20px 20px; /* Espacement des tenons */
+    min-height: 100vh;
+    padding-top: 80px; /* Pour ne pas être caché par le header fixe */
+}
+
+
+/* --- LE HUD (Header) --- */
+.lego-hud {
+    background: var(--lego-blue);
+    border-bottom: 5px solid var(--lego-yellow);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+    color: white;
+    padding: 10px 0;
+    position: fixed;
+    width: 100%;
     top: 0;
     z-index: 100;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-}
-.ficsit-hud span { color: var(--ficsit-orange); }
-
-
-/* --- LES BIOMES (Sections) --- */
-.biome {
-    padding: 60px 0;
-    border-bottom: 5px solid var(--ficsit-dark-grey);
 }
 
-/* Section HUB - Style un peu plus "propre" */
-.biome-hub {
-    background: linear-gradient(rgba(42, 42, 42, 0.9), rgba(42, 42, 42, 0.9)), url('https://i.imgur.com/8F9H6jA.jpeg'); /* Image de fond Satisfactory générique */
-    background-size: cover;
-    background-position: center;
-    min-height: 40vh;
+.header-bar {
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
-.intro-box {
-    background: rgba(42, 42, 42, 0.8);
-    border: 2px solid var(--ficsit-orange);
+.character-stud {
+    background: var(--lego-yellow);
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    border: 3px solid white;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 30px;
+    box-shadow: var(--plastic-shadow-inset);
+}
+
+.player-info h1 { margin: 0; font-size: 1.5rem; text-shadow: 2px 2px 0 var(--lego-dark); }
+.player-info p { margin: 0; opacity: 0.9; font-size: 0.9rem; }
+
+.stud-counter {
+    background: rgba(0,0,0,0.3);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-family: 'Fredoka One';
+    display: flex; align-items: center;
+}
+.stud-coin { margin-right: 10px; font-size: 1.2rem; animation: spin 3s linear infinite; }
+@keyframes spin { 100% { transform: rotateY(360deg); } }
+
+
+/* --- PANNEAUX ET BRIQUES --- */
+
+/* Le style générique d'une pièce en plastique */
+.lego-panel, .skill-brick, .project-brick, .lego-btn {
+    border-radius: 8px;
+    /* C'est cette ligne qui donne tout l'effet "plastique brillant avec un bord épais" */
+    box-shadow: var(--plastic-shadow-inset), var(--plastic-shadow-drop);
+    transition: all 0.2s ease;
+}
+
+/* Panneau d'intro blanc */
+.white-brick {
+    background: var(--lego-white);
     padding: 30px;
-    backdrop-filter: blur(5px);
+    border: 4px solid white;
 }
 
-/* Section USINE - Style industriel */
-.biome-factory {
-    background-color: #222;
-    /* Texture de sol d'usine */
-    background-image:
-        linear-gradient(45deg, var(--ficsit-metal) 25%, transparent 25%),
-        linear-gradient(-45deg, var(--ficsit-metal) 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, var(--ficsit-metal) 75%),
-        linear-gradient(-45deg, transparent 75%, var(--ficsit-metal) 75%);
-    background-size: 20px 20px;
-    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+/* Zone de compétences */
+.skills-grid { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
+.skill-brick {
+    padding: 15px 25px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+}
+/* Couleurs des briques de compétences */
+.blue-brick { background: var(--lego-blue); border: 3px solid #3a8adb; }
+.yellow-brick { background: var(--lego-yellow); color: var(--lego-dark); border: 3px solid #ffe163; }
+.red-brick { background: var(--lego-red); border: 3px solid #ff5e5e; }
+.green-brick { background: var(--lego-green); border: 3px solid #5ce685; }
+
+
+/* --- LES PROJETS (Grosses Briques 3D) --- */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Grille responsive */
+    gap: 40px;
+    margin-top: 40px;
 }
 
-/* --- LE CONVOYEUR (LA PIÈCE MAÎTRESSE) --- */
-.conveyor-belt-container {
-    margin-top: 50px;
+/* Le conteneur principal de la brique projet */
+.project-brick {
     position: relative;
-    height: 250px; /* Hauteur de la zone du convoyeur */
-    overflow: hidden; /* Cache les projets qui sortent de l'écran */
-    background: #111;
-    border-top: 5px solid var(--ficsit-metal);
-    border-bottom: 5px solid var(--ficsit-metal);
+    margin-top: 15px; /* Espace pour les tenons du dessus */
 }
 
-/* L'animation visuelle de la bande qui roule */
-.belt-surface {
+/* La partie "contenu" de la brique */
+.brick-content {
+    padding: 25px;
+    color: white;
+    border-radius: 0 0 8px 8px; /* Arrondi seulement en bas */
+    /* On réapplique l'effet plastique ici */
+    box-shadow: inset 0 -6px 0 rgba(0,0,0,0.2), inset 0 2px 2px rgba(255,255,255,0.3), 0 8px 15px rgba(0,0,0,0.2);
+}
+
+/* COULEURS DES PROJETS */
+.red-brick-build .brick-content { background: var(--lego-red); }
+.blue-brick-build .brick-content { background: var(--lego-blue); }
+.green-brick-build .brick-content { background: var(--lego-green); }
+
+
+/* --- L'EFFET 3D DES TENONS (STUDS) SUR LE DESSUS --- */
+/* C'est la partie la plus technique. On crée 4 ronds en CSS et on les pose sur la boîte */
+.studs-top {
     position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 20px;
-    margin-top: 40px; /* Position sous les projets */
-    background: repeating-linear-gradient(
-        90deg,
-        #333,
-        #333 10px,
-        #222 10px,
-        #222 20px
-    );
-    /* Animation pour faire "rouler" la texture du tapis */
-    animation: scrollBelt 1s linear infinite;
-}
-
-/* Le conteneur qui déplace physiquement les objets */
-.moving-items-track {
+    top: -15px; /* On les remonte pour qu'ils dépassent */
+    left: 0; width: 100%;
     display: flex;
-    /* L'animation principale qui fait bouger les projets de droite à gauche */
-    animation: moveProjects 15s linear infinite;
-    width: max-content; /* Important pour que les éléments soient sur une seule ligne */
-    padding-left: 100%; /* Commence hors écran à droite */
+    justify-content: space-evenly;
+    height: 15px;
 }
 
-/* Pause l'animation au survol de la souris */
-.conveyor-belt-container:hover .moving-items-track,
-.conveyor-belt-container:hover .belt-surface {
-    animation-play-state: paused;
+.studs-top span {
+    width: 22%; /* Largeur d'un tenon */
+    height: 15px;
+    border-radius: 10px 10px 0 0; /* Arrondi dessus, plat dessous */
+    /* Ombre pour donner le volume au tenon */
+    box-shadow: inset 0 3px 2px rgba(255,255,255,0.4), inset 0 -2px 2px rgba(0,0,0,0.3);
 }
 
-
-/* --- LES PROJETS SUR LE CONVOYEUR --- */
-.project-item {
-    flex: 0 0 auto; /* Ne pas rétrécir */
-    width: 200px;
-    margin-right: 80px; /* Espace entre les projets sur le tapis */
-    position: relative;
-    top: 20px; /* Positionner sur le "tapis" visuel */
-    transition: transform 0.3s ease;
-}
-
-/* Petit effet quand on survole un projet spécifique */
-.project-item:hover {
-    transform: scale(1.05);
-    z-index: 10;
-}
-
-/* Placeholder visuel pour le projet (remplace par une image 3D si tu peux !) */
-.cube-placeholder {
-    width: 100%;
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-    border: 3px solid var(--ficsit-metal);
-    box-shadow: 0 10px 10px rgba(0,0,0,0.3);
-    /* Petit look "caisse" */
-    background-image: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent);
-    background-size: 20px 20px;
-}
-
-.item-info {
-    background: var(--ficsit-dark-grey);
-    padding: 10px;
-    border: 1px solid var(--ficsit-orange);
-    margin-top: 15px;
-    text-align: center;
-}
-.item-info h3 { margin: 5px 0; font-size: 1.1rem; }
-.item-info p { color: var(--ficsit-orange); font-size: 0.9rem; }
+/* Couleur des tenons selon la brique parente */
+.red-brick-build .studs-top span { background: var(--lego-red); }
+.blue-brick-build .studs-top span { background: var(--lego-blue); }
+.green-brick-build .studs-top span { background: var(--lego-green); }
 
 
-/* Bouton style FICSIT */
-.ficsit-button {
+/* --- BOUTONS et TAGS --- */
+.tech-tag {
     display: inline-block;
-    margin-top: 10px;
-    padding: 5px 15px;
-    background: var(--ficsit-orange);
-    color: var(--ficsit-dark-grey);
-    text-decoration: none;
-    font-weight: bold;
-    text-transform: uppercase;
-    clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
-}
-.ficsit-button:hover { background: #fff; }
-
-
-/* --- ANIMATIONS --- */
-
-/* Animation 1: Fait rouler la texture du tapis */
-@keyframes scrollBelt {
-    from { background-position: 0 0; }
-    to { background-position: 20px 0; }
-}
-
-/* Animation 2: Déplace les conteneurs de droite à gauche */
-@keyframes moveProjects {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        /* On déplace loin vers la gauche pour être sûr qu'ils sortent de l'écran */
-        transform: translateX(-200%); 
-    }
-}
-
-footer {
-    background: var(--ficsit-dark-grey);
-    text-align: center;
-    padding: 20px;
-    margin-top: 50px;
-    border-top: 3px solid var(--ficsit-orange);
+    background: rgba(0,0,0,0.2);
+    padding: 5px 10px;
+    border-radius: 15px;
     font-size: 0.8rem;
+    margin-bottom: 15px;
+}
+
+.lego-btn {
+    display: block;
+    text-align: center;
+    background: var(--lego-yellow);
+    color: var(--lego-dark);
+    text-decoration: none;
+    padding: 12px;
+    border: 3px solid #ffe163;
+}
+
+/* Effet "rebond" quand on passe la souris sur un bouton ou une brique */
+.lego-btn:hover, .skill-brick:hover, .project-brick:hover {
+    transform: translateY(-4px); /* Ça monte un peu */
+    /* L'ombre dessous grandit */
+    box-shadow: var(--plastic-shadow-inset), 0 12px 0 rgba(0,0,0,0.15); 
+    cursor: pointer;
+}
+/* Effet "clic" */
+.lego-btn:active {
+    transform: translateY(2px);
+    box-shadow: var(--plastic-shadow-inset), 0 2px 0 rgba(0,0,0,0.15);
+}
+
+.lego-footer {
+    text-align: center; padding: 30px;
+    background: var(--lego-blue); color: white;
+    border-top: 5px solid var(--lego-yellow);
 }
