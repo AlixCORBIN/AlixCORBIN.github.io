@@ -1,0 +1,216 @@
+/* --- CONFIGURATION GÉNÉRALE --- */
+:root {
+    /* Palette de couleurs "Satisfactory" */
+    --ficsit-orange: #FA9C1D;
+    --ficsit-dark-grey: #2A2A2A;
+    --ficsit-metal: #4F4F4F;
+    --ficsit-light: #E0E0E0;
+    --bg-color: #1a1a1a;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--ficsit-light);
+    font-family: 'Rajdhani', sans-serif; /* Police style industriel */
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1, h2, h3 {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.ficsit-orange { color: var(--ficsit-orange); }
+
+/* --- LE HUD (En-tête) --- */
+.ficsit-hud {
+    background: var(--ficsit-dark-grey);
+    border-bottom: 3px solid var(--ficsit-orange);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+.ficsit-hud span { color: var(--ficsit-orange); }
+
+
+/* --- LES BIOMES (Sections) --- */
+.biome {
+    padding: 60px 0;
+    border-bottom: 5px solid var(--ficsit-dark-grey);
+}
+
+/* Section HUB - Style un peu plus "propre" */
+.biome-hub {
+    background: linear-gradient(rgba(42, 42, 42, 0.9), rgba(42, 42, 42, 0.9)), url('https://i.imgur.com/8F9H6jA.jpeg'); /* Image de fond Satisfactory générique */
+    background-size: cover;
+    background-position: center;
+    min-height: 40vh;
+    display: flex;
+    align-items: center;
+}
+
+.intro-box {
+    background: rgba(42, 42, 42, 0.8);
+    border: 2px solid var(--ficsit-orange);
+    padding: 30px;
+    backdrop-filter: blur(5px);
+}
+
+/* Section USINE - Style industriel */
+.biome-factory {
+    background-color: #222;
+    /* Texture de sol d'usine */
+    background-image:
+        linear-gradient(45deg, var(--ficsit-metal) 25%, transparent 25%),
+        linear-gradient(-45deg, var(--ficsit-metal) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, var(--ficsit-metal) 75%),
+        linear-gradient(-45deg, transparent 75%, var(--ficsit-metal) 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+/* --- LE CONVOYEUR (LA PIÈCE MAÎTRESSE) --- */
+.conveyor-belt-container {
+    margin-top: 50px;
+    position: relative;
+    height: 250px; /* Hauteur de la zone du convoyeur */
+    overflow: hidden; /* Cache les projets qui sortent de l'écran */
+    background: #111;
+    border-top: 5px solid var(--ficsit-metal);
+    border-bottom: 5px solid var(--ficsit-metal);
+}
+
+/* L'animation visuelle de la bande qui roule */
+.belt-surface {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 20px;
+    margin-top: 40px; /* Position sous les projets */
+    background: repeating-linear-gradient(
+        90deg,
+        #333,
+        #333 10px,
+        #222 10px,
+        #222 20px
+    );
+    /* Animation pour faire "rouler" la texture du tapis */
+    animation: scrollBelt 1s linear infinite;
+}
+
+/* Le conteneur qui déplace physiquement les objets */
+.moving-items-track {
+    display: flex;
+    /* L'animation principale qui fait bouger les projets de droite à gauche */
+    animation: moveProjects 15s linear infinite;
+    width: max-content; /* Important pour que les éléments soient sur une seule ligne */
+    padding-left: 100%; /* Commence hors écran à droite */
+}
+
+/* Pause l'animation au survol de la souris */
+.conveyor-belt-container:hover .moving-items-track,
+.conveyor-belt-container:hover .belt-surface {
+    animation-play-state: paused;
+}
+
+
+/* --- LES PROJETS SUR LE CONVOYEUR --- */
+.project-item {
+    flex: 0 0 auto; /* Ne pas rétrécir */
+    width: 200px;
+    margin-right: 80px; /* Espace entre les projets sur le tapis */
+    position: relative;
+    top: 20px; /* Positionner sur le "tapis" visuel */
+    transition: transform 0.3s ease;
+}
+
+/* Petit effet quand on survole un projet spécifique */
+.project-item:hover {
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+/* Placeholder visuel pour le projet (remplace par une image 3D si tu peux !) */
+.cube-placeholder {
+    width: 100%;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    border: 3px solid var(--ficsit-metal);
+    box-shadow: 0 10px 10px rgba(0,0,0,0.3);
+    /* Petit look "caisse" */
+    background-image: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent);
+    background-size: 20px 20px;
+}
+
+.item-info {
+    background: var(--ficsit-dark-grey);
+    padding: 10px;
+    border: 1px solid var(--ficsit-orange);
+    margin-top: 15px;
+    text-align: center;
+}
+.item-info h3 { margin: 5px 0; font-size: 1.1rem; }
+.item-info p { color: var(--ficsit-orange); font-size: 0.9rem; }
+
+
+/* Bouton style FICSIT */
+.ficsit-button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 5px 15px;
+    background: var(--ficsit-orange);
+    color: var(--ficsit-dark-grey);
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+}
+.ficsit-button:hover { background: #fff; }
+
+
+/* --- ANIMATIONS --- */
+
+/* Animation 1: Fait rouler la texture du tapis */
+@keyframes scrollBelt {
+    from { background-position: 0 0; }
+    to { background-position: 20px 0; }
+}
+
+/* Animation 2: Déplace les conteneurs de droite à gauche */
+@keyframes moveProjects {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        /* On déplace loin vers la gauche pour être sûr qu'ils sortent de l'écran */
+        transform: translateX(-200%); 
+    }
+}
+
+footer {
+    background: var(--ficsit-dark-grey);
+    text-align: center;
+    padding: 20px;
+    margin-top: 50px;
+    border-top: 3px solid var(--ficsit-orange);
+    font-size: 0.8rem;
+}
