@@ -1,330 +1,344 @@
-/* --- 1. CONFIGURATION & VARIABLES --- */
+/* --- 1. CONFIGURATION FICSIT (Variables) --- */
 :root {
-    /* Palette LEGO Classique */
-    --lego-red: #da291c;
-    --lego-red-dark: #b91d12;
+    /* Palette Principale */
+    --ficsit-orange: #FA9C1D; /* L'orange iconique */
+    --ficsit-orange-glow: rgba(250, 156, 29, 0.6);
     
-    --lego-blue: #0055bf;
-    --lego-blue-dark: #003f8e;
-    
-    --lego-yellow: #fecb00;
-    --lego-yellow-dark: #dcb000;
-    
-    --lego-green: #23b14d;
-    --lego-green-dark: #1a853a;
-    
-    --lego-white: #f4f4f4;
-    --lego-grey: #a0a5a9;
-    --lego-dark-grey: #4d5156;
-    --text-color: #333;
+    --metal-dark: #2A2A2A; /* Fond principal sombre */
+    --metal-medium: #3D3D3D; /* Panneaux */
+    --metal-light: #5F5F5F; /* Bordures */
+    --metal-highlight: #808080;
 
-    /* Effets 3D Plastique */
-    --plastic-shadow: 
-        inset 0 2px 2px rgba(255,255,255,0.4), 
-        inset 0 -4px 0 rgba(0,0,0,0.15),
-        0 4px 0 rgba(0,0,0,0.1);
-        
-    --card-shadow: 
-        0 10px 0 rgba(0,0,0,0.1),
-        0 10px 20px rgba(0,0,0,0.15);
+    --text-light: #E0E0E0;
+    --text-dim: #A0A0A0;
+
+    /* Couleurs d'état (Status) */
+    --status-green: #4ade80; /* Efficace */
+    --status-blue: #3ba4ff; /* Normal */
+    --status-yellow: #ffd700; /* En attente */
+    --status-red: #ff4d4d; /* Erreur/Arrêt */
+
+    /* Polices */
+    --font-hud: 'Chakra Petch', sans-serif; /* Titres techniques */
+    --font-body: 'Roboto', sans-serif; /* Texte lisible */
 }
 
-* { box-sizing: border-box; }
+/* Reset de base */
+* { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
 
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Nunito', sans-serif;
-    color: var(--text-color);
-    background-color: var(--lego-grey);
-    
-    /* LE FOND MAGIQUE : PLAQUE DE BASE (BASEPLATE) */
-    background-image: radial-gradient(rgba(0,0,0,0.15) 15%, transparent 16%),
-                      radial-gradient(rgba(255,255,255,0.1) 15%, transparent 16%);
-    background-size: 30px 30px;
-    background-position: 0 0, 1px 1px; /* Léger décalage pour effet relief */
+    background-color: var(--metal-dark);
+    color: var(--text-light);
+    font-family: var(--font-body);
     overflow-x: hidden;
-    padding-top: 60px; /* Pour la navbar fixe */
 }
 
-h1, h2, h3, h4, .nav-links, .lego-btn, .lego-cta {
-    font-family: 'Fredoka One', cursive;
+/* Texture de fond globale (Grille métallique subtile) */
+.bg-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: 
+        linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+    background-size: 20px 20px; /* Taille de la grille */
+    pointer-events: none; z-index: -1;
+    opacity: 0.5;
+}
+
+/* Typographie globale */
+h1, h2, h3, h4, h5, .hud-link, .ficsit-btn, .status-efficient, .meter-label {
+    font-family: var(--font-hud);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 }
 
-.container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 40px 20px;
-}
+.ficsit-orange { color: var(--ficsit-orange); }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+.section-pad { padding: 80px 20px; }
 
-/* --- 2. NAVBAR STYLE BRIQUE --- */
-.lego-navbar {
-    position: fixed;
-    top: 0; left: 0; width: 100%;
-    background: var(--lego-white);
-    border-bottom: 4px solid #ddd;
+/* --- 2. HUD NAVBAR (En-tête) --- */
+.ficsit-hud {
+    position: fixed; top: 0; width: 100%;
+    background: rgba(42, 42, 42, 0.95); /* Semi-transparent */
+    border-bottom: 3px solid var(--ficsit-orange);
     z-index: 1000;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
 }
 
-.nav-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
+.hud-container {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 20px; max-width: 1400px; margin: 0 auto;
 }
 
-.logo {
-    font-weight: bold;
-    font-size: 1.5rem;
-    display: flex;
-    align-items: center;
-    color: var(--lego-red);
+.hud-brand { font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; gap: 10px;}
+
+.hud-nav { display: flex; gap: 20px; }
+.hud-link {
+    text-decoration: none; color: var(--text-dim); font-weight: 600; font-size: 0.9rem;
+    padding: 5px 10px; transition: all 0.3s; border: 1px solid transparent;
+}
+.hud-link:hover, .hud-link.active {
+    color: var(--ficsit-orange);
+    border-color: var(--ficsit-orange);
+    text-shadow: 0 0 10px var(--ficsit-orange-glow);
+    background: rgba(250, 156, 29, 0.1);
 }
 
-.nav-links {
-    list-style: none;
-    display: flex;
-    gap: 15px;
-    margin: 0; padding: 0;
+.hud-status { font-family: var(--font-hud); font-size: 0.9rem; color: var(--text-dim); }
+.status-efficient { color: var(--status-green); font-weight: bold; text-shadow: 0 0 5px var(--status-green); }
+
+
+/* --- 3. HERO SECTION (Le Hub) --- */
+.section-hero {
+    height: 100vh; min-height: 600px;
+    background-size: cover; background-position: center; background-attachment: fixed;
+    position: relative;
+    margin-top: 50px; /* Pour ne pas être caché par la navbar */
 }
 
-.nav-btn {
-    text-decoration: none;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    box-shadow: var(--plastic-shadow);
-    transition: transform 0.1s;
-}
-/* Couleurs des boutons nav */
-.red-btn { background: var(--lego-red); border-bottom: 3px solid var(--lego-red-dark); }
-.blue-btn { background: var(--lego-blue); border-bottom: 3px solid var(--lego-blue-dark); }
-.yellow-btn { background: var(--lego-yellow); color: #333; border-bottom: 3px solid var(--lego-yellow-dark); }
-.green-btn { background: var(--lego-green); border-bottom: 3px solid var(--lego-green-dark); }
-
-.nav-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
-.nav-btn:active { transform: translateY(2px); border-bottom-width: 0; margin-top: 3px; }
-
-/* --- 3. SECTION HERO (CARTE PRINCIPALE) --- */
-.hero-section {
-    padding: 60px 20px;
-    text-align: center;
-    display: flex;
-    justify-content: center;
+.hero-overlay {
+    background: linear-gradient(to right, rgba(30,30,30,0.9) 30%, rgba(30,30,30,0.6) 100%);
+    height: 100%; width: 100%;
+    display: flex; align-items: center;
 }
 
-.lego-card {
-    background: var(--lego-white);
-    border-radius: 12px;
+.hero-flex { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.pioneer-data { max-width: 600px; }
+
+h1.glitch-effect {
+    font-size: 4rem; margin-bottom: 10px; color: var(--ficsit-orange);
+    text-shadow: 2px 2px 0px var(--metal-dark), -1px -1px 10px var(--ficsit-orange-glow);
+    position: relative;
+}
+/* Petit effet visuel sous le titre */
+h1.glitch-effect::after {
+    content: ''; display: block; width: 100px; height: 4px; background: var(--ficsit-orange); margin-top: 10px;
+}
+
+.subtitle { color: var(--text-light); font-size: 1.5rem; margin-bottom: 20px; }
+.intro-text { font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px; border-left: 3px solid var(--ficsit-orange); padding-left: 20px; }
+
+.pioneer-visual {
+    max-width: 400px; display: flex; justify-content: center;
+    /* Effet d'hologramme/scan sur l'image du personnage */
+    filter: drop-shadow(0 0 20px var(--ficsit-orange-glow));
+    opacity: 0.9;
+}
+.pioneer-img { width: 100%; height: auto; }
+
+/* Boutons style Industriel */
+.hero-actions { display: flex; gap: 20px; }
+.ficsit-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 25px;
+    text-decoration: none; font-weight: 700;
+    border: 2px solid; transition: all 0.3s;
+    clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%); /* Forme angulaire */
+}
+.orange-btn {
+    background: var(--ficsit-orange); color: var(--metal-dark); border-color: var(--ficsit-orange);
+}
+.orange-btn:hover { background: transparent; color: var(--ficsit-orange); box-shadow: 0 0 15px var(--ficsit-orange-glow); }
+.dark-btn {
+    background: transparent; color: var(--text-light); border-color: var(--metal-light);
+}
+.dark-btn:hover { border-color: var(--ficsit-orange); color: var(--ficsit-orange); }
+
+
+/* --- 4. STYLES GÉNÉRAUX DE SECTION --- */
+.terminal-header { margin-bottom: 50px; position: relative; }
+.terminal-header h3 { font-size: 2rem; margin-bottom: 10px; }
+.orange-slash { color: var(--ficsit-orange); margin-right: 10px; }
+/* Bandes de chantier jaune/noir */
+.caution-stripes {
+    height: 10px; width: 100%;
+    background: repeating-linear-gradient(
+        45deg,
+        #000,
+        #000 10px,
+        var(--ficsit-orange) 10px,
+        var(--ficsit-orange) 20px
+    );
+    border-top: 2px solid var(--metal-light);
+    border-bottom: 2px solid var(--metal-light);
+}
+
+/* Panneau standard FICSIT (La boîte grise de base) */
+.ficsit-panel {
+    background: var(--metal-medium);
+    border: 2px solid var(--metal-light);
     padding: 30px;
-    box-shadow: var(--card-shadow);
-    border: 2px solid white;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.3), 0 10px 20px rgba(0,0,0,0.3);
     position: relative;
-}
-
-.hero-content { max-width: 700px; width: 100%; padding: 50px 30px; }
-
-.avatar-container {
-    width: 150px; height: 150px;
-    margin: 0 auto 20px;
-    background: var(--lego-yellow);
-    border-radius: 50%;
-    padding: 5px;
-    border: 4px solid white;
-    box-shadow: var(--plastic-shadow);
-}
-.avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-
-.hero-content h1 { font-size: 3rem; margin: 0; color: var(--lego-dark-grey); }
-.hero-content .subtitle { color: var(--lego-blue); margin-top: 5px; }
-
-.hero-actions { margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
-
-/* Gros boutons CTA */
-.lego-cta {
-    display: inline-block;
-    padding: 15px 30px;
-    text-decoration: none;
-    color: white;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    box-shadow: var(--plastic-shadow);
-    transition: transform 0.1s;
-}
-.lego-cta:hover { transform: translateY(-3px); }
-.lego-cta:active { transform: translateY(3px); box-shadow: none; }
-
-.red-brick { background: var(--lego-red); border-bottom: 5px solid var(--lego-red-dark); }
-.blue-brick { background: var(--lego-blue); border-bottom: 5px solid var(--lego-blue-dark); }
-.yellow-brick { background: var(--lego-yellow); color: #333; border-bottom: 5px solid var(--lego-yellow-dark); }
-.green-brick { background: var(--lego-green); border-bottom: 5px solid var(--lego-green-dark); }
-
-
-/* --- 4. SECTION STYLES GÉNÉRAUX --- */
-.section-title-brick {
-    display: inline-block;
-    padding: 10px 40px;
-    color: white;
-    border-radius: 8px;
-    margin-bottom: 30px;
-    box-shadow: var(--plastic-shadow);
-    transform: rotate(-2deg); /* Petite rotation fun */
-}
-.section-title-brick h3 { margin: 0; font-size: 1.8rem; }
-.yellow-brick h3 { color: #333; }
-
-.two-columns {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-}
-
-/* Tags Hobbies */
-.hobbies { margin-top: 20px; }
-.tag {
-    display: inline-block;
-    background: #eee;
-    padding: 5px 10px;
-    border-radius: 20px;
-    margin: 3px;
-    font-size: 0.85rem;
-    font-weight: bold;
-    border: 2px solid #ddd;
-}
-
-/* SKILLS BARS */
-.skill-bar { margin-bottom: 15px; }
-.skill-name { display: block; font-weight: bold; margin-bottom: 5px; }
-.progress-track {
-    background: #eee;
-    height: 20px;
-    border-radius: 10px;
-    border: 2px solid #ddd;
-    overflow: hidden;
-    position: relative;
-    /* Petit effet "tenons" dans la barre vide */
-    background-image: radial-gradient(#ccc 15%, transparent 16%);
+    /* Petit détail visuel aux coins */
+    background-image: 
+        linear-gradient(135deg, var(--metal-highlight) 5px, transparent 5px),
+        linear-gradient(225deg, var(--metal-highlight) 5px, transparent 5px),
+        linear-gradient(45deg, var(--metal-highlight) 5px, transparent 5px),
+        linear-gradient(315deg, var(--metal-highlight) 5px, transparent 5px);
+    background-position: top left, top right, bottom left, bottom right;
     background-size: 10px 10px;
+    background-repeat: no-repeat;
 }
-.progress-fill { height: 100%; border-right: 2px solid rgba(0,0,0,0.2); }
-.red-fill { background: var(--lego-red); }
-.yellow-fill { background: var(--lego-yellow); }
-.blue-fill { background: var(--lego-blue); }
-.green-fill { background: var(--lego-green); }
+.ficsit-panel h4 { color: var(--ficsit-orange); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+
+.grid-2-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
 
 
-/* --- 5. TIMELINE (PARCOURS) --- */
-.timeline {
+/* --- 5. SECTION ABOUT (M.A.M) --- */
+.text-panel p { margin-bottom: 15px; line-height: 1.7; }
+.inventory-slots { display: flex; gap: 15px; margin-top: 30px; }
+.inv-slot {
+    width: 60px; height: 60px;
+    background: var(--metal-dark); border: 2px solid var(--metal-light);
+    display: flex; justify-content: center; align-items: center;
+    font-size: 1.5rem; color: var(--text-dim);
+    transition: all 0.3s; cursor: help;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+.inv-slot:hover { border-color: var(--ficsit-orange); color: var(--ficsit-orange); box-shadow: 0 0 15px var(--ficsit-orange-glow); }
+
+/* Barres de Compétences (Efficiency Meters) */
+.efficiency-meter { margin-bottom: 20px; }
+.meter-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; font-weight: bold; }
+.percentage { color: var(--ficsit-orange); }
+.meter-track {
+    height: 16px; background: #1a1a1a;
+    border: 2px solid var(--metal-light);
+    padding: 2px; /* Espace entre le bord et la barre */
+    /* Effet de segments */
+    background-image: repeating-linear-gradient(90deg, transparent, transparent 20%, rgba(0,0,0,0.5) 20%, rgba(0,0,0,0.5) 22%);
+}
+.meter-fill {
+    height: 100%;
+    box-shadow: 0 0 10px currentColor; /* Lueur basée sur la couleur de la barre */
+    transition: width 1s ease-in-out;
     position: relative;
-    padding-left: 30px;
-    border-left: 8px solid #ddd; /* La tige qui tient tout */
-}
-
-.timeline-item {
-    position: relative;
-    margin-bottom: 40px;
-}
-
-.timeline-stud {
-    position: absolute;
-    left: -46px; /* Ajuster pour centrer sur la ligne */
-    top: 0;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    color: white;
-    font-size: 0.7rem;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: bold;
-    box-shadow: 0 0 0 4px white; /* Bordure blanche autour du rond */
-    z-index: 2;
-    padding: 15px; /* Pour faire un rond plus gros */
-}
-.yellow-brick.timeline-stud { color: #333; }
-
-.timeline-content { padding: 20px; }
-.timeline-content h4 { margin: 0 0 5px 0; color: var(--lego-blue-dark); }
-.company { margin: 0 0 10px 0; color: var(--lego-grey); font-weight: normal; }
-
-
-/* --- 6. PROJETS (GRID) --- */
-.projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-}
-
-.project-card {
-    padding: 0;
-    overflow: hidden;
-    transition: transform 0.3s;
-}
-.project-card:hover { transform: translateY(-10px); }
-
-.project-image {
-    height: 180px;
-    display: flex;
-    align-items: center; justify-content: center;
-    color: white;
-    font-family: 'Fredoka One';
-    font-size: 1.5rem;
-    /* Motif LEGO dessus */
-    background-image: radial-gradient(rgba(255,255,255,0.2) 15%, transparent 16%);
+    /* Texture rayée sur la barre pleine */
+    background-image: linear-gradient(45deg, rgba(255,255,255,.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.15) 50%, rgba(255,255,255,.15) 75%, transparent 75%, transparent);
     background-size: 20px 20px;
-    border-bottom: 4px solid rgba(0,0,0,0.1);
+    animation: moveStripes 2s linear infinite; /* Animation des rayures */
+}
+@keyframes moveStripes { from { background-position: 0 0; } to { background-position: 40px 0; } }
+
+.orange-fill { background-color: var(--ficsit-orange); color: var(--ficsit-orange); }
+.blue-fill { background-color: var(--status-blue); color: var(--status-blue); }
+.green-fill { background-color: var(--status-green); color: var(--status-green); }
+.yellow-fill { background-color: var(--status-yellow); color: var(--status-yellow); }
+
+
+/* --- 6. SECTION EXPÉRIENCE (Timeline) --- */
+.milestone-timeline {
+    position: relative; max-width: 800px; margin: 0 auto;
+}
+/* La ligne centrale qui ressemble à un tuyau/câble */
+.milestone-timeline::before {
+    content: ''; position: absolute; left: 30px; top: 0; height: 100%; width: 8px;
+    background: var(--metal-light); border: 2px solid var(--metal-dark);
+    background-image: linear-gradient(to bottom, var(--metal-highlight) 1px, transparent 1px); background-size: 10px 10px;
 }
 
-.project-info { padding: 20px; }
-.project-info h4 { margin: 0; }
-.project-tags { margin: 15px 0; }
-.mini-brick {
-    display: inline-block;
-    padding: 3px 8px;
-    color: white;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    margin-right: 5px;
-    font-weight: bold;
+.milestone-node {
+    position: relative; padding-left: 80px; margin-bottom: 50px;
 }
-.mini-brick.yellow-brick { color: #333; }
-
-.lego-btn {
-    display: block;
-    width: 100%;
-    text-align: center;
-    padding: 10px;
-    background: #eee;
-    color: #333;
-    border-radius: 6px;
-    text-decoration: none;
-    border: 2px solid #ddd;
-    font-weight: bold;
-    transition: all 0.2s;
+/* Le rond de l'étape (Node Icon) */
+.node-icon {
+    position: absolute; left: 0; top: 0;
+    width: 60px; height: 60px;
+    background: var(--metal-dark); border: 4px solid var(--metal-light);
+    border-radius: 50%; display: flex; justify-content: center; align-items: center;
+    font-size: 1.5rem; color: var(--text-dim); z-index: 2;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
-.lego-btn:hover { background: var(--lego-yellow); border-color: var(--lego-yellow-dark); color: #333; }
-
-
-/* --- 7. FOOTER --- */
-.lego-footer {
-    background: var(--lego-dark-grey);
-    color: white;
-    padding: 40px 0;
-    margin-top: 60px;
-    border-top: 10px solid var(--lego-yellow); /* Bande jaune chantier */
-    text-align: center;
+/* Styles selon l'état */
+.milestone-node.unlocked .node-icon {
+    border-color: var(--ficsit-orange); color: var(--metal-dark); background: var(--ficsit-orange);
+    box-shadow: 0 0 25px var(--ficsit-orange-glow);
+}
+.milestone-node.previous .node-icon {
+    border-color: var(--status-green); color: var(--status-green);
 }
 
-/* --- RESPONSIVE MOBILE --- */
-@media (max-width: 768px) {
-    .nav-links { display: none; } /* Cache le menu sur petit écran pour simplifier */
-    .two-columns { grid-template-columns: 1fr; }
-    .hero-content h1 { font-size: 2rem; }
-    .timeline { border-left: 4px solid #ddd; padding-left: 20px; }
-    .timeline-stud { left: -34px; padding: 10px; font-size: 0.6rem; }
+.milestone-content { padding: 25px; }
+.milestone-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 2px solid var(--metal-dark); padding-bottom: 10px;}
+.milestone-header h4 { margin: 0; color: var(--text-light); font-size: 1.2rem; }
+.milestone-date { font-family: var(--font-hud); color: var(--ficsit-orange); font-size: 0.9rem; }
+.company-name { color: var(--text-dim); margin-bottom: 15px; }
+
+
+/* --- 7. SECTION PROJETS (Assembly Line) --- */
+.production-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px;
+}
+
+.project-constructor { padding: 0; overflow: hidden; transition: transform 0.3s, border-color 0.3s; }
+.project-constructor:hover {
+    border-color: var(--ficsit-orange); transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4), 0 0 20px var(--ficsit-orange-glow) inset;
+}
+
+.project-visual-frame {
+    height: 200px; position: relative;
+    border-bottom: 4px solid var(--metal-dark);
+    /* Bordure hachurée style "Zone de chargement" */
+    background-image: repeating-linear-gradient(45deg, var(--metal-dark), var(--metal-dark) 10px, var(--ficsit-orange) 10px, var(--ficsit-orange) 20px);
+    padding: 5px;
+}
+.project-img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(30%) contrast(120%); }
+.project-overlay {
+    position: absolute; top: 15px; right: 15px;
+}
+.status-badge {
+    background: var(--status-green); color: var(--metal-dark); font-family: var(--font-hud);
+    padding: 5px 10px; font-weight: bold; font-size: 0.8rem; clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+    box-shadow: 0 0 10px var(--status-green);
+}
+.status-badge.warning { background: var(--status-yellow); box-shadow: 0 0 10px var(--status-yellow); }
+
+.project-data { padding: 25px; }
+.project-data h4 { font-size: 1.3rem; color: var(--text-light); margin-bottom: 10px; }
+
+.components-required { margin: 20px 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.component-tag {
+    background: var(--metal-dark); border: 1px solid var(--metal-light);
+    padding: 5px 10px; font-size: 0.85rem; font-family: var(--font-hud);
+    display: flex; align-items: center; gap: 5px; color: var(--text-dim);
+}
+.component-tag i { color: var(--ficsit-orange); }
+
+.small-btn { padding: 8px 15px; font-size: 0.9rem; width: 100%; justify-content: center; background: var(--metal-dark); color: var(--ficsit-orange); border-color: var(--ficsit-orange); }
+.small-btn:hover { background: var(--ficsit-orange); color: var(--metal-dark); }
+
+
+/* --- 8. FOOTER --- */
+.ficsit-footer {
+    background: var(--metal-dark); border-top: 4px solid var(--ficsit-orange);
+    padding: 40px 0; margin-top: 80px;
+    /* Texture de sol métallique */
+    background-image: 
+        linear-gradient(45deg, var(--metal-medium) 25%, transparent 25%),
+        linear-gradient(-45deg, var(--metal-medium) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, var(--metal-medium) 75%),
+        linear-gradient(-45deg, transparent 75%, var(--metal-medium) 75%);
+    background-size: 20px 20px;
+}
+.footer-flex { display: flex; justify-content: space-between; align-items: center; }
+.disclaimer { font-size: 0.8rem; color: var(--text-dim); margin-top: 10px; max-width: 600px; }
+.footer-end-logo { font-family: var(--font-hud); font-weight: bold; font-size: 1.5rem; color: var(--text-dim); }
+
+
+/* --- RESPONSIVE (Mobile) --- */
+@media (max-width: 900px) {
+    .hero-flex { flex-direction: column-reverse; text-align: center; }
+    .pioneer-visual { margin-bottom: 30px; max-width: 300px; }
+    .intro-text { border-left: none; padding-left: 0; }
+    .hero-actions { justify-content: center; }
+    .grid-2-cols { grid-template-columns: 1fr; }
+    .hud-nav { display: none; } /* Simplification du menu sur mobile */
+    h1.glitch-effect { font-size: 3rem; }
+    h1.glitch-effect::after { margin: 10px auto; }
+    .milestone-timeline::before { left: 20px; }
+    .milestone-node { padding-left: 60px; }
+    .node-icon { width: 40px; height: 40px; font-size: 1rem; }
+    .footer-flex { flex-direction: column; gap: 30px; text-align: center; }
 }
