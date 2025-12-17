@@ -1,0 +1,106 @@
+#lego {
+    background-color: #a0a5a9; /* Gris plaque de base */
+    /* Motif tenons LEGO (Ronds) */
+    background-image: radial-gradient(rgba(0,0,0,0.15) 15%, transparent 16%);
+    background-size: 30px 30px;
+    background-position: 0 0;
+    
+    font-family: 'Fredoka One', cursive;
+    padding: 80px 0;
+    min-height: 90vh;
+    color: #333;
+}
+
+.lego-intro {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.lego-title {
+    font-size: 3rem;
+    color: #d60000; /* Rouge LEGO */
+    text-shadow: 3px 3px 0px #fff, 5px 5px 0px rgba(0,0,0,0.2);
+    text-transform: uppercase;
+}
+
+.lego-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+}
+
+/* Les briques (Panneaux) */
+.lego-panel {
+    background: #f4f4f4;
+    padding: 30px;
+    border-radius: 4px;
+    width: 100%;
+    max-width: 450px;
+    position: relative;
+    margin-top: 25px; /* Espace pour les tenons du haut */
+    /* Ombre interne pour effet plastique */
+    box-shadow: 
+        inset 0 -4px 0 rgba(0,0,0,0.2), 
+        0 8px 15px rgba(0,0,0,0.3);
+    border: 2px solid rgba(0,0,0,0.1);
+}
+
+.lego-panel h3 {
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    border-bottom: 2px dashed rgba(0,0,0,0.2);
+    padding-bottom: 10px;
+}
+
+.lego-panel ul {
+    list-style: none;
+    line-height: 1.6;
+    font-family: 'Roboto', sans-serif; /* Texte lisible pour les listes */
+}
+.lego-panel li { margin-bottom: 10px; }
+
+/* Les Tenons (Studs) sur le dessus */
+.studs {
+    position: absolute;
+    top: -15px;
+    left: 0;
+    width: 100%;
+    height: 15px;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.studs span {
+    width: 60px; /* Largeur d'un tenon */
+    height: 15px;
+    border-radius: 5px 5px 0 0;
+    /* Ombre pour le volume */
+    box-shadow: inset 0 3px 2px rgba(255,255,255,0.4), inset 0 -2px 0 rgba(0,0,0,0.1);
+}
+
+/* Couleurs des Briques */
+.red-brick { background: #d60000; color: white; border-color: #b30000; }
+.red-brick .studs span { background: #d60000; }
+.red-brick h3 { border-color: rgba(255,255,255,0.3); }
+
+.blue-brick { background: #0055bf; color: white; border-color: #004499; }
+.blue-brick .studs span { background: #0055bf; }
+.blue-brick h3 { border-color: rgba(255,255,255,0.3); }
+
+.yellow-brick { background: #fecb00; color: #333; border-color: #e6b800; }
+.yellow-brick .studs span { background: #fecb00; }
+
+/* Tags (Compétences) */
+.tags-container { margin-top: 10px; }
+.lego-tag {
+    display: inline-block;
+    padding: 5px 12px;
+    background: rgba(255,255,255,0.5);
+    color: #333;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    border-radius: 15px;
+    margin: 5px;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+}
