@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alix Corbin | Portfolio</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Fredoka+One&family=Cinzel:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* =========================================
+           1. CSS GLOBAL (BASE)
+           ========================================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        body { font-family: 'Roboto', sans-serif; overflow-x: hidden; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px; position: relative; z-index: 2; }
+
+        /* NAVIGATION FIXE */
+        .gamemode-nav {
+            position: fixed; top: 0; width: 100%; height: 60px;
+            background: #111; color: white;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 30px; z-index: 1000;
+            border-bottom: 2px solid #333; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .player-name { font-weight: bold; letter-spacing: 2px; font-size: 1.1rem; }
+        .nav-links a {
+            color: #888; text-decoration: none; margin-left: 20px; font-size: 0.9rem;
+            font-weight: bold; transition: 0.3s; text-transform: uppercase;
+        }
+        .nav-links a:hover { color: white; text-shadow: 0 0 5px white; }
+
+        /* SEPARATEURS DE MONDES */
+        .portal-divider { height: 80px; width: 100%; position: relative; z-index: 5; margin-top: -40px; pointer-events: none; }
+        .to-lego { background: linear-gradient(to bottom, #2A2A2A, #a0a5a9); }
+        .to-chess { background: linear-gradient(to bottom, #a0a5a9, #1a1a1a); }
+
+        /* =========================================
+           2. CSS SATISFACTORY (USINE)
+           ========================================= */
+        #satisfactory {
+            background-color: #2A2A2A; color: #E0E0E0; font-family: 'Chakra Petch', sans-serif;
+            padding-top: 100px; padding-bottom: 80px; position: relative; min-height: 100vh;
+        }
+        .ficsit-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 30px 30px; pointer-events: none;
+        }
+        .pioneer-card {
+            border: 3px solid #FA9C1D; background: rgba(0,0,0,0.6); padding: 40px;
+            display: inline-block; backdrop-filter: blur(5px); text-align: center;
+            box-shadow: 0 0 20px rgba(250, 156, 29, 0.2); margin-bottom: 60px;
+        }
+        .pioneer-card h1 { color: #FA9C1D; font-size: 3rem; text-transform: uppercase; margin-bottom: 5px; }
+        .mission-brief {
+            margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.1);
+            border-left: 4px solid #FA9C1D; text-align: left; color: #FA9C1D; font-weight: bold;
+        }
+        .ficsit-btn {
+            display: inline-block; background: #FA9C1D; color: #222; padding: 12px 25px;
+            text-decoration: none; font-weight: 700; text-transform: uppercase;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            transition: transform 0.2s;
+        }
+        .ficsit-btn:hover { transform: scale(1.05); background: #ffb85c; }
+        
+        .factory-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .machine-card { background: #3D3D3D; border: 1px solid #5F5F5F; transition: transform 0.2s; }
+        .machine-card:hover { border-color: #FA9C1D; transform: translateY(-5px); }
+        .machine-head { background: #1a1a1a; color: #FA9C1D; padding: 15px; font-weight: bold; border-bottom: 2px solid #FA9C1D; }
+        .machine-body { padding: 20px; }
+        .tech-tag { display: inline-block; background: #222; color: #aaa; padding: 4px 10px; font-size: 0.8rem; margin: 15px 5px 0 0; border: 1px solid #555; }
+        .ficsit-title { color: #FA9C1D; font-size: 1.5rem; margin-bottom: 30px; border-bottom: 2px solid #5F5F5F; padding-bottom: 10px; }
+
+        /* =========================================
+           3. CSS LEGO (CONSTRUCTION)
+           ========================================= */
+        #lego {
+            background-color: #a0a5a9; background-image: radial-gradient(rgba(0,0,0,0.15) 15%, transparent 16%);
+            background-size: 30px 30px; font-family: 'Fredoka One', cursive; padding: 80px 0; min-height: 90vh; color: #333;
+        }
+        .lego-title { text-align: center; font-size: 3rem; color: #d60000; text-shadow: 3px 3px 0px #fff; text-transform: uppercase; margin-bottom: 50px; }
+        .lego-row { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; }
+        .lego-panel {
+            background: #f4f4f4; padding: 30px; border-radius: 4px; width: 100%; max-width: 450px;
+            position: relative; margin-top: 25px; border: 2px solid rgba(0,0,0,0.1);
+            box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2), 0 8px 15px rgba(0,0,0,0.3);
+        }
+        .lego-panel h3 { text-transform: uppercase; margin-bottom: 15px; border-bottom: 2px dashed rgba(0,0,0,0.2); padding-bottom: 10px; }
+        .lego-panel ul { list-style: none; font-family: 'Roboto', sans-serif; line-height: 1.6; }
+        
+        .studs { position: absolute; top: -15px; left: 0; width: 100%; height: 15px; display: flex; justify-content: space-evenly; }
+        .studs span { width: 60px; height: 15px; border-radius: 5px 5px 0 0; box-shadow: inset 0 3px 2px rgba(255,255,255,0.4), inset 0 -2px 0 rgba(0,0,0,0.1); }
+        
+        .red-brick { background: #d60000; color: white; border-color: #b30000; } .red-brick .studs span { background: #d60000; }
+        .blue-brick { background: #0055bf; color: white; border-color: #004499; } .blue-brick .studs span { background: #0055bf; }
+        .yellow-brick { background: #fecb00; color: #333; border-color: #e6b800; } .yellow-brick .studs span { background: #fecb00; }
+        
+        .lego-tag { display: inline-block; padding: 5px 12px; background: rgba(255,255,255,0.5); color: #333; font-family: 'Roboto', sans-serif; font-weight: bold; border-radius: 15px; margin: 5px; }
+
+        /* =========================================
+           4. CSS CHESS (STRATEGIE)
+           ========================================= */
+        #chess { background-color: #1a1a1a; font-family: 'Cinzel', serif; padding: 80px 0; color: #ddd; min-height: 80vh; }
+        .chess-title { text-align: center; font-size: 2.5rem; margin-bottom: 50px; letter-spacing: 5px; color: #f0d9b5; border-bottom: 1px solid #444; display: inline-block; position: relative; left: 50%; transform: translateX(-50%); padding-bottom: 10px; }
+        .chessboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); max-width: 800px; margin: 0 auto; border: 15px solid #483C32; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        .chess-square { aspect-ratio: 1 / 1; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: all 0.3s; }
+        .chess-square:hover { filter: brightness(1.1); z-index: 2; }
+        .white-square { background-color: #f0d9b5; color: #333; }
+        .black-square { background-color: #b58863; color: #f0d9b5; }
+        .piece-content h4 { margin-bottom: 5px; font-weight: 700; font-size: 1.1rem; text-transform: uppercase; }
+        .piece-content .date { font-style: italic; font-size: 0.8rem; display: block; margin-bottom: 15px; opacity: 0.8; font-family: 'Roboto', sans-serif; }
+        .piece-content p { font-family: 'Roboto', sans-serif; font-size: 0.95rem; line-height: 1.4; }
+        .light-text { color: #f2f2f2; }
+        .icon-square { font-size: 4rem; opacity: 0.3; }
+        .chess-footer { text-align: center; margin-top: 50px; opacity: 0.6; font-family: 'Roboto', sans-serif; }
+
+        /* MOBILE */
+        @media (max-width: 600px) {
+            .gamemode-nav { padding: 0 10px; }
+            .player-name { display: none; }
+            .nav-links a { margin-left: 10px; font-size: 0.75rem; }
+            .pioneer-card h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="gamemode-nav">
+        <span class="player-name">ALIX CORBIN</span>
+        <div class="nav-links">
+            <a href="#satisfactory">USINE</a>
+            <a href="#lego">CONSTRUCTION</a>
+            <a href="#chess">STRATÉGIE</a>
+        </div>
+    </nav>
+
+    <section id="satisfactory">
+        <div class="ficsit-overlay"></div>
+        <div class="container">
+            <div style="text-align: center;">
+                <div class="pioneer-card">
+                    <h1>ALIX CORBIN</h1>
+                    <h2>ÉTUDIANT BUT INFORMATIQUE</h2>
+                    <p class="mission-brief">
+                        <i class="fas fa-search"></i> MISSION : Stage développement (8-12 semaines)<br>
+                        <span style="color: #fff;">DÉBUT : 13 AVRIL 2026</span>
+                    </p>
+                    <a href="mailto:alix.corbin.pro@gmail.com" class="ficsit-btn">CONTACTER LE PIONEER</a>
+                </div>
+            </div>
+
+            <h3 class="ficsit-title">LIGNE DE PRODUCTION : PROJETS</h3>
+            
+            <div class="factory-grid">
+                <article class="machine-card">
+                    <div class="machine-head">PROJET SAVI</div>
+                    <div class="machine-body">
+                        <p>Création d'une devanture de magasin animée.</p>
+                        <span class="tech-tag">Arduino</span>
+                        <span class="tech-tag">Électronique</span>
+                    </div>
+                </article>
+                <article class="machine-card">
+                    <div class="machine-head">ROOMBA TÉLÉCOMMANDÉ</div>
+                    <div class="machine-body">
+                        <p>Développement d'une IHM avec Processing pour contrôler le robot.</p>
+                        <span class="tech-tag">Processing</span>
+                        <span class="tech-tag">C++</span>
+                    </div>
+                </article>
+                <article class="machine-card">
+                    <div class="machine-head">SERVEUR MINECRAFT</div>
+                    <div class="machine-body">
+                        <p>Gestion serveur & Organisation d'événements hebdomadaires.</p>
+                        <span class="tech-tag">Management</span>
+                        <span class="tech-tag">Réseau</span>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <div class="portal-divider to-lego"></div>
+
+    <section id="lego">
+        <div class="container">
+            <h2 class="lego-title">FORMATION & ATOUTS</h2>
+            <div class="lego-row">
+                <div class="lego-panel red-brick">
+                    <div class="studs"><span></span><span></span><span></span><span></span></div>
+                    <h3>DIPLÔMES</h3>
+                    <ul>
+                        <li><strong>BUT Informatique</strong> (2024-Présent)<br><small>IUT Laval / Le Mans</small></li>
+                        <li><strong>Bac STI2D</strong> (2023-2024)<br><small>St Joseph-Lasalle - Mention</small></li>
+                    </ul>
+                </div>
+                <div class="lego-panel blue-brick">
+                    <div class="studs"><span></span><span></span><span></span><span></span></div>
+                    <h3>BRIQUES SPÉCIALES</h3>
+                    <ul>
+                        <li>🏆 <strong>1er Concours Éloquence</strong> (2023)</li>
+                        <li>🦫 <strong>Concours Castor</strong> (64ème/45k - 2021)</li>
+                    </ul>
+                </div>
+                <div class="lego-panel yellow-brick">
+                    <div class="studs"><span></span><span></span><span></span><span></span></div>
+                    <h3>ATOUTS PERSONNELS</h3>
+                    <div class="tags-container">
+                        <span class="lego-tag">Motivé</span>
+                        <span class="lego-tag">Sociable</span>
+                        <span class="lego-tag">Organisé</span>
+                        <span class="lego-tag">Commerçant</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="portal-divider to-chess"></div>
+
+    <section id="chess">
+        <div class="container">
+            <h2 class="chess-title">LA STRATÉGIE (EXPÉRIENCES)</h2>
+
+            <div class="chessboard">
+                <div class="chess-square white-square">
+                    <div class="piece-content">
+                        <h4>RESPONSABLE COM' BDE</h4>
+                        <span class="date">Depuis Mars 2025 - ADIIL</span>
+                        <p>Communication & Événementiel étudiant.</p>
+                    </div>
+                </div>
+                <div class="chess-square black-square icon-square"><i class="fas fa-bullhorn"></i></div>
+
+                <div class="chess-square black-square">
+                    <div class="piece-content light-text">
+                        <h4>RESTAURATION</h4>
+                        <span class="date">Avril 2024 - Papea Parc</span>
+                        <p>Polyvalence, Gestion du temps, Travail d'équipe.</p>
+                    </div>
+                </div>
+                <div class="chess-square white-square icon-square"><i class="fas fa-utensils"></i></div>
+
+                <div class="chess-square white-square">
+                    <div class="piece-content">
+                        <h4>STAGE INFORMATIQUE</h4>
+                        <span class="date">2020 - Huttepain Aliments</span>
+                        <p>Service informatique, communication en entreprise.</p>
+                    </div>
+                </div>
+                <div class="chess-square black-square icon-square"><i class="fas fa-desktop"></i></div>
+                
+                <div class="chess-square black-square">
+                    <div class="piece-content light-text">
+                        <h4>CASTRAGE DE MAÏS</h4>
+                        <span class="date">2022-2023 - Earl Legay</span>
+                        <p>Contraintes physiques, Travail d'équipe.</p>
+                    </div>
+                </div>
+                <div class="chess-square white-square icon-square"><i class="fas fa-seedling"></i></div>
+            </div>
+
+            <footer class="chess-footer">
+                <p>Alix Corbin &copy; 2025 - Permis B & Véhicule Personnel</p>
+            </footer>
+        </div>
+    </section>
+
+</body>
+</html>
