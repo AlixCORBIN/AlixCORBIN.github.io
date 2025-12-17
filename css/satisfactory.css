@@ -1,0 +1,125 @@
+#satisfactory {
+    background-color: #2A2A2A;
+    color: #E0E0E0;
+    font-family: 'Chakra Petch', sans-serif;
+    padding-top: 100px; /* Espace pour la navbar */
+    padding-bottom: 80px;
+    position: relative;
+    min-height: 100vh;
+}
+
+/* Texture de grille en fond */
+.ficsit-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: 
+        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+}
+
+/* En-tête Pioneer */
+.ficsit-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.pioneer-card {
+    border: 3px solid #FA9C1D;
+    background: rgba(0,0,0,0.6);
+    padding: 40px;
+    display: inline-block;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 20px rgba(250, 156, 29, 0.2);
+}
+
+.pioneer-card h1 {
+    color: #FA9C1D;
+    font-size: 3rem;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 0 #000;
+}
+
+.mission-brief {
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(255,255,255,0.1);
+    border-left: 4px solid #FA9C1D;
+    text-align: left;
+    color: #FA9C1D;
+    font-weight: bold;
+}
+
+.ficsit-btn {
+    display: inline-block;
+    background: #FA9C1D;
+    color: #222;
+    padding: 12px 25px;
+    text-decoration: none;
+    font-weight: 700;
+    margin-top: 10px;
+    text-transform: uppercase;
+    /* Coupe les coins du bouton */
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    transition: transform 0.2s;
+}
+
+.ficsit-btn:hover {
+    transform: scale(1.05);
+    background: #ffb85c;
+}
+
+/* Grille des Machines (Projets) */
+.ficsit-title {
+    font-size: 1.5rem;
+    border-bottom: 2px solid #5F5F5F;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+    color: #FA9C1D;
+}
+
+.factory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.machine-card {
+    background: #3D3D3D;
+    border: 1px solid #5F5F5F;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.machine-card:hover {
+    border-color: #FA9C1D;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+.machine-head {
+    background: #1a1a1a;
+    color: #FA9C1D;
+    padding: 15px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #FA9C1D;
+    font-size: 1.1rem;
+}
+
+.machine-body {
+    padding: 20px;
+}
+
+.tech-tag {
+    display: inline-block;
+    background: #222;
+    color: #aaa;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    margin-right: 5px;
+    margin-top: 15px;
+    border: 1px solid #555;
+    font-family: monospace;
+}
