@@ -2,237 +2,224 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FICSIT Pioneer DB : Ton Nom</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Alix Corbin - FICSIT Pioneer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ficsit-orange: #FA9C1D;
+            --ficsit-dark: #2A2A2A;
+            --ficsit-grey: #5F666D;
+            --text-light: #F2F2F2;
+        }
+
+        body {
+            margin: 0;
+            background-color: #1E1E1E;
+            color: var(--text-light);
+            font-family: 'Chakra Petch', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* --- HUD Header --- */
+        header {
+            background: rgba(42, 42, 42, 0.95);
+            border-bottom: 4px solid var(--ficsit-orange);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5em;
+            letter-spacing: 2px;
+        }
+        .logo span { color: var(--ficsit-orange); }
+
+        .status-box {
+            border: 1px solid var(--ficsit-orange);
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            background: rgba(250, 156, 29, 0.1);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            padding: 80px 20px;
+            text-align: center;
+            background: radial-gradient(circle at center, #3a3a3a 0%, #1E1E1E 100%);
+            border-bottom: 2px solid var(--ficsit-grey);
+        }
+
+        h1 { font-size: 3em; margin: 0; text-transform: uppercase; }
+        h2 { color: var(--ficsit-orange); font-weight: 400; margin-top: 10px; }
+        
+        .objective {
+            max-width: 600px;
+            margin: 20px auto;
+            background: var(--ficsit-dark);
+            padding: 20px;
+            border-left: 5px solid var(--ficsit-orange);
+            text-align: left;
+        }
+
+        /* --- Section Convoyeur (Skills) --- */
+        .factory-section {
+            padding: 50px 0;
+            overflow: hidden;
+        }
+        
+        .section-title {
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 2em;
+            margin-bottom: 40px;
+            text-shadow: 0 0 10px rgba(250, 156, 29, 0.5);
+        }
+
+        /* Le Tapis Roulant */
+        .conveyor-belt {
+            display: flex;
+            background: #111;
+            padding: 20px 0;
+            border-top: 5px solid #444;
+            border-bottom: 5px solid #444;
+            position: relative;
+            /* Texture du tapis */
+            background-image: repeating-linear-gradient(90deg, #111, #111 20px, #222 20px, #222 40px);
+            animation: scrollBelt 2s linear infinite;
+        }
+
+        @keyframes scrollBelt {
+            from { background-position: 0 0; }
+            to { background-position: 40px 0; }
+        }
+
+        .items-container {
+            display: flex;
+            gap: 50px;
+            animation: moveItems 15s linear infinite;
+            padding-left: 100%; /* Commence hors écran */
+        }
+
+        @keyframes moveItems {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-200%); }
+        }
+
+        .skill-box {
+            width: 120px;
+            height: 120px;
+            background: var(--ficsit-grey);
+            border: 2px solid var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            position: relative;
+            /* Effet 3D "Caisse" */
+        }
+        
+        .skill-box::after {
+            content: '';
+            position: absolute;
+            top: 5px; right: 5px; bottom: 5px; left: 5px;
+            border: 1px dashed rgba(255,255,255,0.3);
+        }
+
+        .skill-name {
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--ficsit-orange);
+        }
+
+        .icon { font-size: 2em; }
+
+        /* --- Bouton style FICSIT --- */
+        .btn {
+            display: inline-block;
+            background: var(--ficsit-orange);
+            color: #000;
+            padding: 15px 30px;
+            text-decoration: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            background: #ffb347;
+        }
+
+    </style>
 </head>
 <body>
 
-    <div class="bg-overlay"></div>
-
-    <header class="ficsit-hud">
-        <div class="hud-container">
-            <div class="hud-brand">
-                <i class="fas fa-cogs ficsit-orange"></i> FICSIT Inc. // <span style="color:white">Pioneer DB</span>
-            </div>
-            <nav class="hud-nav">
-                <a href="#hub-intro" class="hud-link active">[THE HUB]</a>
-                <a href="#mam-about" class="hud-link">[M.A.M Analysis]</a>
-                <a href="#milestones-exp" class="hud-link">[Milestones]</a>
-                <a href="#production-projects" class="hud-link">[Production]</a>
-            </nav>
-            <div class="hud-status">
-                 STATUS: <span class="status-efficient">EFFICIENT</span>
-            </div>
+    <header>
+        <div class="logo">FICSIT <span>//</span> ALIX.CORBIN</div>
+        <div class="status-box">
+            ÉTAT: RECHERCHE STAGE (AVRIL 2026)
         </div>
     </header>
 
-    <main class="main-content">
+    <section class="hero">
+        <h1>Alix Corbin</h1>
+        <h2>Étudiant BUT Informatique - Niveau 2</h2>
+        
+        <div class="objective">
+            <strong><span style="color:var(--ficsit-orange)">></span> MISSION ACTUELLE :</strong><br>
+            Trouver un stage en développement informatique (8 à 12 semaines) pour renforcer l'expérience dans le secteur[cite: 11].
+        </div>
 
-        <section id="hub-intro" class="section-hero" style="background-image: url('https://static.wikia.nocookie.net/satisfactory_gamepedia_en/images/c/c5/MASSIVE_FACTORY.png/revision/latest?cb=20200421142839');">
-            <div class="hero-overlay">
-               <div class="container hero-flex">
-                   <div class="pioneer-data">
-                       <h1 class="glitch-effect">Ton Nom</h1>
-                       <h2 class="subtitle">// Ingénieur Automatisation & Web Senior</h2>
-                       <p class="intro-text">
-                           Pioneer FICSIT spécialisé dans la construction d'architectures logicielles robustes et l'optimisation des flux de données. Objectif : Efficacité maximale.
-                       </p>
-                       <div class="hero-actions">
-                           <a href="#contact" class="ficsit-btn orange-btn"><i class="fas fa-terminal"></i> Initialiser Contact</a>
-                           <a href="#" class="ficsit-btn dark-btn"><i class="fab fa-github"></i> Accès GitHub</a>
-                       </div>
-                   </div>
-                   <div class="pioneer-visual">
-                       <img src="https://static.wikia.nocookie.net/satisfactory_gamepedia_en/images/a/aa/Pioneer_render.png" alt="Pioneer" class="pioneer-img">
-                   </div>
-               </div>
-            </div>
-        </section>
+        <a href="mailto:alix.corbin.pro@gmail.com" class="btn">Initialiser le Contact</a>
+    </section>
 
-        <section id="mam-about" class="container section-pad">
-            <div class="terminal-header">
-                <h3><span class="orange-slash">//</span> M.A.M. ANALYSIS : Profil du Sujet</h3>
-                <div class="caution-stripes"></div>
-            </div>
-
-            <div class="grid-2-cols">
-                <div class="ficsit-panel text-panel">
-                    <h4><i class="fas fa-user-astronaut"></i> Données Biométriques</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. En tant que développeur, j'aborde chaque projet comme une nouvelle planète à optimiser. J'aime déconstruire les problèmes complexes pour construire des chaînes de production de code propres et maintenables.</p>
-                    <p>Capacité d'adaptation aux environnements hostiles (legacy code) confirmée.</p>
-
-                    <div class="inventory-slots">
-                        <div class="inv-slot" title="Gaming"><i class="fas fa-gamepad"></i></div>
-                        <div class="inv-slot" title="Construction"><i class="fas fa-cubes"></i></div>
-                        <div class="inv-slot" title="Automatisation"><i class="fas fa-robot"></i></div>
-                        <div class="inv-slot" title="Café (Fuel)"><i class="fas fa-coffee"></i></div>
-                    </div>
+    <section class="factory-section">
+        <div class="section-title">Ligne de Production : Compétences</div>
+        
+        <div class="conveyor-belt">
+            <div class="items-container">
+                <div class="skill-box">
+                    <div class="icon">💻</div>
+                    <div class="skill-name">Prog</div>
                 </div>
-
-                <div class="ficsit-panel stats-panel">
-                    <h4><i class="fas fa-chart-line"></i> Efficacité Technique</h4>
-                    
-                    <div class="efficiency-meter">
-                        <div class="meter-label"><span>HTML/CSS/SASS</span> <span class="percentage">95% O/C</span></div>
-                        <div class="meter-track">
-                            <div class="meter-fill orange-fill" style="width: 95%;"></div>
-                        </div>
-                    </div>
-
-                    <div class="efficiency-meter">
-                        <div class="meter-label"><span>JavaScript / TypeScript</span> <span class="percentage">85%</span></div>
-                        <div class="meter-track">
-                            <div class="meter-fill blue-fill" style="width: 85%;"></div>
-                        </div>
-                    </div>
-
-                    <div class="efficiency-meter">
-                        <div class="meter-label"><span>React / Vue.js</span> <span class="percentage">75%</span></div>
-                        <div class="meter-track">
-                            <div class="meter-fill green-fill" style="width: 75%;"></div>
-                        </div>
-                    </div>
-
-                    <div class="efficiency-meter">
-                        <div class="meter-label"><span>Backend (Node/Python)</span> <span class="percentage">60%</span></div>
-                        <div class="meter-track">
-                            <div class="meter-fill yellow-fill" style="width: 60%;"></div>
-                        </div>
-                    </div>
+                <div class="skill-box">
+                    <div class="icon">🤖</div>
+                    <div class="skill-name">Arduino</div>
                 </div>
-            </div>
-        </section>
-
-        <section id="milestones-exp" class="container section-pad">
-             <div class="terminal-header">
-                <h3><span class="orange-slash">//</span> MILESTONES UNLOCKED : Parcours</h3>
-                <div class="caution-stripes"></div>
-            </div>
-
-            <div class="milestone-timeline">
-                <div class="milestone-node unlocked">
-                    <div class="node-icon"><i class="fas fa-check"></i></div>
-                    <div class="ficsit-panel milestone-content">
-                        <div class="milestone-header">
-                            <h4>TIER 3 : Développeur FullStack Senior</h4>
-                            <span class="milestone-date">2023 - Présent</span>
-                        </div>
-                        <h5 class="company-name">Tech Industries Inc.</h5>
-                        <p>Automatisation des processus de déploiement. Supervision d'une équipe de 5 pioneers juniors. Augmentation de la production de code de 200%.</p>
-                    </div>
+                 <div class="skill-box">
+                    <div class="icon">🗣️</div>
+                    <div class="skill-name">Éloquence</div>
                 </div>
-
-                 <div class="milestone-node unlocked">
-                    <div class="node-icon"><i class="fas fa-check"></i></div>
-                    <div class="ficsit-panel milestone-content">
-                        <div class="milestone-header">
-                            <h4>TIER 2 : Développeur Front-End</h4>
-                            <span class="milestone-date">2020 - 2023</span>
-                        </div>
-                        <h5 class="company-name">WebAgency Creations</h5>
-                        <p>Développement d'interfaces utilisateur réactives. Intégration de maquettes complexes. Optimisation des performances de rendu.</p>
-                    </div>
+                 <div class="skill-box">
+                    <div class="icon">👥</div>
+                    <div class="skill-name">Équipe</div>
                 </div>
-
-                 <div class="milestone-node previous">
-                    <div class="node-icon"><i class="fas fa-arrow-up"></i></div>
-                    <div class="ficsit-panel milestone-content">
-                        <div class="milestone-header">
-                            <h4>TIER 1 : Formation Ingénieur</h4>
-                            <span class="milestone-date">2015 - 2020</span>
-                        </div>
-                        <h5 class="company-name">Institut Technologique</h5>
-                        <p>Acquisition des bases fondamentales de la programmation et de l'architecture système. Projet de fin d'études sur l'IA.</p>
-                    </div>
+                 <div class="skill-box">
+                    <div class="icon">📅</div>
+                    <div class="skill-name">Organisation</div>
                 </div>
-            </div>
-        </section>
-
-        <section id="production-projects" class="container section-pad">
-             <div class="terminal-header">
-                <h3><span class="orange-slash">//</span> ASSEMBLY LINE : Projets Construits</h3>
-                <div class="caution-stripes"></div>
-            </div>
-
-            <div class="production-grid">
-                
-                <article class="ficsit-panel project-constructor">
-                    <div class="project-visual-frame">
-                        <img src="https://i.redd.it/8w9v306555r81.jpg" alt="Projet 1" class="project-img">
-                        <div class="project-overlay">
-                            <span class="status-badge">OPERATIONAL</span>
-                        </div>
-                    </div>
-                    <div class="project-data">
-                        <h4>Plateforme E-Commerce "SpaceLift"</h4>
-                        <p>Conception d'une marketplace complète. Gestion des stocks en temps réel et tableau de bord administrateur.</p>
-                        
-                        <div class="components-required">
-                            <span class="component-tag"><i class="fab fa-react"></i> React</span>
-                            <span class="component-tag"><i class="fab fa-node-js"></i> NodeJs</span>
-                            <span class="component-tag"><i class="fas fa-database"></i> MongoDB</span>
-                        </div>
-                        
-                        <a href="#" class="ficsit-btn small-btn">Inspecter Code <i class="fas fa-chevron-right"></i></a>
-                    </div>
-                </article>
-
-                <article class="ficsit-panel project-constructor">
-                    <div class="project-visual-frame">
-                         <img src="https://preview.redd.it/my-100-efficient-10-gw-turbofuel-power-plant-v0-d8n9g7b001k81.jpg?width=1920&format=pjpg&auto=webp&s=be1f21a8c6a733f47042660502787821001721f8" alt="Projet 2" class="project-img">
-                         <div class="project-overlay">
-                            <span class="status-badge warning">OPTIMIZING</span>
-                        </div>
-                    </div>
-                    <div class="project-data">
-                        <h4>Application Mobile "Tracker"</h4>
-                        <p>App de suivi de tâches géolocalisées pour équipes sur le terrain. Synchronisation hors-ligne.</p>
-                        
-                        <div class="components-required">
-                            <span class="component-tag"><i class="fab fa-react"></i> React Native</span>
-                            <span class="component-tag"><i class="fas fa-fire"></i> Firebase</span>
-                        </div>
-                        
-                        <a href="#" class="ficsit-btn small-btn">Inspecter Code <i class="fas fa-chevron-right"></i></a>
-                    </div>
-                </article>
-
-                <article class="ficsit-panel project-constructor">
-                    <div class="project-visual-frame">
-                        <img src="https://static.wikia.nocookie.net/satisfactory_gamepedia_en/images/5/54/Foundry.png" alt="Projet 3" class="project-img">
-                    </div>
-                    <div class="project-data">
-                        <h4>Bot Discord d'Automatisation</h4>
-                        <p>Bot Python pour gérer les rôles et les événements d'une communauté de 5000 membres.</p>
-                        
-                        <div class="components-required">
-                            <span class="component-tag"><i class="fab fa-python"></i> Python</span>
-                            <span class="component-tag"><i class="fas fa-server"></i> Docker</span>
-                        </div>
-                        
-                        <a href="#" class="ficsit-btn small-btn">Inspecter Code <i class="fas fa-chevron-right"></i></a>
-                    </div>
-                </article>
-
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="ficsit-footer">
-        <div class="container footer-flex">
-            <div class="footer-info">
-                <p>FICSIT Inc. // Propriété de **Ton Nom** © 2025.</p>
-                <p class="disclaimer">Ce site est un fan-project. Les assets Satisfactory sont la propriété de Coffee Stain Studios. N'oubliez pas : Efficacité d'abord.</p>
-            </div>
-            <div class="footer-end-logo">
-                 <i class="fas fa-rocket ficsit-orange"></i> END OF LINE
+                 <div class="skill-box">
+                    <div class="icon">⌨️</div>
+                    <div class="skill-name">Dactylo</div>
+                </div>
             </div>
         </div>
-    </footer>
+    </section>
+
+    <div style="text-align:center; padding: 50px; color: #555;">
+        <p>// SECTION PROJETS (Space Elevator) EN CONSTRUCTION //</p>
+        <p>// SECTION EXPÉRIENCE (Assemblers) EN CONSTRUCTION //</p>
+    </div>
 
 </body>
 </html>
