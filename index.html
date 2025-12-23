@@ -3,273 +3,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alix Corbin | Portfolio Interactif</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Fredoka+One&family=Cinzel:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <title>Mon Portfolio Wii</title>
     <style>
-        /* =========================================
-           1. CSS GLOBAL (BASE)
-           ========================================= */
-        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
-        body { font-family: 'Roboto', sans-serif; overflow-x: hidden; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 20px; position: relative; z-index: 2; }
+        /* --- CONFIGURATION GLOBALE --- */
+        :root {
+            --bg-color: #e0e0e0;
+            --wii-blue: #60a0dc;
+            --wii-gray: #b0b0b0;
+            --glass-shine: rgba(255, 255, 255, 0.8);
+        }
 
-        /* NAVIGATION FIXE */
-        .gamemode-nav {
-            position: fixed; top: 0; width: 100%; height: 60px;
-            background: #111; color: white;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 30px; z-index: 1000;
-            border-bottom: 2px solid #333; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            /* Motif de fond subtil quadrillé */
+            background-image: 
+                linear-gradient(rgba(200,200,200, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(200,200,200, 0.3) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
-        .player-name { font-weight: bold; letter-spacing: 2px; font-size: 1.1rem; }
-        .nav-links a {
-            color: #888; text-decoration: none; margin-left: 20px; font-size: 0.9rem;
-            font-weight: bold; transition: 0.3s; text-transform: uppercase;
-        }
-        .nav-links a:hover { color: white; text-shadow: 0 0 5px white; }
 
-        /* SEPARATEURS DE MONDES */
-        .portal-divider { height: 80px; width: 100%; position: relative; z-index: 5; margin-top: -40px; pointer-events: none; }
-        .to-lego { background: linear-gradient(to bottom, #2A2A2A, #a0a5a9); }
-        .to-chess { background: linear-gradient(to bottom, #a0a5a9, #1a1a1a); }
+        /* --- GRILLE DES CHAÎNES --- */
+        .wii-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 15px;
+            width: 800px;
+            height: 500px;
+            padding: 20px;
+        }
 
-        /* =========================================
-           2. CSS SATISFACTORY (USINE - PROJETS)
-           ========================================= */
-        #satisfactory {
-            background-color: #2A2A2A; color: #E0E0E0; font-family: 'Chakra Petch', sans-serif;
-            padding-top: 100px; padding-bottom: 80px; position: relative; min-height: 100vh;
+        /* --- STYLE D'UNE CHAÎNE (CHANNEL) --- */
+        .channel {
+            background: white;
+            border-radius: 20px;
+            border: 4px solid #dcdcdc;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-        .ficsit-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
-            background-size: 30px 30px; pointer-events: none;
+
+        /* Effet de brillance (Glassy effect) */
+        .channel::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 45%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.1) 100%);
+            border-radius: 15px 15px 100% 100% / 15px 15px 20px 20px;
+            pointer-events: none;
         }
-        .pioneer-card {
-            border: 3px solid #FA9C1D; background: rgba(0,0,0,0.6); padding: 40px;
-            display: inline-block; backdrop-filter: blur(5px); text-align: center;
-            box-shadow: 0 0 20px rgba(250, 156, 29, 0.2); margin-bottom: 60px;
+
+        /* Hover style (Le contour bleu typique) */
+        .channel:hover {
+            border-color: var(--wii-blue);
+            box-shadow: 0 0 15px var(--wii-blue);
+            transform: scale(1.02);
         }
-        .pioneer-card h1 { color: #FA9C1D; font-size: 3rem; text-transform: uppercase; margin-bottom: 5px; }
-        .pioneer-card h2 { color: #fff; font-size: 1.2rem; font-weight: normal; letter-spacing: 2px; }
-        .mission-brief {
-            margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.1);
-            border-left: 4px solid #FA9C1D; text-align: left; color: #FA9C1D; font-weight: bold;
+
+        /* Contenu de la chaîne Test */
+        .channel-content {
+            z-index: 1;
+            text-align: center;
+            color: #555;
         }
-        .ficsit-btn {
-            display: inline-block; background: #FA9C1D; color: #222; padding: 12px 25px;
-            text-decoration: none; font-weight: 700; text-transform: uppercase;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-            transition: transform 0.2s;
-        }
-        .ficsit-btn:hover { transform: scale(1.05); background: #ffb85c; }
         
-        .factory-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .machine-card { background: #3D3D3D; border: 1px solid #5F5F5F; transition: transform 0.2s; }
-        .machine-card:hover { border-color: #FA9C1D; transform: translateY(-5px); }
-        .machine-head { background: #1a1a1a; color: #FA9C1D; padding: 15px; font-weight: bold; border-bottom: 2px solid #FA9C1D; }
-        .machine-body { padding: 20px; }
-        .tech-tag { display: inline-block; background: #222; color: #aaa; padding: 4px 10px; font-size: 0.8rem; margin: 15px 5px 0 0; border: 1px solid #555; }
-        .ficsit-title { color: #FA9C1D; font-size: 1.5rem; margin-bottom: 30px; border-bottom: 2px solid #5F5F5F; padding-bottom: 10px; }
-
-        /* =========================================
-           3. CSS LEGO (COMPETENCES)
-           ========================================= */
-        #lego {
-            background-color: #a0a5a9; background-image: radial-gradient(rgba(0,0,0,0.15) 15%, transparent 16%);
-            background-size: 30px 30px; font-family: 'Fredoka One', cursive; padding: 80px 0; min-height: 90vh; color: #333;
+        .channel-icon {
+            font-size: 3rem;
+            margin-bottom: 5px;
+            display: block;
         }
-        .lego-title { text-align: center; font-size: 3rem; color: #d60000; text-shadow: 3px 3px 0px #fff; text-transform: uppercase; margin-bottom: 50px; }
-        .lego-row { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; }
-        .lego-panel {
-            background: #f4f4f4; padding: 30px; border-radius: 4px; width: 100%; max-width: 450px;
-            position: relative; margin-top: 25px; border: 2px solid rgba(0,0,0,0.1);
-            box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2), 0 8px 15px rgba(0,0,0,0.3);
-        }
-        .lego-panel h3 { text-transform: uppercase; margin-bottom: 15px; border-bottom: 2px dashed rgba(0,0,0,0.2); padding-bottom: 10px; }
-        .lego-panel ul { list-style: none; font-family: 'Roboto', sans-serif; line-height: 1.6; }
-        
-        .studs { position: absolute; top: -15px; left: 0; width: 100%; height: 15px; display: flex; justify-content: space-evenly; }
-        .studs span { width: 60px; height: 15px; border-radius: 5px 5px 0 0; box-shadow: inset 0 3px 2px rgba(255,255,255,0.4), inset 0 -2px 0 rgba(0,0,0,0.1); }
-        
-        .red-brick { background: #d60000; color: white; border-color: #b30000; } .red-brick .studs span { background: #d60000; }
-        .blue-brick { background: #0055bf; color: white; border-color: #004499; } .blue-brick .studs span { background: #0055bf; }
-        .yellow-brick { background: #fecb00; color: #333; border-color: #e6b800; } .yellow-brick .studs span { background: #fecb00; }
-        
-        .lego-tag { display: inline-block; padding: 5px 12px; background: rgba(255,255,255,0.5); color: #333; font-family: 'Roboto', sans-serif; font-weight: bold; border-radius: 15px; margin: 5px; }
 
-        /* =========================================
-           4. CSS CHESS (PARCOURS)
-           ========================================= */
-        #chess { background-color: #1a1a1a; font-family: 'Cinzel', serif; padding: 80px 0; color: #ddd; min-height: 80vh; }
-        .chess-title { text-align: center; font-size: 2.5rem; margin-bottom: 50px; letter-spacing: 5px; color: #f0d9b5; border-bottom: 1px solid #444; display: inline-block; position: relative; left: 50%; transform: translateX(-50%); padding-bottom: 10px; }
-        .chessboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); max-width: 800px; margin: 0 auto; border: 15px solid #483C32; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        .chess-square { aspect-ratio: 1 / 1; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: all 0.3s; }
-        .chess-square:hover { filter: brightness(1.1); z-index: 2; }
-        .white-square { background-color: #f0d9b5; color: #333; }
-        .black-square { background-color: #b58863; color: #f0d9b5; }
-        .piece-content h4 { margin-bottom: 5px; font-weight: 700; font-size: 1.1rem; text-transform: uppercase; }
-        .piece-content .date { font-style: italic; font-size: 0.8rem; display: block; margin-bottom: 15px; opacity: 0.8; font-family: 'Roboto', sans-serif; }
-        .piece-content p { font-family: 'Roboto', sans-serif; font-size: 0.95rem; line-height: 1.4; }
-        .light-text { color: #f2f2f2; }
-        .icon-square { font-size: 4rem; opacity: 0.3; }
-        .chess-footer { text-align: center; margin-top: 50px; opacity: 0.6; font-family: 'Roboto', sans-serif; }
-
-        /* MOBILE */
-        @media (max-width: 600px) {
-            .gamemode-nav { padding: 0 10px; }
-            .player-name { display: none; }
-            .nav-links a { margin-left: 10px; font-size: 0.75rem; }
-            .pioneer-card h1 { font-size: 2rem; }
-            .pioneer-card { padding: 20px; }
+        .channel-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #888;
         }
+
+        /* Chaînes vides (bruit statique simulé) */
+        .channel.empty {
+            cursor: default;
+            background: #f0f0f0;
+        }
+        .channel.empty:hover {
+            border-color: #dcdcdc;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* --- L'ANIMATION DE ZOOM (L'OVERLAY) --- */
+        .channel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 100;
+        }
+
+        .channel-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* L'écran "Démarrer" */
+        .start-screen {
+            width: 700px;
+            height: 400px;
+            background: linear-gradient(135deg, #ffffff 0%, #e6e6e6 100%);
+            border-radius: 20px; /* Moins arrondi que la grille */
+            border: 4px solid #ccc;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.1);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Effet de rebond */
+            overflow: hidden;
+            position: relative;
+        }
+
+        .channel-overlay.active .start-screen {
+            transform: scale(1);
+        }
+
+        /* Contenu de l'écran Démarrer */
+        .banner-area {
+            flex: 2;
+            background: #f0f0f0; /* Place pour une image */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 2px solid #ccc;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Animation de fond style Wii */
+        .banner-bg {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(200, 200, 200, 0.1) 10px,
+                rgba(200, 200, 200, 0.1) 20px
+            );
+            animation: scrollBg 20s linear infinite;
+        }
+
+        @keyframes scrollBg {
+            0% { transform: translate(0,0); }
+            100% { transform: translate(-50px, -50px); }
+        }
+
+        .banner-title {
+            font-size: 3rem;
+            color: #555;
+            z-index: 2;
+        }
+
+        .controls-area {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: white;
+        }
+
+        /* Boutons Wii */
+        .wii-btn {
+            padding: 15px 40px;
+            border-radius: 30px;
+            border: 2px solid #ccc;
+            background: white;
+            font-size: 1.2rem;
+            color: #555;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Effet gloss sur les boutons */
+        .wii-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(255,255,255,0.1));
+        }
+
+        .wii-btn:hover {
+            border-color: var(--wii-blue);
+            color: var(--wii-blue);
+            box-shadow: 0 0 10px var(--wii-blue);
+            transform: scale(1.05);
+        }
+
+        /* Bas de page (footer style Wii) */
+        .footer-bar {
+            position: absolute;
+            bottom: 20px;
+            width: 800px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .footer-pill {
+            background: white;
+            border: 2px solid #ccc;
+            padding: 10px 30px;
+            border-radius: 50px;
+            color: #888;
+            font-weight: bold;
+            box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+        }
+
     </style>
 </head>
 <body>
 
-    <nav class="gamemode-nav">
-        <span class="player-name">ALIX CORBIN // PORTFOLIO</span>
-        <div class="nav-links">
-            <a href="#satisfactory">PROJETS</a>
-            <a href="#lego">ATOUTS</a>
-            <a href="#chess">PARCOURS</a>
-        </div>
-    </nav>
-
-    <section id="satisfactory">
-        <div class="ficsit-overlay"></div>
-        <div class="container">
-            <div style="text-align: center;">
-                <div class="pioneer-card">
-                    <h1>ALIX CORBIN</h1>
-                    [cite_start]<h2>ÉTUDIANT BUT INFORMATIQUE [cite: 2]</h2>
-                    <p class="mission-brief">
-                        <i class="fas fa-code"></i> PORTFOLIO & PROJETS PERSONNELS<br>
-                        [cite_start]<span style="color: #fff; font-weight: normal; font-size: 0.9em;">RECHERCHE STAGE (8-12 SEMAINES) - AVRIL 2026 [cite: 11]</span>
-                    </p>
-                    [cite_start]<a href="mailto:alix.corbin.pro@gmail.com" class="ficsit-btn">INITIALISER CONTACT [cite: 3]</a>
-                </div>
+    <div class="wii-grid">
+        <div class="channel" onclick="openChannel('Portfolio', '🧪')">
+            <div class="channel-content">
+                <span class="channel-icon">🧪</span>
+                <div class="channel-title">Projet Test</div>
             </div>
+        </div>
 
-            <h3 class="ficsit-title">LIGNE DE PRODUCTION : RÉALISATIONS</h3>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+    </div>
+
+    <div class="footer-bar">
+        <div class="footer-pill">Wii Menu</div>
+        <div class="footer-pill" id="clock">12:00</div>
+    </div>
+
+    <div id="overlay" class="channel-overlay">
+        <div class="start-screen">
+            <div class="banner-area">
+                <div class="banner-bg"></div>
+                <h1 id="overlay-title" class="banner-title">Titre</h1>
+            </div>
+            <div class="controls-area">
+                <button class="wii-btn" onclick="closeChannel()">Menu Wii</button>
+                <button class="wii-btn" onclick="goToProject()">Démarrer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- LOGIQUE JAVASCRIPT ---
+
+        const overlay = document.getElementById('overlay');
+        const overlayTitle = document.getElementById('overlay-title');
+        let currentLink = "#"; // Lien par défaut
+
+        // Fonction pour l'horloge en bas
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('clock').innerText = `${hours}:${minutes}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 1. Ouvrir le "Start Screen"
+        function openChannel(title, icon) {
+            // Mise à jour du contenu
+            overlayTitle.innerHTML = icon + " " + title;
             
-            <div class="factory-grid">
-                <article class="machine-card">
-                    <div class="machine-head">PROJET SAVI</div>
-                    <div class="machine-body">
-                        <p>Création d'une devanture de magasin animée.</p>
-                        [cite_start]<span class="tech-tag">Arduino [cite: 57]</span>
-                        <span class="tech-tag">Électronique</span>
-                    </div>
-                </article>
-                <article class="machine-card">
-                    [cite_start]<div class="machine-head">ROOMBA TÉLÉCOMMANDÉ [cite: 58]</div>
-                    <div class="machine-body">
-                        <p>Interface Homme-Machine (IHM) pour contrôler le robot.</p>
-                        [cite_start]<span class="tech-tag">Processing [cite: 59]</span>
-                        [cite_start]<span class="tech-tag">Arduino [cite: 60]</span>
-                    </div>
-                </article>
-                <article class="machine-card">
-                    [cite_start]<div class="machine-head">SERVEUR MINECRAFT [cite: 61]</div>
-                    <div class="machine-body">
-                        [cite_start]<p>Gestion serveur & Organisation d'événements hebdomadaires. [cite: 62, 63]</p>
-                        <span class="tech-tag">Management</span>
-                        <span class="tech-tag">Communauté</span>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
+            // Affichage avec animation
+            overlay.classList.add('active');
+        }
 
-    <div class="portal-divider to-lego"></div>
+        // 2. Fermer le "Start Screen"
+        function closeChannel() {
+            overlay.classList.remove('active');
+        }
 
-    <section id="lego">
-        <div class="container">
-            <h2 class="lego-title">MA BASE DE DONNÉES</h2>
-            <div class="lego-row">
-                <div class="lego-panel red-brick">
-                    <div class="studs"><span></span><span></span><span></span><span></span></div>
-                    <h3>DIPLÔMES</h3>
-                    <ul>
-                        [cite_start]<li><strong>BUT Informatique</strong> (2024-Présent)<br><small>IUT Laval / Le Mans [cite: 2]</small></li>
-                        [cite_start]<li><strong>Bac STI2D</strong> (2023-2024)<br><small>St Joseph-Lasalle - Mention [cite: 13, 14]</small></li>
-                    </ul>
-                </div>
-                <div class="lego-panel blue-brick">
-                    <div class="studs"><span></span><span></span><span></span><span></span></div>
-                    <h3>BRIQUES SPÉCIALES</h3>
-                    <ul>
-                        [cite_start]<li>🏆 <strong>1er Concours Éloquence</strong> (2023) [cite: 15]</li>
-                        [cite_start]<li>🦫 <strong>Concours Castor</strong> (64ème/45k - 2021) [cite: 25, 26]</li>
-                    </ul>
-                </div>
-                <div class="lego-panel yellow-brick">
-                    <div class="studs"><span></span><span></span><span></span><span></span></div>
-                    <h3>ATOUTS PERSONNELS</h3>
-                    <div class="tags-container">
-                        [cite_start]<span class="lego-tag">Motivé [cite: 18]</span>
-                        [cite_start]<span class="lego-tag">Sociable [cite: 22]</span>
-                        [cite_start]<span class="lego-tag">Organisé [cite: 20]</span>
-                        [cite_start]<span class="lego-tag">Commerçant [cite: 21]</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        // 3. Action du bouton Démarrer
+        function goToProject() {
+            alert("Lancement du projet... (Ici tu mettras ton lien vers le projet)");
+            // window.location.href = 'ton-lien-projet.html';
+        }
 
-    <div class="portal-divider to-chess"></div>
+        // Fermer l'overlay si on clique en dehors de la boîte
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeChannel();
+            }
+        });
 
-    <section id="chess">
-        <div class="container">
-            <h2 class="chess-title">LA STRATÉGIE (PARCOURS)</h2>
-
-            <div class="chessboard">
-                <div class="chess-square white-square">
-                    <div class="piece-content">
-                        [cite_start]<h4>RESPONSABLE COM' BDE [cite: 30]</h4>
-                        [cite_start]<span class="date">Depuis Mars 2025 - ADIIL [cite: 30]</span>
-                        [cite_start]<p>Gestion d'événements et communication. [cite: 30]</p>
-                    </div>
-                </div>
-                <div class="chess-square black-square icon-square"><i class="fas fa-bullhorn"></i></div>
-
-                <div class="chess-square black-square">
-                    <div class="piece-content light-text">
-                        [cite_start]<h4>RESTAURATION [cite: 31]</h4>
-                        [cite_start]<span class="date">Avril 2024 - Papea Parc [cite: 31]</span>
-                        [cite_start]<p>Polyvalence, Gestion du temps, Travail d'équipe. [cite: 32, 34, 35]</p>
-                    </div>
-                </div>
-                <div class="chess-square white-square icon-square"><i class="fas fa-utensils"></i></div>
-
-                <div class="chess-square white-square">
-                    <div class="piece-content">
-                        [cite_start]<h4>STAGE INFORMATIQUE [cite: 42]</h4>
-                        [cite_start]<span class="date">2020 - Huttepain Aliments [cite: 43, 44]</span>
-                        [cite_start]<p>Découverte service info & communication entreprise. [cite: 44, 47]</p>
-                    </div>
-                </div>
-                <div class="chess-square black-square icon-square"><i class="fas fa-desktop"></i></div>
-                
-                <div class="chess-square black-square">
-                    <div class="piece-content light-text">
-                        [cite_start]<h4>CASTRAGE DE MAÏS [cite: 37]</h4>
-                        [cite_start]<span class="date">2022-2023 - Earl Legay [cite: 38]</span>
-                        [cite_start]<p>Contraintes physiques, Travail d'équipe. [cite: 39, 41]</p>
-                    </div>
-                </div>
-                <div class="chess-square white-square icon-square"><i class="fas fa-seedling"></i></div>
-            </div>
-
-            <footer class="chess-footer">
-                <p>Alix Corbin &copy; [cite_start]2025 - Permis B & Véhicule Personnel [cite: 5, 6]</p>
-            </footer>
-        </div>
-    </section>
-
+    </script>
 </body>
 </html>
