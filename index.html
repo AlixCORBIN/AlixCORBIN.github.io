@@ -3,172 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wii Portfolio</title>
+    <title>Wii Portfolio - Footer Réaliste</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+
     <style>
-        /* Configuration générale du corps et du fond */
+        /* --- CONFIGURATION GLOBALE --- */
         body, html {
             height: 100%;
             margin: 0;
+            overflow: hidden;
             font-family: sans-serif;
             background-color: #e8e8e8;
+            /* Le fond strié original */
             background-image: repeating-linear-gradient(
                 0deg, transparent, transparent 2px, #d4d4d4 2px, #d4d4d4 4px
             );
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-end;
-            user-select: none;
-            overflow: hidden;
         }
 
-        /* Grille des chaînes (rectangles) */
+        /* --- GRILLE (Pour l'exemple) --- */
         .grid-container {
+            flex: 1; /* Prend toute la place dispo */
+            width: 90vw;
+            max-width: 1000px;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            gap: 2vh;
-            width: 90vw;
-            max-width: 1200px;
-            height: 60vh;
-            margin-bottom: 5vh;
+            gap: 15px;
+            margin-top: 5vh;
+            margin-bottom: 2vh;
         }
-
-        /* Style d'un rectangle vide avec le motif rayé et le logo Wii */
+        
         .channel {
-            background-color: #d4d4d4;
-            border: 4px solid #b0b0b0;
+            background: white;
             border-radius: 20px;
-            box-shadow: 3px 3px 10px rgba(0,0,0,0.1);
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50" viewBox="0 0 100 50"><text x="50" y="35" font-family="sans-serif" font-size="30" fill="%23c0c0c0" text-anchor="middle">Wii</text></svg>'),
-                              repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px);
-            background-repeat: no-repeat, repeat;
-            background-position: center, center;
-            background-size: contain, auto;
-            cursor: pointer;
+            border: 4px solid #cecece;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.05);
+        }
+
+        /* --- LE FOOTER REALISTE --- */
+        .footer-container {
             position: relative;
-            overflow: hidden;
-        }
-
-        /* Style pour le rectangle sélectionné (blanc uni) */
-        .channel.selected {
-            background-color: #ffffff;
-            background-image: none;
-            border-color: #ffffff;
-        }
-
-        /* Barre inférieure incurvée */
-        .footer {
             width: 100%;
-            height: 25vh;
-            position: relative;
+            height: 140px; /* Hauteur fixe pour le footer */
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 5vw;
-            background: linear-gradient(to top, #dcdcdc 0%, #eeeeee 100%);
-            border-top: 2px solid #bbb;
-            mask-image: radial-gradient(circle at 50% -50px, transparent 220px, black 221px);
-            -webkit-mask-image: radial-gradient(circle at 50% -50px, transparent 220px, black 221px);
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 10;
         }
 
-        /* Icônes détaillées des boutons inférieurs (Wii et Enveloppe) */
-        .footer-icon {
-            width: 10vh;
-            height: 10vh;
+        /* 1. L'IMAGE DE FOND (DESSINÉE EN CSS/SVG) */
+        .footer-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        /* Ombre portée sous la barre bleue */
+        .footer-bg svg {
+            filter: drop-shadow(0px -2px 4px rgba(0,0,0,0.15));
+        }
+
+        /* 2. LES BOUTONS RONDS (Wii & Mail) */
+        .wii-btn-wrapper {
+            position: absolute;
+            bottom: 25px; /* Ajustement vertical */
+            z-index: 2;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #fff, #dcdcdc);
-            border: 3px solid #b0b0b0;
-            box-shadow: 2px 5px 10px rgba(0,0,0,0.2);
+            /* Effet d'enfoncement dans le footer */
+            background: linear-gradient(to bottom, #d0d0d0, #f0f0f0);
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.1);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 4vh;
-            color: #888;
-            font-weight: bold;
-        }
-        .footer-icon.wii {
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="%23b0b0b0" stroke-width="3"/><text x="50" y="60" font-family="sans-serif" font-size="30" fill="%23888" text-anchor="middle">Wii</text></svg>');
-            background-size: cover;
-            background-color: #e8e8e8;
-            border: none;
-            box-shadow: none;
-        }
-        .footer-icon.mail {
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="%23b0b0b0" stroke-width="3"/><text x="50" y="65" font-family="sans-serif" font-size="50" fill="%23888" text-anchor="middle">✉️</text></svg>');
-            background-size: cover;
-            background-color: #e8e8e8;
-            border: none;
-            box-shadow: none;
         }
 
-        /* Zone de l'heure et de la date */
-        .time-date-container {
-            text-align: center;
-            color: #666;
-            font-family: sans-serif;
-            z-index: 2;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 6vh;
+        .left-btn { left: 40px; }
+        .right-btn { right: 40px; }
+
+        /* La "Bulle" brillante du bouton */
+        .glass-btn {
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #ffffff 0%, #dcdcdc 60%, #a0a0a0 100%);
+            border: 2px solid #b0b0b0;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.1s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        .time {
-            font-size: 5vh;
-            font-weight: 300;
-            letter-spacing: -2px;
+
+        /* Effet de reflet "glossy" sur le dessus du bouton */
+        .glass-btn::after {
+            content: '';
+            position: absolute;
+            top: 5px; left: 15px;
+            width: 45px; height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0.1));
+            pointer-events: none;
+        }
+
+        .glass-btn:hover { transform: scale(1.05); border-color: #4ac0e0; }
+        .glass-btn:active { transform: scale(0.95); }
+
+        /* Icônes dans les boutons */
+        .btn-text {
+            color: #999;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 2;
+            text-shadow: 1px 1px 0 #fff;
+        }
+        .btn-icon {
+            width: 50%;
+            opacity: 0.6;
+            z-index: 2;
+        }
+
+        /* 3. L'HORLOGE DIGITALE */
+        .clock-area {
+            text-align: center;
+            margin-bottom: 20px; /* Remonte le texte */
+            z-index: 5;
+            color: #6a6a6a;
+        }
+
+        .digital-time {
+            font-family: 'Orbitron', monospace; /* Police style digital */
+            font-size: 4rem;
+            color: #888;
+            letter-spacing: 2px;
             display: flex;
             align-items: baseline;
             justify-content: center;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.8);
         }
-        .ampm { font-size: 2.5vh; margin-left: 5px; font-weight: bold; }
-        .date { font-size: 2.5vh; color: #888; margin-top: 0vh; }
-        .blue-line {
-            position: absolute;
-            bottom: -1vh;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 30vw;
-            height: 10vh;
-            border-bottom: 4px solid #4ac0e0;
-            border-radius: 50%;
-            z-index: -1;
-            opacity: 0.6;
+        
+        .ampm { font-size: 1.5rem; margin-left: 10px; font-weight: bold; font-family: sans-serif; }
+        .date-text { font-size: 1.6rem; color: #777; margin-top: -5px; font-weight: 500;}
+
+        /* Responsive : sur mobile on réduit un peu */
+        @media (max-width: 600px) {
+            .footer-container { height: 100px; }
+            .wii-btn-wrapper { width: 60px; height: 60px; bottom: 15px; }
+            .left-btn { left: 10px; } .right-btn { right: 10px; }
+            .glass-btn { width: 50px; height: 50px; }
+            .digital-time { font-size: 2.5rem; }
+            .btn-text { font-size: 14px; }
         }
 
-        /* Curseur Wii (main) */
-        body {
-            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5"><path d="M10 2L9 9H5C3.34 9 2 10.34 2 12V22H18V13L15.5 6L14.5 4L13 2H10Z"/></svg>') 10 2, auto;
-        }
     </style>
 </head>
 <body>
+
     <div class="grid-container">
-        <div class="channel selected"></div>
-        <div class="channel"></div>
-        <div class="channel"></div>
-        <div class="channel"></div>
-        <div class="channel"></div>
-        <div class="channel"></div>
-        <div class="channel"></div>
-        <div class="channel"></div>
-        <div class="channel"></div>
-        <div class="channel"></div>
-        <div class="channel"></div>
-        <div class="channel"></div>
+        <div class="channel"></div><div class="channel"></div><div class="channel"></div><div class="channel"></div>
+        <div class="channel"></div><div class="channel"></div><div class="channel"></div><div class="channel"></div>
+        <div class="channel"></div><div class="channel"></div><div class="channel"></div><div class="channel"></div>
     </div>
 
-    <div class="footer">
-        <div class="footer-icon wii"></div>
-        <div class="time-date-container">
-            <div class="time">
-                <span>12</span>:<span>14</span>
+    <div class="footer-container">
+        
+        <div class="footer-bg">
+            <svg width="100%" height="100%" viewBox="0 0 1000 140" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="greyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#dcdcdc;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path d="M0,140 L0,0 Q250,0 350,35 T650,35 T1000,0 L1000,140 Z" fill="url(#greyGrad)" stroke="#4ac0e0" stroke-width="4"/>
+            </svg>
+        </div>
+
+        <div class="wii-btn-wrapper left-btn">
+            <div class="glass-btn">
+                <span class="btn-text" style="font-family: sans-serif; letter-spacing: -1px;">Wii</span>
+            </div>
+        </div>
+
+        <div class="clock-area">
+            <div class="digital-time">
+                <span id="h">12</span><span style="animation: blink 1s infinite">:</span><span id="m">19</span>
                 <span class="ampm">AM</span>
             </div>
-            <div class="date">Wed 12/24</div>
-            <div class="blue-line"></div>
+            <div class="date-text" id="date">Wed 12/24</div>
         </div>
-        <div class="footer-icon mail"></div>
+
+        <div class="wii-btn-wrapper right-btn">
+            <div class="glass-btn">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="#999">
+                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                </svg>
+            </div>
+        </div>
+
     </div>
+
+    <script>
+        // Script pour l'heure réelle
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+
+            document.getElementById('h').innerText = hours;
+            document.getElementById('m').innerText = minutes;
+
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const dayStr = days[now.getDay()];
+            const month = now.getMonth() + 1;
+            const dateNum = now.getDate();
+            document.getElementById('date').innerText = `${dayStr} ${month}/${dateNum}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
 </body>
 </html>
