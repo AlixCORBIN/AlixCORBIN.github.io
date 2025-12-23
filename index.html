@@ -3,59 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wii Portfolio - Footer Réaliste</title>
+    <title>Wii Portfolio Final</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 
     <style>
-        /* --- CONFIGURATION GLOBALE --- */
+        /* --- 1. CONFIGURATION GÉNÉRALE --- */
         body, html {
             height: 100%;
             margin: 0;
-            overflow: hidden;
+            overflow: hidden; /* Empêche le scroll */
             font-family: sans-serif;
             background-color: #e8e8e8;
-            /* Le fond strié original */
+            /* Fond rayé (Scanlines) */
             background-image: repeating-linear-gradient(
                 0deg, transparent, transparent 2px, #d4d4d4 2px, #d4d4d4 4px
             );
             display: flex;
             flex-direction: column;
             align-items: center;
+            /* On centre le contenu principal, le footer sera collé en bas */
+            justify-content: center; 
         }
 
-        /* --- GRILLE (Pour l'exemple) --- */
+        /* --- 2. LA GRILLE (Dimensions restaurées de la version précédente) --- */
         .grid-container {
-            flex: 1; /* Prend toute la place dispo */
-            width: 90vw;
-            max-width: 1000px;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 5vh;
-            margin-bottom: 2vh;
-        }
-        
-        .channel {
-            background: white;
-            border-radius: 20px;
-            border: 4px solid #cecece;
-            box-shadow: 3px 3px 10px rgba(0,0,0,0.05);
+            gap: 2vh;
+            /* Dimensions exactes que tu aimais */
+            width: 90vw;
+            max-width: 1200px;
+            height: 60vh;
+            /* On remonte un peu la grille pour laisser la place au footer */
+            margin-bottom: 10vh; 
+            z-index: 1;
         }
 
-        /* --- LE FOOTER REALISTE --- */
-        .footer-container {
+        /* Style des rectangles */
+        .channel {
+            background-color: #ffffff;
+            border: 4px solid #b0b0b0; /* Bordure grise par défaut */
+            border-radius: 20px;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.1);
             position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform 0.1s, border-color 0.1s, box-shadow 0.1s;
+        }
+
+        /* Le motif "Wii" rayé pour les chaînes vides */
+        .channel.empty {
+            background-color: #d4d4d4;
+            /* SVG du logo Wii + Rayures CSS combinés */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50" viewBox="0 0 100 50"><text x="50" y="35" font-family="sans-serif" font-size="30" fill="%23c0c0c0" text-anchor="middle">Wii</text></svg>'),
+                              repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px);
+            background-repeat: no-repeat, repeat;
+            background-position: center, center;
+            background-size: contain, auto;
+            border-color: #b0b0b0;
+        }
+
+        /* Effet de survol (Hover) */
+        .channel:hover {
+            border-color: #4ac0e0; /* Bleu Wii */
+            box-shadow: 0 0 15px #4ac0e0;
+            transform: scale(1.02);
+            z-index: 10;
+        }
+        
+        .channel.empty:hover {
+             transform: none; /* Pas de zoom sur les vides */
+             border-color: #b0b0b0;
+             box-shadow: none;
+        }
+
+        /* --- 3. LE FOOTER RÉALISTE (Positionné en bas) --- */
+        .footer-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
             width: 100%;
-            height: 140px; /* Hauteur fixe pour le footer */
+            height: 140px; /* Hauteur fixe pour le dessin de la courbe */
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            z-index: 10;
+            z-index: 100;
         }
 
-        /* 1. L'IMAGE DE FOND (DESSINÉE EN CSS/SVG) */
+        /* Fond SVG (Courbe grise + Ligne Bleue) */
         .footer-bg {
             position: absolute;
             bottom: 0;
@@ -63,33 +100,26 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-        }
-        
-        /* Ombre portée sous la barre bleue */
-        .footer-bg svg {
-            filter: drop-shadow(0px -2px 4px rgba(0,0,0,0.15));
+            filter: drop-shadow(0px -5px 5px rgba(0,0,0,0.1));
         }
 
-        /* 2. LES BOUTONS RONDS (Wii & Mail) */
+        /* Boutons ronds (Wii & Mail) */
         .wii-btn-wrapper {
             position: absolute;
-            bottom: 25px; /* Ajustement vertical */
-            z-index: 2;
+            bottom: 25px;
             width: 90px;
             height: 90px;
             border-radius: 50%;
-            /* Effet d'enfoncement dans le footer */
             background: linear-gradient(to bottom, #d0d0d0, #f0f0f0);
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.1);
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
         .left-btn { left: 40px; }
         .right-btn { right: 40px; }
 
-        /* La "Bulle" brillante du bouton */
+        /* Style "Verre" des boutons */
         .glass-btn {
             width: 76px;
             height: 76px;
@@ -102,10 +132,8 @@
             justify-content: center;
             align-items: center;
             transition: transform 0.1s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-
-        /* Effet de reflet "glossy" sur le dessus du bouton */
+        /* Reflet blanc sur le bouton */
         .glass-btn::after {
             content: '';
             position: absolute;
@@ -115,34 +143,20 @@
             background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0.1));
             pointer-events: none;
         }
-
         .glass-btn:hover { transform: scale(1.05); border-color: #4ac0e0; }
-        .glass-btn:active { transform: scale(0.95); }
 
-        /* Icônes dans les boutons */
-        .btn-text {
-            color: #999;
-            font-size: 24px;
-            font-weight: bold;
-            z-index: 2;
-            text-shadow: 1px 1px 0 #fff;
-        }
-        .btn-icon {
-            width: 50%;
-            opacity: 0.6;
-            z-index: 2;
-        }
+        /* Texte/Icones dans les boutons */
+        .btn-text { color: #999; font-size: 24px; font-weight: bold; letter-spacing: -1px;}
+        .btn-icon { width: 50%; opacity: 0.6; fill: #999; }
 
-        /* 3. L'HORLOGE DIGITALE */
+        /* Horloge Digitale */
         .clock-area {
             text-align: center;
-            margin-bottom: 20px; /* Remonte le texte */
+            margin-bottom: 25px;
             z-index: 5;
-            color: #6a6a6a;
         }
-
         .digital-time {
-            font-family: 'Orbitron', monospace; /* Police style digital */
+            font-family: 'Orbitron', monospace;
             font-size: 4rem;
             color: #888;
             letter-spacing: 2px;
@@ -151,28 +165,46 @@
             justify-content: center;
             text-shadow: 2px 2px 0px rgba(255,255,255,0.8);
         }
-        
-        .ampm { font-size: 1.5rem; margin-left: 10px; font-weight: bold; font-family: sans-serif; }
+        .ampm { font-size: 1.5rem; margin-left: 10px; font-weight: bold; font-family: sans-serif; color: #888;}
         .date-text { font-size: 1.6rem; color: #777; margin-top: -5px; font-weight: 500;}
 
-        /* Responsive : sur mobile on réduit un peu */
-        @media (max-width: 600px) {
-            .footer-container { height: 100px; }
-            .wii-btn-wrapper { width: 60px; height: 60px; bottom: 15px; }
-            .left-btn { left: 10px; } .right-btn { right: 10px; }
-            .glass-btn { width: 50px; height: 50px; }
-            .digital-time { font-size: 2.5rem; }
-            .btn-text { font-size: 14px; }
+        /* --- 4. CURSEUR MAIN WII --- */
+        body {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5"><path d="M10 2L9 9H5C3.34 9 2 10.34 2 12V22H18V13L15.5 6L14.5 4L13 2H10Z"/></svg>') 10 2, auto;
         }
 
+        /* Media Query Mobile */
+        @media (max-width: 800px) {
+            .grid-container { height: 50vh; width: 95vw; gap: 10px;}
+            .digital-time { font-size: 2.5rem; }
+            .wii-btn-wrapper { width: 60px; height: 60px; bottom: 10px; }
+            .glass-btn { width: 50px; height: 50px; }
+            .left-btn { left: 10px; } .right-btn { right: 10px; }
+        }
     </style>
 </head>
 <body>
 
     <div class="grid-container">
-        <div class="channel"></div><div class="channel"></div><div class="channel"></div><div class="channel"></div>
-        <div class="channel"></div><div class="channel"></div><div class="channel"></div><div class="channel"></div>
-        <div class="channel"></div><div class="channel"></div><div class="channel"></div><div class="channel"></div>
+        <div class="channel">
+            <div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center; color:#555;">
+                <h2 style="margin:0;">Moi</h2>
+            </div>
+        </div>
+
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
     </div>
 
     <div class="footer-container">
@@ -185,27 +217,27 @@
                         <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1" />
                     </linearGradient>
                 </defs>
-                <path d="M0,140 L0,0 Q250,0 350,35 T650,35 T1000,0 L1000,140 Z" fill="url(#greyGrad)" stroke="#4ac0e0" stroke-width="4"/>
+                <path d="M0,140 L0,0 L200,0 Q300,0 350,30 L650,30 Q700,0 800,0 L1000,0 L1000,140 Z" fill="url(#greyGrad)" stroke="#4ac0e0" stroke-width="4"/>
             </svg>
         </div>
 
         <div class="wii-btn-wrapper left-btn">
             <div class="glass-btn">
-                <span class="btn-text" style="font-family: sans-serif; letter-spacing: -1px;">Wii</span>
+                <span class="btn-text">Wii</span>
             </div>
         </div>
 
         <div class="clock-area">
             <div class="digital-time">
-                <span id="h">12</span><span style="animation: blink 1s infinite">:</span><span id="m">19</span>
-                <span class="ampm">AM</span>
+                <span id="h">12</span><span style="animation: blink 1s infinite">:</span><span id="m">00</span>
+                <span class="ampm" id="ampm">AM</span>
             </div>
-            <div class="date-text" id="date">Wed 12/24</div>
+            <div class="date-text" id="date">Mon 01/01</div>
         </div>
 
         <div class="wii-btn-wrapper right-btn">
             <div class="glass-btn">
-                <svg class="btn-icon" viewBox="0 0 24 24" fill="#999">
+                <svg class="btn-icon" viewBox="0 0 24 24">
                     <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                 </svg>
             </div>
@@ -214,7 +246,7 @@
     </div>
 
     <script>
-        // Script pour l'heure réelle
+        // Fonction Horloge
         function updateClock() {
             const now = new Date();
             let hours = now.getHours();
@@ -225,6 +257,7 @@
 
             document.getElementById('h').innerText = hours;
             document.getElementById('m').innerText = minutes;
+            document.getElementById('ampm').innerText = ampm;
 
             const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             const dayStr = days[now.getDay()];
