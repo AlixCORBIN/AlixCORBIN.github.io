@@ -1,201 +1,428 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Menu Wii</title>
-<style>
-  body, html {
-    height: 100%;
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #e0e0e0; /* Fond gris clair */
-    display: flex;
-    flex-direction: column;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wii Portfolio</title>
+    <style>
+        /* --- 1. CONFIGURATION GÉNÉRALE & FOND --- */
+        :root {
+            --bg-grey: #e8e8e8;
+            --line-grey: #d4d4d4;
+            --wii-blue: #4ac0e0;
+            --shadow: rgba(0, 0, 0, 0.15);
+        }
 
-  /* Conteneur principal pour centrer le contenu */
-  .main-container {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-  }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            user-select: none;
+            cursor: default; /* On va personnaliser le curseur plus bas */
+        }
 
-  /* Grille des chaînes */
-  .grid-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 colonnes */
-    grid-template-rows: repeat(3, 1fr); /* 3 rangées */
-    gap: 15px;
-    width: 80%; /* Largeur relative */
-    max-width: 800px; /* Largeur maximale pour ne pas être trop grand */
-    aspect-ratio: 4 / 3; /* Ratio d'aspect pour ressembler à l'écran Wii */
-  }
+        /* Le fond strié caractéristique de la Wii */
+        .wii-background {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-grey);
+            background-image: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                var(--line-grey) 2px,
+                var(--line-grey) 4px
+            );
+            z-index: -1;
+        }
 
-  /* Style d'une chaîne individuelle */
-  .channel {
-    background-color: #d0d0d0; /* Gris plus foncé pour les chaînes inactives */
-    border: 3px solid #c0c0c0; /* Bordure grise */
-    border-radius: 20px; /* Coins arrondis */
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.1); /* Ombre intérieure subtile */
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-  }
+        /* --- 2. LA GRILLE (CHANNELS) --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 1.5vh;
+            width: 85vw;
+            height: 65vh;
+            margin: 5vh auto 0 auto;
+            max-width: 1000px;
+        }
 
-  /* Effet de survol (hover) */
-  .channel:hover {
-    background-color: #e8e8e8; /* Plus clair au survol */
-    border-color: #50c0e0; /* Bordure bleue cyan */
-    box-shadow: 0 0 15px #50c0e0; /* Lueur bleue */
-    transform: scale(1.05); /* Léger agrandissement */
-  }
+        .channel {
+            background: white;
+            border-radius: 20px; /* Coins très arrondis */
+            border: 4px solid #cecece;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.1s, border-color 0.1s;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.05);
+        }
 
-  /* Style pour la première chaîne, sélectionnée par défaut dans l'image */
-  .channel.selected {
-    background-color: #e8e8e8;
-  }
+        /* L'effet "verre bombé" sur les cases */
+        .channel::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(255,255,255,0));
+            border-radius: 16px 16px 50% 50% / 16px 16px 20px 20px;
+            pointer-events: none;
+        }
 
-  /* Barre du bas */
-  .footer-bar {
-    height: 120px;
-    background-color: #fff;
-    border-top: 4px solid #50c0e0; /* Bordure supérieure bleue */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 40px;
-    position: relative;
-  }
+        .channel:hover {
+            border-color: var(--wii-blue);
+            box-shadow: 0 0 15px var(--wii-blue), inset 0 0 10px var(--wii-blue);
+            transform: scale(1.02);
+            z-index: 10;
+        }
 
-  /* Forme incurvée de la barre du bas */
-  .footer-bar::before {
-    content: '';
-    position: absolute;
-    top: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 200px;
-    height: 40px;
-    background-color: #fff;
-    border-top: 4px solid #50c0e0;
-    border-radius: 50% 50% 0 0; /* Forme de demi-cercle */
-  }
+        /* Chaîne vide (bruit statique CSS) */
+        .channel.empty {
+            background: #dedede;
+            cursor: default;
+        }
+        .channel.empty:hover {
+            border-color: #cecece;
+            box-shadow: none;
+            transform: none;
+        }
 
-  /* Boutons ronds (Wii et Enveloppe) */
-  .circle-button {
-    width: 70px;
-    height: 70px;
-    background-color: #e8e8e8;
-    border: 3px solid #c0c0c0;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px;
-    color: #808080;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    z-index: 1; /* Pour être au-dessus de la forme incurvée */
-  }
+        /* Contenu Chaîne PROFIL (La première) */
+        .channel-content {
+            text-align: center;
+            color: #555;
+            z-index: 1;
+        }
+        .channel-img {
+            font-size: 3rem; 
+            /* Ici tu mettrais une balise <img> si tu en as une */
+        }
+        .channel-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #888;
+            margin-top: 5px;
+        }
 
-  /* Icône d'enveloppe (simplifiée) */
-  .envelope-icon {
-    font-size: 30px;
-  }
+        /* --- 3. BARRE DU BAS (FOOTER) --- */
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 15vh;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5vw;
+            box-sizing: border-box;
+        }
 
-  /* Section Heure et Date au centre */
-  .time-date {
-    text-align: center;
-    color: #808080;
-    z-index: 1;
-  }
+        /* La forme courbe grise complexe en SVG background pour être parfait */
+        .footer-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(to top, #dcdcdc 0%, #eeeeee 100%);
+            border-top: 2px solid #bbb;
+            /* Masque pour créer la courbe au centre */
+            mask-image: radial-gradient(circle at 50% -30px, transparent 180px, black 181px);
+            -webkit-mask-image: radial-gradient(circle at 50% -30px, transparent 180px, black 181px);
+        }
 
-  /* Style de l'heure */
-  .time {
-    font-size: 48px;
-    font-weight: bold;
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-  }
+        /* La courbe bleue décorative sous l'horloge */
+        .blue-curve {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 380px;
+            height: 50px;
+            border-bottom: 4px solid var(--wii-blue);
+            border-radius: 50%;
+            z-index: 0;
+            opacity: 0.6;
+            box-shadow: 0 5px 10px rgba(74, 192, 224, 0.4);
+        }
 
-  /* Style AM/PM */
-  .am-pm {
-    font-size: 24px;
-    margin-left: 5px;
-  }
+        /* Boutons ronds (Wii / Mail) */
+        .circle-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff, #dcdcdc);
+            border: 3px solid #b0b0b0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #888;
+            font-size: 1.2rem;
+            box-shadow: 2px 5px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .circle-btn:hover {
+            border-color: var(--wii-blue);
+            color: var(--wii-blue);
+            transform: scale(1.1);
+        }
 
-  /* Style de la date */
-  .date {
-    font-size: 20px;
-    margin-top: 5px;
-  }
+        /* Horloge */
+        .clock-container {
+            text-align: center;
+            color: #666;
+            z-index: 2;
+        }
+        .time {
+            font-size: 3rem;
+            font-weight: 300;
+            letter-spacing: -2px;
+            font-family: sans-serif;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+        }
+        .ampm { font-size: 1.2rem; margin-left: 5px; font-weight: bold;}
+        .date { font-size: 1.2rem; color: #888; margin-top: -5px;}
 
-</style>
+
+        /* --- 4. OVERLAY "START CHANNEL" (L'animation Zoom) --- */
+        #channel-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        #channel-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* La fenêtre blanche qui apparait */
+        .start-window {
+            width: 600px;
+            height: 380px;
+            background: #fff;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 0 5px rgba(255,255,255,0.2);
+            transform: scale(0.5);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #channel-overlay.active .start-window {
+            transform: scale(1);
+        }
+
+        /* Header de la fenêtre (bannière animée) */
+        .start-banner {
+            flex: 2;
+            background: #f0f0f0;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 2px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Motif animé en fond de bannière */
+        .banner-pattern {
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(0,0,0,0.03) 20px, rgba(0,0,0,0.03) 40px);
+            animation: scroll 20s linear infinite;
+        }
+        @keyframes scroll { 100% { transform: translate(-50px, -50px); } }
+
+        .start-title {
+            z-index: 2;
+            font-size: 2.5rem;
+            color: #555;
+            text-shadow: 2px 2px 0px rgba(255,255,255,1);
+        }
+
+        /* Footer de la fenêtre (Boutons) */
+        .start-controls {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: radial-gradient(circle at center, #fff, #eee);
+        }
+
+        .wii-big-btn {
+            padding: 10px 30px;
+            border-radius: 50px;
+            border: 2px solid #bbb;
+            background: white;
+            font-size: 1.2rem;
+            color: #555;
+            cursor: pointer;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Effet glossy bouton */
+        .wii-big-btn::before {
+            content:''; position: absolute; top:0; left:0; width:100%; height:50%;
+            background: linear-gradient(white, rgba(255,255,255,0));
+        }
+        .wii-big-btn:hover {
+            border-color: var(--wii-blue);
+            color: var(--wii-blue);
+            box-shadow: 0 0 15px var(--wii-blue);
+            transform: scale(1.05);
+        }
+
+        /* --- 5. CURSEUR WII (Main) EN CSS/SVG --- */
+        /* Pour faire simple en un fichier, on remplace le curseur par défaut par une main */
+        /* Note: Pour une vraie main Wii, il faudrait une image Base64 très longue. 
+           Ici j'utilise une image curseur générique mais stylisée. */
+        body {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5"><path d="M10 2L9 9H5C3.34 9 2 10.34 2 12V22H18V13L15.5 6L14.5 4L13 2H10Z"/></svg>') 10 2, auto;
+        }
+
+    </style>
 </head>
 <body>
 
-  <div class="main-container">
+    <div class="wii-background"></div>
+
     <div class="grid-container">
-      <div class="channel selected"></div>
-      <div class="channel"></div>
-      <div class="channel"></div>
-      <div class="channel"></div>
-      <div class="channel"></div>
-      <div class="channel"></div>
-      <div class="channel"></div>
-      <div class="channel"></div>
-      <div class="channel"></div>
-      <div class="channel"></div>
-      <div class="channel"></div>
-      <div class="channel"></div>
+        <div class="channel" onclick="openChannel('Mon Profil', '👤')">
+            <div class="channel-content">
+                <div class="channel-img">👤</div>
+                <div class="channel-text">Moi</div>
+            </div>
+        </div>
+
+        <div class="channel" onclick="openChannel('Mes Projets', '🚀')">
+            <div class="channel-content">
+                <div class="channel-img">🚀</div>
+                <div class="channel-text">Projets</div>
+            </div>
+        </div>
+
+        <div class="channel" onclick="openChannel('Github', '💻')">
+            <div class="channel-content">
+                <div class="channel-img">💻</div>
+                <div class="channel-text">Code</div>
+            </div>
+        </div>
+
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
+        <div class="channel empty"></div>
     </div>
-  </div>
 
-  <div class="footer-bar">
-    <div class="circle-button">Wii</div>
-    <div class="time-date">
-      <div class="time">
-        <span id="hours">10</span><span id="minutes">00</span>
-        <span class="am-pm" id="ampm">AM</span>
-      </div>
-      <div class="date" id="date">Mon 1/01</div>
+    <div class="footer">
+        <div class="footer-bg"></div>
+        
+        <div class="circle-btn">Wii</div>
+        
+        <div class="clock-container">
+            <div class="blue-curve"></div>
+            <div class="time">
+                <span id="h">12</span><span style="animation: blink 1s infinite">:</span><span id="m">00</span>
+                <span class="ampm" id="ampm">PM</span>
+            </div>
+            <div class="date" id="date">Lun 01/01</div>
+        </div>
+
+        <div class="circle-btn">✉️</div>
     </div>
-    <div class="circle-button">
-      <span class="envelope-icon">✉️</span>
+
+    <div id="channel-overlay">
+        <div class="start-window">
+            <div class="start-banner">
+                <div class="banner-pattern"></div>
+                <h1 id="start-title" class="start-title">Titre</h1>
+            </div>
+            <div class="start-controls">
+                <button class="wii-big-btn" onclick="closeChannel()">Menu Wii</button>
+                <button class="wii-big-btn" id="start-btn" onclick="launchAction()">Démarrer</button>
+            </div>
+        </div>
     </div>
-  </div>
 
-<script>
-  // Script pour mettre à jour l'heure et la date
-  function updateTimeAndDate() {
-    const now = new Date();
-    
-    // Heure
-    let hours = now.getHours();
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // L'heure '0' doit être '12'
-    
-    document.getElementById('hours').textContent = hours;
-    document.getElementById('minutes').textContent = ':' + minutes;
-    document.getElementById('ampm').textContent = ampm;
+    <script>
+        /* --- LOGIQUE JS --- */
 
-    // Date
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const dayName = days[now.getDay()];
-    const month = now.getMonth() + 1; // Les mois commencent à 0
-    const day = now.getDate();
-    
-    document.getElementById('date').textContent = `${dayName} ${month}/${day}`;
-  }
+        // 1. HORLOGE
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            
+            hours = hours % 12;
+            hours = hours ? hours : 12; // Format 12h
 
-  // Mettre à jour immédiatement puis toutes les secondes
-  updateTimeAndDate();
-  setInterval(updateTimeAndDate, 1000);
-</script>
+            document.getElementById('h').textContent = hours;
+            document.getElementById('m').textContent = minutes;
+            document.getElementById('ampm').textContent = ampm;
 
+            const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+            const dayStr = days[now.getDay()];
+            const dateStr = now.getDate() + '/' + (now.getMonth()+1);
+            document.getElementById('date').textContent = `${dayStr} ${dateStr}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 2. GESTION DES CHAINES (ANIMATION)
+        const overlay = document.getElementById('channel-overlay');
+        const titleEl = document.getElementById('start-title');
+        let currentAction = null;
+
+        function openChannel(title, icon) {
+            titleEl.innerHTML = icon + " " + title;
+            overlay.classList.add('active');
+            
+            // On définit ce qui se passe quand on clique sur Démarrer selon le titre
+            // Ici tu peux rediriger vers tes vraies pages
+            if(title === 'Mon Profil') currentAction = () => alert("Lien vers ta page 'Qui suis-je'");
+            else if(title === 'Mes Projets') currentAction = () => alert("Lien vers tes projets");
+            else if(title === 'Github') currentAction = () => window.open('https://github.com', '_blank');
+        }
+
+        function closeChannel() {
+            overlay.classList.remove('active');
+        }
+
+        function launchAction() {
+            if(currentAction) currentAction();
+        }
+
+        // Fermer en cliquant en dehors
+        overlay.addEventListener('click', (e) => {
+            if(e.target === overlay) closeChannel();
+        });
+
+    </script>
 </body>
 </html>
