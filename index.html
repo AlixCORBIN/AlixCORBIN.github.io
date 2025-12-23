@@ -3,177 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wii Portfolio Final</title>
+    <title>Wii Portfolio</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 
     <style>
         /* --- 1. CONFIGURATION GÉNÉRALE --- */
         body, html {
             height: 100%;
             margin: 0;
-            overflow: hidden; /* Empêche le scroll */
-            font-family: sans-serif;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif; /* Police plus proche de l'interface Wii */
             background-color: #e8e8e8;
-            /* Fond rayé (Scanlines) */
             background-image: repeating-linear-gradient(
                 0deg, transparent, transparent 2px, #d4d4d4 2px, #d4d4d4 4px
             );
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* On centre le contenu principal, le footer sera collé en bas */
             justify-content: center; 
+            user-select: none;
         }
 
-        /* --- 2. LA GRILLE (Dimensions restaurées de la version précédente) --- */
+        /* --- 2. ÉCRAN D'INTRO (Santé & Sécurité) --- */
+        #intro-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: black;
+            color: white;
+            z-index: 9999; /* Au-dessus de tout */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: opacity 0.5s ease-out;
+        }
+
+        /* Le Warning Jaune */
+        .warning-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #b0b0b0; /* Gris clair comme sur Wii */
+        }
+        
+        .warning-icon {
+            width: 60px;
+            height: 60px;
+            margin-right: 20px;
+        }
+
+        .intro-text {
+            max-width: 800px;
+            margin-bottom: 50px;
+            line-height: 1.6;
+            font-size: 1.2rem;
+            color: #b0b0b0;
+        }
+
+        .highlight {
+            color: white;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        /* Texte clignotant "Appuyez pour continuer" */
+        .press-btn {
+            margin-top: 50px;
+            font-size: 1.5rem;
+            color: #888;
+            animation: blink 2s infinite ease-in-out;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        /* --- 3. LA GRILLE DU MENU --- */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(3, 1fr);
             gap: 2vh;
-            /* Dimensions exactes que tu aimais */
             width: 90vw;
             max-width: 1200px;
             height: 60vh;
-            /* On remonte un peu la grille pour laisser la place au footer */
             margin-bottom: 10vh; 
             z-index: 1;
+            opacity: 0; /* Caché au début */
+            transform: scale(0.95);
+            transition: opacity 1s, transform 1s;
+        }
+        /* Classe pour faire apparaître le menu après l'intro */
+        .grid-visible {
+            opacity: 1;
+            transform: scale(1);
         }
 
-        /* Style des rectangles */
         .channel {
             background-color: #ffffff;
-            border: 4px solid #b0b0b0; /* Bordure grise par défaut */
+            border: 4px solid #b0b0b0;
             border-radius: 20px;
             box-shadow: 3px 3px 10px rgba(0,0,0,0.1);
             position: relative;
             cursor: pointer;
             overflow: hidden;
-            transition: transform 0.1s, border-color 0.1s, box-shadow 0.1s;
+            transition: transform 0.1s, border-color 0.1s;
         }
 
-        /* Le motif "Wii" rayé pour les chaînes vides */
         .channel.empty {
             background-color: #d4d4d4;
-            /* SVG du logo Wii + Rayures CSS combinés */
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50" viewBox="0 0 100 50"><text x="50" y="35" font-family="sans-serif" font-size="30" fill="%23c0c0c0" text-anchor="middle">Wii</text></svg>'),
                               repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px);
             background-repeat: no-repeat, repeat;
-            background-position: center, center;
+            background-position: center;
             background-size: contain, auto;
             border-color: #b0b0b0;
         }
 
-        /* Effet de survol (Hover) */
         .channel:hover {
-            border-color: #4ac0e0; /* Bleu Wii */
+            border-color: #4ac0e0;
             box-shadow: 0 0 15px #4ac0e0;
             transform: scale(1.02);
             z-index: 10;
         }
-        
-        .channel.empty:hover {
-             transform: none; /* Pas de zoom sur les vides */
-             border-color: #b0b0b0;
-             box-shadow: none;
-        }
+        .channel.empty:hover { transform: none; border-color: #b0b0b0; box-shadow: none; }
 
-        /* --- 3. LE FOOTER RÉALISTE (Positionné en bas) --- */
+        /* --- 4. LE FOOTER RÉALISTE --- */
         .footer-container {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 140px; /* Hauteur fixe pour le dessin de la courbe */
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
+            bottom: 0; left: 0; width: 100%; height: 140px;
+            display: flex; justify-content: center; align-items: flex-end;
             z-index: 100;
         }
 
-        /* Fond SVG (Courbe grise + Ligne Bleue) */
         .footer-bg {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: -1;
             filter: drop-shadow(0px -5px 5px rgba(0,0,0,0.1));
         }
 
-        /* Boutons ronds (Wii & Mail) */
         .wii-btn-wrapper {
-            position: absolute;
-            bottom: 25px;
-            width: 90px;
-            height: 90px;
+            position: absolute; bottom: 25px; width: 90px; height: 90px;
             border-radius: 50%;
             background: linear-gradient(to bottom, #d0d0d0, #f0f0f0);
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
         }
         .left-btn { left: 40px; }
         .right-btn { right: 40px; }
 
-        /* Style "Verre" des boutons */
         .glass-btn {
-            width: 76px;
-            height: 76px;
-            border-radius: 50%;
+            width: 76px; height: 76px; border-radius: 50%;
             background: radial-gradient(circle at 35% 35%, #ffffff 0%, #dcdcdc 60%, #a0a0a0 100%);
-            border: 2px solid #b0b0b0;
-            position: relative;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            border: 2px solid #b0b0b0; position: relative; cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
             transition: transform 0.1s;
         }
-        /* Reflet blanc sur le bouton */
         .glass-btn::after {
-            content: '';
-            position: absolute;
-            top: 5px; left: 15px;
-            width: 45px; height: 30px;
-            border-radius: 50%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0.1));
+            content: ''; position: absolute; top: 5px; left: 15px; width: 45px; height: 30px;
+            border-radius: 50%; background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0.1));
             pointer-events: none;
         }
         .glass-btn:hover { transform: scale(1.05); border-color: #4ac0e0; }
 
-        /* Texte/Icones dans les boutons */
         .btn-text { color: #999; font-size: 24px; font-weight: bold; letter-spacing: -1px;}
         .btn-icon { width: 50%; opacity: 0.6; fill: #999; }
 
-        /* Horloge Digitale */
-        .clock-area {
-            text-align: center;
-            margin-bottom: 25px;
-            z-index: 5;
-        }
+        .clock-area { text-align: center; margin-bottom: 25px; z-index: 5; }
         .digital-time {
-            font-family: 'Orbitron', monospace;
-            font-size: 4rem;
-            color: #888;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: baseline;
-            justify-content: center;
+            font-family: 'Orbitron', monospace; font-size: 4rem; color: #888;
+            letter-spacing: 2px; display: flex; align-items: baseline; justify-content: center;
             text-shadow: 2px 2px 0px rgba(255,255,255,0.8);
         }
         .ampm { font-size: 1.5rem; margin-left: 10px; font-weight: bold; font-family: sans-serif; color: #888;}
         .date-text { font-size: 1.6rem; color: #777; margin-top: -5px; font-weight: 500;}
 
-        /* --- 4. CURSEUR MAIN WII --- */
-        body {
-            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5"><path d="M10 2L9 9H5C3.34 9 2 10.34 2 12V22H18V13L15.5 6L14.5 4L13 2H10Z"/></svg>') 10 2, auto;
-        }
+        body { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5"><path d="M10 2L9 9H5C3.34 9 2 10.34 2 12V22H18V13L15.5 6L14.5 4L13 2H10Z"/></svg>') 10 2, auto; }
 
-        /* Media Query Mobile */
         @media (max-width: 800px) {
             .grid-container { height: 50vh; width: 95vw; gap: 10px;}
             .digital-time { font-size: 2.5rem; }
@@ -185,30 +196,45 @@
 </head>
 <body>
 
-    <div class="grid-container">
+    <audio id="bg-music" loop>
+        <source src="assets/WiiMenuMusic.mp3" type="audio/mp3">
+    </audio>
+
+    <div id="intro-screen" onclick="startExperience()">
+        <div class="warning-header">
+            <svg class="warning-icon" viewBox="0 0 100 100">
+                <path d="M50 5 L95 90 L5 90 Z" fill="#fdd835" stroke="#fdd835" stroke-width="2"/>
+                <path d="M50 5 L95 90 L5 90 Z" fill="none" stroke="black" stroke-width="5" stroke-linejoin="round" transform="scale(0.8) translate(12, 10)"/>
+                <text x="50" y="75" font-family="sans-serif" font-size="50" font-weight="bold" text-anchor="middle" fill="black">!</text>
+            </svg>
+            <span>ATTENTION - SANTÉ ET SÉCURITÉ</span>
+        </div>
+
+        <div class="intro-text">
+            <p>BONJOUR, JE SUIS <span class="highlight">TON NOM ICI</span>. JE SUIS DÉVELOPPEUR.</p>
+            <p>CECI EST MON PORTFOLIO INTERACTIF.</p>
+            <br>
+            <p>CE PROJET EST UNE REPRODUCTION DU MENU WII ET IL EST FORTEMENT INSPIRÉ DU TRAVAIL DE <span class="highlight">TOBIAS ECHENIQUE</span>.</p>
+            <p>POUR UNE MEILLEURE EXPÉRIENCE, ACTIVEZ LE SON ET UTILISEZ UN ORDINATEUR DE BUREAU.</p>
+        </div>
+
+        <div class="press-btn">
+            Appuyez sur A pour continuer
+        </div>
+    </div>
+
+    <div class="grid-container" id="main-grid">
         <div class="channel">
             <div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center; color:#555;">
                 <h2 style="margin:0;">Moi</h2>
             </div>
         </div>
-
-        <div class="channel empty"></div>
-        <div class="channel empty"></div>
-        <div class="channel empty"></div>
-        
-        <div class="channel empty"></div>
-        <div class="channel empty"></div>
-        <div class="channel empty"></div>
-        <div class="channel empty"></div>
-        
-        <div class="channel empty"></div>
-        <div class="channel empty"></div>
-        <div class="channel empty"></div>
-        <div class="channel empty"></div>
+        <div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div>
+        <div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div>
+        <div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div>
     </div>
 
     <div class="footer-container">
-        
         <div class="footer-bg">
             <svg width="100%" height="100%" viewBox="0 0 1000 140" preserveAspectRatio="none">
                 <defs>
@@ -220,13 +246,7 @@
                 <path d="M0,140 L0,0 L200,0 Q300,0 350,30 L650,30 Q700,0 800,0 L1000,0 L1000,140 Z" fill="url(#greyGrad)" stroke="#4ac0e0" stroke-width="4"/>
             </svg>
         </div>
-
-        <div class="wii-btn-wrapper left-btn">
-            <div class="glass-btn">
-                <span class="btn-text">Wii</span>
-            </div>
-        </div>
-
+        <div class="wii-btn-wrapper left-btn"><div class="glass-btn"><span class="btn-text">Wii</span></div></div>
         <div class="clock-area">
             <div class="digital-time">
                 <span id="h">12</span><span style="animation: blink 1s infinite">:</span><span id="m">00</span>
@@ -234,36 +254,49 @@
             </div>
             <div class="date-text" id="date">Mon 01/01</div>
         </div>
-
         <div class="wii-btn-wrapper right-btn">
             <div class="glass-btn">
-                <svg class="btn-icon" viewBox="0 0 24 24">
-                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                </svg>
+                <svg class="btn-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
             </div>
         </div>
-
     </div>
 
     <script>
-        // Fonction Horloge
+        // --- 1. FONCTION DE DÉMARRAGE ---
+        function startExperience() {
+            const intro = document.getElementById('intro-screen');
+            const grid = document.getElementById('main-grid');
+            const audio = document.getElementById('bg-music');
+
+            // 1. Lancer la musique
+            // Note : L'utilisateur a cliqué, donc le navigateur autorise l'audio
+            audio.volume = 0.5; // Volume à 50%
+            audio.play().catch(error => {
+                console.log("Lecture audio bloquée : " + error);
+            });
+
+            // 2. Faire disparaître l'intro
+            intro.style.opacity = '0';
+            
+            // 3. Après la transition, supprimer l'intro et afficher la grille
+            setTimeout(() => {
+                intro.style.display = 'none';
+                grid.classList.add('grid-visible'); // Lance l'animation d'apparition du menu
+            }, 500); // 500ms = temps de la transition CSS
+        }
+
+        // --- 2. HORLOGE ---
         function updateClock() {
             const now = new Date();
             let hours = now.getHours();
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12;
-
+            hours = hours % 12; hours = hours ? hours : 12;
             document.getElementById('h').innerText = hours;
             document.getElementById('m').innerText = minutes;
             document.getElementById('ampm').innerText = ampm;
-
-            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            const dayStr = days[now.getDay()];
-            const month = now.getMonth() + 1;
-            const dateNum = now.getDate();
-            document.getElementById('date').innerText = `${dayStr} ${month}/${dateNum}`;
+            const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+            document.getElementById('date').innerText = `${days[now.getDay()]} ${now.getDate()}/${now.getMonth() + 1}`;
         }
         setInterval(updateClock, 1000);
         updateClock();
