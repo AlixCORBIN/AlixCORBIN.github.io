@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wii Portfolio</title>
+    <title>Wii Portfolio - Expérience Complète</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 
@@ -13,7 +13,7 @@
             height: 100%;
             margin: 0;
             overflow: hidden;
-            font-family: 'Roboto', sans-serif; /* Police plus proche de l'interface Wii */
+            font-family: 'Roboto', sans-serif;
             background-color: #e8e8e8;
             background-image: repeating-linear-gradient(
                 0deg, transparent, transparent 2px, #d4d4d4 2px, #d4d4d4 4px
@@ -27,62 +27,17 @@
 
         /* --- 2. ÉCRAN D'INTRO (Santé & Sécurité) --- */
         #intro-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: black;
-            color: white;
-            z-index: 9999; /* Au-dessus de tout */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            cursor: pointer;
-            transition: opacity 0.5s ease-out;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: black; color: white; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; cursor: pointer; transition: opacity 0.5s ease-out;
         }
-
-        /* Le Warning Jaune */
-        .warning-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 40px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #b0b0b0; /* Gris clair comme sur Wii */
-        }
-        
-        .warning-icon {
-            width: 60px;
-            height: 60px;
-            margin-right: 20px;
-        }
-
-        .intro-text {
-            max-width: 800px;
-            margin-bottom: 50px;
-            line-height: 1.6;
-            font-size: 1.2rem;
-            color: #b0b0b0;
-        }
-
-        .highlight {
-            color: white;
-            font-weight: bold;
-            font-style: italic;
-        }
-
-        /* Texte clignotant "Appuyez pour continuer" */
-        .press-btn {
-            margin-top: 50px;
-            font-size: 1.5rem;
-            color: #888;
-            animation: blink 2s infinite ease-in-out;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 1; }
-        }
+        .warning-header { display: flex; align-items: center; margin-bottom: 40px; font-size: 1.5rem; font-weight: bold; color: #b0b0b0; }
+        .warning-icon { width: 60px; height: 60px; margin-right: 20px; }
+        .intro-text { max-width: 800px; margin-bottom: 50px; line-height: 1.6; font-size: 1.2rem; color: #b0b0b0; }
+        .highlight { color: white; font-weight: bold; font-style: italic; }
+        .press-btn { margin-top: 50px; font-size: 1.5rem; color: #888; animation: blink 2s infinite ease-in-out; }
+        @keyframes blink { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
 
         /* --- 3. LA GRILLE DU MENU --- */
         .grid-container {
@@ -90,107 +45,147 @@
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(3, 1fr);
             gap: 2vh;
-            width: 90vw;
-            max-width: 1200px;
-            height: 60vh;
-            margin-bottom: 10vh; 
-            z-index: 1;
-            opacity: 0; /* Caché au début */
-            transform: scale(0.95);
-            transition: opacity 1s, transform 1s;
+            width: 90vw; max-width: 1200px; height: 60vh;
+            margin-bottom: 10vh; z-index: 1;
+            opacity: 0; transform: scale(0.95); transition: opacity 1s, transform 1s;
         }
-        /* Classe pour faire apparaître le menu après l'intro */
-        .grid-visible {
-            opacity: 1;
-            transform: scale(1);
-        }
+        .grid-visible { opacity: 1; transform: scale(1); }
 
         .channel {
             background-color: #ffffff;
             border: 4px solid #b0b0b0;
             border-radius: 20px;
             box-shadow: 3px 3px 10px rgba(0,0,0,0.1);
-            position: relative;
-            cursor: pointer;
-            overflow: hidden;
+            position: relative; cursor: pointer; overflow: hidden;
             transition: transform 0.1s, border-color 0.1s;
         }
-
         .channel.empty {
             background-color: #d4d4d4;
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50" viewBox="0 0 100 50"><text x="50" y="35" font-family="sans-serif" font-size="30" fill="%23c0c0c0" text-anchor="middle">Wii</text></svg>'),
                               repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px);
-            background-repeat: no-repeat, repeat;
-            background-position: center;
-            background-size: contain, auto;
-            border-color: #b0b0b0;
+            background-repeat: no-repeat, repeat; background-position: center; background-size: contain, auto; border-color: #b0b0b0;
         }
-
-        .channel:hover {
-            border-color: #4ac0e0;
-            box-shadow: 0 0 15px #4ac0e0;
-            transform: scale(1.02);
-            z-index: 10;
-        }
+        .channel:hover { border-color: #4ac0e0; box-shadow: 0 0 15px #4ac0e0; transform: scale(1.02); z-index: 10; }
         .channel.empty:hover { transform: none; border-color: #b0b0b0; box-shadow: none; }
 
-        /* --- 4. LE FOOTER RÉALISTE --- */
+        /* --- 4. LE FOOTER --- */
         .footer-container {
-            position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 140px;
-            display: flex; justify-content: center; align-items: flex-end;
-            z-index: 100;
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 140px;
+            display: flex; justify-content: center; align-items: flex-end; z-index: 100;
         }
-
-        .footer-bg {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            filter: drop-shadow(0px -5px 5px rgba(0,0,0,0.1));
-        }
-
+        .footer-bg { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: -1; filter: drop-shadow(0px -5px 5px rgba(0,0,0,0.1)); }
         .wii-btn-wrapper {
-            position: absolute; bottom: 25px; width: 90px; height: 90px;
-            border-radius: 50%;
+            position: absolute; bottom: 25px; width: 90px; height: 90px; border-radius: 50%;
             background: linear-gradient(to bottom, #d0d0d0, #f0f0f0);
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.1);
             display: flex; justify-content: center; align-items: center;
         }
-        .left-btn { left: 40px; }
-        .right-btn { right: 40px; }
-
+        .left-btn { left: 40px; } .right-btn { right: 40px; }
         .glass-btn {
             width: 76px; height: 76px; border-radius: 50%;
             background: radial-gradient(circle at 35% 35%, #ffffff 0%, #dcdcdc 60%, #a0a0a0 100%);
             border: 2px solid #b0b0b0; position: relative; cursor: pointer;
-            display: flex; justify-content: center; align-items: center;
-            transition: transform 0.1s;
-        }
-        .glass-btn::after {
-            content: ''; position: absolute; top: 5px; left: 15px; width: 45px; height: 30px;
-            border-radius: 50%; background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0.1));
-            pointer-events: none;
+            display: flex; justify-content: center; align-items: center; transition: transform 0.1s;
         }
         .glass-btn:hover { transform: scale(1.05); border-color: #4ac0e0; }
-
+        .glass-btn::after {
+            content: ''; position: absolute; top: 5px; left: 15px; width: 45px; height: 30px;
+            border-radius: 50%; background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0.1)); pointer-events: none;
+        }
         .btn-text { color: #999; font-size: 24px; font-weight: bold; letter-spacing: -1px;}
         .btn-icon { width: 50%; opacity: 0.6; fill: #999; }
-
         .clock-area { text-align: center; margin-bottom: 25px; z-index: 5; }
-        .digital-time {
-            font-family: 'Orbitron', monospace; font-size: 4rem; color: #888;
-            letter-spacing: 2px; display: flex; align-items: baseline; justify-content: center;
-            text-shadow: 2px 2px 0px rgba(255,255,255,0.8);
-        }
+        .digital-time { font-family: 'Orbitron', monospace; font-size: 4rem; color: #888; letter-spacing: 2px; display: flex; align-items: baseline; justify-content: center; text-shadow: 2px 2px 0px rgba(255,255,255,0.8); }
         .ampm { font-size: 1.5rem; margin-left: 10px; font-weight: bold; font-family: sans-serif; color: #888;}
         .date-text { font-size: 1.6rem; color: #777; margin-top: -5px; font-weight: 500;}
 
-        body { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5"><path d="M10 2L9 9H5C3.34 9 2 10.34 2 12V22H18V13L15.5 6L14.5 4L13 2H10Z"/></svg>') 10 2, auto; }
+        /* --- 5. NOUVEAU : LE START SCREEN (Zoom Animation) --- */
+        #start-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 2000;
+            display: none; /* Caché par défaut */
+            justify-content: center; align-items: center;
+        }
 
+        /* La fenêtre blanche style TV */
+        .start-window {
+            width: 800px; height: 480px;
+            background: white;
+            border-radius: 50px; /* Bords très ronds comme sur l'image */
+            overflow: hidden;
+            display: flex; flex-direction: column;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.5);
+            
+            /* L'animation de Zoom / Rebond */
+            transform: scale(0.1);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        /* État actif pour l'animation */
+        #start-overlay.active { display: flex; }
+        #start-overlay.active .start-window { transform: scale(1); }
+
+        /* Contenu Haut (Bannière) */
+        .start-body {
+            flex: 1;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            position: relative;
+        }
+        .start-title { font-size: 3rem; color: #555; margin: 10px 0; }
+        .start-subtitle { font-size: 1.2rem; color: #888; }
+        .start-icon { font-size: 5rem; margin-bottom: 10px; }
+
+        /* Flèches bleues sur les côtés */
+        .side-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 40px; height: 60px;
+            cursor: pointer;
+        }
+        .side-arrow.left { left: 20px; }
+        .side-arrow.right { right: 20px; }
+        .side-arrow polygon { fill: #8cdbff; stroke: #3ea0e0; stroke-width: 2; }
+
+        /* Footer Gris Rayé (Bas de la fenêtre) */
+        .start-footer {
+            height: 110px;
+            background-color: #dadada;
+            /* Rayures grises horizontales */
+            background-image: repeating-linear-gradient(
+                0deg, transparent, transparent 2px, #c0c0c0 2px, #c0c0c0 4px
+            );
+            border-top: 2px solid #b0b0b0;
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 0 100px;
+        }
+
+        /* Boutons "Start" et "Menu Wii" */
+        .pill-btn {
+            width: 200px; height: 60px;
+            border-radius: 35px;
+            background: linear-gradient(to bottom, #ffffff 0%, #e6e6e6 50%, #dadada 100%);
+            border: 3px solid #66c6e6; /* Bordure bleue cyan */
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.5rem; color: #555; cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.1s, box-shadow 0.1s, border-color 0.1s;
+        }
+        .pill-btn:hover {
+            border-color: #3ea0e0;
+            box-shadow: 0 0 15px rgba(74, 192, 224, 0.6);
+            transform: scale(1.05);
+        }
+        .pill-btn:active { transform: scale(0.98); }
+
+        /* Curseur Main */
+        body { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5"><path d="M10 2L9 9H5C3.34 9 2 10.34 2 12V22H18V13L15.5 6L14.5 4L13 2H10Z"/></svg>') 10 2, auto; }
+        
         @media (max-width: 800px) {
-            .grid-container { height: 50vh; width: 95vw; gap: 10px;}
-            .digital-time { font-size: 2.5rem; }
-            .wii-btn-wrapper { width: 60px; height: 60px; bottom: 10px; }
-            .glass-btn { width: 50px; height: 50px; }
-            .left-btn { left: 10px; } .right-btn { right: 10px; }
+            .start-window { width: 95vw; height: 60vh; border-radius: 20px;}
+            .start-footer { padding: 0 20px; }
+            .pill-btn { width: 140px; font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -209,83 +204,122 @@
             </svg>
             <span>ATTENTION - SANTÉ ET SÉCURITÉ</span>
         </div>
-
         <div class="intro-text">
-            <p>BONJOUR, JE SUIS <span class="highlight">Alix CORBIN</span>. JE SUIS DÉVELOPPEUR.</p>
-            <p>CECI EST MON PORTFOLIO INTERACTIF.</p>
-            <br>
+            <p>BONJOUR, JE SUIS <span class="highlight">ALIX CORBIN</span>. JE SUIS DÉVELOPPEUR.</p>
             <p>CE PROJET EST UNE REPRODUCTION DU MENU WII ET IL EST FORTEMENT INSPIRÉ DU TRAVAIL DE <span class="highlight">TOBIAS ECHENIQUE</span>.</p>
-            <p>POUR UNE MEILLEURE EXPÉRIENCE, ACTIVEZ LE SON ET UTILISEZ UN ORDINATEUR DE BUREAU.</p>
         </div>
-
-        <div class="press-btn">
-            Appuyez sur A pour continuer
-        </div>
+        <div class="press-btn">Appuyez sur A pour continuer</div>
     </div>
 
     <div class="grid-container" id="main-grid">
-        <div class="channel">
-            <div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center; color:#555;">
-                <h2 style="margin:0;">Moi</h2>
+        <div class="channel" onclick="openChannel('Moi', '👤', 'https://ton-lien-moi.com')">
+            <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#555;">
+                <span style="font-size:3rem">👤</span>
+                <h2 style="margin:5px 0;">Moi</h2>
             </div>
         </div>
-        <div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div>
+        
+        <div class="channel" onclick="openChannel('Projets', '🚀', 'https://github.com')">
+             <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#555;">
+                <span style="font-size:3rem">🚀</span>
+                <h2 style="margin:5px 0;">Projets</h2>
+            </div>
+        </div>
+
+        <div class="channel empty"></div><div class="channel empty"></div>
         <div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div>
         <div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div>
+    </div>
+
+    <div id="start-overlay">
+        <div class="start-window">
+            
+            <div class="start-body">
+                <svg class="side-arrow left" viewBox="0 0 50 100"><polygon points="40,10 10,50 40,90" /></svg>
+                
+                <div class="start-icon" id="modal-icon">👤</div>
+                <h1 class="start-title" id="modal-title">Chaîne</h1>
+                <div class="start-subtitle">Démarrer cette chaîne ?</div>
+
+                <svg class="side-arrow right" viewBox="0 0 50 100"><polygon points="10,10 40,50 10,90" /></svg>
+            </div>
+
+            <div class="start-footer">
+                <div class="pill-btn" onclick="closeChannel()">Menu Wii</div>
+                <div class="pill-btn" id="start-btn-action">Démarrer</div>
+            </div>
+        </div>
     </div>
 
     <div class="footer-container">
         <div class="footer-bg">
             <svg width="100%" height="100%" viewBox="0 0 1000 140" preserveAspectRatio="none">
-                <defs>
-                    <linearGradient id="greyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style="stop-color:#dcdcdc;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1" />
-                    </linearGradient>
-                </defs>
+                <defs><linearGradient id="greyGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#dcdcdc;stop-opacity:1"/><stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1"/></linearGradient></defs>
                 <path d="M0,140 L0,0 L200,0 Q300,0 350,30 L650,30 Q700,0 800,0 L1000,0 L1000,140 Z" fill="url(#greyGrad)" stroke="#4ac0e0" stroke-width="4"/>
             </svg>
         </div>
         <div class="wii-btn-wrapper left-btn"><div class="glass-btn"><span class="btn-text">Wii</span></div></div>
         <div class="clock-area">
-            <div class="digital-time">
-                <span id="h">12</span><span style="animation: blink 1s infinite">:</span><span id="m">00</span>
-                <span class="ampm" id="ampm">AM</span>
-            </div>
+            <div class="digital-time"><span id="h">12</span><span style="animation:blink 1s infinite">:</span><span id="m">00</span><span class="ampm" id="ampm">AM</span></div>
             <div class="date-text" id="date">Mon 01/01</div>
         </div>
-        <div class="wii-btn-wrapper right-btn">
-            <div class="glass-btn">
-                <svg class="btn-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-            </div>
-        </div>
+        <div class="wii-btn-wrapper right-btn"><div class="glass-btn"><svg class="btn-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div></div>
     </div>
 
     <script>
-        // --- 1. FONCTION DE DÉMARRAGE ---
+        // --- 1. INTRO & MUSIQUE ---
         function startExperience() {
             const intro = document.getElementById('intro-screen');
             const grid = document.getElementById('main-grid');
             const audio = document.getElementById('bg-music');
-
-            // 1. Lancer la musique
-            // Note : L'utilisateur a cliqué, donc le navigateur autorise l'audio
-            audio.volume = 0.5; // Volume à 50%
-            audio.play().catch(error => {
-                console.log("Lecture audio bloquée : " + error);
-            });
-
-            // 2. Faire disparaître l'intro
+            audio.volume = 0.5; 
+            audio.play().catch(e => console.log("Audio bloqué", e));
             intro.style.opacity = '0';
-            
-            // 3. Après la transition, supprimer l'intro et afficher la grille
             setTimeout(() => {
                 intro.style.display = 'none';
-                grid.classList.add('grid-visible'); // Lance l'animation d'apparition du menu
-            }, 500); // 500ms = temps de la transition CSS
+                grid.classList.add('grid-visible');
+            }, 500);
         }
 
-        // --- 2. HORLOGE ---
+        // --- 2. GESTION DU START SCREEN (ZOOM) ---
+        const overlay = document.getElementById('start-overlay');
+        const modalTitle = document.getElementById('modal-title');
+        const modalIcon = document.getElementById('modal-icon');
+        const startBtn = document.getElementById('start-btn-action');
+
+        function openChannel(title, icon, link) {
+            // Remplir les infos
+            modalTitle.innerText = title;
+            modalIcon.innerText = icon;
+            
+            // Configurer le bouton démarrer
+            startBtn.onclick = function() {
+                window.open(link, '_blank'); // Ouvre le lien
+            };
+
+            // Afficher et animer
+            overlay.style.display = 'flex';
+            // Petit délai pour permettre au CSS de voir le changement de display avant d'ajouter la classe active
+            setTimeout(() => {
+                overlay.classList.add('active');
+            }, 10);
+        }
+
+        function closeChannel() {
+            // Retirer l'animation
+            overlay.classList.remove('active');
+            // Attendre la fin de l'animation pour cacher le display
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 500);
+        }
+
+        // Fermer si on clique en dehors de la fenêtre blanche
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeChannel();
+        });
+
+        // --- 3. HORLOGE ---
         function updateClock() {
             const now = new Date();
             let hours = now.getHours();
