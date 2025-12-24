@@ -3,26 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wii Portfolio - Expérience Complète</title>
+    <title>Wii Portfolio - Alix Corbin</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 
     <style>
         /* --- 1. CONFIGURATION GÉNÉRALE --- */
         body, html {
-            height: 100%;
-            margin: 0;
-            overflow: hidden;
-            font-family: 'Roboto', sans-serif;
+            height: 100%; margin: 0; overflow: hidden; font-family: 'Roboto', sans-serif;
             background-color: #e8e8e8;
-            background-image: repeating-linear-gradient(
-                0deg, transparent, transparent 2px, #d4d4d4 2px, #d4d4d4 4px
-            );
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center; 
-            user-select: none;
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, #d4d4d4 2px, #d4d4d4 4px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; user-select: none;
         }
 
         /* --- 2. ÉCRAN D'INTRO (Santé & Sécurité) --- */
@@ -41,32 +32,27 @@
 
         /* --- 3. LA GRILLE DU MENU --- */
         .grid-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 2vh;
-            width: 90vw; max-width: 1200px; height: 60vh;
-            margin-bottom: 10vh; z-index: 1;
-            opacity: 0; transform: scale(0.95); transition: opacity 1s, transform 1s;
+            display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr);
+            gap: 2vh; width: 90vw; max-width: 1200px; height: 60vh;
+            margin-bottom: 10vh; z-index: 1; opacity: 0; transform: scale(0.95); transition: opacity 1s, transform 1s;
         }
         .grid-visible { opacity: 1; transform: scale(1); }
 
         .channel {
-            background-color: #ffffff;
-            border: 4px solid #b0b0b0;
-            border-radius: 20px;
-            box-shadow: 3px 3px 10px rgba(0,0,0,0.1);
-            position: relative; cursor: pointer; overflow: hidden;
-            transition: transform 0.1s, border-color 0.1s;
+            background-color: #ffffff; border: 4px solid #b0b0b0; border-radius: 20px;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.1); position: relative; cursor: pointer; overflow: hidden;
+            transition: transform 0.1s, border-color 0.1s, opacity 0.3s; /* Ajout d'opacité pour l'anim de zoom */
         }
+        /* Classe ajoutée quand on clique sur une chaîne pour la cacher temporairement */
+        .channel.zooming { opacity: 0; pointer-events: none; }
+
         .channel.empty {
-            background-color: #d4d4d4;
+            background-color: #d4d4d4; cursor: default;
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50" viewBox="0 0 100 50"><text x="50" y="35" font-family="sans-serif" font-size="30" fill="%23c0c0c0" text-anchor="middle">Wii</text></svg>'),
                               repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px);
             background-repeat: no-repeat, repeat; background-position: center; background-size: contain, auto; border-color: #b0b0b0;
         }
-        .channel:hover { border-color: #4ac0e0; box-shadow: 0 0 15px #4ac0e0; transform: scale(1.02); z-index: 10; }
-        .channel.empty:hover { transform: none; border-color: #b0b0b0; box-shadow: none; }
+        .channel:not(.empty):hover { border-color: #4ac0e0; box-shadow: 0 0 15px #4ac0e0; transform: scale(1.02); z-index: 10; }
 
         /* --- 4. LE FOOTER --- */
         .footer-container {
@@ -99,93 +85,52 @@
         .ampm { font-size: 1.5rem; margin-left: 10px; font-weight: bold; font-family: sans-serif; color: #888;}
         .date-text { font-size: 1.6rem; color: #777; margin-top: -5px; font-weight: 500;}
 
-        /* --- 5. NOUVEAU : LE START SCREEN (Zoom Animation) --- */
+        /* --- 5. LE START SCREEN (Nouvelle Animation de Plongée) --- */
         #start-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4);
-            z-index: 2000;
-            display: none; /* Caché par défaut */
-            justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.4); z-index: 2000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; /* Caché par défaut */
+            transition: opacity 0.5s ease;
         }
+        #start-overlay.visible { opacity: 1; pointer-events: auto; }
 
-        /* La fenêtre blanche style TV */
         .start-window {
-            width: 800px; height: 480px;
-            background: white;
-            border-radius: 50px; /* Bords très ronds comme sur l'image */
-            overflow: hidden;
-            display: flex; flex-direction: column;
-            box-shadow: 0 0 50px rgba(255, 255, 255, 0.5);
-            
-            /* L'animation de Zoom / Rebond */
-            transform: scale(0.1);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
+            width: 800px; height: 480px; background: white; border-radius: 50px;
+            overflow: hidden; display: flex; flex-direction: column;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.5); position: relative;
+            /* La transition magique pour le zoom */
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            /* Initialement, pas de transformation, le JS va gérer ça */
+            transform-origin: center center;
         }
 
-        /* État actif pour l'animation */
-        #start-overlay.active { display: flex; }
-        #start-overlay.active .start-window { transform: scale(1); }
-
-        /* Contenu Haut (Bannière) */
-        .start-body {
-            flex: 1;
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            position: relative;
-        }
+        .start-body { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
         .start-title { font-size: 3rem; color: #555; margin: 10px 0; }
         .start-subtitle { font-size: 1.2rem; color: #888; }
         .start-icon { font-size: 5rem; margin-bottom: 10px; }
-
-        /* Flèches bleues sur les côtés */
-        .side-arrow {
-            position: absolute; top: 50%; transform: translateY(-50%);
-            width: 40px; height: 60px;
-            cursor: pointer;
-        }
-        .side-arrow.left { left: 20px; }
-        .side-arrow.right { right: 20px; }
+        .side-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 60px; cursor: pointer; }
+        .side-arrow.left { left: 20px; } .side-arrow.right { right: 20px; }
         .side-arrow polygon { fill: #8cdbff; stroke: #3ea0e0; stroke-width: 2; }
 
-        /* Footer Gris Rayé (Bas de la fenêtre) */
         .start-footer {
-            height: 110px;
-            background-color: #dadada;
-            /* Rayures grises horizontales */
-            background-image: repeating-linear-gradient(
-                0deg, transparent, transparent 2px, #c0c0c0 2px, #c0c0c0 4px
-            );
-            border-top: 2px solid #b0b0b0;
-            display: flex; justify-content: space-around; align-items: center;
-            padding: 0 100px;
+            height: 110px; background-color: #dadada;
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, #c0c0c0 2px, #c0c0c0 4px);
+            border-top: 2px solid #b0b0b0; display: flex; justify-content: space-around; align-items: center; padding: 0 100px;
         }
-
-        /* Boutons "Start" et "Menu Wii" */
         .pill-btn {
-            width: 200px; height: 60px;
-            border-radius: 35px;
+            width: 200px; height: 60px; border-radius: 35px;
             background: linear-gradient(to bottom, #ffffff 0%, #e6e6e6 50%, #dadada 100%);
-            border: 3px solid #66c6e6; /* Bordure bleue cyan */
-            display: flex; justify-content: center; align-items: center;
-            font-size: 1.5rem; color: #555; cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 3px solid #66c6e6; display: flex; justify-content: center; align-items: center;
+            font-size: 1.5rem; color: #555; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: transform 0.1s, box-shadow 0.1s, border-color 0.1s;
         }
-        .pill-btn:hover {
-            border-color: #3ea0e0;
-            box-shadow: 0 0 15px rgba(74, 192, 224, 0.6);
-            transform: scale(1.05);
-        }
+        .pill-btn:hover { border-color: #3ea0e0; box-shadow: 0 0 15px rgba(74, 192, 224, 0.6); transform: scale(1.05); }
         .pill-btn:active { transform: scale(0.98); }
 
-        /* Curseur Main */
         body { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5"><path d="M10 2L9 9H5C3.34 9 2 10.34 2 12V22H18V13L15.5 6L14.5 4L13 2H10Z"/></svg>') 10 2, auto; }
-        
         @media (max-width: 800px) {
-            .start-window { width: 95vw; height: 60vh; border-radius: 20px;}
-            .start-footer { padding: 0 20px; }
-            .pill-btn { width: 140px; font-size: 1.2rem; }
+            .start-window { width: 95vw; height: 60vh; border-radius: 20px;} .start-footer { padding: 0 20px; } .pill-btn { width: 140px; font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -212,14 +157,14 @@
     </div>
 
     <div class="grid-container" id="main-grid">
-        <div class="channel" onclick="openChannel('Moi', '👤', 'https://ton-lien-moi.com')">
+        <div class="channel" onclick="openChannel(this, 'Moi', '👤', 'https://ton-lien-moi.com')">
             <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#555;">
                 <span style="font-size:3rem">👤</span>
                 <h2 style="margin:5px 0;">Moi</h2>
             </div>
         </div>
         
-        <div class="channel" onclick="openChannel('Projets', '🚀', 'https://github.com')">
+        <div class="channel" onclick="openChannel(this, 'Projets', '🚀', 'https://github.com')">
              <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#555;">
                 <span style="font-size:3rem">🚀</span>
                 <h2 style="margin:5px 0;">Projets</h2>
@@ -232,18 +177,14 @@
     </div>
 
     <div id="start-overlay">
-        <div class="start-window">
-            
+        <div class="start-window" id="start-window-box">
             <div class="start-body">
                 <svg class="side-arrow left" viewBox="0 0 50 100"><polygon points="40,10 10,50 40,90" /></svg>
-                
-                <div class="start-icon" id="modal-icon">👤</div>
-                <h1 class="start-title" id="modal-title">Chaîne</h1>
+                <div class="start-icon" id="modal-icon"></div>
+                <h1 class="start-title" id="modal-title"></h1>
                 <div class="start-subtitle">Démarrer cette chaîne ?</div>
-
                 <svg class="side-arrow right" viewBox="0 0 50 100"><polygon points="10,10 40,50 10,90" /></svg>
             </div>
-
             <div class="start-footer">
                 <div class="pill-btn" onclick="closeChannel()">Menu Wii</div>
                 <div class="pill-btn" id="start-btn-action">Démarrer</div>
@@ -252,17 +193,9 @@
     </div>
 
     <div class="footer-container">
-        <div class="footer-bg">
-            <svg width="100%" height="100%" viewBox="0 0 1000 140" preserveAspectRatio="none">
-                <defs><linearGradient id="greyGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#dcdcdc;stop-opacity:1"/><stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1"/></linearGradient></defs>
-                <path d="M0,140 L0,0 L200,0 Q300,0 350,30 L650,30 Q700,0 800,0 L1000,0 L1000,140 Z" fill="url(#greyGrad)" stroke="#4ac0e0" stroke-width="4"/>
-            </svg>
-        </div>
+        <div class="footer-bg"><svg width="100%" height="100%" viewBox="0 0 1000 140" preserveAspectRatio="none"><defs><linearGradient id="greyGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#dcdcdc;stop-opacity:1"/><stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1"/></linearGradient></defs><path d="M0,140 L0,0 L200,0 Q300,0 350,30 L650,30 Q700,0 800,0 L1000,0 L1000,140 Z" fill="url(#greyGrad)" stroke="#4ac0e0" stroke-width="4"/></svg></div>
         <div class="wii-btn-wrapper left-btn"><div class="glass-btn"><span class="btn-text">Wii</span></div></div>
-        <div class="clock-area">
-            <div class="digital-time"><span id="h">12</span><span style="animation:blink 1s infinite">:</span><span id="m">00</span><span class="ampm" id="ampm">AM</span></div>
-            <div class="date-text" id="date">Mon 01/01</div>
-        </div>
+        <div class="clock-area"><div class="digital-time"><span id="h">12</span><span style="animation:blink 1s infinite">:</span><span id="m">00</span><span class="ampm" id="ampm">AM</span></div><div class="date-text" id="date">Mon 01/01</div></div>
         <div class="wii-btn-wrapper right-btn"><div class="glass-btn"><svg class="btn-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div></div>
     </div>
 
@@ -281,40 +214,80 @@
             }, 500);
         }
 
-        // --- 2. GESTION DU START SCREEN (ZOOM) ---
+        // --- 2. GESTION DU START SCREEN (ANIMATION DE PLONGÉE) ---
         const overlay = document.getElementById('start-overlay');
+        const startWindow = document.getElementById('start-window-box');
         const modalTitle = document.getElementById('modal-title');
         const modalIcon = document.getElementById('modal-icon');
         const startBtn = document.getElementById('start-btn-action');
+        
+        // Variable pour se souvenir de quelle case on est parti
+        let activeSourceElement = null;
 
-        function openChannel(title, icon, link) {
-            // Remplir les infos
+        function openChannel(sourceElement, title, icon, link) {
+            if (sourceElement.classList.contains('empty')) return;
+
+            activeSourceElement = sourceElement;
             modalTitle.innerText = title;
             modalIcon.innerText = icon;
-            
-            // Configurer le bouton démarrer
-            startBtn.onclick = function() {
-                window.open(link, '_blank'); // Ouvre le lien
-            };
+            startBtn.onclick = () => window.open(link, '_blank');
 
-            // Afficher et animer
-            overlay.style.display = 'flex';
-            // Petit délai pour permettre au CSS de voir le changement de display avant d'ajouter la classe active
-            setTimeout(() => {
-                overlay.classList.add('active');
-            }, 10);
+            // 1. Calculer les positions
+            const startRect = sourceElement.getBoundingClientRect();
+            const finalRect = startWindow.getBoundingClientRect();
+
+            // 2. Calculer l'échelle et la translation nécessaires pour que la fenêtre
+            //    blanche ait exactement la taille et la position de la case cliquée.
+            const scaleX = startRect.width / finalRect.width;
+            const scaleY = startRect.height / finalRect.height;
+            const transX = startRect.left - finalRect.left + (startRect.width / 2) - (finalRect.width / 2);
+            const transY = startRect.top - finalRect.top + (startRect.height / 2) - (finalRect.height / 2);
+
+            // 3. Appliquer la transformation initiale (sans transition pour l'instant)
+            startWindow.style.transition = 'none';
+            startWindow.style.transform = `translate(${transX}px, ${transY}px) scale(${scaleX}, ${scaleY})`;
+            
+            // Rendre l'overlay visible (le fond noir)
+            overlay.classList.add('visible');
+            // Cacher la case originale pendant le zoom
+            sourceElement.classList.add('zooming');
+
+            // 4. Forcer le navigateur à recalculer (Reflow)
+            startWindow.offsetHeight; 
+
+            // 5. Activer la transition et remettre la fenêtre au centre (scale 1, translate 0)
+            startWindow.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
+            startWindow.style.transform = 'translate(0, 0) scale(1)';
         }
 
         function closeChannel() {
-            // Retirer l'animation
-            overlay.classList.remove('active');
-            // Attendre la fin de l'animation pour cacher le display
+            if (!activeSourceElement) return;
+
+            // 1. Recalculer la position de retour vers la case d'origine
+            const startRect = activeSourceElement.getBoundingClientRect();
+            const finalRect = startWindow.getBoundingClientRect();
+            const scaleX = startRect.width / finalRect.width;
+            const scaleY = startRect.height / finalRect.height;
+            const transX = startRect.left - finalRect.left + (startRect.width / 2) - (finalRect.width / 2);
+            const transY = startRect.top - finalRect.top + (startRect.height / 2) - (finalRect.height / 2);
+
+            // 2. Appliquer la transformation inverse (le retour dans la case)
+            startWindow.style.transform = `translate(${transX}px, ${transY}px) scale(${scaleX}, ${scaleY})`;
+            
+            // Fader le fond noir
+            overlay.classList.remove('visible');
+
+            // 3. Attendre la fin de l'animation pour nettoyer
             setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 500);
+                // Réafficher la case originale
+                activeSourceElement.classList.remove('zooming');
+                // Reset de la fenêtre modale
+                startWindow.style.transition = 'none';
+                startWindow.style.transform = 'translate(0, 0) scale(1)';
+                activeSourceElement = null;
+            }, 500); // 500ms = durée de la transition CSS
         }
 
-        // Fermer si on clique en dehors de la fenêtre blanche
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) closeChannel();
         });
@@ -324,16 +297,12 @@
             const now = new Date();
             let hours = now.getHours();
             const minutes = String(now.getMinutes()).padStart(2, '0');
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12; hours = hours ? hours : 12;
-            document.getElementById('h').innerText = hours;
-            document.getElementById('m').innerText = minutes;
-            document.getElementById('ampm').innerText = ampm;
+            const ampm = hours >= 12 ? 'PM' : 'AM'; hours = hours % 12; hours = hours ? hours : 12;
+            document.getElementById('h').innerText = hours; document.getElementById('m').innerText = minutes; document.getElementById('ampm').innerText = ampm;
             const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
             document.getElementById('date').innerText = `${days[now.getDay()]} ${now.getDate()}/${now.getMonth() + 1}`;
         }
-        setInterval(updateClock, 1000);
-        updateClock();
+        setInterval(updateClock, 1000); updateClock();
     </script>
 </body>
 </html>
