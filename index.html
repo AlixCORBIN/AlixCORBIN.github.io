@@ -120,6 +120,34 @@
 
         body { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5"><path d="M10 2L9 9H5C3.34 9 2 10.34 2 12V22H18V13L15.5 6L14.5 4L13 2H10Z"/></svg>') 10 2, auto; }
         @media (max-width: 800px) { .start-title { font-size: 2rem; } .start-icon { font-size: 5rem; } .pill-btn { width: 140px; font-size: 1.2rem; height: 50px; } .overlay-footer { gap: 20px; padding: 0 10px; } }
+    
+        /* --- STYLE SPÉCIFIQUE "MOI" --- */
+        .tobias-layout {
+            text-align: center;
+            font-family: 'Georgia', 'Times New Roman', serif; /* Police Serif comme l'original */
+            color: #333;
+            max-width: 900px;
+            padding: 20px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .tobias-avatar {
+            width: 160px; height: 160px;
+            border-radius: 50%;
+            border: 6px solid #fff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+
+        .tobias-intro { font-size: 1.8rem; margin-bottom: 15px; line-height: 1.4; }
+        .name-highlight { color: #e67e22; font-weight: bold; } /* Orange */
+        .tobias-sub { font-size: 1.3rem; margin-bottom: 20px; color: #555; font-weight: bold; }
+        .blue-highlight { color: #2980b9; font-weight: bold; } /* Bleu */
+        .tobias-desc { font-size: 1.2rem; margin-bottom: 30px; color: #666; font-style: italic;}
+        .tobias-cta { font-size: 1.5rem; color: #95a5a6; margin-top: 40px; font-family: sans-serif; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -206,9 +234,54 @@
         function zoomChannel(element, title, icon, link) {
             if (element.classList.contains('empty')) return;
             activeCard = element;
-            ovTitle.innerText = title;
-            ovIcon.innerText = icon;
+
+            const contentBox = document.querySelector('.overlay-content');
+            
+            // Configurer le bouton Démarrer
             startBtn.onclick = () => window.open(link, '_blank');
+
+            // --- LOGIQUE D'AFFICHAGE ---
+            if (title === 'Moi') {
+                // 1. STYLE TOBIAS POUR LA PAGE "MOI"
+                // On change le fond en dégradé pêche/orange
+                overlay.style.background = "linear-gradient(to bottom, #fff8f0 0%, #ffeecf 100%)";
+                
+                // On injecte le HTML personnalisé avec tes infos du CV
+                contentBox.innerHTML = `
+                    <div class="tobias-layout">
+                        <img src="assets/maphoto.png" class="tobias-avatar" alt="Alix Corbin">
+                        
+                        <div class="tobias-intro">
+                            Salut ! Je m'appelle <span class="name-highlight">Alix Corbin</span>, et je suis étudiant basé à Laval/Le Mans.
+                        </div>
+                        
+                        <div class="tobias-sub">
+                            Je prépare un <span class="blue-highlight">BUT Informatique</span> et je suis passionné par le <span class="blue-highlight">Développement Logiciel</span>.
+                        </div>
+
+                        <div class="tobias-desc">
+                            Compétent en <span class="blue-highlight">Programmation</span>, <span class="blue-highlight">Travail d'équipe</span> et doté d'un bon relationnel.
+                            <br>Je recherche un stage de 8 à 12 semaines à partir d'Avril 2026.
+                        </div>
+
+                        <div class="tobias-cta">
+                            Appuyez sur "Démarrer" pour voir mon CV.
+                        </div>
+                    </div>
+                `;
+            } else {
+                // 2. STYLE STANDARD POUR LES AUTRES PAGES (GitHub, etc.)
+                overlay.style.background = "white"; // Fond blanc normal
+                contentBox.innerHTML = `
+                    <div class="start-icon" id="ov-icon">${icon}</div>
+                    <div class="start-title" id="ov-title">${title}</div>
+                    <div class="start-subtitle">Démarrer cette chaîne ?</div>
+                `;
+            }
+
+            // --- FIN LOGIQUE ---
+
+            // Le reste de l'animation (identique à avant)
             const rect = element.getBoundingClientRect();
             overlay.style.display = 'flex';
             overlay.style.transition = 'none';
@@ -217,14 +290,18 @@
             overlay.style.width = rect.width + 'px';
             overlay.style.height = rect.height + 'px';
             overlay.style.borderRadius = '20px';
+            
             mainFooter.classList.add('footer-hidden');
-            overlay.offsetHeight; 
+            
+            overlay.offsetHeight; // Force reflow
+            
             overlay.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
             overlay.style.top = '0px';
             overlay.style.left = '0px';
             overlay.style.width = '100%';
             overlay.style.height = '100%';
             overlay.style.borderRadius = '0px';
+            
             element.classList.add('hidden');
             setTimeout(() => { overlay.classList.add('active'); }, 50);
         }
