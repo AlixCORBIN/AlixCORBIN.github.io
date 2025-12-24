@@ -12,7 +12,6 @@
         body, html {
             height: 100%; margin: 0; overflow: hidden; font-family: 'Roboto', sans-serif;
             background-color: #e8e8e8;
-            /* Fond rayé subtil */
             background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, #d4d4d4 2px, #d4d4d4 4px);
             display: flex; flex-direction: column; align-items: center; justify-content: center; user-select: none;
         }
@@ -28,8 +27,32 @@
         .warning-header { display: flex; align-items: center; margin-bottom: 40px; font-size: 1.5rem; font-weight: bold; color: #b0b0b0; }
         .intro-text { max-width: 800px; margin-bottom: 50px; line-height: 1.6; font-size: 1.2rem; color: #b0b0b0; }
         .highlight { color: white; font-weight: bold; font-style: italic; }
-        .press-btn { margin-top: 50px; font-size: 1.5rem; color: #888; animation: blink 2s infinite ease-in-out; }
-        @keyframes blink { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+        
+        /* MODIFICATION ICI : Conteneur du bouton clignotant */
+        .press-btn {
+            margin-top: 40px;
+            /* Couleur grise qui va clignoter */
+            color: #888;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: blink 2s infinite ease-in-out;
+        }
+
+        /* NOUVEAU : Style de l'icône souris */
+        .mouse-icon {
+            width: 50px;
+            height: 50px;
+            /* currentColor permet à l'SVG de prendre la couleur du parent (#888) et de clignoter avec */
+            stroke: currentColor; 
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            margin-bottom: 10px;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
         /* --- 3. GRILLE --- */
         .grid-container {
@@ -38,15 +61,12 @@
             margin-bottom: 10vh; z-index: 1; opacity: 0; transform: scale(0.95); transition: opacity 1s, transform 1s;
         }
         .grid-visible { opacity: 1; transform: scale(1); }
-
         .channel {
             background-color: #ffffff; border: 4px solid #b0b0b0; border-radius: 20px;
             box-shadow: 3px 3px 10px rgba(0,0,0,0.1); position: relative; cursor: pointer; overflow: hidden;
             transition: transform 0.1s, border-color 0.1s;
-            /* Important pour l'animation : on veut cacher la case quand elle "devient" l'écran */
         }
         .channel.hidden { opacity: 0; pointer-events: none; }
-
         .channel.empty {
             background-color: #d4d4d4; cursor: default;
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50" viewBox="0 0 100 50"><text x="50" y="35" font-family="sans-serif" font-size="30" fill="%23c0c0c0" text-anchor="middle">Wii</text></svg>'),
@@ -56,73 +76,36 @@
         .channel:not(.empty):hover { border-color: #4ac0e0; box-shadow: 0 0 15px #4ac0e0; transform: scale(1.02); z-index: 10; }
 
         /* --- 4. LE START SCREEN PLEIN ÉCRAN --- */
-        /* C'est cet élément qui va s'animer pour prendre toute la place */
         #full-overlay {
-            position: fixed;
-            background: white;
-            z-index: 5000;
-            overflow: hidden;
-            display: none; /* Caché par défaut */
-            flex-direction: column;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            /* Transition fluide de la position et de la taille */
-            transition: top 0.6s cubic-bezier(0.25, 1, 0.5, 1), 
-                        left 0.6s cubic-bezier(0.25, 1, 0.5, 1), 
-                        width 0.6s cubic-bezier(0.25, 1, 0.5, 1), 
-                        height 0.6s cubic-bezier(0.25, 1, 0.5, 1),
-                        border-radius 0.6s ease;
+            position: fixed; background: white; z-index: 5000; overflow: hidden; display: none; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            transition: top 0.6s cubic-bezier(0.25, 1, 0.5, 1), left 0.6s cubic-bezier(0.25, 1, 0.5, 1), width 0.6s cubic-bezier(0.25, 1, 0.5, 1), height 0.6s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.6s ease;
         }
-
-        /* Contenu du Start Screen */
-        .overlay-content {
-            flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            opacity: 0; transition: opacity 0.4s ease 0.2s; /* Apparait avec un léger retard */
-        }
+        .overlay-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.4s ease 0.2s; }
         #full-overlay.active .overlay-content { opacity: 1; }
-
         .start-title { font-size: 4rem; color: #555; margin: 20px 0; }
         .start-subtitle { font-size: 1.5rem; color: #888; margin-bottom: 40px; }
         .start-icon { font-size: 8rem; }
-        
-        /* Les flèches bleues sur les côtés */
-        .side-arrow {
-            position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 80px; cursor: pointer;
-            opacity: 0; transition: opacity 0.5s ease 0.5s;
-        }
+        .side-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 80px; cursor: pointer; opacity: 0; transition: opacity 0.5s ease 0.5s; }
         #full-overlay.active .side-arrow { opacity: 1; }
         .side-arrow.left { left: 30px; } .side-arrow.right { right: 30px; }
         .side-arrow polygon { fill: #8cdbff; stroke: #3ea0e0; stroke-width: 2; }
-
-        /* Footer Pleine Largeur (Style image 5) */
         .overlay-footer {
-            height: 120px; width: 100%;
-            background-color: #dadada;
+            height: 120px; width: 100%; background-color: #dadada;
             background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, #c0c0c0 2px, #c0c0c0 4px);
-            border-top: 4px solid #b0b0b0;
-            display: flex; justify-content: center; align-items: center; gap: 100px;
-            /* Caché au début de l'anim */
+            border-top: 4px solid #b0b0b0; display: flex; justify-content: center; align-items: center; gap: 100px;
             transform: translateY(100%); transition: transform 0.5s ease 0.2s;
         }
         #full-overlay.active .overlay-footer { transform: translateY(0); }
-
         .pill-btn {
-            width: 280px; height: 70px; border-radius: 40px;
-            background: linear-gradient(to bottom, #ffffff 0%, #e6e6e6 50%, #dadada 100%);
-            border: 4px solid #66c6e6; display: flex; justify-content: center; align-items: center;
-            font-size: 2rem; color: #555; cursor: pointer; box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-            transition: transform 0.1s;
+            width: 280px; height: 70px; border-radius: 40px; background: linear-gradient(to bottom, #ffffff 0%, #e6e6e6 50%, #dadada 100%);
+            border: 4px solid #66c6e6; display: flex; justify-content: center; align-items: center; font-size: 2rem; color: #555; cursor: pointer; box-shadow: 0 5px 10px rgba(0,0,0,0.1); transition: transform 0.1s;
         }
         .pill-btn:hover { border-color: #3ea0e0; box-shadow: 0 0 20px rgba(74, 192, 224, 0.8); transform: scale(1.05); }
         .pill-btn:active { transform: scale(0.98); }
 
         /* --- 5. FOOTER PRINCIPAL (ACCUEIL) --- */
-        .footer-container {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 140px;
-            display: flex; justify-content: center; align-items: flex-end; z-index: 100;
-            transition: transform 0.5s; /* Pour le cacher quand on zoom */
-        }
+        .footer-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 140px; display: flex; justify-content: center; align-items: flex-end; z-index: 100; transition: transform 0.5s; }
         .footer-hidden { transform: translateY(100%); }
-
         .footer-bg { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: -1; filter: drop-shadow(0px -5px 5px rgba(0,0,0,0.1)); }
         .wii-btn-wrapper { position: absolute; bottom: 25px; width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(to bottom, #d0d0d0, #f0f0f0); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; }
         .left-btn { left: 40px; } .right-btn { right: 40px; }
@@ -135,13 +118,8 @@
         .ampm { font-size: 1.5rem; margin-left: 10px; font-weight: bold; font-family: sans-serif; color: #888;}
         .date-text { font-size: 1.6rem; color: #777; margin-top: -5px; font-weight: 500;}
 
-        /* Curseur */
         body { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5"><path d="M10 2L9 9H5C3.34 9 2 10.34 2 12V22H18V13L15.5 6L14.5 4L13 2H10Z"/></svg>') 10 2, auto; }
-        
-        @media (max-width: 800px) {
-            .start-title { font-size: 2rem; } .start-icon { font-size: 5rem; } .pill-btn { width: 140px; font-size: 1.2rem; height: 50px; }
-            .overlay-footer { gap: 20px; padding: 0 10px; }
-        }
+        @media (max-width: 800px) { .start-title { font-size: 2rem; } .start-icon { font-size: 5rem; } .pill-btn { width: 140px; font-size: 1.2rem; height: 50px; } .overlay-footer { gap: 20px; padding: 0 10px; } }
     </style>
 </head>
 <body>
@@ -157,7 +135,18 @@
             <p>BONJOUR, JE SUIS <span class="highlight">ALIX CORBIN</span>. JE SUIS DÉVELOPPEUR.</p>
             <p>CE PROJET EST UNE REPRODUCTION DU MENU WII ET IL EST FORTEMENT INSPIRÉ DU TRAVAIL DE <span class="highlight">TOBIAS ECHENIQUE</span>.</p>
         </div>
-        <div class="press-btn">Appuyez sur A pour continuer</div>
+        
+        <div class="press-btn">
+            <svg class="mouse-icon" viewBox="0 0 24 24">
+                <rect x="5" y="2" width="14" height="20" rx="7" />
+                <line x1="12" y1="2" x2="12" y2="10" />
+                <line x1="5" y1="10" x2="19" y2="10" />
+                <path d="M2 9c-1-1-2-3-2-5s1-4 2-5" opacity="0.5"/>
+                <path d="M22 9c1-1 2-3 2-5s-1-4-2-5" opacity="0.5"/>
+            </svg>
+            <span style="font-size: 1.2rem;">Cliquer pour continuer</span>
+        </div>
+
     </div>
 
     <div class="grid-container" id="main-grid">
@@ -179,13 +168,11 @@
     <div id="full-overlay">
         <svg class="side-arrow left" viewBox="0 0 50 100"><polygon points="40,10 10,50 40,90" /></svg>
         <svg class="side-arrow right" viewBox="0 0 50 100"><polygon points="10,10 40,50 10,90" /></svg>
-
         <div class="overlay-content">
             <div class="start-icon" id="ov-icon">👤</div>
             <div class="start-title" id="ov-title">Titre</div>
             <div class="start-subtitle">Démarrer cette chaîne ?</div>
         </div>
-
         <div class="overlay-footer">
             <div class="pill-btn" onclick="closeZoom()">Menu Wii</div>
             <div class="pill-btn" id="start-btn-action">Démarrer</div>
@@ -209,7 +196,6 @@
             setTimeout(() => { intro.style.display = 'none'; grid.classList.add('grid-visible'); }, 500);
         }
 
-        // --- GESTION DU ZOOM PLEIN ÉCRAN ---
         const overlay = document.getElementById('full-overlay');
         const ovTitle = document.getElementById('ov-title');
         const ovIcon = document.getElementById('ov-icon');
@@ -220,78 +206,46 @@
         function zoomChannel(element, title, icon, link) {
             if (element.classList.contains('empty')) return;
             activeCard = element;
-
-            // Remplir le contenu
             ovTitle.innerText = title;
             ovIcon.innerText = icon;
             startBtn.onclick = () => window.open(link, '_blank');
-
-            // 1. Calculer la position de départ (La case cliquée)
             const rect = element.getBoundingClientRect();
-
-            // 2. Positionner l'overlay exactement sur la case
             overlay.style.display = 'flex';
-            overlay.style.transition = 'none'; // Pas d'anim pour le placement initial
-            overlay.style.top = rect.top + 'px';
-            overlay.style.left = rect.left + 'px';
-            overlay.style.width = rect.width + 'px';
-            overlay.style.height = rect.height + 'px';
-            overlay.style.borderRadius = '20px'; // Comme la case
-
-            // Cacher le footer principal pour faire de la place
-            mainFooter.classList.add('footer-hidden');
-
-            // 3. Forcer le navigateur à appliquer ces styles avant de passer à l'étape suivante
-            overlay.offsetHeight; 
-
-            // 4. Lancer l'animation vers le PLEIN ÉCRAN
-            // On remet la transition CSS
-            overlay.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
-            
-            // On étend aux coordonnées de la fenêtre (0,0) et 100% taille
-            overlay.style.top = '0px';
-            overlay.style.left = '0px';
-            overlay.style.width = '100%';
-            overlay.style.height = '100%';
-            overlay.style.borderRadius = '0px'; // Carré pour l'écran complet
-
-            // Cacher la case d'origine
-            element.classList.add('hidden');
-            
-            // Activer le contenu interne (textes, boutons)
-            setTimeout(() => {
-                overlay.classList.add('active');
-            }, 50);
-        }
-
-        function closeZoom() {
-            if (!activeCard) return;
-
-            // 1. Désactiver le contenu interne
-            overlay.classList.remove('active');
-
-            // 2. Calculer le retour vers la case
-            const rect = activeCard.getBoundingClientRect();
-
-            // 3. Animer le retour
+            overlay.style.transition = 'none';
             overlay.style.top = rect.top + 'px';
             overlay.style.left = rect.left + 'px';
             overlay.style.width = rect.width + 'px';
             overlay.style.height = rect.height + 'px';
             overlay.style.borderRadius = '20px';
+            mainFooter.classList.add('footer-hidden');
+            overlay.offsetHeight; 
+            overlay.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+            overlay.style.top = '0px';
+            overlay.style.left = '0px';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.borderRadius = '0px';
+            element.classList.add('hidden');
+            setTimeout(() => { overlay.classList.add('active'); }, 50);
+        }
 
-            // Réafficher le footer principal
+        function closeZoom() {
+            if (!activeCard) return;
+            overlay.classList.remove('active');
+            const rect = activeCard.getBoundingClientRect();
+            overlay.style.top = rect.top + 'px';
+            overlay.style.left = rect.left + 'px';
+            overlay.style.width = rect.width + 'px';
+            overlay.style.height = rect.height + 'px';
+            overlay.style.borderRadius = '20px';
             mainFooter.classList.remove('footer-hidden');
-
-            // 4. Nettoyage à la fin de l'anim
             setTimeout(() => {
                 overlay.style.display = 'none';
                 activeCard.classList.remove('hidden');
                 activeCard = null;
-            }, 600); // 600ms = durée transition CSS
+            }, 600);
         }
 
-        // Horloge
         function updateClock() {
             const now = new Date();
             let hours = now.getHours();
