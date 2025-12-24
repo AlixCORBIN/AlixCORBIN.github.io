@@ -119,18 +119,10 @@
         .date-text { font-size: 1.6rem; color: #777; margin-top: -5px; font-weight: 500;}
 
         /* Curseur Wii (main avec le 1 bleu) */
-        body {
-            /* L'image SVG est encodée ici. Les chiffres '16 4' définissent le point de clic (le bout du doigt) */
-            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="45" height="50" viewBox="0 0 45 50"><defs><filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="2" dy="3" stdDeviation="1.5" flood-opacity="0.4"/></filter></defs><g filter="url(%23shadow)"><path d="M12 20 C9 19 6 16 9 11 L10 6 A 6 6 0 0 1 22 6 L 22 16 C 28 16 32 20 32 26 C 32 36 26 40 16 40 C 9 40 8 32 8 26 C 6 24 6 22 12 20 Z" fill="white" stroke="black" stroke-width="3" stroke-linejoin="round"/><text x="19" y="32" font-family="Arial, sans-serif" font-weight="900" font-size="16" fill="%230095ff" text-anchor="middle">1</text></g></svg>') 15 2, auto;        }        @media (max-width: 800px) { .start-title { font-size: 2rem; } .start-icon { font-size: 5rem; } .pill-btn { width: 140px; font-size: 1.2rem; height: 50px; } .overlay-footer { gap: 20px; padding: 0 10px; } }
-    
-        /* --- STYLE SPÉCIFIQUE "MOI" --- */
-        .tobias-layout {
-            text-align: center;
-            font-family: 'Georgia', 'Times New Roman', serif; /* Police Serif comme l'original */
-            color: #333;
-            max-width: 900px;
-            padding: 20px;
-            animation: fadeIn 0.8s ease;
+        /* --- CURSEUR WII ORIGINAL (IMAGE BITMAP) --- */
+        body, html, button, a, .channel, .pill-btn, .glass-btn {
+            /* J'ai remplacé ton lien http par un lien https équivalent pour que ça marche sur GitHub */
+            cursor: url('https://cur.cursors-4u.net/games/gam-13/gam1282.cur'), auto !important;
         }
 
         .tobias-avatar {
