@@ -6,48 +6,77 @@
     <title>Wii Portfolio - Alix Corbin</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <audio id="bg-music" loop><source src="assets/WiiMenuMusic.mp3" type="audio/mp3"></audio>
+    <audio id="bg-music" loop>
+        <source src="assets/WiiMenuMusic.mp3" type="audio/mp3">
+    </audio>
 
     <div id="intro-screen" onclick="startExperience()">
         <div class="warning-header">
-            <svg class="warning-icon" viewBox="0 0 100 100"><path d="M50 5 L95 90 L5 90 Z" fill="#fdd835" stroke="#fdd835" stroke-width="2"/><path d="M50 5 L95 90 L5 90 Z" fill="none" stroke="black" stroke-width="5" stroke-linejoin="round" transform="scale(0.8) translate(12, 10)"/><text x="50" y="75" font-family="sans-serif" font-size="50" font-weight="bold" text-anchor="middle" fill="black">!</text></svg>
+            <svg class="warning-icon" viewBox="0 0 100 100">
+                <path d="M50 5 L95 90 L5 90 Z" fill="#fdd835" stroke="#fdd835" stroke-width="2"/>
+                <path d="M50 5 L95 90 L5 90 Z" fill="none" stroke="black" stroke-width="5" stroke-linejoin="round" transform="scale(0.8) translate(12, 10)"/>
+                <text x="50" y="75" font-family="sans-serif" font-size="50" font-weight="bold" text-anchor="middle" fill="black">!</text>
+            </svg>
             <span>ATTENTION - SANTÉ ET SÉCURITÉ</span>
         </div>
-            <div class="intro-text">
-                <p>BONJOUR, JE SUIS <span class="highlight">ALIX CORBIN</span>, APPRENTI DÉVELOPPEUR.</p>
-                <p>CE PORTFOLIO EST UNE RÉINTERPRÉTATION DU MENU DE LA WII, GRANDEMENT INSPIRÉE PAR LE TRAVAIL DE <span class="highlight">TOBIAS ECHENIQUE</span>.</p>
-            </div>
+        
+        <div class="intro-text">
+            <p>BONJOUR, JE SUIS <span class="highlight">ALIX CORBIN</span>, APPRENTI DÉVELOPPEUR.</p>
+            <p>CE PORTFOLIO EST UNE RÉINTERPRÉTATION DU MENU DE LA WII, GRANDEMENT INSPIRÉE PAR LE TRAVAIL DE <span class="highlight">TOBIAS ECHENIQUE</span>.</p>
+        </div>
+        
         <div class="press-btn">
-            <svg class="mouse-icon" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="7" /><line x1="12" y1="2" x2="12" y2="10" /><line x1="5" y1="10" x2="19" y2="10" /><path d="M2 9c-1-1-2-3-2-5s1-4 2-5" opacity="0.5"/><path d="M22 9c1-1 2-3 2-5s-1-4-2-5" opacity="0.5"/></svg>
+            <svg class="mouse-icon" viewBox="0 0 24 24">
+                <rect x="5" y="2" width="14" height="20" rx="7" />
+                <line x1="12" y1="2" x2="12" y2="10" />
+                <line x1="5" y1="10" x2="19" y2="10" />
+                <path d="M2 9c-1-1-2-3-2-5s1-4 2-5" opacity="0.5"/>
+                <path d="M22 9c1-1 2-3 2-5s-1-4-2-5" opacity="0.5"/>
+            </svg>
             <span style="font-size: 1.2rem;">Cliquer pour continuer</span>
         </div>
     </div>
 
     <div class="grid-container" id="main-grid">
+        
         <div class="channel" 
              data-title="Moi" 
              data-icon="👤" 
              data-link="https://cvdesignr.com/p/692b8d14d9619" 
              onclick="zoomChannel(this)">
             <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#555;">
-                <span style="font-size:3rem">👤</span><h2 style="margin:5px 0;">Moi</h2>
+                <span style="font-size:3rem">👤</span>
+                <h2 style="margin:5px 0;">Moi</h2>
+            </div>
+        </div>
+
+        <div class="channel" 
+                    data-title="Blackjack" 
+                    data-icon="<img src='assets/bj.png' style='width:100%; height:100%; object-fit: cover; border-radius: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.2);'>" 
+                    data-link="blackjack/index.html" 
+                    onclick="zoomChannel(this)">
+                    <img src="assets/bj.png" style="width:100%; height:100%; object-fit: cover;" alt="Jeu Blackjack">
+                </div>
+                <div class="channel" 
+            data-title="TicTacToe" 
+            data-icon="⭕❌" 
+            data-link="assets/tictactoe_alixCorbin.zip" 
+            onclick="zoomChannel(this)">
+            
+            <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background: #f0f0f0; border-radius: 10px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 1.5rem; font-weight: bold; color: #333;">
+                    <span>❌</span><span>⭕</span>
+                    <span>⭕</span><span>❌</span>
+                </div>
+                <h2 style="margin-top:10px; font-size: 0.9rem; color: #555;">Morpion</h2>
             </div>
         </div>
         
-        <div class="channel" 
-             data-title="Blackjack" 
-             data-icon="<img src='assets/bj.png' style='width:100%; height:100%; object-fit: cover; border-radius: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.2);'>" 
-             data-link="blackjack/index.html" 
-             onclick="zoomChannel(this)">
-            <img src="assets/bj.png" style="width:100%; height:100%; object-fit: cover;" alt="Jeu Blackjack">
-        </div>
-        
-        <div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div>
+        <div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div>
         <div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div>
         <div class="channel empty"></div><div class="channel empty"></div>
     </div>
@@ -55,8 +84,10 @@
     <div id="full-overlay">
         <svg class="side-arrow left" onclick="navigate(-1)" viewBox="0 0 50 100"><polygon points="40,10 10,50 40,90" /></svg>
         <svg class="side-arrow right" onclick="navigate(1)" viewBox="0 0 50 100"><polygon points="10,10 40,50 10,90" /></svg>
+        
         <div class="overlay-content">
             </div>
+        
         <div class="overlay-footer">
             <div class="pill-btn" onclick="closeZoom()">Menu Wii</div>
             <div class="pill-btn" id="start-btn-action">Démarrer</div>
@@ -64,14 +95,34 @@
     </div>
 
     <div class="footer-container" id="main-footer">
-        <div class="footer-bg"><svg width="100%" height="100%" viewBox="0 0 1000 140" preserveAspectRatio="none"><defs><linearGradient id="greyGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#dcdcdc;stop-opacity:1"/><stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1"/></linearGradient></defs><path d="M0,140 L0,0 L200,0 Q300,0 350,30 L650,30 Q700,0 800,0 L1000,0 L1000,140 Z" fill="url(#greyGrad)" stroke="#4ac0e0" stroke-width="4"/></svg></div>
-        <div class="wii-btn-wrapper left-btn"><div class="glass-btn"><span class="btn-text">Wii</span></div></div>
+        <div class="footer-bg">
+            <svg width="100%" height="100%" viewBox="0 0 1000 140" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="greyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#dcdcdc;stop-opacity:1"/>
+                        <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1"/>
+                    </linearGradient>
+                </defs>
+                <path d="M0,140 L0,0 L200,0 Q300,0 350,30 L650,30 Q700,0 800,0 L1000,0 L1000,140 Z" fill="url(#greyGrad)" stroke="#4ac0e0" stroke-width="4"/>
+            </svg>
+        </div>
+        <div class="wii-btn-wrapper left-btn">
+            <div class="glass-btn"><span class="btn-text">Wii</span></div>
+        </div>
         <div class="clock-area">
             <div class="portfolio-title">Portfolio Alix CORBIN</div>
-            <div class="digital-time"><span id="h">12</span><span style="animation:blink 1s infinite">:</span><span id="m">00</span><span class="ampm" id="ampm">AM</span></div>
-            <div class="date-text" id="date">Mon 01/01</div>
+            <div class="digital-time">
+                <span id="h">12</span><span style="animation:blink 1s infinite">:</span><span id="m">00</span><span class="ampm" id="ampm"></span>
+            </div>
+            <div class="date-text" id="date">--/--</div>
         </div>
-        <div class="wii-btn-wrapper right-btn"><div class="glass-btn"><svg class="btn-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div></div>
+        <div class="wii-btn-wrapper right-btn">
+            <div class="glass-btn">
+                <svg class="btn-icon" viewBox="0 0 24 24">
+                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                </svg>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
