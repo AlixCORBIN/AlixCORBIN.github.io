@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack Casino - Paris & Jetons</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="main-container">
+        
+        <aside class="deck-container">
+            <div class="shoe-stack">
+                <div id="visual-deck"></div>
+            </div>
+        </aside>
+
+        <main class="game-board">
+            <div class="section dealer-section">
+                <h2>Croupier <span id="dealer-score" class="score-badge">0</span></h2>
+                <div id="dealer-hand" class="hand"></div>
+            </div>
+
+            <div id="message-area" class="message hidden"></div>
+
+            <div class="section player-section">
+                <h2>
+                    Joueur <span id="player-score" class="score-badge">0</span>
+                    <span class="bankroll-display">Portefeuille : <span id="bankroll">1000</span> €</span>
+                </h2>
+                <div id="player-hands-container">
+                    <div id="hand-0" class="hand active-hand"></div>
+                </div>
+            </div>
+
+            <div class="controls-area">
+                
+                <div id="betting-controls" class="controls-group">
+                    <div class="bet-info">Mise actuelle : <span id="current-bet">0</span> €</div>
+                    <div class="chips-container">
+                        <button class="chip chip-1" onclick="addBet(1)">1</button>
+                        <button class="chip chip-5" onclick="addBet(5)">5</button>
+                        <button class="chip chip-10" onclick="addBet(10)">10</button>
+                        <button class="chip chip-50" onclick="addBet(50)">50</button>
+                        <button class="chip chip-100" onclick="addBet(100)">100</button>
+                    </div>
+                    <div class="bet-actions">
+                        <button id="btn-clear" class="btn btn-secondary">Effacer</button>
+                        <button id="btn-deal" class="btn" disabled>DISTRIBUER</button>
+                    </div>
+                </div>
+
+                <div id="game-controls" class="controls-group hidden">
+                    <button id="btn-hit" class="btn">Tirer</button>
+                    <button id="btn-stand" class="btn">Rester</button>
+                    <button id="btn-double" class="btn">Doubler</button>
+                    <button id="btn-split" class="btn" disabled>Séparer</button>
+                </div>
+
+                <button id="btn-restart" class="btn hidden">Nouvelle Mise</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="cards.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

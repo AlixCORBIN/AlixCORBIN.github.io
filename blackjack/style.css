@@ -1,0 +1,281 @@
+:root {
+    --felt-green: #2d572c;
+    --felt-dark: #1e3c1e;
+    --card-white: #fdfdfd;
+    --card-red: #d40000;
+    --card-black: #1a1a1a;
+    --gold: #ffd700;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--felt-green);
+    background-image: radial-gradient(circle at center, var(--felt-green) 0%, var(--felt-dark) 100%);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden; /* Empêche le scroll horizontal pendant l'anim */
+}
+
+/* --- NOUVEAU LAYOUT --- */
+.main-container {
+    display: flex;
+    width: 95%;
+    max-width: 1000px;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Le sabot sur le côté */
+.deck-container {
+    flex: 0 0 120px; /* Largeur fixe */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 2px solid rgba(0,0,0,0.2);
+    padding-right: 20px;
+}
+
+/* Empilement visuel des cartes dans le sabot */
+.shoe-stack {
+    position: relative;
+    width: 100px;
+    height: 140px;
+}
+
+/* Style des cartes dans le sabot pour effet 3D */
+.shoe-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-shadow: -2px 2px 5px rgba(0,0,0,0.3);
+}
+.shoe-card:nth-child(1) { transform: translate(0, 0); }
+.shoe-card:nth-child(2) { transform: translate(-2px, -2px); }
+.shoe-card:nth-child(3) { transform: translate(-4px, -4px); }
+.shoe-card:nth-child(4) { transform: translate(-6px, -6px); }
+
+/* La table de jeu principale */
+.game-board {
+    flex: 1; /* Prend le reste de l'espace */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 600px;
+}
+
+/* --- ZONES DE JEU --- */
+.section {
+    min-height: 180px;
+    text-align: center;
+}
+
+.score-badge {
+    background: rgba(0,0,0,0.4);
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    border: 1px solid var(--gold);
+}
+
+/* Conteneur des mains */
+.hand {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Espace entre les cartes quand elles sont posées */
+    margin-top: 15px;
+    min-height: 140px;
+    padding: 10px;
+    transition: all 0.3s;
+}
+
+.active-hand {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2) inset;
+}
+
+/* --- CARTES & ANIMATIONS --- */
+
+/* Le conteneur d'une carte individuelle dans la main */
+.card-wrapper {
+    width: 100px;
+    height: 140px;
+    /* C'est la clé : position relative pour que l'animation fonctionne */
+    position: relative; 
+}
+
+/* L'image SVG elle-même */
+.card-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+}
+
+/* L'animation de tirage */
+@keyframes dealSlideIn {
+    0% {
+        opacity: 0;
+        /* Départ : loin à gauche (vers le sabot) et un peu tourné */
+        transform: translateX(-300px) translateY(-100px) rotate(-20deg) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        /* Arrivée : position normale */
+        transform: translateX(0) translateY(0) rotate(0) scale(1);
+    }
+}
+
+/* Classe appliquée JS au moment du tirage */
+.deal-animation {
+    animation: dealSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+
+/* --- CONTRÔLES --- */
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 12px 24px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: linear-gradient(to bottom, #ffe066, #ffd700);
+    color: #333;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: transform 0.1s, background 0.2s;
+    box-shadow: 0 4px 0 #ccac00;
+}
+
+.btn:hover { background: linear-gradient(to bottom, #fff066, #ffe700); transform: translateY(-2px); }
+.btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #ccac00; }
+.btn:disabled { background: #888; color: #ccc; cursor: not-allowed; opacity: 0.7; box-shadow: none; transform: none;}
+.btn.hidden { display: none; }
+
+.message {
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #fff;
+    padding: 15px;
+    margin: 10px 0;
+    background: rgba(0,0,0,0.6);
+    border-radius: 10px;
+    border-left: 5px solid var(--gold);
+    animation: popIn 0.3s ease-out;
+}
+@keyframes popIn { from { transform: scale(0.8); opacity: 0;} to { transform: scale(1); opacity: 1;}}
+.message.hidden { display: none; }
+
+.controls-area {
+    background: rgba(0,0,0,0.3);
+    border-radius: 15px;
+    padding: 15px;
+    margin-top: 10px;
+    min-height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.controls-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+.controls-group.hidden { display: none; }
+
+/* Interface de Jeu (Hit/Stand...) alignement horizontal */
+#game-controls {
+    flex-direction: row;
+    justify-content: center;
+}
+
+/* --- DESIGN DES JETONS (CHIPS) --- */
+.bet-info {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--gold);
+    margin-bottom: 5px;
+}
+
+.chips-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.chip {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 4px dashed white;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    text-shadow: 1px 1px 2px black;
+}
+
+.chip:hover { transform: translateY(-5px) scale(1.1); }
+.chip:active { transform: scale(0.95); }
+
+/* Couleurs Casino Standard */
+.chip-1 { background-color: #ecf0f1; border-color: #bdc3c7; color: #333;} /*Blanc */
+.chip-5 { background-color: #c0392b; border-color: #e74c3c; } /* Rouge */
+.chip-10 { background-color: #2980b9; border-color: #3498db; } /* Bleu */
+.chip-50 { background-color: #27ae60; border-color: #2ecc71; } /* Vert */
+.chip-100 { background-color: #2c3e50; border-color: #34495e; } /* Noir */
+
+/* Boutons secondaires (Effacer) */
+.btn-secondary {
+    background: #e74c3c;
+    box-shadow: 0 4px 0 #c0392b;
+    font-size: 0.9rem;
+    padding: 10px 15px;
+}
+.btn-secondary:hover { background: #ff6b6b; }
+
+.bet-actions {
+    display: flex;
+    gap: 20px;
+}
+
+.bankroll-display {
+    display: block;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    color: #ddd;
+}
+#bankroll { color: var(--gold); font-weight: bold; font-size: 1.1rem; }
+
+/* Mise affichée sous chaque main (optionnel, pour le split) */
+.hand-bet {
+    font-size: 0.8rem;
+    color: var(--gold);
+    margin-top: 5px;
+    background: rgba(0,0,0,0.5);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
