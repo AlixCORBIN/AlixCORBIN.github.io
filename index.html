@@ -225,13 +225,12 @@
         
         <div class="channel" 
              data-title="Blackjack" 
-             data-icon="🃏" 
+             /* Astuce : On met l'image directement dans le data-icon pour l'overlay */
+             data-icon="<img src='assets/bj.png' style='width:150px; height:auto;'>" 
              data-link="blackjack/index.html" 
              onclick="zoomChannel(this)">
-            <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#555;">
-                <span style="font-size:3rem">🃏</span>
-                <h2 style="margin:5px 0;">Jeu</h2>
-            </div>
+            
+            <img src="assets/bj.png" alt="Blackjack" style="width:100%; height:100%; object-fit: cover;">
         </div>
         
         <div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div>
