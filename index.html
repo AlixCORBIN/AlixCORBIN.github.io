@@ -282,17 +282,23 @@
 
         // --- NOUVEAU : FONCTION DE RENDU UNIFIÉE (POUR ZOOM + FLÈCHES) ---
         // --- FONCTION DE RENDU UNIFIÉE ---
+// --- FONCTION DE RENDU UNIFIÉE ---
         function renderOverlayContent(element) {
             const title = element.dataset.title;
             const icon = element.dataset.icon;
             const link = element.dataset.link;
             const contentBox = document.querySelector('.overlay-content');
             
+            // 1. IMPORTANT : On réinitialise le style du conteneur à chaque fois
+            // pour éviter que les réglages du Blackjack ne cassent les autres pages
+            contentBox.style.padding = ''; 
+            contentBox.style.justifyContent = 'center';
+            
             // Met à jour le bouton Démarrer
             startBtn.onclick = () => window.open(link, '_blank');
 
             if (title === 'Moi') {
-                // CAS 1 : PAGE PROFIL (Style Tobias)
+                // CAS 1 : PAGE PROFIL
                 overlay.style.background = "linear-gradient(to bottom, #fff8f0 0%, #ffeecf 100%)";
                 contentBox.innerHTML = `
                     <div class="tobias-layout">
@@ -313,32 +319,28 @@
                     </div>
                 `;
             } else if (title === 'Blackjack') {
-                // CAS 2 : JEU BLACKJACK (Image Plein Écran TOTAL)
+                // CAS 2 : BLACKJACK (Image plein écran MAIS footer visible)
                 
-                // On met le fond en transparent ou noir pour éviter tout flash blanc
-                overlay.style.background = "black"; 
+                overlay.style.background = "black"; // Fond noir pour faire propre
                 
-                // On crée un conteneur qui prend 100% de la place sans padding
-                contentBox.innerHTML = `
-                    <div style="width: 100%; height: 100%; display: flex; padding: 0; margin: 0;">
-                        ${icon}
-                    </div>
-                `;
+                // On enlève les marges internes du conteneur pour que l'image touche les bords
+                contentBox.style.padding = '0';
                 
-                // --- FORCAGE DU STYLE DE L'IMAGE ---
-                // On récupère l'image qu'on vient d'injecter pour lui enlever ses bords ronds 
-                // et la forcer à coller aux bords de l'écran.
+                // On injecte l'image
+                contentBox.innerHTML = icon;
+
+                // On force le style de l'image pour qu'elle remplisse la zone content
                 const img = contentBox.querySelector('img');
                 if (img) {
                     img.style.width = "100%";
                     img.style.height = "100%";
-                    img.style.objectFit = "cover"; // Remplit tout l'espace sans déformer
-                    img.style.borderRadius = "0px"; // Carré parfait (pas d'arrondi)
-                    img.style.boxShadow = "none";   // Pas d'ombre
+                    img.style.objectFit = "cover"; // Remplissage sans déformation (coupe les bords si besoin)
+                    img.style.borderRadius = "0";  // Pas d'arrondis
+                    img.style.boxShadow = "none";
                 }
 
             } else {
-                // CAS 3 : AUTRES PROJETS (Style Standard)
+                // CAS 3 : STANDARD
                 overlay.style.background = "white";
                 contentBox.innerHTML = `
                     <div class="start-icon" id="ov-icon">${icon}</div>
