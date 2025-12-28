@@ -6,185 +6,8 @@
     <title>Wii Portfolio - Alix Corbin</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-
-    <style>
-        /* --- 1. CONFIGURATION GÉNÉRALE --- */
-        body, html {
-            height: 100%; margin: 0; overflow: hidden; font-family: 'Roboto', sans-serif;
-            background-color: #e8e8e8;
-            background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, #d4d4d4 2px, #d4d4d4 4px);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; user-select: none;
-        }
-
-        /* --- 2. ÉCRAN D'INTRO --- */
-        #intro-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: black; color: white; z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; cursor: pointer; transition: opacity 0.5s ease-out;
-        }
-        .warning-icon { width: 60px; height: 60px; margin-right: 20px; }
-        .warning-header { display: flex; align-items: center; margin-bottom: 40px; font-size: 1.5rem; font-weight: bold; color: #b0b0b0; }
-        .intro-text { max-width: 800px; margin-bottom: 50px; line-height: 1.6; font-size: 1.2rem; color: #b0b0b0; }
-        .highlight { color: white; font-weight: bold; font-style: italic; }
-        
-        .press-btn {
-            margin-top: 40px;
-            color: #888;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            animation: blink 2s infinite ease-in-out;
-        }
-
-        .mouse-icon {
-            width: 50px;
-            height: 50px;
-            stroke: currentColor; 
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            margin-bottom: 10px;
-        }
-
-        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-
-        /* --- 3. GRILLE --- */
-        .grid-container {
-            display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr);
-            gap: 2vh; width: 90vw; max-width: 1200px; height: 60vh;
-            margin-bottom: 10vh; z-index: 1; opacity: 0; transform: scale(0.95); transition: opacity 1s, transform 1s;
-        }
-        .grid-visible { opacity: 1; transform: scale(1); }
-        .channel {
-            background-color: #ffffff; border: 4px solid #b0b0b0; border-radius: 20px;
-            box-shadow: 3px 3px 10px rgba(0,0,0,0.1); position: relative; cursor: pointer; overflow: hidden;
-            transition: transform 0.1s, border-color 0.1s;
-        }
-        .channel.hidden { opacity: 0; pointer-events: none; }
-        .channel.empty {
-            background-color: #d4d4d4; cursor: default;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50" viewBox="0 0 100 50"><text x="50" y="35" font-family="sans-serif" font-size="30" fill="%23c0c0c0" text-anchor="middle">Wii</text></svg>'),
-                              repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px);
-            background-repeat: no-repeat, repeat; background-position: center; background-size: contain, auto; border-color: #b0b0b0;
-        }
-        .channel:not(.empty):hover { border-color: #4ac0e0; box-shadow: 0 0 15px #4ac0e0; transform: scale(1.02); z-index: 10; }
-
-        /* --- 4. LE START SCREEN PLEIN ÉCRAN --- */
-        #full-overlay {
-            position: fixed; background: white; z-index: 5000; overflow: hidden; display: none; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            transition: top 0.6s cubic-bezier(0.25, 1, 0.5, 1), left 0.6s cubic-bezier(0.25, 1, 0.5, 1), width 0.6s cubic-bezier(0.25, 1, 0.5, 1), height 0.6s cubic-bezier(0.25, 1, 0.5, 1), border-radius 0.6s ease;
-        }
-        .overlay-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.4s ease 0.2s; }
-        #full-overlay.active .overlay-content { opacity: 1; }
-        .start-title { font-size: 4rem; color: #555; margin: 20px 0; }
-        .start-subtitle { font-size: 1.5rem; color: #888; margin-bottom: 40px; }
-        .start-icon { font-size: 8rem; }
-        
-        .side-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 80px; cursor: pointer; opacity: 0; transition: opacity 0.5s ease 0.5s; z-index: 6000; }
-        #full-overlay.active .side-arrow { opacity: 1; }
-        .side-arrow.left { left: 30px; } .side-arrow.right { right: 30px; }
-        .side-arrow polygon { fill: #8cdbff; stroke: #3ea0e0; stroke-width: 2; }
-        
-        .overlay-footer {
-            height: 120px; width: 100%; background-color: #dadada;
-            background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, #c0c0c0 2px, #c0c0c0 4px);
-            border-top: 4px solid #b0b0b0; display: flex; justify-content: center; align-items: center; gap: 100px;
-            transform: translateY(100%); transition: transform 0.5s ease 0.2s;
-        }
-        #full-overlay.active .overlay-footer { transform: translateY(0); }
-        .pill-btn {
-            width: 280px; height: 70px; border-radius: 40px; background: linear-gradient(to bottom, #ffffff 0%, #e6e6e6 50%, #dadada 100%);
-            border: 4px solid #66c6e6; display: flex; justify-content: center; align-items: center; font-size: 2rem; color: #555; cursor: pointer; box-shadow: 0 5px 10px rgba(0,0,0,0.1); transition: transform 0.1s;
-        }
-        .pill-btn:hover { border-color: #3ea0e0; box-shadow: 0 0 20px rgba(74, 192, 224, 0.8); transform: scale(1.05); }
-        .pill-btn:active { transform: scale(0.98); }
-
-        /* --- 5. FOOTER PRINCIPAL (ACCUEIL) --- */
-        .footer-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 140px; display: flex; justify-content: center; align-items: flex-end; z-index: 100; transition: transform 0.5s; }
-        .footer-hidden { transform: translateY(100%); }
-        .footer-bg { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: -1; filter: drop-shadow(0px -5px 5px rgba(0,0,0,0.1)); }
-        .wii-btn-wrapper { position: absolute; bottom: 25px; width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(to bottom, #d0d0d0, #f0f0f0); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; }
-        .left-btn { left: 40px; } .right-btn { right: 40px; }
-        .glass-btn { width: 76px; height: 76px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffffff 0%, #dcdcdc 60%, #a0a0a0 100%); border: 2px solid #b0b0b0; position: relative; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: transform 0.1s; }
-        .glass-btn:hover { transform: scale(1.05); border-color: #4ac0e0; }
-        .glass-btn::after { content: ''; position: absolute; top: 5px; left: 15px; width: 45px; height: 30px; border-radius: 50%; background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0.1)); pointer-events: none; }
-        .btn-text { color: #999; font-size: 24px; font-weight: bold; letter-spacing: -1px;} .btn-icon { width: 50%; opacity: 0.6; fill: #999; }
-        
-        /* --- MODIFICATION DU FOOTER CENTRAL (Tes marges restaurées) --- */
-        .clock-area {
-            text-align: center;
-            margin-bottom: 15px; /* Restauré à 15px */
-            z-index: 5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .portfolio-title {
-            font-family: 'Roboto', sans-serif;
-            font-size: 1.6rem;
-            color: #666;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding-bottom: 5px;
-            border-bottom: 3px solid #4ac0e0; 
-            margin-bottom: 15px;
-            width: 120%; 
-        }
-
-        .digital-time {
-            font-family: 'Orbitron', monospace;
-            font-size: 3.5rem; 
-            color: #888;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: baseline;
-            justify-content: center;
-            text-shadow: 2px 2px 0px rgba(255,255,255,0.8);
-            line-height: 1; 
-        }
-
-        .ampm {
-            font-size: 1.2rem;
-            margin-left: 8px;
-            font-weight: bold;
-            font-family: sans-serif;
-            color: #888;
-        }
-
-        .date-text {
-            font-size: 1.4rem;
-            color: #777;
-            margin-top: 5px;
-            font-weight: 500;
-        }
-
-        /* Curseur Wii */
-        body, html, button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
-            cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), auto !important;
-        }
-
-        .tobias-avatar {
-            width: 160px; height: 160px;
-            border-radius: 50%;
-            border: 6px solid #fff;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-            object-fit: cover;
-            margin-bottom: 20px;
-        }
-
-        .tobias-intro { font-size: 1.8rem; margin-bottom: 15px; line-height: 1.4; }
-        .name-highlight { color: #e67e22; font-weight: bold; } 
-        .tobias-sub { font-size: 1.3rem; margin-bottom: 20px; color: #555; font-weight: bold; }
-        .blue-highlight { color: #2980b9; font-weight: bold; } 
-        .tobias-desc { font-size: 1.2rem; margin-bottom: 30px; color: #666; font-style: italic;}
-        .tobias-cta { font-size: 1.5rem; color: #95a5a6; margin-top: 40px; font-family: sans-serif; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+    
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -199,15 +22,8 @@
             <p>BONJOUR, JE SUIS <span class="highlight">ALIX CORBIN</span>. JE SUIS DÉVELOPPEUR.</p>
             <p>CE PROJET EST UNE REPRODUCTION DU MENU WII ET IL EST FORTEMENT INSPIRÉ DU TRAVAIL DE <span class="highlight">TOBIAS ECHENIQUE</span>.</p>
         </div>
-        
         <div class="press-btn">
-            <svg class="mouse-icon" viewBox="0 0 24 24">
-                <rect x="5" y="2" width="14" height="20" rx="7" />
-                <line x1="12" y1="2" x2="12" y2="10" />
-                <line x1="5" y1="10" x2="19" y2="10" />
-                <path d="M2 9c-1-1-2-3-2-5s1-4 2-5" opacity="0.5"/>
-                <path d="M22 9c1-1 2-3 2-5s-1-4-2-5" opacity="0.5"/>
-            </svg>
+            <svg class="mouse-icon" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="7" /><line x1="12" y1="2" x2="12" y2="10" /><line x1="5" y1="10" x2="19" y2="10" /><path d="M2 9c-1-1-2-3-2-5s1-4 2-5" opacity="0.5"/><path d="M22 9c1-1 2-3 2-5s-1-4-2-5" opacity="0.5"/></svg>
             <span style="font-size: 1.2rem;">Cliquer pour continuer</span>
         </div>
     </div>
@@ -228,7 +44,6 @@
              data-icon="<img src='assets/bj.png' style='width:100%; height:100%; object-fit: cover; border-radius: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.2);'>" 
              data-link="blackjack/index.html" 
              onclick="zoomChannel(this)">
-            
             <img src="assets/bj.png" style="width:100%; height:100%; object-fit: cover;" alt="Jeu Blackjack">
         </div>
         
@@ -250,188 +65,15 @@
 
     <div class="footer-container" id="main-footer">
         <div class="footer-bg"><svg width="100%" height="100%" viewBox="0 0 1000 140" preserveAspectRatio="none"><defs><linearGradient id="greyGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#dcdcdc;stop-opacity:1"/><stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1"/></linearGradient></defs><path d="M0,140 L0,0 L200,0 Q300,0 350,30 L650,30 Q700,0 800,0 L1000,0 L1000,140 Z" fill="url(#greyGrad)" stroke="#4ac0e0" stroke-width="4"/></svg></div>
-        
         <div class="wii-btn-wrapper left-btn"><div class="glass-btn"><span class="btn-text">Wii</span></div></div>
-        
         <div class="clock-area">
             <div class="portfolio-title">Portfolio Alix CORBIN</div>
-            <div class="digital-time">
-                <span id="h">12</span><span style="animation:blink 1s infinite">:</span><span id="m">00</span>
-                <span class="ampm" id="ampm">AM</span>
-            </div>
+            <div class="digital-time"><span id="h">12</span><span style="animation:blink 1s infinite">:</span><span id="m">00</span><span class="ampm" id="ampm">AM</span></div>
             <div class="date-text" id="date">Mon 01/01</div>
         </div>
-
         <div class="wii-btn-wrapper right-btn"><div class="glass-btn"><svg class="btn-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div></div>
     </div>
 
-    <script>
-        function startExperience() {
-            const intro = document.getElementById('intro-screen');
-            const grid = document.getElementById('main-grid');
-            const audio = document.getElementById('bg-music');
-            audio.volume = 0.5; audio.play().catch(e => console.log(e));
-            intro.style.opacity = '0';
-            setTimeout(() => { intro.style.display = 'none'; grid.classList.add('grid-visible'); }, 500);
-        }
-
-        const overlay = document.getElementById('full-overlay');
-        const startBtn = document.getElementById('start-btn-action');
-        const mainFooter = document.getElementById('main-footer');
-        let activeCard = null;
-
-        // --- NOUVEAU : FONCTION DE RENDU UNIFIÉE (POUR ZOOM + FLÈCHES) ---
-        // --- FONCTION DE RENDU UNIFIÉE ---
-// --- FONCTION DE RENDU UNIFIÉE ---
-// --- FONCTION DE RENDU UNIFIÉE ---
-        function renderOverlayContent(element) {
-            const title = element.dataset.title;
-            const icon = element.dataset.icon;
-            const link = element.dataset.link;
-            const contentBox = document.querySelector('.overlay-content');
-            
-            // 1. IMPORTANT : On réinitialise le style du conteneur à chaque fois
-            // pour éviter que les réglages du Blackjack ne cassent les autres pages
-            contentBox.style.padding = ''; 
-            contentBox.style.justifyContent = 'center';
-            
-            // Met à jour le bouton Démarrer
-            startBtn.onclick = () => window.open(link, '_blank');
-
-            if (title === 'Moi') {
-                // CAS 1 : PAGE PROFIL
-                overlay.style.background = "linear-gradient(to bottom, #fff8f0 0%, #ffeecf 100%)";
-                contentBox.innerHTML = `
-                    <div class="tobias-layout">
-                        <img src="assets/maphoto.png" class="tobias-avatar" alt="Alix Corbin">
-                        <div class="tobias-intro">
-                            Salut ! Je m'appelle <span class="name-highlight">Alix Corbin</span>, et je suis étudiant basé à Laval/Le Mans.
-                        </div>
-                        <div class="tobias-sub">
-                            Je prépare un <span class="blue-highlight">BUT Informatique</span> et je suis passionné par le <span class="blue-highlight">Développement Logiciel</span>.
-                        </div>
-                        <div class="tobias-desc">
-                            Compétent en <span class="blue-highlight">Programmation</span>, <span class="blue-highlight">Travail d'équipe</span> et doté d'un bon relationnel.
-                            <br>Je recherche un stage de 8 à 12 semaines à partir d'Avril 2026.
-                        </div>
-                        <div class="tobias-cta">
-                            Appuyez sur "Démarrer" pour voir mon CV.
-                        </div>
-                    </div>
-                `;
-            } else if (title === 'Blackjack') {
-                // CAS 2 : BLACKJACK (Image plein écran MAIS footer visible)
-                
-                overlay.style.background = "black"; // Fond noir pour faire propre
-                
-                // On enlève les marges internes du conteneur pour que l'image touche les bords
-                contentBox.style.padding = '0';
-                
-                // On injecte l'image
-                contentBox.innerHTML = icon;
-
-                // On force le style de l'image pour qu'elle remplisse la zone content
-                const img = contentBox.querySelector('img');
-                if (img) {
-                    img.style.width = "100%";
-                    img.style.height = "100%";
-                    img.style.objectFit = "cover"; // Remplissage sans déformation (coupe les bords si besoin)
-                    img.style.borderRadius = "0";  // Pas d'arrondis
-                    img.style.boxShadow = "none";
-                }
-
-            } else {
-                // CAS 3 : STANDARD
-                overlay.style.background = "white";
-                contentBox.innerHTML = `
-                    <div class="start-icon" id="ov-icon">${icon}</div>
-                    <div class="start-title" id="ov-title">${title}</div>
-                    <div class="start-subtitle">Démarrer cette chaîne ?</div>
-                `;
-            }
-        }
-        function zoomChannel(element) {
-            if (element.classList.contains('empty')) return;
-            activeCard = element;
-
-            // Appel de la fonction de rendu
-            renderOverlayContent(element);
-
-            // Animation
-            const rect = element.getBoundingClientRect();
-            overlay.style.display = 'flex';
-            overlay.style.transition = 'none';
-            overlay.style.top = rect.top + 'px';
-            overlay.style.left = rect.left + 'px';
-            overlay.style.width = rect.width + 'px';
-            overlay.style.height = rect.height + 'px';
-            overlay.style.borderRadius = '20px';
-            
-            mainFooter.classList.add('footer-hidden');
-            
-            overlay.offsetHeight; 
-            
-            overlay.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
-            overlay.style.top = '0px';
-            overlay.style.left = '0px';
-            overlay.style.width = '100%';
-            overlay.style.height = '100%';
-            overlay.style.borderRadius = '0px';
-            
-            element.classList.add('hidden');
-            setTimeout(() => { overlay.classList.add('active'); }, 50);
-        }
-
-        // --- NOUVEAU : FONCTION DE NAVIGATION ---
-        function navigate(direction) {
-            // Récupère toutes les chaînes non vides
-            const channels = Array.from(document.querySelectorAll('.channel:not(.empty)'));
-            if (channels.length < 2) return;
-
-            const currentIndex = channels.indexOf(activeCard);
-            let newIndex = currentIndex + direction;
-
-            // Boucle infinie
-            if (newIndex < 0) newIndex = channels.length - 1;
-            if (newIndex >= channels.length) newIndex = 0;
-
-            const nextCard = channels[newIndex];
-
-            // Gérer la transition visuelle sur la grille (en arrière-plan)
-            activeCard.classList.remove('hidden');
-            nextCard.classList.add('hidden');
-
-            activeCard = nextCard;
-            renderOverlayContent(nextCard);
-        }
-
-        function closeZoom() {
-            if (!activeCard) return;
-            overlay.classList.remove('active');
-            const rect = activeCard.getBoundingClientRect();
-            overlay.style.top = rect.top + 'px';
-            overlay.style.left = rect.left + 'px';
-            overlay.style.width = rect.width + 'px';
-            overlay.style.height = rect.height + 'px';
-            overlay.style.borderRadius = '20px';
-            mainFooter.classList.remove('footer-hidden');
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                activeCard.classList.remove('hidden');
-                activeCard = null;
-            }, 600);
-        }
-
-        function updateClock() {
-            const now = new Date();
-            let hours = now.getHours();
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const ampm = hours >= 12 ? 'PM' : 'AM'; hours = hours % 12; hours = hours ? hours : 12;
-            document.getElementById('h').innerText = hours; document.getElementById('m').innerText = minutes; document.getElementById('ampm').innerText = ampm;
-            const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
-            document.getElementById('date').innerText = `${days[now.getDay()]} ${now.getDate()}/${now.getMonth() + 1}`;
-        }
-        setInterval(updateClock, 1000); updateClock();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
