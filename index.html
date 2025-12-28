@@ -313,14 +313,30 @@
                     </div>
                 `;
             } else if (title === 'Blackjack') {
-                // CAS 2 : JEU BLACKJACK (Image Plein Écran)
-                overlay.style.background = "#eee"; // Fond gris clair neutre derrière l'image
-                // On injecte juste l'image en grand, sans titre ni texte
+                // CAS 2 : JEU BLACKJACK (Image Plein Écran TOTAL)
+                
+                // On met le fond en transparent ou noir pour éviter tout flash blanc
+                overlay.style.background = "black"; 
+                
+                // On crée un conteneur qui prend 100% de la place sans padding
                 contentBox.innerHTML = `
-                    <div style="width: 80%; height: 70%; display: flex; justify-content: center; align-items: center;">
+                    <div style="width: 100%; height: 100%; display: flex; padding: 0; margin: 0;">
                         ${icon}
                     </div>
                 `;
+                
+                // --- FORCAGE DU STYLE DE L'IMAGE ---
+                // On récupère l'image qu'on vient d'injecter pour lui enlever ses bords ronds 
+                // et la forcer à coller aux bords de l'écran.
+                const img = contentBox.querySelector('img');
+                if (img) {
+                    img.style.width = "100%";
+                    img.style.height = "100%";
+                    img.style.objectFit = "cover"; // Remplit tout l'espace sans déformer
+                    img.style.borderRadius = "0px"; // Carré parfait (pas d'arrondi)
+                    img.style.boxShadow = "none";   // Pas d'ombre
+                }
+
             } else {
                 // CAS 3 : AUTRES PROJETS (Style Standard)
                 overlay.style.background = "white";
