@@ -1,0 +1,466 @@
+/* =========================================
+   1. CONFIGURATION GÉNÉRALE
+   ========================================= */
+body, html {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Roboto', sans-serif;
+    background-color: #e8e8e8;
+    background-image: repeating-linear-gradient(
+        0deg, 
+        transparent, 
+        transparent 2px, 
+        #d4d4d4 2px, 
+        #d4d4d4 4px
+    );
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    
+    /* Curseur Wii personnalisé */
+    cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), auto !important;
+}
+
+/* Appliquer le curseur sur tous les éléments interactifs */
+button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
+    cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), auto !important;
+}
+
+/* =========================================
+   2. ÉCRAN D'INTRO (NOIR)
+   ========================================= */
+#intro-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    color: white;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    transition: opacity 0.5s ease-out;
+}
+
+.warning-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #b0b0b0;
+}
+
+.warning-icon {
+    width: 60px;
+    height: 60px;
+    margin-right: 20px;
+}
+
+.intro-text {
+    max-width: 800px;
+    margin-bottom: 50px;
+    line-height: 1.6;
+    font-size: 1.2rem;
+    color: #b0b0b0;
+}
+
+.highlight {
+    color: white;
+    font-weight: bold;
+    font-style: italic;
+}
+
+/* Bouton clignotant "Appuyer sur A" */
+.press-btn {
+    margin-top: 40px;
+    color: #888;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: blink 2s infinite ease-in-out;
+}
+
+.mouse-icon {
+    width: 50px;
+    height: 50px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    margin-bottom: 10px;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+/* =========================================
+   3. GRILLE DES CHAINES (MENU PRINCIPAL)
+   ========================================= */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 2vh;
+    width: 90vw;
+    max-width: 1200px;
+    height: 60vh;
+    margin-bottom: 10vh;
+    z-index: 1;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 1s, transform 1s;
+}
+
+.grid-visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.channel {
+    background-color: #ffffff;
+    border: 4px solid #b0b0b0;
+    border-radius: 20px;
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.1);
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.1s, border-color 0.1s;
+}
+
+.channel.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.channel:not(.empty):hover {
+    border-color: #4ac0e0;
+    box-shadow: 0 0 15px #4ac0e0;
+    transform: scale(1.02);
+    z-index: 10;
+}
+
+.channel.empty {
+    background-color: #d4d4d4;
+    cursor: default;
+    border-color: #b0b0b0;
+    background-image: 
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50" viewBox="0 0 100 50"><text x="50" y="35" font-family="sans-serif" font-size="30" fill="%23c0c0c0" text-anchor="middle">Wii</text></svg>'),
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px);
+    background-repeat: no-repeat, repeat;
+    background-position: center;
+    background-size: contain, auto;
+}
+
+/* =========================================
+   4. ÉCRAN DE DÉMARRAGE (ZOOM / OVERLAY)
+   ========================================= */
+#full-overlay {
+    position: fixed;
+    background: white;
+    z-index: 5000;
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    /* Transition fluide pour l'effet de zoom */
+    transition: 
+        top 0.6s cubic-bezier(0.25, 1, 0.5, 1), 
+        left 0.6s cubic-bezier(0.25, 1, 0.5, 1), 
+        width 0.6s cubic-bezier(0.25, 1, 0.5, 1), 
+        height 0.6s cubic-bezier(0.25, 1, 0.5, 1), 
+        border-radius 0.6s ease;
+}
+
+.overlay-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.4s ease 0.2s;
+}
+
+#full-overlay.active .overlay-content {
+    opacity: 1;
+}
+
+/* Éléments standards de l'overlay */
+.start-title { font-size: 4rem; color: #555; margin: 20px 0; }
+.start-subtitle { font-size: 1.5rem; color: #888; margin-bottom: 40px; }
+.start-icon { font-size: 8rem; }
+
+/* Flèches de navigation */
+.side-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 80px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.5s ease 0.5s;
+    z-index: 6000; /* Toujours au-dessus */
+}
+
+#full-overlay.active .side-arrow { opacity: 1; }
+.side-arrow.left { left: 30px; }
+.side-arrow.right { right: 30px; }
+.side-arrow polygon { fill: #8cdbff; stroke: #3ea0e0; stroke-width: 2; }
+
+/* Footer de l'overlay (Boutons Démarrer / Menu Wii) */
+.overlay-footer {
+    height: 120px;
+    width: 100%;
+    background-color: #dadada;
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, #c0c0c0 2px, #c0c0c0 4px);
+    border-top: 4px solid #b0b0b0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 100px;
+    
+    transform: translateY(100%);
+    transition: transform 0.5s ease 0.2s;
+    
+    /* CORRECTIF : Priorité d'affichage */
+    position: relative;
+    z-index: 2000;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+}
+
+#full-overlay.active .overlay-footer {
+    transform: translateY(0);
+}
+
+.pill-btn {
+    width: 280px;
+    height: 70px;
+    border-radius: 40px;
+    background: linear-gradient(to bottom, #ffffff 0%, #e6e6e6 50%, #dadada 100%);
+    border: 4px solid #66c6e6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    color: #555;
+    cursor: pointer;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    transition: transform 0.1s;
+}
+
+.pill-btn:hover {
+    border-color: #3ea0e0;
+    box-shadow: 0 0 20px rgba(74, 192, 224, 0.8);
+    transform: scale(1.05);
+}
+
+.pill-btn:active {
+    transform: scale(0.98);
+}
+
+/* =========================================
+   5. FOOTER PRINCIPAL (BARRE DU BAS)
+   ========================================= */
+.footer-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 100;
+    transition: transform 0.5s;
+}
+
+.footer-hidden {
+    transform: translateY(100%);
+}
+
+.footer-bg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    filter: drop-shadow(0px -5px 5px rgba(0,0,0,0.1));
+}
+
+/* Boutons ronds (Wii / Mail) */
+.wii-btn-wrapper {
+    position: absolute;
+    bottom: 25px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, #d0d0d0, #f0f0f0);
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.left-btn { left: 40px; }
+.right-btn { right: 40px; }
+
+.glass-btn {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ffffff 0%, #dcdcdc 60%, #a0a0a0 100%);
+    border: 2px solid #b0b0b0;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.1s;
+}
+
+.glass-btn:hover {
+    transform: scale(1.05);
+    border-color: #4ac0e0;
+}
+
+.glass-btn::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 15px;
+    width: 45px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0.1));
+    pointer-events: none;
+}
+
+.btn-text { color: #999; font-size: 24px; font-weight: bold; letter-spacing: -1px; }
+.btn-icon { width: 50%; opacity: 0.6; fill: #999; }
+
+/* Zone Centrale (Horloge / Date / Nom) */
+.clock-area {
+    text-align: center;
+    margin-bottom: 15px;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.portfolio-title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.6rem;
+    color: #666;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-bottom: 5px;
+    border-bottom: 3px solid #4ac0e0;
+    margin-bottom: 15px;
+    width: 120%;
+}
+
+.digital-time {
+    font-family: 'Orbitron', monospace;
+    font-size: 3.5rem;
+    color: #888;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    text-shadow: 2px 2px 0px rgba(255,255,255,0.8);
+    line-height: 1;
+}
+
+.ampm {
+    font-size: 1.2rem;
+    margin-left: 8px;
+    font-weight: bold;
+    font-family: sans-serif;
+    color: #888;
+}
+
+.date-text {
+    font-size: 1.4rem;
+    color: #777;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+/* =========================================
+   6. STYLE SPÉCIFIQUE PAGE "MOI"
+   ========================================= */
+.tobias-layout {
+    text-align: center;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    color: #333;
+    max-width: 900px;
+    padding: 20px;
+    animation: fadeIn 0.8s ease;
+}
+
+.tobias-avatar {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 6px solid #fff;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+.tobias-intro {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.name-highlight {
+    color: #e67e22;
+    font-weight: bold;
+}
+
+.tobias-sub {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color: #555;
+    font-weight: bold;
+}
+
+.blue-highlight {
+    color: #2980b9;
+    font-weight: bold;
+}
+
+.tobias-desc {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: #666;
+    font-style: italic;
+}
+
+.tobias-cta {
+    font-size: 1.5rem;
+    color: #95a5a6;
+    margin-top: 40px;
+    font-family: sans-serif;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
