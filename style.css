@@ -464,3 +464,6 @@ button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+.intro-text {
+    text-transform: uppercase;
+}
