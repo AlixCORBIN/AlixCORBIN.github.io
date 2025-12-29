@@ -41,17 +41,20 @@ function renderOverlayContent(element) {
 
     // Récupération des données
     const title = element.dataset.title;
-    const icon = element.dataset.icon; // Peut être un émoji ou une balise <img>
+    const icon = element.dataset.icon; // Peut être un émoji, une balise <img> ou un chemin d'image
     const link = element.dataset.link;
+    const desc = element.dataset.desc || ""; // Nouveau : description pour la page Culture
 
     // --- RESET DES STYLES ---
-    // Important : on remet les styles par défaut pour éviter les conflits entre "Blackjack" et "Moi"
+    // Important : on remet les styles par défaut pour éviter les conflits
     overlayContentBox.style.padding = ''; 
     overlayContentBox.style.justifyContent = 'center';
     overlayContentBox.style.alignItems = 'center';
     overlayContentBox.style.overflow = '';
     overlayContentBox.style.display = 'flex';
-    overlayContentBox.style.flexDirection = 'column'; // Par défaut en colonne
+    overlayContentBox.style.flexDirection = 'column'; 
+    overlayContentBox.style.color = ''; // Reset couleur texte
+    overlay.style.background = '';      // Reset fond
     
     // Action du bouton
     if (startBtn) {
@@ -115,8 +118,31 @@ function renderOverlayContent(element) {
             img.style.boxShadow = "none";
         }
 
+    } else if (title === 'Culture') {
+        // === CAS 3 : CULTURE (Image de fond + Texte par-dessus) ===
+        
+        overlay.style.background = "black";
+        overlayContentBox.style.padding = '0';
+        overlayContentBox.style.overflow = 'hidden'; // Empêche de déborder sur le footer
+        
+        // Ici icon contient le chemin de l'image (assets/culture_bg.png)
+        overlayContentBox.innerHTML = `
+            <div style="position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                
+                <img src="${icon}" style="position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; opacity: 0.5;">
+                
+                <div style="position: relative; z-index: 10; color: white; padding: 20px; max-width: 80%;">
+                    <div style="font-size: 5rem; margin-bottom: 20px; text-shadow: 0 4px 15px rgba(0,0,0,0.8);">🎬</div>
+                    <h1 style="font-size: 3rem; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 3px; text-shadow: 0 4px 10px rgba(0,0,0,1);">CULTURE G</h1>
+                    <p style="font-size: 1.5rem; line-height: 1.5; font-weight: 300; text-shadow: 0 2px 5px rgba(0,0,0,1); color: #ddd;">
+                        ${desc}
+                    </p>
+                </div>
+            </div>
+        `;
+
     } else {
-        // === CAS 3 : DÉFAUT (Autres projets) ===
+        // === CAS 4 : DÉFAUT (Autres projets) ===
         overlay.style.background = "white"; // ou var(--bg-color)
         
         overlayContentBox.innerHTML = `
@@ -233,14 +259,10 @@ function updateClock() {
     let hours = now.getHours();
     const minutes = String(now.getMinutes()).padStart(2, '0');
     
-    // Format 12h (AM/PM) pour le style Wii, ou 24h selon préférence
-    // Ici : style 12h
-    // const ampm = hours >= 12 ? 'PM' : 'AM'; 
-    // hours = hours % 12; 
-    // hours = hours ? hours : 12; // "0" devient "12"
-
-    // Format 24h (plus courant en France) - Décommente la section au-dessus si tu veux AM/PM
-    const ampm = ''; // Vide pour 24h
+    // Format 12h (AM/PM) pour le style Wii
+    const ampm = hours >= 12 ? 'PM' : 'AM'; 
+    hours = hours % 12; 
+    hours = hours ? hours : 12; // "0" devient "12"
 
     const hEl = document.getElementById('h');
     const mEl = document.getElementById('m');
