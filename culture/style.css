@@ -1,0 +1,125 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    background-color: #f0f2f5;
+    color: #333;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    max-width: 1000px;
+    width: 100%;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #7f8c8d;
+    font-style: italic;
+    margin-bottom: 40px;
+}
+
+/* --- TABLEAU --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 15px 20px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background-color: #34495e;
+    color: white;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Styles spécifiques aux colonnes */
+.title {
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.episode {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    font-weight: normal;
+}
+
+.date {
+    color: #e67e22; /* Une touche de couleur pour la date */
+    font-weight: 500;
+    font-family: monospace;
+    font-size: 1.1rem;
+}
+
+.separator td {
+    background-color: #f0f2f5;
+    height: 10px;
+    padding: 0;
+    border: none;
+}
+
+/* --- BOUTON DIAPO --- */
+.presentation-link {
+    text-align: center;
+    background-color: #e8f6f3;
+    padding: 30px;
+    border-radius: 15px;
+    border: 2px solid #1abc9c;
+}
+
+.presentation-link h2 {
+    color: #16a085;
+    margin-top: 0;
+}
+
+.btn-diapo {
+    display: inline-flex;
+    align-items: center;
+    background-color: #1abc9c;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: transform 0.2s, background-color 0.2s;
+    box-shadow: 0 5px 15px rgba(26, 188, 156, 0.4);
+    margin-top: 20px;
+}
+
+.btn-diapo:hover {
+    background-color: #16a085;
+    transform: translateY(-2px);
+}
