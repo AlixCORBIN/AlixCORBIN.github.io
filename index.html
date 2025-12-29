@@ -84,12 +84,16 @@
 
         <div class="channel" 
              data-title="BUT Informatique" 
-             data-icon="🎓" 
+             data-icon="assets/but_bg.png"
+             data-desc="Compétences, Projets & Parcours.<br>Découvre le détail de ma formation et mon évolution."
              data-link="BUT/index.html" 
              onclick="zoomChannel(this)">
-            <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#555;">
-                <span style="font-size:3rem">🎓</span>
-                <h2 style="margin:5px 0;">BUT Info</h2>
+            
+            <div style="width:100%; height:100%; position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; overflow:hidden;">
+                <img src="assets/but_bg.png" style="position:absolute; width:100%; height:100%; object-fit:cover; opacity:0.7; z-index:0;" alt="BUT Info">
+                
+                <span style="font-size:3rem; z-index:1; text-shadow:0 2px 5px rgba(0,0,0,0.5);">🎓</span>
+                <h2 style="margin:5px 0; z-index:1; color:#333; text-shadow:0 0 10px white;">BUT Info</h2>
             </div>
         </div>
 
@@ -107,7 +111,20 @@
             </div>
         </div>
 
-        <div class="channel empty"></div>
+        <div class="channel" 
+             data-title="Arduino" 
+             data-icon="assets/arduino_bg.png"
+             data-desc="Prototypage électronique & C++.<br>Un projet terminé et plusieurs en développement."
+             data-link="arduino/index.html" 
+             onclick="zoomChannel(this)">
+            
+            <div style="width:100%; height:100%; position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; overflow:hidden;">
+                <img src="assets/arduino_bg.png" style="position:absolute; width:100%; height:100%; object-fit:cover; opacity:0.7; z-index:0;" alt="Arduino">
+                
+                <span style="font-size:3rem; z-index:1; text-shadow:0 2px 5px rgba(0,0,0,0.5);">🤖</span>
+                <h2 style="margin:5px 0; z-index:1; color:#333; text-shadow:0 0 10px white;">Arduino</h2>
+            </div>
+        </div>
         <div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div><div class="channel empty"></div>
         <div class="channel empty"></div><div class="channel empty"></div>
     </div>
