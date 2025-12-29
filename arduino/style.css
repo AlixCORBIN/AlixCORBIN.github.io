@@ -1,0 +1,124 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    background-color: #eef2f5;
+    color: #333;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    max-width: 900px;
+    width: 100%;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+h1 {
+    color: #00979d; /* Couleur Arduino Teal */
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+h2 {
+    color: #555;
+    border-bottom: 2px solid #00979d;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* --- CARTE PROJET FINI --- */
+.card-featured {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    display: flex;
+    flex-wrap: wrap; /* Pour le mobile */
+    margin-bottom: 50px;
+}
+
+.img-container {
+    flex: 1;
+    min-width: 300px;
+    background: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.img-placeholder {
+    color: white;
+    font-family: monospace;
+}
+
+.content {
+    flex: 1;
+    padding: 30px;
+    min-width: 300px;
+}
+
+.badge.success {
+    background-color: #27ae60;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+ul { margin-top: 20px; color: #666; font-size: 0.9rem; }
+
+/* --- CARTES PROJETS EN COURS --- */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.card-wip {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    border-left: 5px solid #e67e22; /* Orange pour "En cours" */
+    transition: transform 0.2s;
+}
+
+.card-wip:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.icon-box {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #eee;
+    border-radius: 3px;
+    margin-top: 15px;
+    overflow: hidden;
+}
+
+.progress-bar div {
+    height: 100%;
+    background: #e67e22;
+}
