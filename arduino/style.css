@@ -1,3 +1,6 @@
+/* =========================================
+   1. CONFIGURATION GÉNÉRALE
+   ========================================= */
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
@@ -13,17 +16,21 @@ body {
     width: 100%;
 }
 
+/* =========================================
+   2. EN-TÊTE (HEADER)
+   ========================================= */
 header {
     text-align: center;
     margin-bottom: 50px;
 }
 
 h1 {
-    color: #00979d; /* Couleur Arduino Teal */
+    color: #00979d; /* Couleur "Teal" officielle Arduino */
     font-family: 'Share Tech Mono', monospace;
     font-size: 2.5rem;
     margin-bottom: 10px;
     text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
 h2 {
@@ -31,38 +38,41 @@ h2 {
     border-bottom: 2px solid #00979d;
     padding-bottom: 10px;
     margin-bottom: 20px;
+    margin-top: 40px;
 }
 
-/* --- CARTE PROJET FINI --- */
+p {
+    line-height: 1.6;
+}
+
+/* =========================================
+   3. SECTION PROJET TERMINÉ (SAVI)
+   ========================================= */
 .card-featured {
     background: white;
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     display: flex;
-    flex-wrap: wrap; /* Pour le mobile */
-    margin-bottom: 50px;
+    flex-wrap: wrap; /* Permet de passer l'image au-dessus sur mobile */
 }
 
+/* Conteneur de la vidéo/image à gauche */
 .img-container {
     flex: 1;
-    min-width: 300px;
-    background: #333;
+    min-width: 300px; /* Largeur mini pour pas être trop écrasé */
+    background: #222;
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 250px;
 }
 
-.img-container img {
+.img-container video {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-}
-
-.img-placeholder {
-    color: white;
-    font-family: monospace;
 }
 
 .content {
@@ -71,23 +81,33 @@ h2 {
     min-width: 300px;
 }
 
+/* Badge "Terminé" */
 .badge.success {
+    display: inline-block;
     background-color: #27ae60;
     color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
+    padding: 5px 12px;
+    border-radius: 20px;
     font-size: 0.8rem;
     font-weight: bold;
     text-transform: uppercase;
+    margin-bottom: 15px;
 }
 
-ul { margin-top: 20px; color: #666; font-size: 0.9rem; }
+.content ul {
+    margin-top: 20px;
+    color: #666;
+    font-size: 0.9rem;
+    padding-left: 20px;
+}
 
-/* --- CARTES PROJETS EN COURS --- */
+/* =========================================
+   4. GRILLE DES PROJETS EN COURS
+   ========================================= */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    gap: 25px;
 }
 
 .card-wip {
@@ -95,30 +115,66 @@ ul { margin-top: 20px; color: #666; font-size: 0.9rem; }
     padding: 25px;
     border-radius: 10px;
     border: 1px solid #ddd;
-    border-left: 5px solid #e67e22; /* Orange pour "En cours" */
-    transition: transform 0.2s;
+    border-left: 5px solid #e67e22; /* Bordure Orange pour signaler "En cours" */
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
 }
 
 .card-wip:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
 .icon-box {
-    font-size: 2rem;
-    margin-bottom: 10px;
+    font-size: 2.5rem;
+    margin-bottom: 15px;
 }
 
+.card-wip h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+/* Barre de progression */
 .progress-bar {
     width: 100%;
     height: 6px;
     background: #eee;
     border-radius: 3px;
-    margin-top: 15px;
+    margin-top: auto; /* Pousse la barre tout en bas de la carte */
     overflow: hidden;
 }
 
 .progress-bar div {
     height: 100%;
     background: #e67e22;
+}
+
+/* =========================================
+   5. GESTION DES PHOTOS DANS LES CARTES (ROOMBA)
+   ========================================= */
+
+/* C'est ici que la magie opère pour ta photo */
+.img-wip-wrapper {
+    width: 100%;
+    height: 160px; /* Hauteur fixe : l'image ne dépassera jamais ça */
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background-color: #eee; /* Fond gris pendant le chargement */
+}
+
+.img-wip-wrapper img {
+    width: 100%;
+    height: 100%;
+    /* 'cover' coupe les bords de l'image pour qu'elle remplisse le cadre sans être déformée */
+    object-fit: cover; 
+    transition: transform 0.3s ease;
+}
+
+/* Zoom sur l'image au survol de la souris */
+.card-wip:hover .img-wip-wrapper img {
+    transform: scale(1.1);
 }
