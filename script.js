@@ -48,14 +48,14 @@ function renderOverlayContent(element) {
     overlayContentBox.style.display = 'flex';
     overlayContentBox.style.flexDirection = 'column'; 
     overlayContentBox.style.color = ''; 
-    overlay.style.background = '';      
+    overlay.style.background = '';
     
-    // Action du bouton
-    if (startBtn) {
-        startBtn.onclick = () => {
-            if (link) window.open(link, '_blank');
-        };
+    // --- RESET DU BOUTON DÉMARRER ---
+    if(startBtn) {
+        startBtn.style.display = 'flex'; 
+        startBtn.classList.remove('btn-disabled');
         startBtn.innerText = (title === 'Moi') ? "Voir mon CV" : "Démarrer";
+        startBtn.onclick = () => { if (link) window.open(link, '_blank'); };
     }
 
     // --- LOGIQUE D'AFFICHAGE ---
@@ -112,11 +112,10 @@ function renderOverlayContent(element) {
             </div>`;
 
     } else if (title === 'Arduino') {
-        // === CAS : ARDUINO (Le nouveau bloc !) ===
+        // === CAS : ARDUINO ===
         overlay.style.background = "black";
         overlayContentBox.style.padding = '0';
         overlayContentBox.style.overflow = 'hidden';
-        
         overlayContentBox.innerHTML = `
             <div style="position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
                 <img src="${icon}" style="position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; opacity: 0.5;">
@@ -124,6 +123,54 @@ function renderOverlayContent(element) {
                     <div style="font-size: 5rem; margin-bottom: 20px; text-shadow: 0 4px 15px rgba(0,255,255,0.6);">🤖</div>
                     <h1 style="font-size: 3rem; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px #00979d;">LABO ARDUINO</h1>
                     <p style="font-size: 1.4rem; line-height: 1.5; font-weight: 300; text-shadow: 0 2px 5px rgba(0,0,0,1); color: #e0f7fa;">${desc}</p>
+                </div>
+            </div>`;
+
+    } else if (title === 'Projet Jeu') {
+        // === NOUVEAU CAS HYBRIDE : JEU ALCOOL PRO (En travaux) ===
+        
+        overlay.style.background = "black";
+        overlayContentBox.style.padding = '0';
+        overlayContentBox.style.overflow = 'hidden';
+
+        // 1. On grise le bouton Démarrer
+        if(startBtn) {
+            startBtn.classList.add('btn-disabled');
+            startBtn.innerText = "Bientôt...";
+            startBtn.onclick = null;
+        }
+
+        // 2. Structure : Image de fond + Rubans + Texte
+        overlayContentBox.innerHTML = `
+            <div class="construction-container" style="background: none;">
+                
+                <img src="${icon}" style="position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
+                
+                <div class="tape-cross tape-1" style="opacity: 0.8;">EN DÉVELOPPEMENT</div>
+                <div class="tape-cross tape-2" style="opacity: 0.8;">PROJET EN COURS</div>
+
+                <div style="position: relative; z-index: 10; color: white; padding: 20px; max-width: 80%; text-align: center; text-shadow: 0 2px 10px rgba(0,0,0,1);">
+                    <div style="font-size: 5rem; margin-bottom: 20px;">🍻</div>
+                    <h1 style="font-size: 3rem; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px; color: #f1c40f;">GLOUGLOU</h1>
+                    <p style="font-size: 1.5rem; line-height: 1.5; font-weight: 300; color: #eee;">
+                        ${desc}
+                    </p>
+                </div>
+            </div>
+        `;
+
+    } else if (title === 'Projets IHM') {
+        // === CAS : IHM (Resté en style chantier simple pour l'instant) ===
+        overlay.style.background = "repeating-linear-gradient(45deg, #ffc107, #ffc107 20px, #ffca2c 20px, #ffca2c 40px)";
+        if(startBtn) { startBtn.classList.add('btn-disabled'); startBtn.innerText = "En Travaux"; startBtn.onclick = null; }
+        overlayContentBox.innerHTML = `
+            <div class="construction-container">
+                <div class="tape-cross tape-1">EN TRAVAUX</div>
+                <div class="tape-cross tape-2">EN TRAVAUX</div>
+                <div style="text-align: center; max-width: 600px; padding: 20px; background: rgba(255,255,255,0.9); border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.2);">
+                    <div style="font-size: 6rem; margin-bottom: 20px;">${icon}</div>
+                    <h1 style="margin: 10px 0; font-size: 3rem; text-transform: uppercase; color: #333;">${title}</h1>
+                    <p style="font-size: 1.5rem; line-height: 1.6; color: #666; margin: 30px 0;">${desc}</p>
                 </div>
             </div>`;
 
