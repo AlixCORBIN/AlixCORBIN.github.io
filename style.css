@@ -467,3 +467,53 @@ button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
 .intro-text {
     text-transform: uppercase;
 }
+/* --- STYLE RUBANS DE CHANTIER (EN TRAVAUX) --- */
+
+.construction-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.tape-cross {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150%; /* Plus large pour couvrir les coins */
+    height: 60px;
+    background: repeating-linear-gradient(
+        45deg,
+        #f1c40f,
+        #f1c40f 20px,
+        #2c3e50 20px,
+        #2c3e50 40px
+    );
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #2c3e50;
+    font-weight: bold;
+    font-size: 1.5rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    z-index: 100;
+    pointer-events: none; /* Permet de voir le texte dessous */
+}
+
+/* La croix : une barre à 45° et l'autre à -45° */
+.tape-1 { transform: translate(-50%, -50%) rotate(45deg); }
+.tape-2 { transform: translate(-50%, -50%) rotate(-45deg); }
+
+/* Classe pour griser le bouton démarrer */
+.btn-disabled {
+    opacity: 0.3 !important;
+    pointer-events: none !important; /* Rend le clic impossible */
+    filter: grayscale(100%) !important;
+    cursor: not-allowed !important;
+}
