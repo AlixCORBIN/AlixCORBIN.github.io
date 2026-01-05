@@ -16,7 +16,7 @@ let activeCard = null;
 const sfxClick1 = new Audio('assets/wiiClickChanel1.mp3');
 const sfxClick2 = new Audio('assets/wiiClickChanel2.mp3');
 const sfxStart = new Audio('assets/wiiButtonPopUp.mp3');
-const sfxBack = new Audio('assets/WiiBackMenuButton.mp3'); // LE NOUVEAU SON
+const sfxBack = new Audio('assets/wiibackmenu.mp3');
 
 // Config volume
 sfxClick1.volume = 0.6;
