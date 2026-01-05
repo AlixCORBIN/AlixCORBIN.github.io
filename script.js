@@ -1,6 +1,6 @@
 /* =========================================
-   1. SÉLECTION DES ÉLÉMENTS DU DOM
-   ========================================= */
+   1. SÉLECTION DES ÉLÉMENTS DU DOM & AUDIO
+   ======================================== */
 const introScreen = document.getElementById('intro-screen');
 const mainGrid = document.getElementById('main-grid');
 const bgMusic = document.getElementById('bg-music');
@@ -12,9 +12,62 @@ const mainFooter = document.getElementById('main-footer');
 
 let activeCard = null;
 
+// --- CRÉATION DES OBJETS AUDIO ---
+const sfxClick1 = new Audio('assets/wiiClickChanel1.mp3');
+const sfxClick2 = new Audio('assets/wiiClickChanel2.mp3');
+const sfxStart = new Audio('assets/wiiButtonPopUp.mp3');
+const sfxBack = new Audio('assets/WiiBackMenuButton.mp3'); // LE NOUVEAU SON
+
+// Config volume
+sfxClick1.volume = 0.6;
+sfxClick2.volume = 0.5;
+sfxStart.volume = 0.7;
+sfxBack.volume = 0.7;
+
+// On désactive la boucle pour le son 2
+sfxClick2.loop = false; 
+
 /* =========================================
-   2. GESTION DE L'INTRODUCTION
-   ========================================= */
+   2. GESTION DU SON DES CHAÎNES
+   ======================================== */
+let soundTimeout = null;
+
+function playChannelSequence() {
+    // 1. On lance le premier son (Clic/Zoom)
+    sfxClick1.currentTime = 0;
+    sfxClick1.play().catch(e => console.warn("Audio bloqué:", e));
+
+    // 2. On lance le deuxième son QUASI IMMÉDIATEMENT (chevauchement)
+    if (soundTimeout) clearTimeout(soundTimeout);
+
+    soundTimeout = setTimeout(() => {
+        // On vérifie que le zoom est toujours actif
+        if (overlay.style.display === 'flex') {
+            sfxClick2.currentTime = 0;
+            sfxClick2.play().catch(e => console.warn("Audio 2 bloqué:", e));
+        }
+    }, 50); // 50ms pour un enchaînement ultra-rapide
+}
+
+function stopChannelSequence() {
+    // On coupe les sons de la chaîne
+    if (soundTimeout) clearTimeout(soundTimeout);
+    
+    sfxClick1.pause();
+    sfxClick1.currentTime = 0;
+    
+    sfxClick2.pause();
+    sfxClick2.currentTime = 0;
+}
+
+function playStartSound() {
+    sfxStart.currentTime = 0;
+    sfxStart.play().catch(e => console.warn("Audio Start bloqué:", e));
+}
+
+/* =========================================
+   3. GESTION DE L'INTRODUCTION
+   ======================================== */
 function startExperience() {
     if (bgMusic) {
         bgMusic.volume = 0.5;
@@ -30,8 +83,8 @@ function startExperience() {
 }
 
 /* =========================================
-   3. GESTION DU CONTENU DE L'OVERLAY
-   ========================================= */
+   4. GESTION DU CONTENU DE L'OVERLAY
+   ======================================== */
 function renderOverlayContent(element) {
     if (!element) return;
 
@@ -55,13 +108,19 @@ function renderOverlayContent(element) {
         startBtn.style.display = 'flex'; 
         startBtn.classList.remove('btn-disabled');
         startBtn.innerText = (title === 'Moi') ? "Voir mon CV" : "Démarrer";
-        startBtn.onclick = () => { if (link) window.open(link, '_blank'); };
+        
+        // Clic avec Son PopUp
+        startBtn.onclick = () => {
+            if (link) {
+                playStartSound(); 
+                window.open(link, '_blank');
+            }
+        };
     }
 
-    // --- LOGIQUE D'AFFICHAGE ---
+    // --- LOGIQUE D'AFFICHAGE (CONTENU) ---
 
     if (title === 'Moi') {
-        // === CAS : PROFIL ===
         overlay.style.background = "linear-gradient(to bottom, #fff8f0 0%, #ffeecf 100%)";
         overlayContentBox.innerHTML = `
             <div class="tobias-layout">
@@ -73,7 +132,6 @@ function renderOverlayContent(element) {
             </div>`;
 
     } else if (title === 'Blackjack') {
-        // === CAS : BLACKJACK ===
         overlay.style.background = "black";
         overlayContentBox.style.padding = '0';
         overlayContentBox.style.overflow = 'hidden';
@@ -82,7 +140,6 @@ function renderOverlayContent(element) {
         if (img) { img.style.width = "100%"; img.style.height = "100%"; img.style.objectFit = "contain"; }
 
     } else if (title === 'Culture') {
-        // === CAS : CULTURE ===
         overlay.style.background = "black";
         overlayContentBox.style.padding = '0';
         overlayContentBox.style.overflow = 'hidden';
@@ -97,7 +154,6 @@ function renderOverlayContent(element) {
             </div>`;
 
     } else if (title === 'BUT Informatique') {
-        // === CAS : BUT INFO ===
         overlay.style.background = "black";
         overlayContentBox.style.padding = '0';
         overlayContentBox.style.overflow = 'hidden';
@@ -112,7 +168,6 @@ function renderOverlayContent(element) {
             </div>`;
 
     } else if (title === 'Arduino') {
-        // === CAS : ARDUINO ===
         overlay.style.background = "black";
         overlayContentBox.style.padding = '0';
         overlayContentBox.style.overflow = 'hidden';
@@ -127,42 +182,36 @@ function renderOverlayContent(element) {
             </div>`;
 
     } else if (title === 'Projet Jeu') {
-        // === NOUVEAU CAS HYBRIDE : JEU ALCOOL PRO (En travaux) ===
-        
+        // JEU ALCOOL (En travaux)
         overlay.style.background = "black";
         overlayContentBox.style.padding = '0';
         overlayContentBox.style.overflow = 'hidden';
 
-        // 1. On grise le bouton Démarrer
         if(startBtn) {
             startBtn.classList.add('btn-disabled');
             startBtn.innerText = "Bientôt...";
-            startBtn.onclick = null;
+            startBtn.onclick = null; 
         }
 
-        // 2. Structure : Image de fond + Rubans + Texte
         overlayContentBox.innerHTML = `
             <div class="construction-container" style="background: none;">
-                
                 <img src="${icon}" style="position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
-                
                 <div class="tape-cross tape-1" style="opacity: 0.8;">EN DÉVELOPPEMENT</div>
                 <div class="tape-cross tape-2" style="opacity: 0.8;">PROJET EN COURS</div>
-
                 <div style="position: relative; z-index: 10; color: white; padding: 20px; max-width: 80%; text-align: center; text-shadow: 0 2px 10px rgba(0,0,0,1);">
                     <div style="font-size: 5rem; margin-bottom: 20px;">🍻</div>
                     <h1 style="font-size: 3rem; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px; color: #f1c40f;">GLOUGLOU</h1>
-                    <p style="font-size: 1.5rem; line-height: 1.5; font-weight: 300; color: #eee;">
-                        ${desc}
-                    </p>
+                    <p style="font-size: 1.5rem; line-height: 1.5; font-weight: 300; color: #eee;">${desc}</p>
                 </div>
-            </div>
-        `;
+            </div>`;
 
     } else if (title === 'Projets IHM') {
-        // === CAS : IHM (Resté en style chantier simple pour l'instant) ===
         overlay.style.background = "repeating-linear-gradient(45deg, #ffc107, #ffc107 20px, #ffca2c 20px, #ffca2c 40px)";
-        if(startBtn) { startBtn.classList.add('btn-disabled'); startBtn.innerText = "En Travaux"; startBtn.onclick = null; }
+        if(startBtn) { 
+            startBtn.classList.add('btn-disabled'); 
+            startBtn.innerText = "En Travaux"; 
+            startBtn.onclick = null; 
+        }
         overlayContentBox.innerHTML = `
             <div class="construction-container">
                 <div class="tape-cross tape-1">EN TRAVAUX</div>
@@ -175,7 +224,6 @@ function renderOverlayContent(element) {
             </div>`;
 
     } else {
-        // === CAS : DÉFAUT ===
         overlay.style.background = "white";
         overlayContentBox.innerHTML = `
             <div class="start-icon" id="ov-icon" style="font-size: 8rem;">${icon}</div>
@@ -185,10 +233,14 @@ function renderOverlayContent(element) {
 }
 
 /* =========================================
-   4. ANIMATION & NAVIGATION
-   ========================================= */
+   5. ANIMATION & NAVIGATION
+   ======================================== */
 function zoomChannel(element) {
     if (element.classList.contains('empty')) return;
+    
+    // Lance les sons d'entrée
+    playChannelSequence();
+    
     activeCard = element;
     renderOverlayContent(element);
 
@@ -217,6 +269,14 @@ function zoomChannel(element) {
 
 function closeZoom() {
     if (!activeCard) return;
+
+    // --- ICI : ON JOUE LE SON DE RETOUR ---
+    sfxBack.currentTime = 0;
+    sfxBack.play().catch(e => console.warn("Audio Back bloqué:", e));
+    
+    // On arrête les sons de la chaîne
+    stopChannelSequence();
+    
     overlay.classList.remove('active');
     const rect = activeCard.getBoundingClientRect();
     overlay.style.top = rect.top + 'px';
@@ -236,6 +296,10 @@ function closeZoom() {
 function navigate(direction) {
     const channels = Array.from(document.querySelectorAll('.channel:not(.empty)'));
     if (channels.length < 2) return;
+    
+    stopChannelSequence();
+    playChannelSequence();
+    
     const currentIndex = channels.indexOf(activeCard);
     let newIndex = currentIndex + direction;
     if (newIndex < 0) newIndex = channels.length - 1;
