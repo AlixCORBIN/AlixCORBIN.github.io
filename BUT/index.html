@@ -1,48 +1,62 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Portfolio BUT1 – CORBIN Alix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio BUT Informatique – Alix CORBIN</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.5; color: #333; max-width: 1100px; margin: auto; padding: 40px; background-color: #fff; }
+        h1 { color: #1a1a1a; border-bottom: 3px solid #333; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        h2 { color: #2c3e50; border-left: 4px solid #2c3e50; padding-left: 15px; margin-top: 40px; margin-bottom: 20px; font-size: 1.4em; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; vertical-align: top; font-size: 0.95em; }
+        th { background-color: #f8f9fa; color: #1a1a1a; font-weight: 600; text-transform: uppercase; font-size: 0.85em; }
+        .non-acquis { background-color: #fdf2f2; }
+        .en-cours { background-color: #fefcf0; }
+        .acquis { background-color: #f0fdf4; }
+        .preuves { font-size: 0.85em; color: #555; background-color: #fcfcfc; }
+        .section-intro { margin-bottom: 30px; color: #666; }
+    </style>
 </head>
 <body>
 
-<h1>Portfolio BUT Informatique – Alix CORBIN</h1>
-<p>Suivi de compétences et auto-évaluation (2ème Année)</p>
+<h1>Portfolio de Compétences - BUT Informatique</h1>
+<div class="section-intro">
+    <p><strong>Étudiant :</strong> Alix CORBIN</p>
+    <p><strong>Niveau :</strong> Deuxième Année - Semestre 3 (Parcours A)</p>
+</div>
 
 <section>
-    <h2>Compétence 1 : Réaliser le développement d’une application</h2>
+    <h2>Compétence 1 : Réaliser un développement d'application</h2>
     <table>
         <tr>
-            <th>Apprentissage Critique</th>
-            <th>Situation Non Acquise</th>
-            <th>En Cours d’Acquisition</th>
-            <th>Acquis</th>
+            <th width="20%">Apprentissage Critique</th>
+            <th width="25%">Situation Non Acquise</th>
+            <th width="25%">En cours d'acquisition</th>
+            <th width="25%">Niveau Acquis</th>
+            <th width="15%">Preuves</th>
         </tr>
         <tr>
-            <td>AC1 - Implémenter des conceptions simples</td>
-            <td>- Ne parvient pas à traduire une conception en code<br>- Code non fonctionnel</td>
-            <td>- Code fonctionnel mais erreurs mineures<br>- Problèmes de lisibilité</td>
-            <td class="acquis">- Code fonctionnel et structuré<br>- Choix corrects des fonctions<br>- Code sans redondance</td>
+            <td><strong>AC1</strong> : Spécifications fonctionnelles</td>
+            <td>Exigences non comprises. Absence de documentation technique (User Stories, UML).</td>
+            <td>Spécifications partielles. Critères d'acceptation imprécis ou contraintes oubliées.</td>
+            <td>Spécifications complètes. Besoins utilisateurs traduits en critères techniques validés.</td>
+            <td class="preuves">Backlog, Diagrammes de cas d'utilisation.</td>
         </tr>
         <tr>
-            <td>AC2 - Élaborer des conceptions simples</td>
-            <td>- Difficulté à élaborer un algorithme<br>- Conception incomplète</td>
-            <td class="encours">- Conception correcte mais perfectible<br>- Modélisation parfois confuse</td>
-            <td>- Conception claire et structurée<br>- Documentation détaillée<br>- Diagrammes adaptés</td>
+            <td><strong>AC2</strong> : Accessibilité & Ergonomie</td>
+            <td>Interface non fonctionnelle. Défaut de lisibilité et navigation incohérente.</td>
+            <td>Interface opérationnelle mais peu intuitive. Support responsive partiel.</td>
+            <td>Interface fluide et logique. Respect des normes d'accessibilité et feedback utilisateur.</td>
+            <td class="preuves">Prototypes Figma, Tests utilisateurs.</td>
         </tr>
         <tr>
-            <td>AC3 - Faire des essais et évaluer les résultats</td>
-            <td>- Absence de tests<br>- Bugs non corrigés</td>
-            <td class="encours">- Résolution de bugs mais manque de méthodologie<br>- Tests peu exploitables</td>
-            <td>- Stratégie de tests complète<br>- Analyse approfondie<br>- Validation efficace</td>
-        </tr>
-        <tr>
-            <td>AC4 - Développer des interfaces utilisateurs</td>
-            <td>- Interface non fonctionnelle<br>- Pas d'accessibilité</td>
-            <td>- Interface fonctionnelle peu intuitive<br>- Design rudimentaire</td>
-            <td class="acquis">- Interface claire et responsive<br>- Respect de l'accessibilité<br>- Ergonomie réfléchie</td>
+            <td><strong>AC3</strong> : Conception & Qualité</td>
+            <td>Code non structuré. Absence de documentation et de découpage logique.</td>
+            <td>Architecture identifiée mais perfectible. Usage basique du versioning (Git).</td>
+            <td>Architecture modulaire. Code documenté et respect des conventions. Workflow Git rigoureux.</td>
+            <td class="preuves">Dépôt Git, Diagrammes de classes.</td>
         </tr>
     </table>
 </section>
@@ -51,94 +65,86 @@
     <h2>Compétence 2 : Optimiser des applications informatiques</h2>
     <table>
         <tr>
-            <th>Apprentissage Critique</th>
+            <th width="20%">Apprentissage Critique</th>
             <th>Situation Non Acquise</th>
-            <th>En Cours d’Acquisition</th>
-            <th>Acquis</th>
+            <th>En cours d'acquisition</th>
+            <th>Niveau Acquis</th>
+            <th width="15%">Preuves</th>
         </tr>
         <tr>
-            <td>AC12.01 | Analyser un problème avec méthode</td>
-            <td>- N’utilise pas les concepts de base</td>
-            <td>- Imprécisions dans l’identification du problème</td>
-            <td class="acquis">- Identifie les éléments clés<br>- Utilise des structures de données adaptées</td>
+            <td><strong>AC1</strong> : Structures de données</td>
+            <td>Organisation inadaptée des données. Redondances critiques.</td>
+            <td>Choix cohérent mais non justifié techniquement.</td>
+            <td>Sélection optimale des structures selon les contraintes de performance et mémoire.</td>
+            <td class="preuves">Analyse comparative, Code source.</td>
         </tr>
         <tr>
-            <td>AC12.02 | Comparer des algorithmes</td>
-            <td>- Aucun algorithme testé<br>- Résultats incohérents</td>
-            <td class="encours">- Critères mal définis<br>- Analyse non approfondie</td>
-            <td>- Justification sur critères mesurables<br>- Analyse complexité/performance</td>
+            <td><strong>AC2</strong> : Algorithmique</td>
+            <td>Résultats erronés. Inadéquation entre l'algorithme et la problématique.</td>
+            <td>Algorithme fonctionnel mais sous-optimal. Absence de mesures d'exécution.</td>
+            <td>Maîtrise de la complexité algorithmique. Optimisation basée sur des mesures concrètes.</td>
+            <td class="preuves">Benchmarks, Analyse Big-O.</td>
         </tr>
         <tr>
-            <td>AC12.03 | Outils mathématiques</td>
-            <td>- Usage non approprié<br>- Fautes de calcul</td>
-            <td class="encours">- Démarche réflexive incomplète<br>- Mise en page moyenne</td>
-            <td>- Usage précis des outils<br>- Formalisation précise<br>- Résultats validés</td>
+            <td><strong>AC3</strong> : Sécurité & Éco-conception</td>
+            <td>Absence de vérification des entrées. Consommation excessive de ressources.</td>
+            <td>Filtrage partiel des données. Optimisation ponctuelle des ressources.</td>
+            <td>Traitement sécurisé contre les injections. Solution économe en ressources CPU/RAM.</td>
+            <td class="preuves">Rapports de profiling, Logs sécurité.</td>
         </tr>
     </table>
 </section>
 
 <section>
-    <h2>Compétence 3 : Administrer des systèmes informatiques</h2>
+    <h2>Compétence 3 : Administrer des systèmes communicants</h2>
     <table>
         <tr>
-            <th>Apprentissage Critique</th>
+            <th width="20%">Apprentissage Critique</th>
             <th>Situation Non Acquise</th>
-            <th>En Cours d’Acquisition</th>
-            <th>Acquis</th>
+            <th>En cours d'acquisition</th>
+            <th>Niveau Acquis</th>
+            <th width="15%">Preuves</th>
         </tr>
         <tr>
-            <td>AC13.01 : Identifier les composants</td>
-            <td>Confusion entre les composants</td>
-            <td>Connaître les composants principaux (CPU, RAM)</td>
-            <td class="acquis">Connaître l’utilité des composants<br>Savoir placer les composants</td>
+            <td><strong>AC1</strong> : Applications réseau</td>
+            <td>Échec de communication entre services. Protocole mal implémenté.</td>
+            <td>Communication fonctionnelle mais instable. Gestion d'erreurs limitée.</td>
+            <td>Échanges client-serveur fiables. Choix de protocole justifié et documenté.</td>
+            <td class="preuves">Captures Wireshark, Logs réseau.</td>
         </tr>
         <tr>
-            <td>AC13.02 : Système multi-tâches / multi-utilisateurs</td>
-            <td>Incapacité d’exécuter des tâches simples</td>
-            <td class="encours">Réussir à gérer les tâches<br>Gérer groupes et utilisateurs</td>
-            <td>Gérer les processus (PID, kill...)<br>Gestion avancée des droits</td>
-        </tr>
-        <tr>
-            <td>AC13.03 : Installer et configurer un OS</td>
-            <td>Ne pas savoir installer un OS</td>
-            <td>Installer un OS sans configuration avancée</td>
-            <td class="acquis">Utiliser le terminal<br>Configuration avancée<br>Personnalisation système</td>
-        </tr>
-        <tr>
-            <td>AC13.04 : Configurer un poste en réseau</td>
-            <td>Ne pas réussir à schématiser le réseau</td>
-            <td class="encours">Créer des rôles avec quelques erreurs</td>
-            <td>Configurer rôles et permissions d’entreprise</td>
+            <td><strong>AC2</strong> : Déploiement & Sécurité</td>
+            <td>Service inaccessible. Configuration réseau ou système erronée.</td>
+            <td>Déploiement opérationnel mais manuel ou peu sécurisé.</td>
+            <td>Déploiement automatisé (Docker). Sécurisation des flux (TLS/HTTPS) et accès.</td>
+            <td class="preuves">Dockerfile, Certificats SSL.</td>
         </tr>
     </table>
 </section>
 
 <section>
-    <h2>Compétence 4 : Gérer des données (Base de Données)</h2>
+    <h2>Compétence 4 : Gérer des données</h2>
     <table>
         <tr>
-            <th>AC</th>
-            <th>Non Acquis</th>
-            <th>En Cours d’Acquisition</th>
-            <th>Acquis</th>
+            <th width="20%">Apprentissage Critique</th>
+            <th>Situation Non Acquise</th>
+            <th>En cours d'acquisition</th>
+            <th>Niveau Acquis</th>
+            <th width="15%">Preuves</th>
         </tr>
         <tr>
-            <td>AC 1: Mettre à jour et interroger une BDD</td>
-            <td>- Ne connait pas la syntaxe SQL de base</td>
-            <td>- Requêtes compliquées non optimisées</td>
-            <td class="acquis">- Mises à jour efficaces (Clés étrangères...)<br>- Requêtes fluides et concises</td>
+            <td><strong>AC1</strong> : Modélisation & SQL</td>
+            <td>Relations erronées. Défaut d'intégrité référentielle.</td>
+            <td>Modèle fonctionnel mais non normalisé. Requêtes SQL lentes.</td>
+            <td>Modèle normalisé et optimisé. Maîtrise des jointures et agrégations complexes.</td>
+            <td class="preuves">MCD/MLD, Scripts SQL.</td>
         </tr>
         <tr>
-            <td>AC 2: Visualiser des données</td>
-            <td>- Mauvaise structure des requêtes</td>
-            <td class="encours">- Interprétation basique<br>- Jointures simples uniquement</td>
-            <td>- Requêtes de visualisation complexes<br>- Jointures avancées</td>
-        </tr>
-        <tr>
-            <td>AC 3: Concevoir une BDD (MCD/MLD)</td>
-            <td>- Mauvaises associations<br>- Pas de règles de gestion</td>
-            <td class="encours">- Respect conventions graphiques<br>- Cardinalités parfois inadaptées</td>
-            <td>- Modélisation fidèle au cahier des charges<br>- Cardinalités optimisées</td>
+            <td><strong>AC2</strong> : Interaction & Sécurité</td>
+            <td>Absence de couche d'accès aux données. Failles d'injection SQL.</td>
+            <td>Connexion établie mais architecture peu structurée.</td>
+            <td>Architecture DAO/Repository. Protection systématique contre les injections.</td>
+            <td class="preuves">Code source (DAO), Fichiers de config.</td>
         </tr>
     </table>
 </section>
@@ -147,34 +153,25 @@
     <h2>Compétence 5 : Conduire un projet</h2>
     <table>
         <tr>
-            <th>Apprentissage Critique</th>
+            <th width="20%">Apprentissage Critique</th>
             <th>Situation Non Acquise</th>
-            <th>En Cours d’Acquisition</th>
-            <th>Acquis</th>
+            <th>En cours d'acquisition</th>
+            <th>Niveau Acquis</th>
+            <th width="15%">Preuves</th>
         </tr>
         <tr>
-            <td>AC1 - Identifier les besoins et les contraintes</td>
-            <td>- Ne comprend pas la demande du client<br>- Ignore les contraintes techniques ou budgétaires</td>
-            <td>- Identifie les besoins principaux mais oublie les cas limites<br>- Analyse des contraintes incomplète</td>
-            <td class="acquis">- Analyse précise du cahier des charges<br>- Prise en compte des contraintes (temps, budget, technique)<br>- Reformulation claire des besoins</td>
+            <td><strong>AC1</strong> : Suivi & Planification</td>
+            <td>Absence d'organisation et de respect des échéances.</td>
+            <td>Utilisation d'outils de suivi mais mise à jour irrégulière.</td>
+            <td>Planification rigoureuse. Gestion des priorités et transparence d'avancement.</td>
+            <td class="preuves">Tableau Kanban, Gantt.</td>
         </tr>
         <tr>
-            <td>AC2 - Définir les solutions techniques et organisationnelles</td>
-            <td>- Propose des solutions irréalisables<br>- Pas de répartition des tâches</td>
-            <td class="encours">- Solutions techniques correctes mais pas toujours optimisées<br>- Répartition des tâches parfois inégale</td>
-            <td>- Choix techniques justifiés et pérennes<br>- Organisation de l'équipe cohérente avec les compétences de chacun</td>
-        </tr>
-        <tr>
-            <td>AC3 - Planifier et suivre l'avancement du projet</td>
-            <td>- Aucune planification<br>- Retards systématiques sans anticipation</td>
-            <td class="encours">- Planning établi mais difficile à tenir sur la durée<br>- Utilisation basique des outils de suivi (Trello/Kanban)</td>
-            <td>- Maîtrise des outils (Gantt, Jira...)<br>- Anticipation des risques et ajustement du planning<br>- Respect strict des jalons</td>
-        </tr>
-        <tr>
-            <td>AC4 - Communiquer avec les parties prenantes</td>
-            <td>- Communication absente ou agressive<br>- Ne rend pas compte de l'avancement</td>
-            <td>- Communication factuelle mais manque de diplomatie ou de clarté pour les non-techniciens</td>
-            <td class="acquis">- Communication fluide et adaptée à l'interlocuteur<br>- Présentations orales convaincantes<br>- Transparence sur l'avancement</td>
+            <td><strong>AC2</strong> : Communication Projet</td>
+            <td>Absence de transmission d'informations critiques.</td>
+            <td>Communication factuelle mais manque d'adaptation aux interlocuteurs.</td>
+            <td>Reporting structuré. Présentations adaptées aux parties prenantes.</td>
+            <td class="preuves">Comptes-rendus, Slides.</td>
         </tr>
     </table>
 </section>
@@ -183,34 +180,20 @@
     <h2>Compétence 6 : Collaborer en équipe</h2>
     <table>
         <tr>
-            <th>AC</th>
-            <th>Non Acquis</th>
-            <th>En cours d’Acquisition</th>
-            <th>Acquis</th>
+            <th width="25%">Apprentissage Critique</th>
+            <th>Niveau de Maîtrise</th>
         </tr>
         <tr>
-            <td>AC1 – Comprendre l’écosystème numérique</td>
-            <td>- Ne comprend pas le fonctionnement</td>
-            <td>- Commence à identifier les interactions</td>
-            <td class="acquis">- Identifie et collabore efficacement avec l'équipe</td>
+            <td><strong>AC1</strong> : Positionnement au sein du groupe</td>
+            <td>Respect du cadre collectif et compréhension de l'impact des tâches individuelles sur le projet global.</td>
         </tr>
         <tr>
-            <td>AC2 – Identifier les compétences requises</td>
-            <td>- Confond les secteurs</td>
-            <td class="encours">- Connaît certaines compétences mais application partielle</td>
-            <td>- Maîtrise la communication et comprend les secteurs</td>
+            <td><strong>AC2</strong> : Communication interne</td>
+            <td>Transmission proactive des informations et contribution active aux échanges techniques.</td>
         </tr>
         <tr>
-            <td>AC3 – Identifier statuts et rôles</td>
-            <td>- Ne connaît pas les statuts</td>
-            <td>- Idée générale des responsabilités</td>
-            <td class="acquis">- Identifie précisément les rôles et la complémentarité</td>
-        </tr>
-        <tr>
-            <td>AC4 – Compétences interpersonnelles</td>
-            <td>- Travail isolé</td>
-            <td>- Doit améliorer la communication</td>
-            <td class="acquis">- Bonne écoute<br>- Suit efficacement les directives</td>
+            <td><strong>AC3</strong> : Organisation & Professionnalisme</td>
+            <td>Respect des délais fixés et attitude constructive face aux retours de l'équipe.</td>
         </tr>
     </table>
 </section>
