@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IHM Roomba — Alix CORBIN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:       #080d1a;
+            --bg2:      #0d1526;
+            --panel:    #101829;
+            --border:   #1a2a44;
+            --cyan:     #00d4ff;
+            --cyan2:    #00a8cc;
+            --green:    #00ff88;
+            --orange:   #ff8c00;
+            --text:     #c8d8e8;
+            --muted:    #5a7090;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Scanline overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.08) 2px,
+                rgba(0,0,0,0.08) 4px
+            );
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── NAV ── */
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 24px 0 40px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+        nav a {
+            color: var(--cyan);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        nav a:hover { opacity: 0.7; }
+        nav span { opacity: 0.4; }
+
+        /* ── HERO ── */
+        .hero {
+            padding: 20px 0 60px;
+            animation: fadeUp 0.7s ease both;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--green);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+        .status-dot {
+            width: 8px; height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+
+        h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(2.4rem, 6vw, 4rem);
+            font-weight: 700;
+            color: white;
+            line-height: 1.05;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        h1 span {
+            color: var(--cyan);
+        }
+
+        .subtitle {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 28px;
+        }
+
+        .hero-desc {
+            max-width: 620px;
+            font-size: 0.95rem;
+            line-height: 1.75;
+            color: #8aa0b8;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 28px;
+        }
+        .tag {
+            padding: 4px 14px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--cyan);
+            background: rgba(0,212,255,0.05);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .link-arduino {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 30px;
+            padding: 10px 20px;
+            border: 1px solid var(--cyan2);
+            border-radius: 4px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--cyan);
+            text-decoration: none;
+            background: rgba(0,212,255,0.06);
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .link-arduino:hover {
+            background: rgba(0,212,255,0.14);
+            border-color: var(--cyan);
+        }
+        .link-arduino::before {
+            content: '→';
+        }
+
+        /* ── DIVIDER ── */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 50px 0 40px;
+            opacity: 0.4;
+            animation: fadeUp 0.7s 0.2s ease both;
+        }
+        .divider-line { flex: 1; height: 1px; background: var(--border); }
+        .divider-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        /* ── SCREENSHOTS ── */
+        .screens-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 28px;
+            animation: fadeUp 0.7s 0.3s ease both;
+        }
+        .screens-title span {
+            color: var(--cyan);
+        }
+
+        .screens-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            animation: fadeUp 0.7s 0.4s ease both;
+        }
+
+        .screen-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+            cursor: pointer;
+        }
+        .screen-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--cyan2);
+            box-shadow: 0 12px 40px rgba(0,212,255,0.12);
+        }
+        .screen-card.featured {
+            grid-column: 1 / -1;
+        }
+
+        .screen-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+        .screen-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--cyan);
+            opacity: 0.6;
+        }
+
+        .screen-img-wrap {
+            overflow: hidden;
+            background: #060b14;
+        }
+        .screen-img-wrap img {
+            width: 100%;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        .screen-card:hover .screen-img-wrap img {
+            transform: scale(1.03);
+        }
+
+        .screen-footer {
+            padding: 14px 16px;
+        }
+        .screen-footer h3 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .screen-footer p {
+            font-size: 0.82rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        /* ── LIGHTBOX ── */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(6px);
+        }
+        .lightbox.open {
+            display: flex;
+        }
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 88vh;
+            object-fit: contain;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-shadow: 0 0 80px rgba(0,212,255,0.15);
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            font-size: 1.8rem;
+            color: var(--muted);
+            cursor: pointer;
+            font-family: 'IBM Plex Mono', monospace;
+            transition: color 0.2s;
+        }
+        .lightbox-close:hover { color: white; }
+
+        /* ── INFO PANELS ── */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 50px;
+            animation: fadeUp 0.7s 0.5s ease both;
+        }
+
+        .info-panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+        }
+        .info-panel-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+        }
+        .info-panel ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .info-panel li {
+            font-size: 0.88rem;
+            color: #8aa0b8;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            line-height: 1.4;
+        }
+        .info-panel li::before {
+            content: '▸';
+            color: var(--cyan);
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse-dot {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.5); }
+            50%       { box-shadow: 0 0 0 6px rgba(0,255,136,0); }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 620px) {
+            .screens-grid { grid-template-columns: 1fr; }
+            .info-grid    { grid-template-columns: 1fr; }
+            .screen-card.featured { grid-column: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Nav -->
+    <nav>
+        <a href="../index.html">← Portfolio</a>
+        <span>/</span>
+        <span>IHM Roomba</span>
+    </nav>
+
+    <!-- Hero -->
+    <div class="hero">
+        <div class="status-row">
+            <div class="status-dot"></div>
+            Projet Lycée — Interface Homme-Machine
+        </div>
+
+        <h1>Contrôle <span>Roomba</span><br>par tablette</h1>
+        <p class="subtitle">Application de télécommande IHM</p>
+
+        <p class="hero-desc">
+            Conception d'une interface graphique en <strong style="color:var(--cyan)">Processing (Java)</strong> pour piloter un Roomba modifié.
+            Chaque bouton de l'interface envoie un signal distinct à la carte Arduino via <strong style="color:var(--cyan)">Bluetooth</strong>,
+            qui transmet ensuite les ordres au Roomba. La vitesse des moteurs est réglable sur
+            5 niveaux via des rectangles au centre de l'interface. Deux dispositions sont proposées
+            pour les droitiers et gauchers.
+        </p>
+
+        <div class="tags">
+            <span class="tag">IHM / UI Design</span>
+            <span class="tag">Processing (Java)</span>
+            <span class="tag">Bluetooth</span>
+            <span class="tag">Arduino</span>
+            <span class="tag">Roomba Modifié</span>
+            <span class="tag">Projet Lycée</span>
+        </div>
+
+        <a class="link-arduino" href="../arduino/index.html">
+            Voir le projet hardware Arduino associé
+        </a>
+    </div>
+
+    <!-- Divider -->
+    <div class="divider">
+        <div class="divider-line"></div>
+        <div class="divider-label">Screenshots</div>
+        <div class="divider-line"></div>
+    </div>
+
+    <!-- Screenshots -->
+    <p class="screens-title">Écrans de l'<span>interface</span></p>
+
+    <div class="screens-grid">
+
+        <!-- Home — featured -->
+        <div class="screen-card featured" onclick="openLightbox('../assets/IHMHome.png')">
+            <div class="screen-header">
+                <div class="screen-dot"></div>
+                ihm_home.screen
+            </div>
+            <div class="screen-img-wrap">
+                <img src="../assets/IHMHome.png" alt="IHM — Écran d'accueil">
+            </div>
+            <div class="screen-footer">
+                <h3>Écran d'accueil</h3>
+                <p>Page principale de l'interface — accès rapide aux commandes de navigation et état du robot.</p>
+            </div>
+        </div>
+
+        <!-- Droitier -->
+        <div class="screen-card" onclick="openLightbox('../assets/IHMDroitier.png')">
+            <div class="screen-header">
+                <div class="screen-dot"></div>
+                ihm_droitier.screen
+            </div>
+            <div class="screen-img-wrap">
+                <img src="../assets/IHMDroitier.png" alt="IHM — Mode Droitier">
+            </div>
+            <div class="screen-footer">
+                <h3>Mode Droitier</h3>
+                <p>Disposition ergonomique avec les contrôles principaux à droite pour une prise en main naturelle.</p>
+            </div>
+        </div>
+
+        <!-- Gaucher -->
+        <div class="screen-card" onclick="openLightbox('../assets/IHMGaucher.png')">
+            <div class="screen-header">
+                <div class="screen-dot"></div>
+                ihm_gaucher.screen
+            </div>
+            <div class="screen-img-wrap">
+                <img src="../assets/IHMGaucher.png" alt="IHM — Mode Gaucher">
+            </div>
+            <div class="screen-footer">
+                <h3>Mode Gaucher</h3>
+                <p>Miroir adaptatif de l'interface — les commandes sont inversées pour les utilisateurs gauchers.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Info panels -->
+    <div class="info-grid">
+        <div class="info-panel">
+            <div class="info-panel-title">// Fonctionnalités</div>
+            <ul>
+                <li>Boutons de commande directionnelle — chaque bouton envoie un signal distinct</li>
+                <li>5 niveaux de vitesse moteur sélectionnables via 5 rectangles au centre de l'interface</li>
+                <li>Mode Droitier / Gaucher avec disposition miroir des boutons</li>
+                <li>Chaque action utilisateur déclenche l'envoi d'un signal Bluetooth vers l'Arduino</li>
+                <li>Interface pensée pour une utilisation simple et réactive</li>
+            </ul>
+        </div>
+        <div class="info-panel">
+            <div class="info-panel-title">// Contexte technique</div>
+            <ul>
+                <li>IHM développée avec <strong style="color:var(--cyan)">Processing (Java)</strong></li>
+                <li>Communication via <strong style="color:var(--cyan)">Bluetooth</strong> entre l'IHM et la carte Arduino</li>
+                <li>L'Arduino reçoit les signaux et pilote directement le Roomba</li>
+                <li>Projet réalisé au lycée dans le cadre d'un cours IHM</li>
+                <li>Couplé au projet hardware Arduino → voir le labo</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close" title="Fermer">✕</span>
+    <img id="lightbox-img" src="" alt="Aperçu">
+</div>
+
+<script>
+    function openLightbox(src) {
+        document.getElementById('lightbox-img').src = src;
+        document.getElementById('lightbox').classList.add('open');
+    }
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('open');
+    }
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeLightbox();
+    });
+</script>
+
+</body>
+</html>

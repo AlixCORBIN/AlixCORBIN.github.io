@@ -206,20 +206,17 @@ function renderOverlayContent(element) {
             </div>`;
 
     } else if (title === 'Projets IHM') {
-        overlay.style.background = "repeating-linear-gradient(45deg, #ffc107, #ffc107 20px, #ffca2c 20px, #ffca2c 40px)";
-        if(startBtn) { 
-            startBtn.classList.add('btn-disabled'); 
-            startBtn.innerText = "En Travaux"; 
-            startBtn.onclick = null; 
-        }
+        overlay.style.background = "black";
+        overlayContentBox.style.padding = '0';
+        overlayContentBox.style.overflow = 'hidden';
         overlayContentBox.innerHTML = `
-            <div class="construction-container">
-                <div class="tape-cross tape-1">EN TRAVAUX</div>
-                <div class="tape-cross tape-2">EN TRAVAUX</div>
-                <div style="text-align: center; max-width: 600px; padding: 20px; background: rgba(255,255,255,0.9); border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.2);">
-                    <div style="font-size: 6rem; margin-bottom: 20px;">${icon}</div>
-                    <h1 style="margin: 10px 0; font-size: 3rem; text-transform: uppercase; color: #333;">${title}</h1>
-                    <p style="font-size: 1.5rem; line-height: 1.6; color: #666; margin: 30px 0;">${desc}</p>
+            <div style="position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <img src="assets/IHMHome.png" style="position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; opacity: 0.25;">
+                <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(8,13,26,0.85), rgba(0,168,204,0.15));"></div>
+                <div style="position: relative; z-index: 10; color: white; padding: 20px; max-width: 80%;">
+                    <div style="font-size: 5rem; margin-bottom: 20px; text-shadow: 0 4px 15px rgba(0,212,255,0.6);">🖥️</div>
+                    <h1 style="font-size: 3rem; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px; color: #00d4ff; text-shadow: 0 0 20px rgba(0,212,255,0.5);">PROJETS IHM</h1>
+                    <p style="font-size: 1.4rem; line-height: 1.5; font-weight: 300; color: #c8d8e8;">${desc}</p>
                 </div>
             </div>`;
 
