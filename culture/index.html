@@ -3,154 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Culture Générale & Visionnage - Alix CORBIN</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Culture Générale — Alix CORBIN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:     #f7f4ef;
+            --ink:    #1a1410;
+            --muted:  #8a7f74;
+            --border: #d8d0c4;
+            --s3:     #2c3e50;
+            --s4:     #5c3d8f;
+            --gold:   #c9a84c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── NAV ── */
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 28px 48px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--muted);
+            border-bottom: 1px solid var(--border);
+        }
+        nav a { color: var(--s4); text-decoration: none; }
+        nav a:hover { text-decoration: underline; }
+        nav span { opacity: 0.5; }
+
+        /* ── MAIN ── */
+        main {
+            flex: 1;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 64px 32px 80px;
+            width: 100%;
+        }
+
+        .kicker {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.2rem, 5vw, 3.4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+
+        .intro {
+            font-size: 1rem;
+            line-height: 1.75;
+            color: #4a3f35;
+            max-width: 580px;
+            margin-bottom: 56px;
+        }
+
+        /* ── CARDS ── */
+        .cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .card {
+            display: block;
+            text-decoration: none;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: transform 0.22s, box-shadow 0.22s;
+            background: white;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+        }
+
+        .card-top {
+            padding: 32px 32px 28px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-top.s3 { background: var(--s3); }
+        .card-top.s4 { background: var(--s4); }
+
+        .card-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 900;
+            line-height: 1;
+            opacity: 0.12;
+            position: absolute;
+            top: 12px;
+            right: 20px;
+        }
+
+        .card-semester {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.25;
+            margin-bottom: 10px;
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            opacity: 0.82;
+        }
+
+        .card-bottom {
+            padding: 20px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-meta {
+            font-size: 0.8rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+        .card-meta strong {
+            display: block;
+            font-size: 0.72rem;
+            font-family: 'DM Mono', monospace;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .card-arrow {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .card-arrow.s3 { background: #e8edf2; color: var(--s3); }
+        .card-arrow.s4 { background: #ede6f8; color: var(--s4); }
+
+        /* Pill "nouveau" */
+        .badge-new {
+            display: inline-block;
+            background: var(--gold);
+            color: #1a1410;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 3px 9px;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 580px) {
+            nav { padding: 20px; }
+            main { padding: 40px 20px 60px; }
+            .cards { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🎯 Objectifs Culture & Visionnage</h1>
-        <p class="subtitle">"Le cinéma et les séries ne sont pas que du divertissement, ce sont des leçons de vie."</p>
+<nav>
+    <a href="../index.html">← Portfolio</a>
+    <span>/</span>
+    <span>Culture Générale</span>
+</nav>
 
-        <section class="table-section">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 25%;">Œuvre</th>
-                        <th style="width: 15%;">Date</th>
-                        <th>Leçon / Morale retenue</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="title">La Ligne Verte</td>
-                        <td class="date">2 juin 2025</td>
-                        <td>L'humanité peut se cacher dans les endroits les plus sombres.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">La Haine</td>
-                        <td class="date">19 mai 2025</td>
-                        <td>La violence entraîne toujours plus de violence, jusqu’à la chute.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Black Mirror S7E1<br><span class="episode">Des gens ordinaires</span></td>
-                        <td class="date">12 mai 2025</td>
-                        <td>La dépendance à la technologie peut déshumaniser les relations les plus intimes.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Black Mirror S6E2<br><span class="episode">Bête Noire</span></td>
-                        <td class="date">5 mai 2025</td>
-                        <td>La perception de la réalité peut être manipulée, semant le doute et la paranoïa.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Black Mirror S7E4<br><span class="episode">De simples jouets</span></td>
-                        <td class="date">28 avril 2025</td>
-                        <td>Les créations numériques peuvent échapper à notre contrôle et devenir menaçantes.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Black Mirror S7E5<br><span class="episode">Eulogie</span></td>
-                        <td class="date">21 avril 2025</td>
-                        <td>Revivre le passé peut raviver des douleurs enfouies et empêcher d'avancer.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Black Mirror S7E6<br><span class="episode">USS Callister</span></td>
-                        <td class="date">14 avril 2025</td>
-                        <td>La valeur d’une vie est-elle la même si elle est virtuelle ?</td>
-                    </tr>
-                    <tr>
-                        <td class="title">The Truman Show</td>
-                        <td class="date">26 mai 2025</td>
-                        <td>Il faut parfois briser les illusions pour découvrir sa propre vérité.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Mr. Robot</td>
-                        <td class="date">04/04/2025</td>
-                        <td>Pour changer le monde, il faut d’abord comprendre ses propres failles.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Black Mirror S2E2<br><span class="episode">White Bear</span></td>
-                        <td class="date">-</td>
-                        <td>La justice peut vite devenir une forme de cruauté déguisée.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Black Mirror S3E3<br><span class="episode">Shut Up and Dance</span></td>
-                        <td class="date">-</td>
-                        <td>Même les victimes peuvent cacher de lourds secrets. Rien n’est jamais tout blanc ou tout noir.</td>
-                    </tr>
+<main>
+    <p class="kicker">Culture Générale · Alix CORBIN</p>
+    <h1>Ce que j'apprends<br>en dehors des cours</h1>
+    <p class="intro">
+        Chaque semestre, je me fixe un thème à explorer de manière autonome.
+        Le principe : apprendre régulièrement, par curiosité, sans y être contraint.
+    </p>
 
-                    <tr class="separator"><td colspan="3"></td></tr>
+    <div class="cards">
 
-                    <tr>
-                        <td class="title">Limitless</td>
-                        <td class="date">11/09</td>
-                        <td>Il n'y a pas de raccourci vers le succès : tout se paie.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Clickbait</td>
-                        <td class="date">20/09 → 30/11</td>
-                        <td>Ta curiosité morbide sur internet a des conséquences réelles. Tu ne connais jamais la vérité.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Black Mirror S3E1<br><span class="episode">Nodedive</span></td>
-                        <td class="date">23/10</td>
-                        <td>Vivre pour le regard des autres, c'est devenir prisonnier.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Fight Club</td>
-                        <td class="date">30/10</td>
-                        <td>On ne possède pas les choses, ce sont les choses qui finissent par nous posséder.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Le Loup de Wall Street</td>
-                        <td class="date">2/11</td>
-                        <td>L'argent amplifie ce que tu es déjà, il ne te rend pas meilleur.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Whiplash</td>
-                        <td class="date">9/11</td>
-                        <td>La perfection ne vaut pas le sacrifice de sa santé mentale.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Your Lie in April</td>
-                        <td class="date">16/11</td>
-                        <td>Même brisé, tu dois continuer à avancer et transformer ta peine en force.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Slumdog Millionaire</td>
-                        <td class="date">23/11</td>
-                        <td>Ton vécu et tes échecs t'apprennent plus que n'importe quel diplôme.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">12 Hommes en colère</td>
-                        <td class="date">30/11</td>
-                        <td>Ne jamais suivre la majorité sans réfléchir par soi-même.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">The Social Network</td>
-                        <td class="date">7/11</td>
-                        <td>On ne construit pas un empire sans trahir quelques amis.</td>
-                    </tr>
-                    <tr>
-                        <td class="title">Breaking Bad</td>
-                        <td class="date">2023 → 2025</td>
-                        <td>C'est l'ego, et non l'argent, qui finit par tout détruire.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
+        <!-- S3 -->
+        <a class="card" href="s3.html">
+            <div class="card-top s3">
+                <div class="card-num">S3</div>
+                <p class="card-semester">Semestre 3</p>
+                <h2 class="card-title">Cinéma &<br>Leçons de vie</h2>
+                <p class="card-desc">Films, séries et les morales que j'en tire. Une œuvre par semaine, une réflexion associée.</p>
+            </div>
+            <div class="card-bottom">
+                <div class="card-meta">
+                    <strong>Format</strong>
+                    1 film ou série / semaine
+                </div>
+                <div class="card-arrow s3">→</div>
+            </div>
+        </a>
 
-        <div class="presentation-link">
-            <h2>Oral de Semestre 3</h2>
-            <p>Retrouvez le support visuel de ma présentation orale.</p>
-            <a href="https://docs.google.com/presentation/d/1K1El7DW50CN0Q89Wdljb11APC7-V0e0KeHR1_VfScbU/edit?usp=sharing" target="_blank" class="btn-diapo">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:10px;">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-                Voir le Diaporama Google Slides
-            </a>
-        </div>
+        <!-- S4 -->
+        <a class="card" href="s4.html">
+            <div class="card-top s4">
+                <div class="card-num">S4</div>
+                <p class="card-semester">Semestre 4</p>
+                <h2 class="card-title">Troubles<br>Humains</h2>
+                <p class="card-desc">TOC, TIC et mécanismes du cerveau. Une heure de recherche chaque dimanche depuis mi-janvier.</p>
+                <span class="badge-new">En cours</span>
+            </div>
+            <div class="card-bottom">
+                <div class="card-meta">
+                    <strong>Format</strong>
+                    1h de recherche / dimanche · 11 séances
+                </div>
+                <div class="card-arrow s4">→</div>
+            </div>
+        </a>
+
     </div>
+</main>
 
 </body>
 </html>

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culture S4 — Psychologie Humaine · Alix CORBIN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:       #f7f4ef;
+            --bg2:      #ede8e0;
+            --panel:    #ffffff;
+            --ink:      #1a1410;
+            --muted:    #8a7f74;
+            --accent:   #5c3d8f;
+            --accent2:  #8b5cf6;
+            --toc:      #c0392b;
+            --tic:      #1a6b8a;
+            --gold:     #c9a84c;
+            --border:   #d8d0c4;
+            --green:    #2d6a4f;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+        }
+
+        /* ── NAV ── */
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 28px 48px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--muted);
+            border-bottom: 1px solid var(--border);
+        }
+        nav a { color: var(--accent); text-decoration: none; }
+        nav a:hover { text-decoration: underline; }
+        nav span { opacity: 0.5; }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 32px 100px;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            padding: 64px 0 48px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 56px;
+        }
+
+        .kicker {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.4rem, 5vw, 3.8rem);
+            font-weight: 900;
+            line-height: 1.08;
+            color: var(--ink);
+            margin-bottom: 20px;
+        }
+        h1 em { font-style: italic; color: var(--accent); }
+
+        .hero-lead {
+            font-size: 1.05rem;
+            line-height: 1.82;
+            color: #4a3f35;
+            max-width: 640px;
+            margin-bottom: 36px;
+        }
+
+        .ritual-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 20px;
+            background: var(--ink);
+            color: white;
+            padding: 18px 28px;
+            border-radius: 6px;
+        }
+        .ritual-icon { font-size: 2rem; }
+        .ritual-text { font-size: 0.88rem; line-height: 1.6; }
+        .ritual-text strong { color: var(--gold); }
+
+        /* ── STREAK ── */
+        .streak-section { margin-bottom: 64px; }
+
+        .section-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+
+        .streak-grid {
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            gap: 8px;
+        }
+        .streak-dot {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            background: var(--accent);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.15s;
+            position: relative;
+        }
+        .streak-dot:hover { transform: scale(1.15); z-index: 2; }
+        .streak-dot .dot-num {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: white;
+        }
+        .streak-dot .dot-date {
+            font-size: 0.5rem;
+            color: rgba(255,255,255,0.6);
+            margin-top: 2px;
+        }
+        .streak-dot:nth-child(1)  { background: #9b7ece; }
+        .streak-dot:nth-child(2)  { background: #9174c8; }
+        .streak-dot:nth-child(3)  { background: #876ac2; }
+        .streak-dot:nth-child(4)  { background: #7d61bc; }
+        .streak-dot:nth-child(5)  { background: #7357b5; }
+        .streak-dot:nth-child(6)  { background: #694eaf; }
+        .streak-dot:nth-child(7)  { background: #5e44a8; }
+        .streak-dot:nth-child(8)  { background: #543aa2; }
+        .streak-dot:nth-child(9)  { background: #4a309b; }
+        .streak-dot:nth-child(10) { background: #402795; }
+        .streak-dot:nth-child(11) { background: #361d8e; }
+
+        .streak-caption {
+            margin-top: 14px;
+            font-size: 0.82rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .streak-caption::before {
+            content: '';
+            display: inline-block;
+            width: 10px; height: 10px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        /* ── BOOK CARD ── */
+        .book-card {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px 28px;
+            margin-bottom: 56px;
+        }
+        .book-cover {
+            flex-shrink: 0;
+            width: 52px; height: 70px;
+            background: var(--accent);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.15);
+        }
+        .book-info { flex: 1; }
+        .book-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+        .book-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 3px;
+        }
+        .book-author {
+            font-size: 0.82rem;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+        .book-desc {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #4a3f35;
+        }
+
+        /* ── SECTION HEADING ── */
+        .section-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.55rem;
+            font-weight: 700;
+            margin-bottom: 28px;
+            color: var(--ink);
+        }
+        .section-heading span { color: var(--accent); font-style: italic; }
+
+        /* ── BROAD TOPICS GRID ── */
+        .broad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 64px;
+        }
+
+        .broad-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 22px;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .broad-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+        }
+        .broad-card .bc-icon {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+        }
+        .broad-card h3 {
+            font-size: 0.92rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--ink);
+        }
+        .broad-card p {
+            font-size: 0.8rem;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        /* ── TIMELINE ── */
+        .timeline-section { margin-bottom: 64px; }
+
+        .timeline {
+            position: relative;
+            padding-left: 36px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-entry {
+            position: relative;
+            margin-bottom: 26px;
+        }
+        .timeline-entry::before {
+            content: '';
+            position: absolute;
+            left: -32px;
+            top: 7px;
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 2px solid var(--bg);
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .entry-meta {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--muted);
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        .entry-title {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--ink);
+            margin-bottom: 3px;
+        }
+        .entry-note {
+            font-size: 0.84rem;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+        .entry-tag {
+            display: inline-block;
+            font-size: 0.62rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 8px;
+            vertical-align: middle;
+            font-family: 'DM Mono', monospace;
+        }
+        .tag-psych { background: #e8e4f5; color: var(--accent); }
+        .tag-toc   { background: #fce8e7; color: var(--toc); }
+        .tag-tic   { background: #e5f2f7; color: var(--tic); }
+        .tag-both  { background: #ede6f8; color: var(--accent); }
+
+        /* ── FOCUS SECTION TOC/TIC ── */
+        .focus-section {
+            margin-bottom: 64px;
+        }
+
+        .focus-intro {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #4a3f35;
+            max-width: 660px;
+            margin-bottom: 28px;
+            padding: 20px 24px;
+            background: white;
+            border-left: 3px solid var(--accent);
+            border-radius: 0 6px 6px 0;
+        }
+        .focus-intro strong { color: var(--ink); }
+
+        .focus-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .focus-card {
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .focus-header {
+            padding: 22px 26px 18px;
+            color: white;
+        }
+        .focus-header.toc { background: var(--toc); }
+        .focus-header.tic { background: var(--tic); }
+
+        .focus-sigla {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            line-height: 1;
+            opacity: 0.2;
+            margin-bottom: 4px;
+        }
+        .focus-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        .focus-header p {
+            font-size: 0.8rem;
+            opacity: 0.85;
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+        .focus-body {
+            background: white;
+            padding: 20px 26px;
+        }
+        .focus-body ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .focus-body li {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #4a3f35;
+            padding-left: 14px;
+            position: relative;
+        }
+        .focus-body li::before {
+            content: '—';
+            position: absolute;
+            left: 0;
+            color: var(--muted);
+            font-size: 0.75rem;
+        }
+
+        /* ── BILAN ── */
+        .bilan {
+            background: var(--ink);
+            color: white;
+            border-radius: 10px;
+            padding: 40px 44px;
+            margin-bottom: 48px;
+        }
+        .bilan-kicker {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .bilan h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            margin-bottom: 16px;
+        }
+        .bilan p {
+            font-size: 0.92rem;
+            line-height: 1.85;
+            color: #c8bfb5;
+            max-width: 640px;
+        }
+        .bilan-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.4rem;
+            font-weight: 900;
+            color: var(--gold);
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 0.78rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.88rem;
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .back-link:hover { text-decoration: underline; }
+
+        @media (max-width: 640px) {
+            nav { padding: 20px; }
+            .container { padding: 0 20px 60px; }
+            .broad-grid { grid-template-columns: 1fr 1fr; }
+            .focus-grid { grid-template-columns: 1fr; }
+            .streak-grid { grid-template-columns: repeat(6, 1fr); }
+            .bilan { padding: 28px 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="../index.html">← Portfolio</a>
+    <span>/</span>
+    <a href="index.html">Culture G</a>
+    <span>/</span>
+    <span>Semestre 4</span>
+</nav>
+
+<div class="container">
+
+    <!-- Hero -->
+    <div class="hero">
+        <p class="kicker">Culture Générale · Semestre 4 · 2026</p>
+        <h1>Psychologie<br><em>Humaine</em></h1>
+        <p class="hero-lead">
+            Ce semestre, j'ai choisi d'explorer la psychologie humaine de façon autonome — biais cognitifs,
+            mémoire, émotions, mécanismes de défense. Une exploration large qui s'est progressivement
+            concentrée sur les troubles du comportement, et en particulier les <strong>TOC</strong> et les <strong>TIC</strong>.
+        </p>
+
+        <div class="ritual-box">
+            <div class="ritual-icon">📅</div>
+            <div class="ritual-text">
+                <strong>Le rituel du dimanche soir</strong><br>
+                Chaque semaine, 1 heure de recherches libres — articles, vidéos, documentaires.<br>
+                Mi-janvier 2026 → aujourd'hui. <strong>11 séances sans interruption.</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Book -->
+    <div class="book-card">
+        <div class="book-cover">📖</div>
+        <div class="book-info">
+            <p class="book-label">Point de départ — Lecture</p>
+            <p class="book-title">Influence et Manipulation</p>
+            <p class="book-author">Robert Cialdini</p>
+            <p class="book-desc">
+                C'est ce livre qui a lancé l'exploration. Cialdini y décrit les 6 principes fondamentaux
+                de la persuasion — réciprocité, engagement, preuve sociale, autorité, sympathie, rareté.
+                Une introduction concrète à la façon dont la psychologie humaine peut être comprise,
+                et exploitée.
+            </p>
+        </div>
+    </div>
+
+    <!-- Streak -->
+    <div class="streak-section">
+        <p class="section-label">Régularité — 11 dimanches consécutifs</p>
+        <div class="streak-grid">
+            <div class="streak-dot"><span class="dot-num">S1</span><span class="dot-date">18 jan</span></div>
+            <div class="streak-dot"><span class="dot-num">S2</span><span class="dot-date">25 jan</span></div>
+            <div class="streak-dot"><span class="dot-num">S3</span><span class="dot-date">1 fév</span></div>
+            <div class="streak-dot"><span class="dot-num">S4</span><span class="dot-date">8 fév</span></div>
+            <div class="streak-dot"><span class="dot-num">S5</span><span class="dot-date">15 fév</span></div>
+            <div class="streak-dot"><span class="dot-num">S6</span><span class="dot-date">22 fév</span></div>
+            <div class="streak-dot"><span class="dot-num">S7</span><span class="dot-date">1 mar</span></div>
+            <div class="streak-dot"><span class="dot-num">S8</span><span class="dot-date">8 mar</span></div>
+            <div class="streak-dot"><span class="dot-num">S9</span><span class="dot-date">15 mar</span></div>
+            <div class="streak-dot"><span class="dot-num">S10</span><span class="dot-date">22 mar</span></div>
+            <div class="streak-dot"><span class="dot-num">S11</span><span class="dot-date">29 mar</span></div>
+        </div>
+        <p class="streak-caption">1 heure de recherche autonome chaque dimanche</p>
+    </div>
+
+    <!-- Broad topics -->
+    <div style="margin-bottom: 64px;">
+        <h2 class="section-heading">Thèmes <span>explorés</span></h2>
+        <div class="broad-grid">
+            <div class="broad-card">
+                <div class="bc-icon">🧠</div>
+                <h3>Biais cognitifs</h3>
+                <p>Comment notre cerveau simplifie la réalité — biais de confirmation, effet de halo, ancrage.</p>
+            </div>
+            <div class="broad-card">
+                <div class="bc-icon">💾</div>
+                <h3>Mémoire & apprentissage</h3>
+                <p>Mémoire à court et long terme, consolidation du savoir, courbe de l'oubli d'Ebbinghaus.</p>
+            </div>
+            <div class="broad-card">
+                <div class="bc-icon">🎭</div>
+                <h3>Émotions & régulation</h3>
+                <p>Rôle des émotions dans la prise de décision, différence entre émotion et sentiment.</p>
+            </div>
+            <div class="broad-card">
+                <div class="bc-icon">🛡️</div>
+                <h3>Mécanismes de défense</h3>
+                <p>Déni, projection, rationalisation — comment le psychisme se protège du stress.</p>
+            </div>
+            <div class="broad-card">
+                <div class="bc-icon">👥</div>
+                <h3>Psychologie sociale</h3>
+                <p>Conformisme, obéissance à l'autorité (Milgram), influence du groupe sur l'individu.</p>
+            </div>
+            <div class="broad-card">
+                <div class="bc-icon">🔁</div>
+                <h3>Troubles du comportement</h3>
+                <p>TOC, TIC, compulsions — quand les mécanismes normaux du cerveau déraillent.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline-section">
+        <h2 class="section-heading">Journal de <span>recherche</span></h2>
+        <div class="timeline">
+
+            <div class="timeline-entry">
+                <p class="entry-meta">Semaine 1 · 18 janvier</p>
+                <p class="entry-title">Lecture : <em>Influence et Manipulation</em> — Cialdini <span class="entry-tag tag-psych">Livre</span></p>
+                <p class="entry-note">Point de départ de l'exploration. Les 6 principes de persuasion de Cialdini ouvrent une première porte sur la psychologie humaine : comment nos comportements sont prévisibles, et comment ils peuvent être influencés.</p>
+            </div>
+
+            <div class="timeline-entry">
+                <p class="entry-meta">Semaine 2 · 25 janvier</p>
+                <p class="entry-title">Les biais cognitifs <span class="entry-tag tag-psych">Cognitif</span></p>
+                <p class="entry-note">Découverte des biais les plus courants : biais de confirmation, effet de halo, biais de disponibilité. Comment ils façonnent nos jugements sans qu'on s'en rende compte.</p>
+            </div>
+
+            <div class="timeline-entry">
+                <p class="entry-meta">Semaine 3 · 1 février</p>
+                <p class="entry-title">Mémoire, oubli et apprentissage <span class="entry-tag tag-psych">Cognitif</span></p>
+                <p class="entry-note">La courbe de l'oubli d'Ebbinghaus. Comment le cerveau consolide un souvenir durant le sommeil. La répétition espacée comme outil d'apprentissage durable.</p>
+            </div>
+
+            <div class="timeline-entry">
+                <p class="entry-meta">Semaine 4 · 8 février</p>
+                <p class="entry-title">Émotions et prise de décision <span class="entry-tag tag-psych">Émotionnel</span></p>
+                <p class="entry-note">L'hypothèse des marqueurs somatiques de Damasio — sans émotions, la prise de décision rationnelle est impossible. Les patients avec lésions du cortex préfrontal en sont la preuve.</p>
+            </div>
+
+            <div class="timeline-entry">
+                <p class="entry-meta">Semaine 5 · 15 février</p>
+                <p class="entry-title">Conformisme et influence sociale <span class="entry-tag tag-psych">Social</span></p>
+                <p class="entry-note">Les expériences d'Asch sur la conformité. L'expérience de Milgram sur l'obéissance à l'autorité. Ce que ça dit de la part d'ombre de la psychologie collective.</p>
+            </div>
+
+            <div class="timeline-entry">
+                <p class="entry-meta">Semaine 6 · 22 février</p>
+                <p class="entry-title">Mécanismes de défense du psychisme <span class="entry-tag tag-psych">Clinique</span></p>
+                <p class="entry-note">Déni, refoulement, rationalisation, projection. Ces stratégies inconscientes que le cerveau utilise pour se protéger d'une réalité trop difficile à affronter.</p>
+            </div>
+
+            <div class="timeline-entry">
+                <p class="entry-meta">Semaine 7 · 1 mars</p>
+                <p class="entry-title">Introduction aux troubles comportementaux <span class="entry-tag tag-psych">Clinique</span></p>
+                <p class="entry-note">Passage vers les troubles : qu'est-ce qui distingue un comportement ordinaire d'une pathologie ? La notion de souffrance et de retentissement sur la vie quotidienne.</p>
+            </div>
+
+            <div class="timeline-entry">
+                <p class="entry-meta">Semaine 8 · 8 mars</p>
+                <p class="entry-title">Les Troubles Obsessionnels Compulsifs <span class="entry-tag tag-toc">TOC</span></p>
+                <p class="entry-note">Le cycle obsession → anxiété → compulsion → soulagement temporaire. Pourquoi la compulsion entretient le trouble plutôt que de le résoudre.</p>
+            </div>
+
+            <div class="timeline-entry">
+                <p class="entry-meta">Semaine 9 · 15 mars</p>
+                <p class="entry-title">Les Troubles des Tics <span class="entry-tag tag-tic">TIC</span></p>
+                <p class="entry-note">Tics moteurs et vocaux, tics simples et complexes. La sensation prémontoire — cette pression interne qui précède le tic. Le syndrome de Gilles de la Tourette démystifié.</p>
+            </div>
+
+            <div class="timeline-entry">
+                <p class="entry-meta">Semaine 10 · 22 mars</p>
+                <p class="entry-title">TOC et TIC : liens et comorbidités <span class="entry-tag tag-both">TOC + TIC</span></p>
+                <p class="entry-note">Les deux troubles coexistent fréquemment. Ressemblances structurelles, différences de mécanisme. Le rôle de l'anxiété comme amplificateur commun.</p>
+            </div>
+
+            <div class="timeline-entry">
+                <p class="entry-meta">Semaine 11 · 29 mars</p>
+                <p class="entry-title">Traitements et vécu des patients <span class="entry-tag tag-both">TOC + TIC</span></p>
+                <p class="entry-note">TCC, EPR, traitements médicamenteux. Témoignages — le prisme humain dépasse la définition clinique. Ce qu'on comprend vraiment quand on côtoie ces troubles de près.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Focus TOC / TIC -->
+    <div class="focus-section">
+        <h2 class="section-heading">Focus <span>TOC & TIC</span></h2>
+
+        <div class="focus-intro">
+            Ces deux troubles ont naturellement pris plus de place dans mes recherches.
+            Au-delà de la curiosité intellectuelle, c'est un sujet qui me touche personnellement —
+            je vis avec des <strong>TICs depuis l'enfance</strong>. Les explorer de façon documentée
+            m'a permis de mieux comprendre ce que je vis, sans pour autant y mettre de mots inutiles.
+        </div>
+
+        <div class="focus-grid">
+            <div class="focus-card">
+                <div class="focus-header toc">
+                    <div class="focus-sigla">TOC</div>
+                    <h3>Troubles Obsessionnels Compulsifs</h3>
+                    <p>Pensées intrusives récurrentes et rituels compulsifs destinés à réduire l'anxiété.</p>
+                </div>
+                <div class="focus-body">
+                    <ul>
+                        <li>Cycle obsession → anxiété → compulsion → soulagement temporaire</li>
+                        <li>Touche 2 à 3 % de la population mondiale</li>
+                        <li>Les compulsions entretiennent le trouble sur le long terme</li>
+                        <li>Traitement principal : TCC avec exposition et prévention de la réponse</li>
+                        <li>Grande variété de formes : contamination, vérification, ordre, pensées intrusives</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="focus-card">
+                <div class="focus-header tic">
+                    <div class="focus-sigla">TIC</div>
+                    <h3>Troubles des Tics</h3>
+                    <p>Mouvements ou vocalisations soudains, répétitifs, souvent semi-involontaires.</p>
+                </div>
+                <div class="focus-body">
+                    <ul>
+                        <li>Spectre large : tics simples (clignement) → complexes (séquences motrices)</li>
+                        <li>Sensation prémontoire : pression interne qui précède le tic</li>
+                        <li>Syndrome de Gilles de la Tourette : forme sévère, souvent mal représentée</li>
+                        <li>Souvent associés à des TOC ou un TDAH</li>
+                        <li>La suppression temporaire génère une accumulation de tension</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bilan -->
+    <div class="bilan">
+        <p class="bilan-kicker">Ce que j'en retiens</p>
+        <h2>La régularité comme méthode</h2>
+        <p>
+            Explorer la psychologie humaine sur onze semaines m'a appris autant sur la discipline personnelle
+            que sur le sujet lui-même. Se fixer un rendez-vous hebdomadaire avec la curiosité — sans y être contraint —
+            c'est une compétence en soi. Et comprendre les mécanismes derrière nos comportements,
+            même les plus intimes, c'est déjà une forme de liberté.
+        </p>
+        <div class="bilan-stats">
+            <div>
+                <div class="stat-num">11</div>
+                <div class="stat-label">dimanches consécutifs</div>
+            </div>
+            <div>
+                <div class="stat-num">~11h</div>
+                <div class="stat-label">de recherche autonome</div>
+            </div>
+            <div>
+                <div class="stat-num">6+</div>
+                <div class="stat-label">thèmes explorés</div>
+            </div>
+        </div>
+    </div>
+
+    <a class="back-link" href="index.html">← Retour au menu Culture</a>
+
+</div>
+
+</body>
+</html>
