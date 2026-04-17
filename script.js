@@ -479,7 +479,22 @@ function navigate(direction) {
 }
 
 /* =========================================
-   8. MODAL CONTACT
+   8. DARK MODE
+   ========================================= */
+function toggleDarkMode() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', isDark ? '1' : '0');
+    sfxBack.currentTime = 0;
+    sfxBack.play().catch(() => {});
+}
+
+// Restaure la préférence au chargement
+if (localStorage.getItem('darkMode') === '1') {
+    document.body.classList.add('dark-mode');
+}
+
+/* =========================================
+   9. MODAL CONTACT
    ========================================= */
 function openContact() {
     const modal = document.getElementById('contact-modal');
