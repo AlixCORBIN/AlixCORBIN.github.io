@@ -275,14 +275,19 @@ function applyCarouselOffset(animated = true) {
         ? 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)'
         : 'none';
 
-    const vw        = window.innerWidth;
-    const pageWidth = pageEl.offsetWidth;
-    // Gap réel entre les pages (5vw défini en CSS)
-    const gap       = parseFloat(getComputedStyle(track).gap) || vw * 0.05;
-    // Position de la page active depuis le début du track (sans transform)
-    const pageLeft  = currentPage * (pageWidth + gap);
+    // Récupère la translation X actuelle du track
+    const matrix   = new DOMMatrix(getComputedStyle(track).transform);
+    const currentX = matrix.m41;
 
-    track.style.transform = `translateX(${(vw - pageWidth) / 2 - pageLeft}px)`;
+    // Position réelle de la page dans le viewport, ramenée à zéro transform
+    const pageRect     = pageEl.getBoundingClientRect();
+    const pageTrueLeft = pageRect.left - currentX;
+
+    // Offset nécessaire pour centrer la page active
+    const vw      = window.innerWidth;
+    const targetX = (vw - pageRect.width) / 2 - pageTrueLeft;
+
+    track.style.transform = `translateX(${targetX}px)`;
 }
 
 function updateActivePageStyle() {
