@@ -106,6 +106,10 @@ const CHANNELS = [
     }
 ];
 
+// Pages du menu — page 1 : les chaînes, page 2 : vide (contenu futur)
+const PAGES = [ CHANNELS, [] ];
+let currentPage = 0;
+
 /* =========================================
    2. SÉLECTION DES ÉLÉMENTS DU DOM & AUDIO
    ========================================= */
@@ -170,7 +174,7 @@ function playStartSound() {
 function createChannelEl(data, index) {
     const div = document.createElement('div');
     div.className = 'channel';
-    div.dataset.index = index;
+    div._channelData = data; // référence directe, pas besoin de re-lookup
     div.onclick = () => zoomChannel(div);
 
     if (data.type === 'moi') {
@@ -245,13 +249,44 @@ function createChannelEl(data, index) {
 }
 
 function renderGrid() {
-    CHANNELS.forEach((ch, i) => mainGrid.appendChild(createChannelEl(ch, i)));
-    const empties = 12 - CHANNELS.length;
+    mainGrid.innerHTML = '';
+    const page = PAGES[currentPage];
+    page.forEach((ch, i) => mainGrid.appendChild(createChannelEl(ch, i)));
+    const empties = 12 - page.length;
     for (let i = 0; i < empties; i++) {
         const div = document.createElement('div');
         div.className = 'channel empty';
         mainGrid.appendChild(div);
     }
+    updatePageArrows();
+}
+
+function updatePageArrows() {
+    const leftArrow  = document.getElementById('page-arrow-left');
+    const rightArrow = document.getElementById('page-arrow-right');
+    if (leftArrow)  leftArrow.style.opacity  = currentPage > 0 ? '1' : '0';
+    if (leftArrow)  leftArrow.style.pointerEvents = currentPage > 0 ? 'all' : 'none';
+    if (rightArrow) rightArrow.style.opacity = currentPage < PAGES.length - 1 ? '1' : '0';
+    if (rightArrow) rightArrow.style.pointerEvents = currentPage < PAGES.length - 1 ? 'all' : 'none';
+}
+
+function navigatePage(dir) {
+    const newPage = currentPage + dir;
+    if (newPage < 0 || newPage >= PAGES.length) return;
+    sfxBack.currentTime = 0;
+    sfxBack.play().catch(() => {});
+    mainGrid.style.opacity = '0';
+    mainGrid.style.transform = `translateX(${dir > 0 ? '-40px' : '40px'})`;
+    setTimeout(() => {
+        currentPage = newPage;
+        renderGrid();
+        mainGrid.style.transition = 'none';
+        mainGrid.style.transform = `translateX(${dir > 0 ? '40px' : '-40px'})`;
+        mainGrid.offsetHeight; // reflow
+        mainGrid.style.transition = 'opacity 0.4s, transform 0.4s';
+        mainGrid.style.opacity = '1';
+        mainGrid.style.transform = 'translateX(0)';
+    }, 300);
 }
 
 /* =========================================
@@ -421,8 +456,7 @@ function zoomChannel(element) {
     if (element.classList.contains('empty')) return;
     playChannelSequence();
     activeCard = element;
-    const data = CHANNELS[parseInt(element.dataset.index)];
-    renderOverlayContent(data);
+    renderOverlayContent(element._channelData);
 
     const rect = element.getBoundingClientRect();
     overlay.style.display = 'flex';
@@ -480,7 +514,7 @@ function navigate(direction) {
     activeCard.classList.remove('hidden');
     nextCard.classList.add('hidden');
     activeCard = nextCard;
-    renderOverlayContent(CHANNELS[parseInt(nextCard.dataset.index)]);
+    renderOverlayContent(nextCard._channelData);
 }
 
 /* =========================================
