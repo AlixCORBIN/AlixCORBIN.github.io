@@ -956,3 +956,123 @@ button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
 }
 
 .contact-item-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+/* =========================================
+   13. DARK MODE
+   ========================================= */
+
+/* --- Body & fond général --- */
+html:has(body.dark-mode),
+body.dark-mode {
+    background-color: #111318;
+    background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        #1a1d24 2px,
+        #1a1d24 4px
+    );
+}
+
+/* --- Chaînes (grille) --- */
+body.dark-mode .channel {
+    background-color: #1e2130;
+    border-color: #2e3350;
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.4);
+}
+
+body.dark-mode .channel:not(.empty):hover {
+    border-color: #4ac0e0;
+    box-shadow: 0 0 15px #4ac0e0;
+}
+
+body.dark-mode .channel.empty {
+    background-color: #181b27;
+    border-color: #252840;
+    background-image:
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50" viewBox="0 0 100 50"><text x="50" y="35" font-family="sans-serif" font-size="30" fill="%23252840" text-anchor="middle">Wii</text></svg>'),
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 4px);
+}
+
+/* --- Overlay principal --- */
+body.dark-mode #full-overlay {
+    background: #13161f;
+}
+
+body.dark-mode .overlay-footer {
+    background-color: #0e1018;
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, #0a0c14 2px, #0a0c14 4px);
+    border-top-color: #2e3350;
+}
+
+body.dark-mode .pill-btn {
+    background: linear-gradient(to bottom, #1e2130 0%, #16192a 50%, #111420 100%);
+    border-color: #2e6080;
+    color: #aaa;
+}
+
+body.dark-mode .pill-btn:hover {
+    border-color: #4ac0e0;
+    color: white;
+}
+
+/* --- Overlay contenu texte (cas default/tictactoe) --- */
+body.dark-mode .start-title { color: #ccc; }
+body.dark-mode .start-subtitle { color: #666; }
+
+/* --- Footer principal --- */
+body.dark-mode .footer-container .footer-bg path {
+    fill: url(#greyGradDark);
+    stroke: #2e6080;
+}
+
+body.dark-mode .footer-container {
+    --footer-fill: #0e1018;
+}
+
+body.dark-mode .wii-btn-wrapper {
+    background: linear-gradient(to bottom, #1e2130, #2a2f45);
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5), 0 5px 10px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .glass-btn {
+    background: radial-gradient(circle at 35% 35%, #2e3350 0%, #1a1d2e 60%, #0e1018 100%);
+    border-color: #2e3350;
+}
+
+body.dark-mode .glass-btn:hover { border-color: #4ac0e0; }
+
+body.dark-mode .glass-btn::after {
+    background: linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+}
+
+body.dark-mode .btn-text { color: #555; }
+body.dark-mode .btn-icon { fill: #555; }
+
+body.dark-mode .portfolio-title { color: #4ac0e0; border-bottom-color: #2e6080; }
+body.dark-mode .digital-time { color: #4a5568; text-shadow: none; }
+body.dark-mode .date-text { color: #4a5568; }
+
+/* --- Footer SVG recolorisé via filtre --- */
+body.dark-mode .footer-bg svg path[fill="url(#greyGrad)"] {
+    fill: #0e1018;
+    stroke: #2e6080;
+}
+body.dark-mode .footer-bg {
+    filter: brightness(0.25) hue-rotate(200deg);
+}
+
+/* --- Bouton Wii (toggle) actif en dark mode --- */
+body.dark-mode .left-btn .glass-btn {
+    background: radial-gradient(circle at 35% 35%, #1e3a4a 0%, #0f2535 60%, #071520 100%);
+    border-color: #4ac0e0;
+    box-shadow: 0 0 12px rgba(74,192,224,0.4);
+}
+
+body.dark-mode .left-btn .btn-text { color: #4ac0e0; }
+
+/* --- ch-label sur cartes (sans fond image) --- */
+body.dark-mode .ch-label { color: #ddd; text-shadow: 0 0 8px rgba(0,0,0,0.8); }
+
+/* --- Modal contact --- */
+body.dark-mode #contact-modal { background: rgba(0,0,0,0.75); }
