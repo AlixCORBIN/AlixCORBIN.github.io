@@ -120,7 +120,7 @@ button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
     z-index: 1;
     opacity: 0;
     transform: scale(0.95);
-    transition: opacity 1s, transform 1s;
+    transition: opacity 1s, transform 1s ease;
 }
 
 .grid-visible {
@@ -1124,7 +1124,54 @@ body.dark-mode .ch-label { color: #ddd; text-shadow: 0 0 8px rgba(0,0,0,0.8); }
 body.dark-mode #contact-modal { background: rgba(0,0,0,0.75); }
 
 /* =========================================
-   15. TOUCH — désactive effets hover sur mobile
+   15. FLÈCHES DE PAGINATION (ENTRE PAGES)
+   ========================================= */
+.page-arrow {
+    position: fixed;
+    top: calc(50% - 7vh); /* légèrement au-dessus du centre pour éviter le footer */
+    transform: translateY(-50%);
+    width: 44px;
+    height: 72px;
+    cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), pointer;
+    z-index: 50;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.page-arrow--left  { left: 12px; }
+.page-arrow--right { right: 12px; }
+
+.page-arrow polygon {
+    fill: #c0c0c0;
+    stroke: #999;
+    stroke-width: 2;
+    transition: fill 0.2s, stroke 0.2s;
+}
+
+.page-arrow:hover polygon {
+    fill: #4ac0e0;
+    stroke: #3ea0e0;
+}
+
+body.dark-mode .page-arrow polygon {
+    fill: #3a3d55;
+    stroke: #4a4e70;
+}
+
+body.dark-mode .page-arrow:hover polygon {
+    fill: #4ac0e0;
+    stroke: #3ea0e0;
+}
+
+@media (max-width: 768px) {
+    .page-arrow { width: 32px; height: 52px; }
+    .page-arrow--left  { left: 4px; }
+    .page-arrow--right { right: 4px; }
+}
+
+/* =========================================
+   17. TOUCH — désactive effets hover sur mobile
    ========================================= */
 @media (hover: none) {
     .channel:not(.empty):hover {
@@ -1140,7 +1187,7 @@ body.dark-mode #contact-modal { background: rgba(0,0,0,0.75); }
 }
 
 /* =========================================
-   17. RESPONSIVE — TABLETTE (≤ 768px)
+   18. RESPONSIVE — TABLETTE (≤ 768px)
    ========================================= */
 @media (max-width: 768px) {
 
@@ -1269,7 +1316,7 @@ body.dark-mode #contact-modal { background: rgba(0,0,0,0.75); }
 }
 
 /* =========================================
-   18. RESPONSIVE — TÉLÉPHONE (≤ 480px)
+   19. RESPONSIVE — TÉLÉPHONE (≤ 480px)
    ========================================= */
 @media (max-width: 480px) {
 
