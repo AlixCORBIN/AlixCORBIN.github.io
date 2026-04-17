@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wii Portfolio - Alix Corbin</title>
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -23,18 +23,18 @@
             </svg>
             <span>ATTENTION - SANTÉ ET SÉCURITÉ</span>
         </div>
-        
+
         <div class="intro-text">
             <p>BONJOUR, JE SUIS <span class="highlight">ALIX CORBIN</span>, APPRENTI DÉVELOPPEUR.</p>
             <p>CE PORTFOLIO EST UNE RÉINTERPRÉTATION DU MENU DE LA WII, GRANDEMENT INSPIRÉE PAR LE TRAVAIL DE <span class="highlight">TOBIAS ECHENIQUE</span>.</p>
-            
+
             <p style="margin-top: 20px; font-size: 0.9em; color: #ddd; line-height: 1.5;">
                 ⚠️ VEUILLEZ NOTER QUE CE SITE EST ACTUELLEMENT <span class="highlight" style="text-decoration: underline;">EN COURS DE CONSTRUCTION</span>.
                 <br>
                 IL ÉVOLUE CONSTAMMENT, ALORS N'HÉSITEZ PAS À REVENIR RÉGULIÈREMENT POUR DÉCOUVRIR LES NOUVEAUTÉS !
             </p>
         </div>
-        
+
         <div class="press-btn">
             <svg class="mouse-icon" viewBox="0 0 24 24">
                 <rect x="5" y="2" width="14" height="20" rx="7" />
@@ -47,127 +47,14 @@
         </div>
     </div>
 
-    <div class="grid-container" id="main-grid">
-        
-        <div class="channel" 
-             data-title="Moi" 
-             data-icon="👤" 
-             data-link="https://cvdesignr.com/p/696ddc0c232e4" 
-             onclick="zoomChannel(this)">
-            <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#555;">
-                <span style="font-size:3rem">👤</span>
-                <h2 style="margin:5px 0;">Moi</h2>
-            </div>
-        </div>
-
-        <div class="channel" 
-             data-title="BUT Informatique" 
-             data-icon="assets/but_bg.png"
-             data-desc="Compétences, Projets & Parcours.<br>Découvre le détail de ma formation et mon évolution."
-             data-link="BUT/index.html" 
-             onclick="zoomChannel(this)">
-            
-            <div style="width:100%; height:100%; position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; overflow:hidden;">
-                <img src="assets/but_bg.png" style="position:absolute; width:100%; height:100%; object-fit:cover; opacity:0.7; z-index:0;" alt="BUT Info">
-                
-                <span style="font-size:3rem; z-index:1; text-shadow:0 2px 5px rgba(0,0,0,0.5);">🎓</span>
-                <h2 style="margin:5px 0; z-index:1; color:#333; text-shadow:0 0 10px white;">BUT Info</h2>
-            </div>
-        </div>
-
-        <div class="channel" 
-                    data-title="Blackjack" 
-                    data-icon="<img src='assets/bj.png' style='width:100%; height:100%; object-fit: cover; border-radius: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.2);'>" 
-                    data-link="blackjack/index.html" 
-                    onclick="zoomChannel(this)">
-                    <img src="assets/bj.png" style="width:100%; height:100%; object-fit: cover;" alt="Jeu Blackjack">
-                </div>
-                <div class="channel" 
-            data-title="TicTacToe" 
-            data-icon="⭕❌" 
-            data-link="assets/tictactoe_alixCorbin.zip" 
-            onclick="zoomChannel(this)">
-            
-            <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background: #f0f0f0; border-radius: 10px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 1.5rem; font-weight: bold; color: #333;">
-                    <span>❌</span><span>⭕</span>
-                    <span>⭕</span><span>❌</span>
-                </div>
-                <h2 style="margin-top:10px; font-size: 0.9rem; color: #555;">Morpion</h2>
-            </div>
-        </div>
-
-        <div class="channel" 
-             data-title="Culture" 
-             data-icon="assets/culture_bg.png"
-             data-desc="Cinéma, Séries & Réflexions.<br>Découvre mes analyses et les leçons que j'en tire."
-             data-link="culture/index.html" 
-             onclick="zoomChannel(this)">
-            
-            <div style="width:100%; height:100%; position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; overflow:hidden;">
-                <img src="assets/culture_bg.png" style="position:absolute; width:100%; height:100%; object-fit:cover; opacity:0.6; z-index:0;" alt="Culture">
-                <span style="font-size:3rem; z-index:1; text-shadow:0 2px 5px rgba(0,0,0,0.5);">🎬</span>
-                <h2 style="margin:5px 0; z-index:1; color:#333; text-shadow:0 0 10px white;">Culture</h2>
-            </div>
-        </div>
-
-        <div class="channel" 
-             data-title="Arduino" 
-             data-icon="assets/arduino_bg.png"
-             data-desc="Prototypage électronique & C++.<br>Un projet terminé et plusieurs en développement."
-             data-link="arduino/index.html" 
-             onclick="zoomChannel(this)">
-            
-            <div style="width:100%; height:100%; position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; overflow:hidden;">
-                <img src="assets/arduino_bg.png" style="position:absolute; width:100%; height:100%; object-fit:cover; opacity:0.7; z-index:0;" alt="Arduino">
-                
-                <span style="font-size:3rem; z-index:1; text-shadow:0 2px 5px rgba(0,0,0,0.5);">🤖</span>
-                <h2 style="margin:5px 0; z-index:1; color:#333; text-shadow:0 0 10px white;">Arduino</h2>
-            </div>
-        </div>
-        
-        <div class="channel"
-             data-title="Projets IHM"
-             data-icon="assets/IHMHome.png"
-             data-desc="Travaux sur les Interfaces Homme-Machine, notamment le contrôle complet du robot Roomba via une tablette."
-             data-link="ihm/index.html"
-             onclick="zoomChannel(this)">
-
-            <div style="width:100%; height:100%; position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; overflow:hidden; background:#080d1a;">
-                <img src="assets/IHMHome.png" style="position:absolute; width:100%; height:100%; object-fit:cover; opacity:0.45; z-index:0;" alt="IHM Roomba">
-                <div style="position:absolute; inset:0; background:linear-gradient(135deg, rgba(8,13,26,0.5), rgba(0,168,204,0.1)); z-index:1;"></div>
-                <span style="font-size:3rem; z-index:2; text-shadow:0 2px 10px rgba(0,212,255,0.7);">🖥️</span>
-                <h2 style="margin:5px 0; z-index:2; color:#00d4ff; text-shadow:0 0 12px rgba(0,212,255,0.6);">IHM</h2>
-            </div>
-        </div>
-
-        <div class="channel" 
-             data-title="Projet Jeu" 
-             /* L'image de fond générée et la nouvelle description */
-             data-icon="assets/jeu_bg.png"
-             data-desc="Développement d'une application mobile festive.<br>Questions, votes, défis et distribution de gorgées entre amis."
-             /* PAS DE DATA-LINK car toujours en travaux */
-             onclick="zoomChannel(this)">
-             
-             <div style="width:100%; height:100%; position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; overflow:hidden;">
-                <img src="assets/jeu_bg.png" style="position:absolute; width:100%; height:100%; object-fit:cover; opacity:0.6; z-index:0;" alt="Jeu soirée">
-                
-                <span style="font-size:3rem; z-index:1; text-shadow:0 2px 5px rgba(0,0,0,0.8);">🍻</span>
-                <h2 style="margin:5px 0; z-index:1; color:white; text-shadow:0 0 10px rgba(0,0,0,1);">GlouGlou</h2>
-            </div>
-        </div>
-        
-        <div class="channel empty"></div><div class="channel empty"></div>
-        <div class="channel empty"></div><div class="channel empty"></div>
-    </div>
+    <div class="grid-container" id="main-grid"></div>
 
     <div id="full-overlay">
         <svg class="side-arrow left" onclick="navigate(-1)" viewBox="0 0 50 100"><polygon points="40,10 10,50 40,90" /></svg>
         <svg class="side-arrow right" onclick="navigate(1)" viewBox="0 0 50 100"><polygon points="10,10 40,50 10,90" /></svg>
-        
-        <div class="overlay-content">
-            </div>
-        
+
+        <div class="overlay-content"></div>
+
         <div class="overlay-footer">
             <div class="pill-btn" onclick="closeZoom()">Menu Wii</div>
             <div class="pill-btn" id="start-btn-action">Démarrer</div>
@@ -196,11 +83,43 @@
             </div>
             <div class="date-text" id="date">--/--</div>
         </div>
-        <div class="wii-btn-wrapper right-btn">
+        <div class="wii-btn-wrapper right-btn" onclick="openContact()">
             <div class="glass-btn">
                 <svg class="btn-icon" viewBox="0 0 24 24">
                     <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                 </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONTACT -->
+    <div id="contact-modal" onclick="closeContact()">
+        <div class="contact-card" onclick="event.stopPropagation()">
+            <button class="contact-close" onclick="closeContact()">✕</button>
+            <div class="contact-header">
+                <img src="assets/maphoto.png" class="contact-avatar" alt="Alix Corbin">
+                <div>
+                    <div class="contact-name">Alix Corbin</div>
+                    <div class="contact-role">Étudiant BUT Informatique — Laval</div>
+                </div>
+            </div>
+            <div class="contact-items">
+                <a class="contact-item" href="mailto:alix.corbin.pro@gmail.com">
+                    <span class="contact-item-icon">✉️</span>
+                    <span>alix.corbin.pro@gmail.com</span>
+                </a>
+                <a class="contact-item" href="tel:+33768658968">
+                    <span class="contact-item-icon">📱</span>
+                    <span>07 68 65 89 68</span>
+                </a>
+                <div class="contact-item">
+                    <span class="contact-item-icon">📍</span>
+                    <span>Laval &mdash; Le Mans / Sablé / La Flèche</span>
+                </div>
+                <a class="contact-item" href="https://alixcorbin.github.io/" target="_blank">
+                    <span class="contact-item-icon">🔗</span>
+                    <span>alixcorbin.github.io</span>
+                </a>
             </div>
         </div>
     </div>

@@ -513,7 +513,446 @@ button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
 /* Classe pour griser le bouton démarrer */
 .btn-disabled {
     opacity: 0.3 !important;
-    pointer-events: none !important; /* Rend le clic impossible */
+    pointer-events: none !important;
     filter: grayscale(100%) !important;
     cursor: not-allowed !important;
 }
+
+/* =========================================
+   7. INTÉRIEUR DES CHAÎNES (GRILLE)
+   ========================================= */
+.channel-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.ch-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.ch-gradient {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.ch-fullimg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ch-emoji {
+    font-size: 3rem;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.ch-label {
+    margin: 5px 0;
+    position: relative;
+    z-index: 2;
+    color: #333;
+    text-shadow: 0 0 10px white;
+}
+
+.ttt-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* =========================================
+   8. OVERLAY IMAGE-BG
+   ========================================= */
+.overlay-image-bg {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+.overlay-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.overlay-gradient {
+    position: absolute;
+    inset: 0;
+}
+
+.overlay-text-block {
+    position: relative;
+    z-index: 10;
+    color: white;
+    padding: 20px;
+    max-width: 80%;
+}
+
+.ov-emoji {
+    font-size: 5rem;
+    margin-bottom: 20px;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.8);
+}
+
+.ov-title {
+    font-size: 3rem;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 4px 10px rgba(0,0,0,1);
+}
+
+.ov-desc {
+    font-size: 1.4rem;
+    line-height: 1.5;
+    font-weight: 300;
+    text-shadow: 0 2px 5px rgba(0,0,0,1);
+    color: #eee;
+}
+
+/* =========================================
+   9. OVERLAY "MOI" — NOUVEAU DESIGN
+   ========================================= */
+.moi-layout {
+    display: flex;
+    gap: 40px;
+    align-items: stretch;
+    padding: 30px 50px;
+    max-width: 900px;
+    width: 100%;
+    animation: fadeIn 0.5s ease;
+}
+
+.moi-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.moi-avatar-ring {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    padding: 4px;
+    background: linear-gradient(135deg, #4ac0e0, #a855f7);
+    box-shadow: 0 0 30px rgba(74, 192, 224, 0.4);
+    margin-bottom: 16px;
+}
+
+.moi-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #1a1a2e;
+    display: block;
+}
+
+.moi-name {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 1px;
+}
+
+.moi-role {
+    font-size: 0.95rem;
+    color: #4ac0e0;
+    margin-top: 6px;
+    font-style: italic;
+}
+
+.moi-location {
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: 8px;
+}
+
+.moi-right {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1;
+}
+
+.moi-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    backdrop-filter: blur(6px);
+}
+
+.moi-card--highlight {
+    background: rgba(74, 192, 224, 0.12);
+    border-color: rgba(74, 192, 224, 0.4);
+    box-shadow: 0 0 20px rgba(74, 192, 224, 0.15);
+}
+
+.moi-card-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.moi-card-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.moi-card-value {
+    font-size: 1rem;
+    color: #ddd;
+    line-height: 1.4;
+}
+
+.moi-card-value strong {
+    color: white;
+}
+
+.moi-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.skill-pill {
+    background: rgba(74, 192, 224, 0.2);
+    border: 1px solid rgba(74, 192, 224, 0.5);
+    color: #4ac0e0;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.moi-cta {
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+/* =========================================
+   10. CARTE TICTACTOE — NOUVEAU DESIGN
+   ========================================= */
+.ttt-card {
+    background: linear-gradient(135deg, #1a1a2e, #0f3460) !important;
+}
+
+.ttt-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    width: 80px;
+    height: 80px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 4px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+.ttt-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.3);
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.ttt-x { color: #4ac0e0; text-shadow: 0 0 8px #4ac0e0; }
+.ttt-o { color: #e06060; text-shadow: 0 0 8px #e06060; }
+.ttt-win { background: rgba(74,192,224,0.25); }
+
+.ttt-label {
+    margin: 10px 0 0 0;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: none;
+    position: relative;
+    z-index: 2;
+}
+
+/* =========================================
+   11. CARTE "MOI" — NOUVEAU DESIGN
+   ========================================= */
+.moi-card-inner {
+    justify-content: flex-end !important;
+    align-items: flex-start !important;
+}
+
+.moi-card-info {
+    position: relative;
+    z-index: 2;
+    padding: 10px 12px;
+    width: 100%;
+}
+
+.moi-card-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    line-height: 1.2;
+}
+
+.moi-card-tag {
+    font-size: 0.72rem;
+    color: #4ac0e0;
+    margin-top: 3px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+/* =========================================
+   12. MODAL CONTACT
+   ========================================= */
+#contact-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    z-index: 8000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 0 50px 160px 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+#contact-modal.contact-visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+#contact-modal.contact-visible .contact-card {
+    transform: translateY(0);
+}
+
+.contact-card {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 1px solid rgba(74,192,224,0.3);
+    border-radius: 20px;
+    padding: 24px 28px;
+    width: 360px;
+    box-shadow: 0 0 40px rgba(74,192,224,0.2), 0 20px 60px rgba(0,0,0,0.5);
+    position: relative;
+    transform: translateY(30px);
+    transition: transform 0.3s ease;
+}
+
+.contact-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: #888;
+    font-size: 1rem;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.contact-close:hover { background: rgba(255,255,255,0.15); color: white; }
+
+.contact-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.contact-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #4ac0e0;
+    flex-shrink: 0;
+}
+
+.contact-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+}
+
+.contact-role {
+    font-size: 0.78rem;
+    color: #4ac0e0;
+    margin-top: 3px;
+}
+
+.contact-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ccc;
+    font-size: 0.88rem;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: background 0.2s;
+}
+
+.contact-item:hover {
+    background: rgba(74,192,224,0.1);
+    color: white;
+}
+
+.contact-item-icon { font-size: 1.1rem; flex-shrink: 0; }
