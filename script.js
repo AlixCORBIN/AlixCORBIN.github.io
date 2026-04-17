@@ -479,7 +479,31 @@ function navigate(direction) {
 }
 
 /* =========================================
-   8. DARK MODE
+   8. MUSIQUE
+   ========================================= */
+let musicMuted = false;
+
+function toggleMusic() {
+    musicMuted = !musicMuted;
+    const btn = document.getElementById('music-btn');
+    const iconOn = document.getElementById('music-icon');
+    const iconOff = document.getElementById('music-icon-muted');
+
+    if (musicMuted) {
+        bgMusic.pause();
+        iconOn.style.display = 'none';
+        iconOff.style.display = 'block';
+        btn.classList.add('music-muted');
+    } else {
+        bgMusic.play().catch(() => {});
+        iconOn.style.display = 'block';
+        iconOff.style.display = 'none';
+        btn.classList.remove('music-muted');
+    }
+}
+
+/* =========================================
+   9. DARK MODE
    ========================================= */
 function toggleDarkMode() {
     const isDark = document.body.classList.toggle('dark-mode');
