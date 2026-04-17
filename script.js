@@ -120,6 +120,11 @@ const mainFooter = document.getElementById('main-footer');
 
 let activeCard = null;
 
+// Désactive le zoom hover sur mobile (touch)
+if ('ontouchstart' in window) {
+    document.documentElement.style.setProperty('--hover-scale', '1');
+}
+
 const sfxClick1 = new Audio('assets/wiiClickChanel1.mp3');
 const sfxClick2 = new Audio('assets/wiiClickChanel2.mp3');
 const sfxStart  = new Audio('assets/wiiButtonPopUp.mp3');
