@@ -47,15 +47,21 @@
         </div>
     </div>
 
+    <!-- Flèches fixes de pagination (hors du wrapper overflow:hidden) -->
     <svg id="page-arrow-left" class="page-arrow page-arrow--left" onclick="navigatePage(-1)" viewBox="0 0 50 100">
         <polygon points="40,10 10,50 40,90" />
     </svg>
-
-    <div class="grid-container" id="main-grid"></div>
-
     <svg id="page-arrow-right" class="page-arrow page-arrow--right" onclick="navigatePage(1)" viewBox="0 0 50 100">
         <polygon points="10,10 40,50 10,90" />
     </svg>
+
+    <!-- Carousel -->
+    <div class="grid-wrapper" id="grid-wrapper">
+        <div class="grid-track" id="grid-track">
+            <div class="grid-page" id="grid-page-0"></div>
+            <div class="grid-page" id="grid-page-1"></div>
+        </div>
+    </div>
 
     <div id="full-overlay">
         <svg class="side-arrow left" onclick="navigate(-1)" viewBox="0 0 50 100"><polygon points="40,10 10,50 40,90" /></svg>

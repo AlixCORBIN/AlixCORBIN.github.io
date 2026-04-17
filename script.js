@@ -113,9 +113,9 @@ let currentPage = 0;
 /* =========================================
    2. SÉLECTION DES ÉLÉMENTS DU DOM & AUDIO
    ========================================= */
-const introScreen = document.getElementById('intro-screen');
-const mainGrid = document.getElementById('main-grid');
-const bgMusic = document.getElementById('bg-music');
+const introScreen  = document.getElementById('intro-screen');
+const gridWrapper  = document.getElementById('grid-wrapper');
+const bgMusic      = document.getElementById('bg-music');
 
 const overlay = document.getElementById('full-overlay');
 const overlayContentBox = document.querySelector('.overlay-content');
@@ -249,25 +249,51 @@ function createChannelEl(data, index) {
 }
 
 function renderGrid() {
-    mainGrid.innerHTML = '';
-    const page = PAGES[currentPage];
-    page.forEach((ch, i) => mainGrid.appendChild(createChannelEl(ch, i)));
-    const empties = 12 - page.length;
-    for (let i = 0; i < empties; i++) {
-        const div = document.createElement('div');
-        div.className = 'channel empty';
-        mainGrid.appendChild(div);
-    }
+    PAGES.forEach((pageChannels, pageIndex) => {
+        const pageEl = document.getElementById(`grid-page-${pageIndex}`);
+        if (!pageEl) return;
+        pageEl.innerHTML = '';
+        pageChannels.forEach((ch, i) => pageEl.appendChild(createChannelEl(ch, i)));
+        const empties = 12 - pageChannels.length;
+        for (let i = 0; i < empties; i++) {
+            const div = document.createElement('div');
+            div.className = 'channel empty';
+            pageEl.appendChild(div);
+        }
+    });
     updatePageArrows();
+    updateActivePageStyle();
+    requestAnimationFrame(() => applyCarouselOffset(false));
+}
+
+function applyCarouselOffset(animated = true) {
+    const track  = document.getElementById('grid-track');
+    const pageEl = document.getElementById(`grid-page-${currentPage}`);
+    if (!track || !pageEl) return;
+
+    track.style.transition = animated
+        ? 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)'
+        : 'none';
+
+    // Centre la page active dans le viewport
+    const vw        = window.innerWidth;
+    const pageWidth = pageEl.offsetWidth;
+    const pageLeft  = pageEl.offsetLeft; // position depuis le début du track
+    track.style.transform = `translateX(${(vw - pageWidth) / 2 - pageLeft}px)`;
+}
+
+function updateActivePageStyle() {
+    PAGES.forEach((_, i) => {
+        const pageEl = document.getElementById(`grid-page-${i}`);
+        if (pageEl) pageEl.classList.toggle('page-inactive', i !== currentPage);
+    });
 }
 
 function updatePageArrows() {
     const leftArrow  = document.getElementById('page-arrow-left');
     const rightArrow = document.getElementById('page-arrow-right');
-    if (leftArrow)  leftArrow.style.opacity  = currentPage > 0 ? '1' : '0';
-    if (leftArrow)  leftArrow.style.pointerEvents = currentPage > 0 ? 'all' : 'none';
-    if (rightArrow) rightArrow.style.opacity = currentPage < PAGES.length - 1 ? '1' : '0';
-    if (rightArrow) rightArrow.style.pointerEvents = currentPage < PAGES.length - 1 ? 'all' : 'none';
+    if (leftArrow)  { leftArrow.style.opacity  = currentPage > 0 ? '1' : '0';               leftArrow.style.pointerEvents  = currentPage > 0 ? 'all' : 'none'; }
+    if (rightArrow) { rightArrow.style.opacity = currentPage < PAGES.length - 1 ? '1' : '0'; rightArrow.style.pointerEvents = currentPage < PAGES.length - 1 ? 'all' : 'none'; }
 }
 
 function navigatePage(dir) {
@@ -275,19 +301,14 @@ function navigatePage(dir) {
     if (newPage < 0 || newPage >= PAGES.length) return;
     sfxBack.currentTime = 0;
     sfxBack.play().catch(() => {});
-    mainGrid.style.opacity = '0';
-    mainGrid.style.transform = `translateX(${dir > 0 ? '-40px' : '40px'})`;
-    setTimeout(() => {
-        currentPage = newPage;
-        renderGrid();
-        mainGrid.style.transition = 'none';
-        mainGrid.style.transform = `translateX(${dir > 0 ? '40px' : '-40px'})`;
-        mainGrid.offsetHeight; // reflow
-        mainGrid.style.transition = 'opacity 0.4s, transform 0.4s';
-        mainGrid.style.opacity = '1';
-        mainGrid.style.transform = 'translateX(0)';
-    }, 300);
+    currentPage = newPage;
+    applyCarouselOffset(true);
+    updatePageArrows();
+    updateActivePageStyle();
 }
+
+// Recalcule l'offset si la fenêtre est redimensionnée
+window.addEventListener('resize', () => applyCarouselOffset(false));
 
 /* =========================================
    5. GESTION DE L'INTRODUCTION
@@ -301,7 +322,7 @@ function startExperience() {
         introScreen.style.opacity = '0';
         setTimeout(() => {
             introScreen.style.display = 'none';
-            if (mainGrid) mainGrid.classList.add('grid-visible');
+            if (gridWrapper) gridWrapper.classList.add('grid-visible');
         }, 500);
     }
 }
