@@ -1122,3 +1122,214 @@ body.dark-mode .ch-label { color: #ddd; text-shadow: 0 0 8px rgba(0,0,0,0.8); }
 
 /* --- Modal contact --- */
 body.dark-mode #contact-modal { background: rgba(0,0,0,0.75); }
+
+/* =========================================
+   15. TOUCH — désactive effets hover sur mobile
+   ========================================= */
+@media (hover: none) {
+    .channel:not(.empty):hover {
+        transform: none;
+        border-color: #b0b0b0;
+        box-shadow: 3px 3px 10px rgba(0,0,0,0.1);
+    }
+    body.dark-mode .channel:not(.empty):hover {
+        border-color: #2e3350;
+        box-shadow: 3px 3px 10px rgba(0,0,0,0.4);
+    }
+    .pill-btn:hover, .glass-btn:hover { transform: none; }
+}
+
+/* =========================================
+   17. RESPONSIVE — TABLETTE (≤ 768px)
+   ========================================= */
+@media (max-width: 768px) {
+
+    /* --- Grille : 2 colonnes, cases vides masquées --- */
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        height: 56vh;
+        margin-bottom: 16vh;
+        gap: 1.2vh;
+        width: 94vw;
+    }
+    .channel.empty { display: none; }
+
+    /* --- Footer principal --- */
+    .footer-container { height: 110px; }
+
+    .wii-btn-wrapper {
+        width: 62px;
+        height: 62px;
+        bottom: 18px;
+    }
+    .left-btn { left: 12px; }
+    .right-btn { right: 12px; }
+
+    .glass-btn { width: 52px; height: 52px; }
+    .glass-btn::after { width: 30px; height: 20px; left: 9px; }
+    .btn-text { font-size: 15px; }
+    .btn-icon { width: 44%; }
+
+    .music-btn {
+        left: 86px;
+        bottom: 27px;
+        width: 36px;
+        height: 36px;
+    }
+    .music-btn svg { width: 17px; height: 17px; }
+
+    /* Clock : contrainte pour ne pas déborder sur les boutons */
+    .clock-area {
+        max-width: calc(100% - 220px);
+        margin-bottom: 10px;
+        overflow: hidden;
+    }
+    .portfolio-title {
+        font-size: clamp(0.55rem, 2vw, 1rem);
+        letter-spacing: 0;
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 6px;
+    }
+    .digital-time { font-size: 2.2rem; letter-spacing: 1px; }
+    .date-text { font-size: 0.9rem; margin-top: 2px; }
+
+    /* --- Overlay footer (boutons Démarrer / Menu Wii) --- */
+    .overlay-footer {
+        height: 80px;
+        gap: 24px;
+    }
+    .pill-btn {
+        width: 150px;
+        height: 52px;
+        font-size: 1.2rem;
+        border-width: 3px;
+    }
+
+    /* --- Flèches de navigation --- */
+    .side-arrow { width: 36px; height: 56px; }
+    .side-arrow.left { left: 8px; }
+    .side-arrow.right { right: 8px; }
+
+    /* --- Overlay texte générique --- */
+    .start-title { font-size: 2.5rem; }
+    .start-subtitle { font-size: 1.1rem; }
+    .start-icon { font-size: 5rem; }
+
+    /* --- Overlay image-bg --- */
+    .ov-emoji { font-size: 3.5rem; margin-bottom: 12px; }
+    .ov-title { font-size: 2rem; letter-spacing: 1px; }
+    .ov-desc { font-size: 1.1rem; }
+
+    /* --- Overlay "Moi" : colonne unique --- */
+    .moi-layout {
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 20px;
+        gap: 16px;
+        overflow-y: auto;
+        max-height: 100%;
+    }
+    .moi-left { flex-direction: row; gap: 16px; width: 100%; }
+    .moi-avatar-ring { width: 80px; height: 80px; flex-shrink: 0; margin-bottom: 0; }
+    .moi-name { font-size: 1.3rem; }
+    .moi-role { font-size: 0.85rem; }
+    .moi-location { font-size: 0.8rem; }
+    .moi-right { width: 100%; gap: 10px; }
+    .moi-card { padding: 10px 14px; }
+    .moi-card-icon { font-size: 1.4rem; }
+    .moi-card-value { font-size: 0.9rem; }
+    .moi-card-title { font-size: 0.65rem; }
+    .moi-cta { font-size: 0.8rem; }
+
+    /* --- Overlay scrollable sur mobile --- */
+    .overlay-content { overflow-y: auto; }
+
+    /* --- Intro screen --- */
+    .warning-header { font-size: 1rem; margin-bottom: 20px; }
+    .warning-icon { width: 36px; height: 36px; margin-right: 12px; }
+    .intro-text { font-size: 0.85rem; max-width: 92%; padding: 0 16px; margin-bottom: 30px; }
+    .press-btn { margin-top: 20px; }
+    .mouse-icon { width: 36px; height: 36px; }
+
+    /* --- Modal contact : centré en bas --- */
+    #contact-modal {
+        align-items: flex-end;
+        justify-content: center;
+        padding: 0 0 120px 0;
+    }
+    .contact-card {
+        width: calc(100% - 32px);
+        max-width: 420px;
+        padding: 20px 20px;
+    }
+}
+
+/* =========================================
+   18. RESPONSIVE — TÉLÉPHONE (≤ 480px)
+   ========================================= */
+@media (max-width: 480px) {
+
+    /* --- Grille --- */
+    .grid-container {
+        height: 52vh;
+        margin-bottom: 18vh;
+        gap: 1vh;
+        width: 96vw;
+    }
+    .channel { border-width: 3px; border-radius: 14px; }
+
+    /* --- Footer --- */
+    .footer-container { height: 96px; }
+
+    .wii-btn-wrapper { width: 52px; height: 52px; bottom: 16px; }
+    .left-btn { left: 10px; }
+    .right-btn { right: 10px; }
+    .glass-btn { width: 44px; height: 44px; }
+    .glass-btn::after { width: 26px; height: 17px; left: 8px; top: 4px; }
+    .btn-text { font-size: 12px; }
+
+    .music-btn {
+        left: 72px;
+        bottom: 24px;
+        width: 30px;
+        height: 30px;
+    }
+    .music-btn svg { width: 14px; height: 14px; }
+
+    /* Sur petit téléphone : cache le titre, garde juste l'heure */
+    .portfolio-title { display: none; }
+    .digital-time { font-size: 2rem; letter-spacing: 1px; }
+    .date-text { font-size: 0.85rem; }
+    .clock-area { max-width: calc(100% - 200px); margin-bottom: 12px; }
+
+    /* --- Overlay footer --- */
+    .overlay-footer { height: 68px; gap: 16px; }
+    .pill-btn {
+        width: 130px;
+        height: 44px;
+        font-size: 1rem;
+        border-radius: 26px;
+    }
+
+    /* --- Overlay image-bg --- */
+    .ov-emoji { font-size: 2.8rem; margin-bottom: 8px; }
+    .ov-title { font-size: 1.6rem; }
+    .ov-desc { font-size: 0.95rem; }
+    .overlay-text-block { padding: 12px; max-width: 92%; }
+
+    /* --- Overlay "Moi" --- */
+    .moi-avatar-ring { width: 64px; height: 64px; }
+    .moi-name { font-size: 1.1rem; }
+
+    /* --- Intro screen --- */
+    .intro-text { font-size: 0.78rem; }
+
+    /* --- Contact modal --- */
+    .contact-card { padding: 16px; }
+    .contact-name { font-size: 1rem; }
+    .contact-item { font-size: 0.82rem; padding: 6px 10px; }
+}
