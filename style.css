@@ -789,6 +789,32 @@ button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
     font-weight: 600;
 }
 
+.moi-socials {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.moi-social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #aaa;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.moi-social-btn:hover {
+    background: rgba(74,192,224,0.2);
+    border-color: rgba(74,192,224,0.5);
+    color: #4ac0e0;
+}
+
 .moi-cta {
     font-size: 0.9rem;
     color: #666;
