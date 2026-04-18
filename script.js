@@ -474,7 +474,7 @@ function renderOverlayContent(data) {
         startBtn.classList.remove('btn-disabled');
         startBtn.innerText = data.type === 'moi' ? t('overlay.cv') : t('overlay.start');
         startBtn.onclick = data.link
-            ? () => { playStartSound(); window.open(data.link, '_blank'); }
+            ? () => { playStartSound(); data.type === 'moi' ? window.open(data.link, '_blank') : (window.location.href = data.link); }
             : null;
     }
 
