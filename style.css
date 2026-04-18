@@ -1474,10 +1474,10 @@ body.dark-mode .lang-divider { background: rgba(255,255,255,0.08); }
 body.overlay-open #lang-switcher {
     opacity: 1;
     pointer-events: auto;
-    z-index: 9999;
-    left: auto;
-    right: 16px;
-    transform: none;
+    z-index: 10000;
+    left: unset !important;
+    right: 16px !important;
+    transform: none !important;
 }
 
 /* =========================================
