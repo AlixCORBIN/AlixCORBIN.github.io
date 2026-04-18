@@ -1470,8 +1470,8 @@ body.dark-mode .lang-btn { color: #444; }
 body.dark-mode .lang-btn.lang-active { background: #2e3350; color: #ddd; box-shadow: none; }
 body.dark-mode .lang-divider { background: rgba(255,255,255,0.08); }
 
-/* Masqué quand overlay ouvert */
-body.overlay-open #lang-switcher { opacity: 0; pointer-events: none; }
+/* Toujours visible, même quand overlay ouvert */
+body.overlay-open #lang-switcher { opacity: 1; pointer-events: auto; z-index: 9999; }
 
 /* =========================================
    21. HINT DARK MODE (REBOND)
