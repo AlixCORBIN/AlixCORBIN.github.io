@@ -610,7 +610,7 @@ function renderOverlayContent(data) {
                     </div>
 
                     <a href="https://www.univ-lemans.fr/fr/actualites/en-2026/ceremonie-des-walid.html"
-                       target="_blank" class="award-hero-card">
+                       target="_self" class="award-hero-card">
                         <img src="https://iut-laval.univ-lemans.fr/_resource/08-Actualit%C3%A9s/2026/F%C3%A9vrier/mmi%20sa%C3%A9/Meilleur%20Portfolio.png"
                              class="award-hero-bg" alt="">
                         <div class="award-hero-bg-fade"></div>
@@ -630,7 +630,7 @@ function renderOverlayContent(data) {
                     <div class="awards-bottom-row">
 
                         <a href="https://www.stjoseph-lasalle.fr/concours-deloquence-2023/"
-                           target="_blank" class="award-small-card">
+                           target="_self" class="award-small-card">
                             <div class="award-small-bar bar-silver"></div>
                             <img src="assets/eloquence.jpg" class="award-small-img" alt="">
                             <div class="award-small-fade"></div>
