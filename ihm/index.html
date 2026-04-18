@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IHM Roomba — Alix CORBIN</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/lang-switcher.css">
     <style>
         :root {
             --bg:       #080d1a;
@@ -387,9 +388,9 @@
 
     <!-- Nav -->
     <nav>
-        <a href="../index.html">← Portfolio</a>
+        <a href="../index.html" data-i18n="ihm.nav.portfolio">← Portfolio</a>
         <span>/</span>
-        <span>IHM Roomba</span>
+        <span data-i18n="ihm.nav.title">IHM Roomba</span>
     </nav>
 
     <!-- Hero -->
@@ -527,6 +528,22 @@
         if (e.key === 'Escape') closeLightbox();
     });
 </script>
+
+<script>
+window.PAGE_TRANSLATIONS = {
+    fr: {
+        'page.title': 'IHM Roomba — Alix CORBIN',
+        'ihm.nav.portfolio': '← Portfolio',
+        'ihm.nav.title': 'IHM Roomba'
+    },
+    en: {
+        'page.title': 'Roomba HMI — Alix CORBIN',
+        'ihm.nav.portfolio': '← Portfolio',
+        'ihm.nav.title': 'Roomba HMI'
+    }
+};
+</script>
+<script src="../assets/lang-switcher.js"></script>
 
 </body>
 </html>
