@@ -1410,7 +1410,7 @@ body.overlay-open .page-arrow { opacity: 0 !important; pointer-events: none !imp
     top: 16px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 300;
+    z-index: 10000;
     display: flex;
     align-items: center;
     background: rgba(255,255,255,0.88);
