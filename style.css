@@ -430,28 +430,6 @@ button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
     font-weight: 500;
 }
 
-.weather-info {
-    font-size: 0.85rem;
-    color: #888;
-    margin-top: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-}
-
-.weather-temp {
-    font-weight: 600;
-    color: #4ac0e0;
-}
-
-.weather-city {
-    color: #aaa;
-    font-size: 0.8rem;
-}
-
-body.dark-mode .weather-temp { color: #4a5568; }
-body.dark-mode .weather-city { color: #4a5568; }
 
 /* =========================================
    6. STYLE SPÉCIFIQUE PAGE "MOI"
@@ -1931,4 +1909,97 @@ body.overlay-open #lang-switcher {
     .award-small-card    { height: 140px; }
     .award-small-name    { font-size: 0.72rem; }
     .award-small-event   { font-size: 0.64rem; }
+}
+
+/* =========================================
+   CHAÎNE MÉTÉO
+   ========================================= */
+
+/* ── Carte dans la grille ── */
+.meteo-card-inner {
+    background: linear-gradient(135deg, #0f2027, #2c5364) !important;
+    justify-content: center;
+    gap: 4px;
+}
+.meteo-card-icon {
+    font-size: 2.4rem;
+}
+.meteo-card-label {
+    color: #7ecfea !important;
+    text-shadow: 0 0 10px rgba(126,207,234,0.5) !important;
+}
+.meteo-card-sub {
+    font-size: 0.9rem;
+    color: #aad4e0;
+    font-weight: 600;
+}
+
+/* ── Overlay ── */
+.meteo-loading {
+    font-size: 1.2rem;
+    color: #aaa;
+    text-align: center;
+}
+.meteo-overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    color: white;
+}
+.meteo-header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+.meteo-icon-big {
+    font-size: 5rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 20px rgba(126,207,234,0.6));
+}
+.meteo-temp-big {
+    font-family: 'Orbitron', monospace;
+    font-size: 3.5rem;
+    color: #7ecfea;
+    text-shadow: 0 0 20px rgba(126,207,234,0.4);
+}
+.meteo-desc {
+    font-size: 1.1rem;
+    color: #cce8f0;
+    text-transform: capitalize;
+}
+.meteo-city {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-top: 2px;
+}
+.meteo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+}
+.meteo-stat {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(126,207,234,0.15);
+    border-radius: 10px;
+    padding: 12px 16px;
+    text-align: center;
+}
+.meteo-stat-label {
+    font-size: 0.7rem;
+    color: #aaa;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.meteo-stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #7ecfea;
 }
