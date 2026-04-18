@@ -6,54 +6,55 @@
     <title>Projets Arduino - Alix CORBIN</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/lang-switcher.css">
 </head>
 <body>
 
     <div class="container">
         <header>
             <div class="icon-chip"></div>
-            <h1>Labo Arduino & Électronique</h1>
-            <p>Expérimentations, code C++ et prototypage hardware.</p>
+            <h1 data-i18n="arduino.title">Labo Arduino & Électronique</h1>
+            <p data-i18n="arduino.subtitle">Expérimentations, code C++ et prototypage hardware.</p>
         </header>
 
         <section class="featured-project">
-            <h2>🏆 Projet Terminé : SAVI</h2>
+            <h2 data-i18n="arduino.featured.h2">🏆 Projet Terminé : SAVI</h2>
             <div class="card-featured">
                 <div class="img-container">
                     <video autoplay loop muted playsinline controls style="width:100%; height:100%; object-fit: cover;">
                         <source src="../assets/savi.mp4" type="video/mp4">
-                        Votre navigateur ne supporte pas la vidéo.
+                        <span data-i18n="arduino.video.unsupported">Votre navigateur ne supporte pas la vidéo.</span>
                     </video>
                 </div>
-                
+
                 <div class="content">
-                    <h3>Devanture de Magasin Animée</h3>
-                    <span class="badge success">Installé au Mans</span>
-                    <p>
+                    <h3 data-i18n="arduino.savi.h3">Devanture de Magasin Animée</h3>
+                    <span class="badge success" data-i18n="arduino.savi.badge">Installé au Mans</span>
+                    <p data-i18n="arduino.savi.desc">
                         Conception et réalisation d'une vitrine automatisée pour Pâques.
                         Le système gère l'animation de plusieurs éléments mécaniques pour attirer les passants.
                     </p>
                     <ul>
-                        <li><strong>Cible :</strong> Commerçants du centre-ville</li>
+                        <li><strong data-i18n="arduino.savi.target.label">Cible :</strong> <span data-i18n="arduino.savi.target">Commerçants du centre-ville</span></li>
                         <li><strong>Tech :</strong> Arduino Mega, Servomoteurs, Relais</li>
-                        <li><strong>Défi :</strong> Fiabilité pour tourner 24h/24</li>
+                        <li><strong data-i18n="arduino.savi.challenge.label">Défi :</strong> <span data-i18n="arduino.savi.challenge">Fiabilité pour tourner 24h/24</span></li>
                     </ul>
                 </div>
             </div>
         </section>
 
         <section class="wip-projects">
-            <h2>🛠️ Sur l'établi (Prototypes & Dev)</h2>
+            <h2 data-i18n="arduino.wip.h2">🛠️ Sur l'établi (Prototypes & Dev)</h2>
             <div class="grid">
-                
+
                 <div class="card-wip">
                     <div class="icon-box">🔒</div>
-                    <h3>Serrure Sécurisée RFID</h3>
-                    <p>Système de contrôle d'accès utilisant la technologie NFC/RFID.</p>
+                    <h3 data-i18n="arduino.rfid.h3">Serrure Sécurisée RFID</h3>
+                    <p data-i18n="arduino.rfid.desc">Système de contrôle d'accès utilisant la technologie NFC/RFID.</p>
                     <ul style="font-size: 0.85rem; padding-left: 20px; color: #666;">
                         <li>Module RC522</li>
-                        <li>Gestion Carte Maître / Utilisateur</li>
-                        <li>Servomoteur de verrouillage</li>
+                        <li data-i18n="arduino.rfid.li2">Gestion Carte Maître / Utilisateur</li>
+                        <li data-i18n="arduino.rfid.li3">Servomoteur de verrouillage</li>
                     </ul>
                     <div class="progress-bar"><div style="width: 80%;"></div></div>
                 </div>
@@ -63,14 +64,14 @@
                         <img src="../assets/roomba.jpg" alt="Hack Roomba">
                     </div>
 
-                    <h3>Hack Roomba (Hardware)</h3>
-                    <p>Interface bas niveau pour le contrôle total du robot.</p>
+                    <h3 data-i18n="arduino.roomba.h3">Hack Roomba (Hardware)</h3>
+                    <p data-i18n="arduino.roomba.desc">Interface bas niveau pour le contrôle total du robot.</p>
                     <ul style="font-size: 0.85rem; padding-left: 20px; color: #666;">
-                        <li>Pont Série Arduino ↔ Tablette</li>
-                        <li>Contrôle moteurs & Capteurs</li>
-                        <li>Gestion des boutons physiques</li>
+                        <li data-i18n="arduino.roomba.li1">Pont Série Arduino ↔ Tablette</li>
+                        <li data-i18n="arduino.roomba.li2">Contrôle moteurs & Capteurs</li>
+                        <li data-i18n="arduino.roomba.li3">Gestion des boutons physiques</li>
                     </ul>
-                    <a href="../ihm/index.html" style="display:inline-block; margin-top: 12px; font-size: 0.82rem; color: #00979d; text-decoration: none; border: 1px solid #00979d; border-radius: 4px; padding: 5px 12px; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,151,157,0.1)'" onmouseout="this.style.background='transparent'">
+                    <a href="../ihm/index.html" data-i18n="arduino.roomba.link" style="display:inline-block; margin-top: 12px; font-size: 0.82rem; color: #00979d; text-decoration: none; border: 1px solid #00979d; border-radius: 4px; padding: 5px 12px; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,151,157,0.1)'" onmouseout="this.style.background='transparent'">
                         → Voir l'IHM associée
                     </a>
                     <div class="progress-bar" style="margin-top: 12px;"><div style="width: 60%;"></div></div>
@@ -78,12 +79,12 @@
 
                 <div class="card-wip">
                     <div class="icon-box">💨</div>
-                    <h3>VMC Intelligente</h3>
-                    <p>Gestion autonome de l'aération selon l'environnement.</p>
+                    <h3 data-i18n="arduino.vmc.h3">VMC Intelligente</h3>
+                    <p data-i18n="arduino.vmc.desc">Gestion autonome de l'aération selon l'environnement.</p>
                     <ul style="font-size: 0.85rem; padding-left: 20px; color: #666;">
-                        <li>Capteur DHT11 (Humidité/Temp)</li>
-                        <li>Seuils de déclenchement auto</li>
-                        <li>Pilotage Relais 220V</li>
+                        <li data-i18n="arduino.vmc.li1">Capteur DHT11 (Humidité/Temp)</li>
+                        <li data-i18n="arduino.vmc.li2">Seuils de déclenchement auto</li>
+                        <li data-i18n="arduino.vmc.li3">Pilotage Relais 220V</li>
                     </ul>
                     <div class="progress-bar"><div style="width: 30%;"></div></div>
                 </div>
@@ -92,5 +93,70 @@
         </section>
     </div>
 
+    <script>
+    window.PAGE_TRANSLATIONS = {
+        fr: {
+            'page.title': 'Projets Arduino - Alix CORBIN',
+            'arduino.title': 'Labo Arduino & Électronique',
+            'arduino.subtitle': 'Expérimentations, code C++ et prototypage hardware.',
+            'arduino.featured.h2': '🏆 Projet Terminé : SAVI',
+            'arduino.video.unsupported': 'Votre navigateur ne supporte pas la vidéo.',
+            'arduino.savi.h3': 'Devanture de Magasin Animée',
+            'arduino.savi.badge': 'Installé au Mans',
+            'arduino.savi.desc': 'Conception et réalisation d\'une vitrine automatisée pour Pâques. Le système gère l\'animation de plusieurs éléments mécaniques pour attirer les passants.',
+            'arduino.savi.target.label': 'Cible :',
+            'arduino.savi.target': 'Commerçants du centre-ville',
+            'arduino.savi.challenge.label': 'Défi :',
+            'arduino.savi.challenge': 'Fiabilité pour tourner 24h/24',
+            'arduino.wip.h2': '🛠️ Sur l\'établi (Prototypes & Dev)',
+            'arduino.rfid.h3': 'Serrure Sécurisée RFID',
+            'arduino.rfid.desc': 'Système de contrôle d\'accès utilisant la technologie NFC/RFID.',
+            'arduino.rfid.li2': 'Gestion Carte Maître / Utilisateur',
+            'arduino.rfid.li3': 'Servomoteur de verrouillage',
+            'arduino.roomba.h3': 'Hack Roomba (Hardware)',
+            'arduino.roomba.desc': 'Interface bas niveau pour le contrôle total du robot.',
+            'arduino.roomba.li1': 'Pont Série Arduino ↔ Tablette',
+            'arduino.roomba.li2': 'Contrôle moteurs & Capteurs',
+            'arduino.roomba.li3': 'Gestion des boutons physiques',
+            'arduino.roomba.link': '→ Voir l\'IHM associée',
+            'arduino.vmc.h3': 'VMC Intelligente',
+            'arduino.vmc.desc': 'Gestion autonome de l\'aération selon l\'environnement.',
+            'arduino.vmc.li1': 'Capteur DHT11 (Humidité/Temp)',
+            'arduino.vmc.li2': 'Seuils de déclenchement auto',
+            'arduino.vmc.li3': 'Pilotage Relais 220V'
+        },
+        en: {
+            'page.title': 'Arduino Projects - Alix CORBIN',
+            'arduino.title': 'Arduino & Electronics Lab',
+            'arduino.subtitle': 'Experiments, C++ code and hardware prototyping.',
+            'arduino.featured.h2': '🏆 Completed Project: SAVI',
+            'arduino.video.unsupported': 'Your browser does not support video.',
+            'arduino.savi.h3': 'Animated Shop Display',
+            'arduino.savi.badge': 'Installed in Le Mans',
+            'arduino.savi.desc': 'Design and implementation of an automated Easter shop window. The system manages the animation of several mechanical elements to attract passers-by.',
+            'arduino.savi.target.label': 'Target:',
+            'arduino.savi.target': 'Downtown shopkeepers',
+            'arduino.savi.challenge.label': 'Challenge:',
+            'arduino.savi.challenge': 'Reliability to run 24/7',
+            'arduino.wip.h2': '🛠️ On the Workbench (Prototypes & Dev)',
+            'arduino.rfid.h3': 'Secure RFID Lock',
+            'arduino.rfid.desc': 'Access control system using NFC/RFID technology.',
+            'arduino.rfid.li2': 'Master / User Card Management',
+            'arduino.rfid.li3': 'Locking servo motor',
+            'arduino.roomba.h3': 'Roomba Hack (Hardware)',
+            'arduino.roomba.desc': 'Low-level interface for full robot control.',
+            'arduino.roomba.li1': 'Serial Bridge Arduino ↔ Tablet',
+            'arduino.roomba.li2': 'Motor & Sensor Control',
+            'arduino.roomba.li3': 'Physical button management',
+            'arduino.roomba.link': '→ See the associated HMI',
+            'arduino.vmc.h3': 'Smart Ventilation (VMC)',
+            'arduino.vmc.desc': 'Autonomous ventilation management based on environment.',
+            'arduino.vmc.li1': 'DHT11 Sensor (Humidity/Temp)',
+            'arduino.vmc.li2': 'Auto trigger thresholds',
+            'arduino.vmc.li3': '220V Relay Control'
+        }
+    };
+    </script>
+    <script src="../assets/lang-switcher.js"></script>
 </body>
 </html>

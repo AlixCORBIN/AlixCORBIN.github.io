@@ -1,0 +1,68 @@
+/* ============================================
+   LANG SWITCHER — DRAPEAUX (pages secondaires)
+   ============================================ */
+#lang-switcher {
+    position: fixed;
+    top: 14px;
+    right: 16px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 4px 6px;
+    gap: 4px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.14);
+    border: 1px solid rgba(0,0,0,0.08);
+    transition: background 0.3s;
+}
+
+.lang-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 50%;
+    transition: transform 0.18s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+}
+
+.lang-btn:hover { transform: scale(1.12); }
+
+.flag-img {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(40%) opacity(0.6);
+    transition: filter 0.2s, box-shadow 0.2s;
+}
+
+.lang-btn.lang-active .flag-img {
+    filter: grayscale(0%) opacity(1);
+    box-shadow: 0 0 0 2px #4ac0e0;
+}
+
+.lang-btn:hover .flag-img {
+    filter: grayscale(0%) opacity(0.9);
+}
+
+.lang-divider {
+    width: 1px;
+    height: 18px;
+    background: rgba(0,0,0,0.1);
+    flex-shrink: 0;
+}
+
+/* Adaptation sur fond sombre */
+.dark-bg #lang-switcher,
+[data-theme="dark"] #lang-switcher {
+    background: rgba(15,18,30,0.9);
+    border-color: rgba(255,255,255,0.08);
+}

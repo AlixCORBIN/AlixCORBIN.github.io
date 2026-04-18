@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Culture Générale — Alix CORBIN</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/lang-switcher.css">
     <style>
         :root {
             --bg:     #f7f4ef;
@@ -198,15 +199,15 @@
 <body>
 
 <nav>
-    <a href="../index.html">← Portfolio</a>
+    <a href="../index.html" data-i18n="culture.nav.portfolio">← Portfolio</a>
     <span>/</span>
-    <span>Culture Générale</span>
+    <span data-i18n="culture.nav.title">Culture Générale</span>
 </nav>
 
 <main>
-    <p class="kicker">Culture Générale · Alix CORBIN</p>
-    <h1>Ce que j'apprends<br>en dehors des cours</h1>
-    <p class="intro">
+    <p class="kicker" data-i18n="culture.kicker">Culture Générale · Alix CORBIN</p>
+    <h1 data-i18n="culture.h1">Ce que j'apprends<br>en dehors des cours</h1>
+    <p class="intro" data-i18n="culture.intro">
         Chaque semestre, je me fixe un thème à explorer de manière autonome.
         Le principe : apprendre régulièrement, par curiosité, sans y être contraint.
     </p>
@@ -217,14 +218,14 @@
         <a class="card" href="s3.html">
             <div class="card-top s3">
                 <div class="card-num">S3</div>
-                <p class="card-semester">Semestre 3</p>
-                <h2 class="card-title">Cinéma &<br>Leçons de vie</h2>
-                <p class="card-desc">Films, séries et les morales que j'en tire. Une œuvre par semaine, une réflexion associée.</p>
+                <p class="card-semester" data-i18n="culture.s3.semester">Semestre 3</p>
+                <h2 class="card-title" data-i18n="culture.s3.title">Cinéma &<br>Leçons de vie</h2>
+                <p class="card-desc" data-i18n="culture.s3.desc">Films, séries et les morales que j'en tire. Une œuvre par semaine, une réflexion associée.</p>
             </div>
             <div class="card-bottom">
                 <div class="card-meta">
-                    <strong>Format</strong>
-                    1 film ou série / semaine
+                    <strong data-i18n="culture.format">Format</strong>
+                    <span data-i18n="culture.s3.format">1 film ou série / semaine</span>
                 </div>
                 <div class="card-arrow s3">→</div>
             </div>
@@ -234,15 +235,15 @@
         <a class="card" href="s4.html">
             <div class="card-top s4">
                 <div class="card-num">S4</div>
-                <p class="card-semester">Semestre 4</p>
-                <h2 class="card-title">Troubles<br>Humains</h2>
-                <p class="card-desc">TOC, TIC et mécanismes du cerveau. Une heure de recherche chaque dimanche depuis mi-janvier.</p>
-                <span class="badge-new">En cours</span>
+                <p class="card-semester" data-i18n="culture.s4.semester">Semestre 4</p>
+                <h2 class="card-title" data-i18n="culture.s4.title">Troubles<br>Humains</h2>
+                <p class="card-desc" data-i18n="culture.s4.desc">TOC, TIC et mécanismes du cerveau. Une heure de recherche chaque dimanche depuis mi-janvier.</p>
+                <span class="badge-new" data-i18n="culture.s4.badge">En cours</span>
             </div>
             <div class="card-bottom">
                 <div class="card-meta">
-                    <strong>Format</strong>
-                    1h de recherche / dimanche · 11 séances
+                    <strong data-i18n="culture.format">Format</strong>
+                    <span data-i18n="culture.s4.format">1h de recherche / dimanche · 11 séances</span>
                 </div>
                 <div class="card-arrow s4">→</div>
             </div>
@@ -251,5 +252,46 @@
     </div>
 </main>
 
+<script>
+window.PAGE_TRANSLATIONS = {
+    fr: {
+        'page.title': 'Culture Générale — Alix CORBIN',
+        'culture.nav.portfolio': '← Portfolio',
+        'culture.nav.title': 'Culture Générale',
+        'culture.kicker': 'Culture Générale · Alix CORBIN',
+        'culture.h1': 'Ce que j\'apprends<br>en dehors des cours',
+        'culture.intro': 'Chaque semestre, je me fixe un thème à explorer de manière autonome. Le principe : apprendre régulièrement, par curiosité, sans y être contraint.',
+        'culture.format': 'Format',
+        'culture.s3.semester': 'Semestre 3',
+        'culture.s3.title': 'Cinéma &<br>Leçons de vie',
+        'culture.s3.desc': 'Films, séries et les morales que j\'en tire. Une œuvre par semaine, une réflexion associée.',
+        'culture.s3.format': '1 film ou série / semaine',
+        'culture.s4.semester': 'Semestre 4',
+        'culture.s4.title': 'Troubles<br>Humains',
+        'culture.s4.desc': 'TOC, TIC et mécanismes du cerveau. Une heure de recherche chaque dimanche depuis mi-janvier.',
+        'culture.s4.badge': 'En cours',
+        'culture.s4.format': '1h de recherche / dimanche · 11 séances'
+    },
+    en: {
+        'page.title': 'General Culture — Alix CORBIN',
+        'culture.nav.portfolio': '← Portfolio',
+        'culture.nav.title': 'General Culture',
+        'culture.kicker': 'General Culture · Alix CORBIN',
+        'culture.h1': 'What I learn<br>outside of class',
+        'culture.intro': 'Each semester, I choose a theme to explore autonomously. The principle: learn regularly, out of curiosity, without being forced to.',
+        'culture.format': 'Format',
+        'culture.s3.semester': 'Semester 3',
+        'culture.s3.title': 'Cinema &<br>Life Lessons',
+        'culture.s3.desc': 'Films, series and the morals I take from them. One work per week, one associated reflection.',
+        'culture.s3.format': '1 film or series / week',
+        'culture.s4.semester': 'Semester 4',
+        'culture.s4.title': 'Human<br>Disorders',
+        'culture.s4.desc': 'OCD, tics and brain mechanisms. One hour of research every Sunday since mid-January.',
+        'culture.s4.badge': 'In progress',
+        'culture.s4.format': '1h of research / Sunday · 11 sessions'
+    }
+};
+</script>
+<script src="../assets/lang-switcher.js"></script>
 </body>
 </html>
