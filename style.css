@@ -1,17 +1,25 @@
 /* =========================================
    1. CONFIGURATION GÉNÉRALE
    ========================================= */
-body, html {
+html {
     height: 100%;
+    overflow: hidden;
+}
+
+body {
+    height: 100%;
+    /* Fallback puis dvh pour mobile (exclut la barre d'adresse) */
+    height: 100dvh;
     margin: 0;
     overflow: hidden;
+    overscroll-behavior: none;
     font-family: 'Roboto', sans-serif;
     background-color: #e8e8e8;
     background-image: repeating-linear-gradient(
-        0deg, 
-        transparent, 
-        transparent 2px, 
-        #d4d4d4 2px, 
+        0deg,
+        transparent,
+        transparent 2px,
+        #d4d4d4 2px,
         #d4d4d4 4px
     );
     display: flex;
@@ -19,7 +27,7 @@ body, html {
     align-items: center;
     justify-content: center;
     user-select: none;
-    
+
     /* Curseur Wii personnalisé */
     cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), auto !important;
 }
