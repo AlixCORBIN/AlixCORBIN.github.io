@@ -11,6 +11,25 @@ body {
     justify-content: center;
 }
 
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 24px;
+    padding: 8px 18px;
+    background: #00979d;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.2s, transform 0.15s;
+}
+.back-btn:hover {
+    background: #007a80;
+    transform: translateX(-3px);
+}
+
 .container {
     max-width: 900px;
     width: 100%;
