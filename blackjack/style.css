@@ -1,3 +1,21 @@
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    background: #2d572c;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.2s, transform 0.15s;
+}
+.back-btn:hover {
+    background: #1e3c1e;
+    transform: translateX(-3px);
+}
+
 :root {
     --felt-green: #2d572c;
     --felt-dark: #1e3c1e;

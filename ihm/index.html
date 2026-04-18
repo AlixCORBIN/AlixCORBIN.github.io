@@ -364,6 +364,28 @@
             margin-top: 1px;
         }
 
+        /* ── BACK BUTTON ── */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            padding: 8px 18px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            color: var(--cyan);
+            text-decoration: none;
+            border-radius: 6px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            transition: background 0.2s, border-color 0.2s, transform 0.15s;
+        }
+        .back-btn:hover {
+            background: rgba(0,212,255,0.08);
+            border-color: var(--cyan);
+            transform: translateX(-3px);
+        }
+
         /* ── ANIMATIONS ── */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(20px); }
@@ -385,6 +407,8 @@
 <body>
 
 <div class="container">
+
+    <a href="../index.html" class="back-btn" data-i18n="ihm.nav.portfolio">← Portfolio</a>
 
     <!-- Nav -->
     <nav>
