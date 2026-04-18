@@ -430,6 +430,29 @@ button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
     font-weight: 500;
 }
 
+.weather-info {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.weather-temp {
+    font-weight: 600;
+    color: #4ac0e0;
+}
+
+.weather-city {
+    color: #aaa;
+    font-size: 0.8rem;
+}
+
+body.dark-mode .weather-temp { color: #4a5568; }
+body.dark-mode .weather-city { color: #4a5568; }
+
 /* =========================================
    6. STYLE SPÉCIFIQUE PAGE "MOI"
    ========================================= */

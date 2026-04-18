@@ -837,8 +837,61 @@ setInterval(updateClock, 1000);
 updateClock();
 
 /* =========================================
-   12. INITIALISATION
+   12. MÉTÉO
+   ========================================= */
+const WEATHER_API_KEY = 'd9409f721206c46f1b0cda57aa74d801';
+
+const WEATHER_ICONS = {
+    Thunderstorm: '⛈️', Drizzle: '🌦️', Rain: '🌧️',
+    Snow: '❄️', Mist: '🌫️', Smoke: '🌫️', Haze: '🌫️',
+    Dust: '🌫️', Fog: '🌫️', Sand: '🌫️', Ash: '🌫️',
+    Squall: '💨', Tornado: '🌪️', Clear: '☀️', Clouds: '☁️'
+};
+
+function fetchWeather(lat, lon) {
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=fr`;
+    fetch(url)
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById('weather-info');
+            if (!el || !data.main) return;
+            const icon = WEATHER_ICONS[data.weather[0].main] || '🌡️';
+            const temp = Math.round(data.main.temp);
+            const city = data.name;
+            el.innerHTML = `${icon} <span class="weather-temp">${temp}°C</span> <span class="weather-city">${city}</span>`;
+        })
+        .catch(() => {});
+}
+
+function initWeather() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+        pos => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+        () => {}
+    );
+}
+
+/* =========================================
+   13. RACCOURCIS CLAVIER
+   ========================================= */
+document.addEventListener('keydown', e => {
+    const inOverlay = !!activeCard;
+    const key = e.key;
+
+    if (inOverlay) {
+        if (key === 'ArrowLeft'  || key === 'q' || key === 'Q') { e.preventDefault(); navigate(-1); }
+        if (key === 'ArrowRight' || key === 'd' || key === 'D') { e.preventDefault(); navigate(1); }
+        if (key === 'Escape')                                    { e.preventDefault(); closeZoom(); }
+    } else {
+        if (key === 'ArrowLeft'  || key === 'q' || key === 'Q') { e.preventDefault(); navigatePage(-1); }
+        if (key === 'ArrowRight' || key === 'd' || key === 'D') { e.preventDefault(); navigatePage(1); }
+    }
+});
+
+/* =========================================
+   14. INITIALISATION
    ========================================= */
 renderGrid();
 applyTranslations(currentLang);
+initWeather();
 
