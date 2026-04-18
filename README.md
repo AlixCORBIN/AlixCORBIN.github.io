@@ -28,6 +28,10 @@ On va pas se mentir, c'est **full vibecoded**. Pas de framework, pas de bundler,
 | 🎲 **Projet Jeu** | WIP |
 | 🏆 **Récompenses** | Prix du Meilleur Portfolio 2026, Concours d'Éloquence 2023, Concours Castor 2021 |
 
+### Sur la chaîne BUT Informatique
+
+C'est du bullshit au même titre que la Culture Générale. Ma prof m'a demandé de mettre un suivi de compétences sur mon CV. J'ai donc fait un tableau. Est-ce que je me suis auto-évalué honnêtement ? Probablement. Est-ce que c'était obligatoire pour avoir une bonne note ? Oui.
+
 ### Sur la chaîne Culture Générale
 
 C'est du bullshit. Ma prof m'a forcé à mettre ça sur mon CV pour avoir des points. Je ne suis pas cinéphile, je regarde des films comme tout le monde. Mais apparemment "regarder Interstellar un dimanche soir" c'est de la *culture personnelle structurée* si t'en parles bien dans un tableau.
