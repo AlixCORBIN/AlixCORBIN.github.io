@@ -397,13 +397,13 @@
     <div class="hero">
         <div class="status-row">
             <div class="status-dot"></div>
-            Projet Lycée — Interface Homme-Machine
+            <span data-i18n="ihm.status">Projet Lycée — Interface Homme-Machine</span>
         </div>
 
-        <h1>Contrôle <span>Roomba</span><br>par tablette</h1>
-        <p class="subtitle">Application de télécommande IHM</p>
+        <h1 data-i18n="ihm.h1">Contrôle <span>Roomba</span><br>par tablette</h1>
+        <p class="subtitle" data-i18n="ihm.subtitle">Application de télécommande IHM</p>
 
-        <p class="hero-desc">
+        <p class="hero-desc" data-i18n="ihm.desc">
             Conception d'une interface graphique en <strong style="color:var(--cyan)">Processing (Java)</strong> pour piloter un Roomba modifié.
             Chaque bouton de l'interface envoie un signal distinct à la carte Arduino via <strong style="color:var(--cyan)">Bluetooth</strong>,
             qui transmet ensuite les ordres au Roomba. La vitesse des moteurs est réglable sur
@@ -416,11 +416,11 @@
             <span class="tag">Processing (Java)</span>
             <span class="tag">Bluetooth</span>
             <span class="tag">Arduino</span>
-            <span class="tag">Roomba Modifié</span>
-            <span class="tag">Projet Lycée</span>
+            <span class="tag" data-i18n="ihm.tag.roomba">Roomba Modifié</span>
+            <span class="tag" data-i18n="ihm.tag.school">Projet Lycée</span>
         </div>
 
-        <a class="link-arduino" href="../arduino/index.html">
+        <a class="link-arduino" href="../arduino/index.html" data-i18n="ihm.link.arduino">
             Voir le projet hardware Arduino associé
         </a>
     </div>
@@ -433,7 +433,7 @@
     </div>
 
     <!-- Screenshots -->
-    <p class="screens-title">Écrans de l'<span>interface</span></p>
+    <p class="screens-title" data-i18n="ihm.screens.title">Écrans de l'<span>interface</span></p>
 
     <div class="screens-grid">
 
@@ -447,8 +447,8 @@
                 <img src="../assets/IHMHome.png" alt="IHM — Écran d'accueil">
             </div>
             <div class="screen-footer">
-                <h3>Écran d'accueil</h3>
-                <p>Page principale de l'interface — accès rapide aux commandes de navigation et état du robot.</p>
+                <h3 data-i18n="ihm.screen1.title">Écran d'accueil</h3>
+                <p data-i18n="ihm.screen1.desc">Page principale de l'interface — accès rapide aux commandes de navigation et état du robot.</p>
             </div>
         </div>
 
@@ -462,8 +462,8 @@
                 <img src="../assets/IHMDroitier.png" alt="IHM — Mode Droitier">
             </div>
             <div class="screen-footer">
-                <h3>Mode Droitier</h3>
-                <p>Disposition ergonomique avec les contrôles principaux à droite pour une prise en main naturelle.</p>
+                <h3 data-i18n="ihm.screen2.title">Mode Droitier</h3>
+                <p data-i18n="ihm.screen2.desc">Disposition ergonomique avec les contrôles principaux à droite pour une prise en main naturelle.</p>
             </div>
         </div>
 
@@ -477,8 +477,8 @@
                 <img src="../assets/IHMGaucher.png" alt="IHM — Mode Gaucher">
             </div>
             <div class="screen-footer">
-                <h3>Mode Gaucher</h3>
-                <p>Miroir adaptatif de l'interface — les commandes sont inversées pour les utilisateurs gauchers.</p>
+                <h3 data-i18n="ihm.screen3.title">Mode Gaucher</h3>
+                <p data-i18n="ihm.screen3.desc">Miroir adaptatif de l'interface — les commandes sont inversées pour les utilisateurs gauchers.</p>
             </div>
         </div>
 
@@ -487,23 +487,23 @@
     <!-- Info panels -->
     <div class="info-grid">
         <div class="info-panel">
-            <div class="info-panel-title">// Fonctionnalités</div>
+            <div class="info-panel-title" data-i18n="ihm.panel1.title">// Fonctionnalités</div>
             <ul>
-                <li>Boutons de commande directionnelle — chaque bouton envoie un signal distinct</li>
-                <li>5 niveaux de vitesse moteur sélectionnables via 5 rectangles au centre de l'interface</li>
-                <li>Mode Droitier / Gaucher avec disposition miroir des boutons</li>
-                <li>Chaque action utilisateur déclenche l'envoi d'un signal Bluetooth vers l'Arduino</li>
-                <li>Interface pensée pour une utilisation simple et réactive</li>
+                <li data-i18n="ihm.panel1.li1">Boutons de commande directionnelle — chaque bouton envoie un signal distinct</li>
+                <li data-i18n="ihm.panel1.li2">5 niveaux de vitesse moteur sélectionnables via 5 rectangles au centre de l'interface</li>
+                <li data-i18n="ihm.panel1.li3">Mode Droitier / Gaucher avec disposition miroir des boutons</li>
+                <li data-i18n="ihm.panel1.li4">Chaque action utilisateur déclenche l'envoi d'un signal Bluetooth vers l'Arduino</li>
+                <li data-i18n="ihm.panel1.li5">Interface pensée pour une utilisation simple et réactive</li>
             </ul>
         </div>
         <div class="info-panel">
-            <div class="info-panel-title">// Contexte technique</div>
+            <div class="info-panel-title" data-i18n="ihm.panel2.title">// Contexte technique</div>
             <ul>
-                <li>IHM développée avec <strong style="color:var(--cyan)">Processing (Java)</strong></li>
-                <li>Communication via <strong style="color:var(--cyan)">Bluetooth</strong> entre l'IHM et la carte Arduino</li>
-                <li>L'Arduino reçoit les signaux et pilote directement le Roomba</li>
-                <li>Projet réalisé au lycée dans le cadre d'un cours IHM</li>
-                <li>Couplé au projet hardware Arduino → voir le labo</li>
+                <li data-i18n="ihm.panel2.li1">IHM développée avec <strong style="color:var(--cyan)">Processing (Java)</strong></li>
+                <li data-i18n="ihm.panel2.li2">Communication via <strong style="color:var(--cyan)">Bluetooth</strong> entre l'IHM et la carte Arduino</li>
+                <li data-i18n="ihm.panel2.li3">L'Arduino reçoit les signaux et pilote directement le Roomba</li>
+                <li data-i18n="ihm.panel2.li4">Projet réalisé au lycée dans le cadre d'un cours IHM</li>
+                <li data-i18n="ihm.panel2.li5">Couplé au projet hardware Arduino → voir le labo</li>
             </ul>
         </div>
     </div>
@@ -534,12 +534,64 @@ window.PAGE_TRANSLATIONS = {
     fr: {
         'page.title': 'IHM Roomba — Alix CORBIN',
         'ihm.nav.portfolio': '← Portfolio',
-        'ihm.nav.title': 'IHM Roomba'
+        'ihm.nav.title': 'IHM Roomba',
+        'ihm.status': 'Projet Lycée — Interface Homme-Machine',
+        'ihm.h1': 'Contrôle <span>Roomba</span><br>par tablette',
+        'ihm.subtitle': 'Application de télécommande IHM',
+        'ihm.desc': 'Conception d\'une interface graphique en <strong style="color:var(--cyan)">Processing (Java)</strong> pour piloter un Roomba modifié. Chaque bouton de l\'interface envoie un signal distinct à la carte Arduino via <strong style="color:var(--cyan)">Bluetooth</strong>, qui transmet ensuite les ordres au Roomba. La vitesse des moteurs est réglable sur 5 niveaux via des rectangles au centre de l\'interface. Deux dispositions sont proposées pour les droitiers et gauchers.',
+        'ihm.tag.roomba': 'Roomba Modifié',
+        'ihm.tag.school': 'Projet Lycée',
+        'ihm.link.arduino': '→ Voir le projet hardware Arduino associé',
+        'ihm.screens.title': 'Écrans de l\'<span>interface</span>',
+        'ihm.screen1.title': 'Écran d\'accueil',
+        'ihm.screen1.desc': 'Page principale de l\'interface — accès rapide aux commandes de navigation et état du robot.',
+        'ihm.screen2.title': 'Mode Droitier',
+        'ihm.screen2.desc': 'Disposition ergonomique avec les contrôles principaux à droite pour une prise en main naturelle.',
+        'ihm.screen3.title': 'Mode Gaucher',
+        'ihm.screen3.desc': 'Miroir adaptatif de l\'interface — les commandes sont inversées pour les utilisateurs gauchers.',
+        'ihm.panel1.title': '// Fonctionnalités',
+        'ihm.panel1.li1': 'Boutons de commande directionnelle — chaque bouton envoie un signal distinct',
+        'ihm.panel1.li2': '5 niveaux de vitesse moteur sélectionnables via 5 rectangles au centre de l\'interface',
+        'ihm.panel1.li3': 'Mode Droitier / Gaucher avec disposition miroir des boutons',
+        'ihm.panel1.li4': 'Chaque action utilisateur déclenche l\'envoi d\'un signal Bluetooth vers l\'Arduino',
+        'ihm.panel1.li5': 'Interface pensée pour une utilisation simple et réactive',
+        'ihm.panel2.title': '// Contexte technique',
+        'ihm.panel2.li1': 'IHM développée avec <strong style="color:var(--cyan)">Processing (Java)</strong>',
+        'ihm.panel2.li2': 'Communication via <strong style="color:var(--cyan)">Bluetooth</strong> entre l\'IHM et la carte Arduino',
+        'ihm.panel2.li3': 'L\'Arduino reçoit les signaux et pilote directement le Roomba',
+        'ihm.panel2.li4': 'Projet réalisé au lycée dans le cadre d\'un cours IHM',
+        'ihm.panel2.li5': 'Couplé au projet hardware Arduino → voir le labo'
     },
     en: {
         'page.title': 'Roomba HMI — Alix CORBIN',
         'ihm.nav.portfolio': '← Portfolio',
-        'ihm.nav.title': 'Roomba HMI'
+        'ihm.nav.title': 'Roomba HMI',
+        'ihm.status': 'High School Project — Human-Machine Interface',
+        'ihm.h1': '<span>Roomba</span> Control<br>via Tablet',
+        'ihm.subtitle': 'HMI Remote Control Application',
+        'ihm.desc': 'Design of a graphical interface in <strong style="color:var(--cyan)">Processing (Java)</strong> to control a modified Roomba. Each button sends a distinct signal to the Arduino board via <strong style="color:var(--cyan)">Bluetooth</strong>, which then relays commands to the Roomba. Motor speed is adjustable across 5 levels using rectangles at the center of the interface. Two layouts are available for right-handed and left-handed users.',
+        'ihm.tag.roomba': 'Modified Roomba',
+        'ihm.tag.school': 'High School Project',
+        'ihm.link.arduino': '→ See the associated Arduino hardware project',
+        'ihm.screens.title': '<span>Interface</span> Screenshots',
+        'ihm.screen1.title': 'Home Screen',
+        'ihm.screen1.desc': 'Main interface screen — quick access to navigation controls and robot status.',
+        'ihm.screen2.title': 'Right-Handed Mode',
+        'ihm.screen2.desc': 'Ergonomic layout with main controls on the right for a natural grip.',
+        'ihm.screen3.title': 'Left-Handed Mode',
+        'ihm.screen3.desc': 'Adaptive mirror of the interface — controls are flipped for left-handed users.',
+        'ihm.panel1.title': '// Features',
+        'ihm.panel1.li1': 'Directional control buttons — each button sends a distinct signal',
+        'ihm.panel1.li2': '5 motor speed levels selectable via 5 rectangles at the center of the interface',
+        'ihm.panel1.li3': 'Right/Left-handed mode with mirrored button layout',
+        'ihm.panel1.li4': 'Each user action triggers a Bluetooth signal sent to the Arduino',
+        'ihm.panel1.li5': 'Interface designed for simple and responsive use',
+        'ihm.panel2.title': '// Technical Context',
+        'ihm.panel2.li1': 'HMI developed with <strong style="color:var(--cyan)">Processing (Java)</strong>',
+        'ihm.panel2.li2': 'Communication via <strong style="color:var(--cyan)">Bluetooth</strong> between the HMI and the Arduino board',
+        'ihm.panel2.li3': 'The Arduino receives signals and directly controls the Roomba',
+        'ihm.panel2.li4': 'Project completed in high school as part of an HMI course',
+        'ihm.panel2.li5': 'Paired with the Arduino hardware project → see the lab'
     }
 };
 </script>
