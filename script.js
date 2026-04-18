@@ -700,69 +700,12 @@ function renderOverlayContent(data) {
         case 'meteo': {
             overlay.style.background = "linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)";
             if (startBtn) startBtn.style.display = 'none';
-            overlayContentBox.innerHTML = `<div class="meteo-loading">${isEn ? 'Locating...' : 'Localisation...'} 📡</div>`;
 
-            if (!navigator.geolocation) {
-                overlayContentBox.innerHTML = `<div class="meteo-loading">${isEn ? 'Geolocation unavailable' : 'Géolocalisation indisponible'}</div>`;
-                break;
+            if (weatherCache) {
+                renderWeatherOverlay(weatherCache, isEn);
+            } else {
+                overlayContentBox.innerHTML = `<div class="meteo-loading">${isEn ? 'Locating...' : 'Localisation...'} 📡</div>`;
             }
-
-            navigator.geolocation.getCurrentPosition(pos => {
-                const { latitude: lat, longitude: lon } = pos.coords;
-                const lang = isEn ? 'en' : 'fr';
-                fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=${lang}`)
-                    .then(r => r.json())
-                    .then(d => {
-                        if (!d.main) return;
-                        const icon      = WEATHER_ICONS[d.weather[0].main] || '🌡️';
-                        const temp      = Math.round(d.main.temp);
-                        const feels     = Math.round(d.main.feels_like);
-                        const tMin      = Math.round(d.main.temp_min);
-                        const tMax      = Math.round(d.main.temp_max);
-                        const humidity  = d.main.humidity;
-                        const wind      = Math.round(d.wind.speed * 3.6);
-                        const desc      = d.weather[0].description.charAt(0).toUpperCase() + d.weather[0].description.slice(1);
-                        const city      = d.name;
-                        const country   = d.sys.country;
-
-                        // Mise à jour de la mini-carte dans le carousel
-                        const cardSub = document.getElementById('meteo-card-sub');
-                        if (cardSub) cardSub.textContent = `${icon} ${temp}°C`;
-
-                        overlayContentBox.innerHTML = `
-                            <div class="meteo-overlay">
-                                <div class="meteo-header">
-                                    <div class="meteo-icon-big">${icon}</div>
-                                    <div class="meteo-temp-big">${temp}°C</div>
-                                    <div class="meteo-desc">${desc}</div>
-                                    <div class="meteo-city">📍 ${city}, ${country}</div>
-                                </div>
-                                <div class="meteo-grid">
-                                    <div class="meteo-stat">
-                                        <div class="meteo-stat-label">${isEn ? 'Feels like' : 'Ressenti'}</div>
-                                        <div class="meteo-stat-value">${feels}°C</div>
-                                    </div>
-                                    <div class="meteo-stat">
-                                        <div class="meteo-stat-label">${isEn ? 'Min / Max' : 'Min / Max'}</div>
-                                        <div class="meteo-stat-value">${tMin}° / ${tMax}°</div>
-                                    </div>
-                                    <div class="meteo-stat">
-                                        <div class="meteo-stat-label">${isEn ? 'Humidity' : 'Humidité'}</div>
-                                        <div class="meteo-stat-value">${humidity}%</div>
-                                    </div>
-                                    <div class="meteo-stat">
-                                        <div class="meteo-stat-label">${isEn ? 'Wind' : 'Vent'}</div>
-                                        <div class="meteo-stat-value">${wind} km/h</div>
-                                    </div>
-                                </div>
-                            </div>`;
-                    })
-                    .catch(() => {
-                        overlayContentBox.innerHTML = `<div class="meteo-loading">${isEn ? 'Unable to fetch weather' : 'Météo indisponible'}</div>`;
-                    });
-            }, () => {
-                overlayContentBox.innerHTML = `<div class="meteo-loading">${isEn ? 'Location denied' : 'Localisation refusée'}</div>`;
-            });
             break;
         }
 
@@ -923,7 +866,7 @@ setInterval(updateClock, 1000);
 updateClock();
 
 /* =========================================
-   12. MÉTÉO (constantes partagées)
+   12. MÉTÉO
    ========================================= */
 const WEATHER_API_KEY = 'd9409f721206c46f1b0cda57aa74d801';
 
@@ -933,6 +876,71 @@ const WEATHER_ICONS = {
     Dust: '🌫️', Fog: '🌫️', Sand: '🌫️', Ash: '🌫️',
     Squall: '💨', Tornado: '🌪️', Clear: '☀️', Clouds: '☁️'
 };
+
+let weatherCache = null;
+
+function renderWeatherOverlay(d, isEn) {
+    const icon     = WEATHER_ICONS[d.weather[0].main] || '🌡️';
+    const temp     = Math.round(d.main.temp);
+    const feels    = Math.round(d.main.feels_like);
+    const tMin     = Math.round(d.main.temp_min);
+    const tMax     = Math.round(d.main.temp_max);
+    const humidity = d.main.humidity;
+    const wind     = Math.round(d.wind.speed * 3.6);
+    const desc     = d.weather[0].description.charAt(0).toUpperCase() + d.weather[0].description.slice(1);
+    const city     = d.name;
+    const country  = d.sys.country;
+
+    const cardSub = document.getElementById('meteo-card-sub');
+    if (cardSub) cardSub.textContent = `${icon} ${temp}°C`;
+
+    overlayContentBox.innerHTML = `
+        <div class="meteo-overlay">
+            <div class="meteo-header">
+                <div class="meteo-icon-big">${icon}</div>
+                <div class="meteo-temp-big">${temp}°C</div>
+                <div class="meteo-desc">${desc}</div>
+                <div class="meteo-city">📍 ${city}, ${country}</div>
+            </div>
+            <div class="meteo-grid">
+                <div class="meteo-stat">
+                    <div class="meteo-stat-label">${isEn ? 'Feels like' : 'Ressenti'}</div>
+                    <div class="meteo-stat-value">${feels}°C</div>
+                </div>
+                <div class="meteo-stat">
+                    <div class="meteo-stat-label">Min / Max</div>
+                    <div class="meteo-stat-value">${tMin}° / ${tMax}°</div>
+                </div>
+                <div class="meteo-stat">
+                    <div class="meteo-stat-label">${isEn ? 'Humidity' : 'Humidité'}</div>
+                    <div class="meteo-stat-value">${humidity}%</div>
+                </div>
+                <div class="meteo-stat">
+                    <div class="meteo-stat-label">${isEn ? 'Wind' : 'Vent'}</div>
+                    <div class="meteo-stat-value">${wind} km/h</div>
+                </div>
+            </div>
+        </div>`;
+}
+
+function prefetchWeather() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(pos => {
+        const { latitude: lat, longitude: lon } = pos.coords;
+        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=fr`)
+            .then(r => r.json())
+            .then(d => {
+                if (!d.main) return;
+                weatherCache = d;
+                // Met à jour la mini-carte immédiatement
+                const icon = WEATHER_ICONS[d.weather[0].main] || '🌡️';
+                const temp = Math.round(d.main.temp);
+                const cardSub = document.getElementById('meteo-card-sub');
+                if (cardSub) cardSub.textContent = `${icon} ${temp}°C`;
+            })
+            .catch(() => {});
+    }, () => {});
+}
 
 /* =========================================
    13. RACCOURCIS CLAVIER
@@ -956,4 +964,5 @@ document.addEventListener('keydown', e => {
    ========================================= */
 renderGrid();
 applyTranslations(currentLang);
+prefetchWeather();
 
