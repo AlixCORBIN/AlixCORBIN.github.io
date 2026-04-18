@@ -1408,8 +1408,7 @@ body.overlay-open .page-arrow { opacity: 0 !important; pointer-events: none !imp
 #lang-switcher {
     position: fixed;
     top: 16px;
-    left: 50%;
-    transform: translateX(-50%);
+    right: 16px;
     z-index: 10000;
     display: flex;
     align-items: center;
@@ -1470,14 +1469,10 @@ body.dark-mode .lang-btn { color: #444; }
 body.dark-mode .lang-btn.lang-active { background: #2e3350; color: #ddd; box-shadow: none; }
 body.dark-mode .lang-divider { background: rgba(255,255,255,0.08); }
 
-/* Toujours visible, déplacé en haut à droite quand overlay ouvert */
+/* Toujours visible sur l'overlay */
 body.overlay-open #lang-switcher {
     opacity: 1;
     pointer-events: auto;
-    z-index: 10000;
-    left: unset !important;
-    right: 16px !important;
-    transform: none !important;
 }
 
 /* =========================================
