@@ -310,6 +310,8 @@ function createChannelEl(data, index) {
         const sub   = currentLang === 'en' ? '3 prizes' : '3 prix';
         div.innerHTML = `
             <div class="channel-inner awards-card-inner">
+                <img src="assets/recompense.png" class="ch-bg awards-card-bg" alt="">
+                <div class="awards-card-overlay"></div>
                 <div class="awards-trophy">🏆</div>
                 <h2 class="ch-label awards-card-label">${label}</h2>
                 <div class="awards-count">${sub}</div>
@@ -321,6 +323,8 @@ function createChannelEl(data, index) {
         const label = (currentLang === 'en' && data.cardLabelEn) ? data.cardLabelEn : data.cardLabel;
         div.innerHTML = `
             <div class="channel-inner meteo-card-inner">
+                <img src="assets/meteo.png" class="ch-bg meteo-card-bg" alt="">
+                <div class="meteo-card-overlay"></div>
                 <div class="meteo-card-icon">🌤️</div>
                 <h2 class="ch-label meteo-card-label">${label}</h2>
                 <div class="meteo-card-sub" id="meteo-card-sub">--°C</div>
@@ -698,7 +702,7 @@ function renderOverlayContent(data) {
         }
 
         case 'meteo': {
-            overlay.style.background = "linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)";
+            overlay.style.background = `url('assets/meteo.png') center/cover no-repeat`;
             if (startBtn) startBtn.style.display = 'none';
 
             if (weatherCache) {
