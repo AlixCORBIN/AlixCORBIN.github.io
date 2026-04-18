@@ -1561,10 +1561,22 @@ body.overlay-open #lang-switcher {
 
 /* ── Carte dans la grille ── */
 .awards-card-inner {
-    background: linear-gradient(135deg, #12100a, #211c08) !important;
+    background: #12100a !important;
     justify-content: center;
     gap: 4px;
+    overflow: hidden;
 }
+.awards-card-bg {
+    object-fit: cover;
+    opacity: 0.55;
+}
+.awards-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10,8,2,0.85) 40%, rgba(0,0,0,0.2) 100%);
+    z-index: 1;
+}
+.awards-trophy, .awards-card-label, .awards-count { position: relative; z-index: 2; }
 .awards-trophy {
     font-size: 2.8rem;
     position: relative;
@@ -1917,21 +1929,38 @@ body.overlay-open #lang-switcher {
 
 /* ── Carte dans la grille ── */
 .meteo-card-inner {
-    background: linear-gradient(135deg, #0f2027, #2c5364) !important;
+    background: #0f2027 !important;
     justify-content: center;
     gap: 4px;
+    overflow: hidden;
+}
+.meteo-card-bg {
+    object-fit: cover;
+    opacity: 0.6;
+}
+.meteo-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,15,30,0.85) 40%, rgba(0,0,0,0.15) 100%);
+    z-index: 1;
 }
 .meteo-card-icon {
     font-size: 2.4rem;
+    position: relative;
+    z-index: 2;
 }
 .meteo-card-label {
-    color: #7ecfea !important;
-    text-shadow: 0 0 10px rgba(126,207,234,0.5) !important;
+    color: #fff !important;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.8) !important;
+    position: relative;
+    z-index: 2;
 }
 .meteo-card-sub {
     font-size: 0.9rem;
-    color: #aad4e0;
+    color: #fff;
     font-weight: 600;
+    position: relative;
+    z-index: 2;
 }
 
 /* ── Overlay ── */
@@ -1945,6 +1974,9 @@ body.overlay-open #lang-switcher {
     flex-direction: column;
     align-items: center;
     gap: 28px;
+    background: rgba(0, 10, 20, 0.55);
+    border-radius: 16px;
+    backdrop-filter: blur(4px);
     width: 100%;
     max-width: 500px;
     padding: 20px;
