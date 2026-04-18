@@ -877,7 +877,46 @@ const WEATHER_ICONS = {
     Squall: '💨', Tornado: '🌪️', Clear: '☀️', Clouds: '☁️'
 };
 
-let weatherCache = null;
+let weatherCache   = null;
+let forecastCache  = null;
+
+function buildForecastHTML(forecastData, isEn) {
+    if (!forecastData || !forecastData.list) return '';
+
+    const daysFr = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+    const daysEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayNames = isEn ? daysEn : daysFr;
+
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const byDay = {};
+
+    forecastData.list.forEach(entry => {
+        const day = entry.dt_txt.slice(0, 10);
+        if (day === todayStr) return;
+        if (!byDay[day]) byDay[day] = [];
+        byDay[day].push(entry);
+    });
+
+    const days = Object.keys(byDay).slice(0, 5);
+    if (!days.length) return '';
+
+    const items = days.map(day => {
+        const entries  = byDay[day];
+        const midday   = entries.find(e => e.dt_txt.includes('12:00:00')) || entries[Math.floor(entries.length / 2)];
+        const icon     = WEATHER_ICONS[midday.weather[0].main] || '🌡️';
+        const tMin     = Math.round(Math.min(...entries.map(e => e.main.temp_min)));
+        const tMax     = Math.round(Math.max(...entries.map(e => e.main.temp_max)));
+        const dow      = dayNames[new Date(day).getDay()];
+        return `
+            <div class="meteo-forecast-day">
+                <div class="meteo-fc-name">${dow}</div>
+                <div class="meteo-fc-icon">${icon}</div>
+                <div class="meteo-fc-temps"><span class="meteo-fc-max">${tMax}°</span><span class="meteo-fc-min">${tMin}°</span></div>
+            </div>`;
+    }).join('');
+
+    return `<div class="meteo-forecast">${items}</div>`;
+}
 
 function renderWeatherOverlay(d, isEn) {
     const icon     = WEATHER_ICONS[d.weather[0].main] || '🌡️';
@@ -920,6 +959,7 @@ function renderWeatherOverlay(d, isEn) {
                     <div class="meteo-stat-value">${wind} km/h</div>
                 </div>
             </div>
+            ${buildForecastHTML(forecastCache, isEn)}
         </div>`;
 }
 
@@ -927,18 +967,25 @@ function prefetchWeather() {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(pos => {
         const { latitude: lat, longitude: lon } = pos.coords;
-        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=fr`)
+        const base = `https://api.openweathermap.org/data/2.5`;
+
+        fetch(`${base}/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=fr`)
             .then(r => r.json())
             .then(d => {
                 if (!d.main) return;
                 weatherCache = d;
-                // Met à jour la mini-carte immédiatement
                 const icon = WEATHER_ICONS[d.weather[0].main] || '🌡️';
                 const temp = Math.round(d.main.temp);
                 const cardSub = document.getElementById('meteo-card-sub');
                 if (cardSub) cardSub.textContent = `${icon} ${temp}°C`;
             })
             .catch(() => {});
+
+        fetch(`${base}/forecast?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=fr`)
+            .then(r => r.json())
+            .then(d => { if (d.list) forecastCache = d; })
+            .catch(() => {});
+
     }, () => {});
 }
 
