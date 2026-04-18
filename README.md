@@ -1,10 +1,65 @@
-# Mon CV en ligne
+# 🎮 Portfolio Wii — Alix Corbin
 
-Bienvenue sur le code source de mon CV !
+> Un portfolio déguisé en menu Wii. Parce que pourquoi pas.
 
-Ce projet est réalisé en **HTML5** et **CSS3** pur, sans framework, pour démontrer mes compétences en intégration web.
-
-🔗 **Voir le résultat en ligne :** [https://ton-pseudo.github.io/](https://alixcorbin.github.io/)
+🔗 **[alixcorbin.github.io](https://alixcorbin.github.io/)**
 
 ---
-*Dernière mise à jour : Décembre 2025*
+
+## C'est quoi ?
+
+Un portfolio interactif qui reproduit l'interface du menu Wii — avec les chaînes, les animations, la musique de fond, le dark mode, et même un bouton contact dans la barre du bas.
+
+On va pas se mentir, c'est **full vibecoded**. Pas de framework, pas de bundler, juste du HTML/CSS/JS vanilla écrit à l'arrache avec une IA à côté. Est-ce que ça marche ? Oui. Est-ce que c'est propre ? Ça dépend de la définition de propre.
+
+---
+
+## Les chaînes
+
+| Chaîne | Contenu |
+|--------|---------|
+| 🧑 **Moi** | Présentation + CV téléchargeable |
+| 🎓 **BUT Informatique** | Suivi de compétences, auto-évaluation |
+| ♠️ **Blackjack** | Jeu de blackjack fonctionnel avec mise, split, double |
+| 🎮 **TicTacToe** | TicTacToe classique |
+| 📚 **Culture Générale** | Voir ci-dessous |
+| 🤖 **Arduino** | Projets électronique : vitrine SAVI, serrure RFID, VMC... |
+| 🖥️ **IHM Roomba** | Interface Processing (Java) pour piloter un Roomba via Bluetooth |
+| 🎲 **Projet Jeu** | WIP |
+| 🏆 **Récompenses** | Prix du Meilleur Portfolio 2026, Concours d'Éloquence 2023, Concours Castor 2021 |
+
+### Sur la chaîne Culture Générale
+
+C'est du bullshit. Ma prof m'a forcé à mettre ça sur mon CV pour avoir des points. Je ne suis pas cinéphile, je regarde des films comme tout le monde. Mais apparemment "regarder Interstellar un dimanche soir" c'est de la *culture personnelle structurée* si t'en parles bien dans un tableau.
+
+---
+
+## Fonctionnalités
+
+- 🌙 **Dark Mode** — parce que c'est obligatoire en 2026
+- 🌍 **Bilingue FR/EN** — sélecteur de drapeaux sur toutes les pages
+- 🎵 **Musique du menu Wii** — activable/désactivable
+- 📱 **Responsive** — ça tourne sur mobile (en mode grille 4×2)
+- 🏆 **Page Récompenses** — avec une vraie mise en scène or/argent/bronze
+
+---
+
+## Stack
+
+```
+HTML · CSS · JavaScript
+Aucun framework. Aucune dépendance npm. Aucun build step.
+Un fichier index.html, un script.js, un style.css et de la bonne volonté.
+```
+
+---
+
+## Crédits
+
+- Inspiré du travail de **Tobias Echenique**
+- Musique : Nintendo (menu Wii)
+- Vibe : 2006
+
+---
+
+*Dernière mise à jour : Avril 2026*
