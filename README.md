@@ -18,15 +18,16 @@ On va pas se mentir, c'est **full vibecoded**. Pas de framework, pas de bundler,
 
 | Chaîne | Contenu |
 |--------|---------|
-| 🧑 **Moi** | Présentation + CV téléchargeable |
+| 🧑 **Moi** | Présentation, soft skills, liens GitHub/LinkedIn + CV téléchargeable |
 | 🎓 **BUT Informatique** | Suivi de compétences, auto-évaluation |
 | ♠️ **Blackjack** | Jeu de blackjack fonctionnel avec mise, split, double |
 | 🎮 **TicTacToe** | TicTacToe classique |
 | 📚 **Culture Générale** | Voir ci-dessous |
 | 🤖 **Arduino** | Projets électronique : vitrine SAVI, serrure RFID, VMC... |
 | 🖥️ **IHM Roomba** | Interface Processing (Java) pour piloter un Roomba via Bluetooth |
-| 🎲 **Projet Jeu** | WIP |
+| 🎲 **GlouGlou** | App mobile festive — WIP, publication prévue |
 | 🏆 **Récompenses** | Prix du Meilleur Portfolio 2026, Concours d'Éloquence 2023, Concours Castor 2021 |
+| 🌤️ **Météo** | Météo géolocalisée en temps réel + prévisions 5 jours |
 
 ### Sur la chaîne BUT Informatique
 
@@ -43,7 +44,9 @@ C'est du bullshit. Ma prof m'a forcé à mettre ça sur mon CV pour avoir des po
 - 🌙 **Dark Mode** — parce que c'est obligatoire en 2026
 - 🌍 **Bilingue FR/EN** — sélecteur de drapeaux sur toutes les pages
 - 🎵 **Musique du menu Wii** — activable/désactivable
-- 📱 **Responsive** — ça tourne sur mobile (en mode grille 4×2)
+- 📱 **Responsive** — grille 2×4 sur mobile, 4×3 sur desktop
+- ⌨️ **Raccourcis clavier** — Q/D + flèches pour naviguer (AZERTY), Échap pour fermer
+- 🌤️ **Météo géolocalisée** — prévisions 5 jours via OpenWeatherMap
 - 🏆 **Page Récompenses** — avec une vraie mise en scène or/argent/bronze
 
 ---
