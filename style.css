@@ -2003,3 +2003,43 @@ body.overlay-open #lang-switcher {
     font-weight: 700;
     color: #7ecfea;
 }
+
+.meteo-forecast {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
+    border-top: 1px solid rgba(126,207,234,0.15);
+    padding-top: 16px;
+}
+
+.meteo-forecast-day {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(126,207,234,0.1);
+    border-radius: 8px;
+    padding: 8px 4px;
+}
+
+.meteo-fc-name {
+    font-size: 0.7rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.meteo-fc-icon { font-size: 1.4rem; }
+
+.meteo-fc-temps {
+    display: flex;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.meteo-fc-max { color: #7ecfea; }
+.meteo-fc-min { color: #666; }
