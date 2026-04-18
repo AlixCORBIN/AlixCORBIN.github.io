@@ -2,223 +2,443 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Portfolio BUT1 – CORBIN Alix</title>
+    <title data-i18n="page.title">Portfolio BUT Informatique – CORBIN Alix</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../assets/lang-switcher.css">
 </head>
 <body>
 
-<h1>Portfolio BUT Informatique – Alix CORBIN</h1>
-<p>Suivi de compétences et auto-évaluation (2ème Année)</p>
+<h1 data-i18n="h1">Portfolio BUT Informatique – Alix CORBIN</h1>
+<p data-i18n="subtitle">Suivi de compétences et auto-évaluation (2ème Année)</p>
 
 <section>
-    <h2>Compétence 1 : Partir des exigences et aller jusqu’à une application complète</h2>
+    <h2 data-i18n="s1.title">Compétence 1 : Partir des exigences et aller jusqu'à une application complète</h2>
     <table>
         <tr>
-            <th>Apprentissage Critique</th>
-            <th>Situation Non Acquise</th>
-            <th>En Cours d’Acquisition</th>
-            <th>Acquis</th>
+            <th data-i18n="th.ac">Apprentissage Critique</th>
+            <th data-i18n="th.notyet">Situation Non Acquise</th>
+            <th data-i18n="th.inprogress">En Cours d'Acquisition</th>
+            <th data-i18n="th.acquired">Acquis</th>
         </tr>
         <tr>
-            <td>AC1 — Élaborer & implémenter les spécifications<br><br><em>Preuves : User stories, UML, traçabilité</em></td>
-            <td>- Exigences non comprises<br>- Manque de documents (user stories, cas d’utilisation…)<br>- Fonctionnalités absentes</td>
-            <td>- Spécifications partielles<br>- Critères d’acceptation incomplets<br>- Contraintes non fonctionnelles oubliées</td>
-            <td class="acquis">- Spécifications complètes et structurées<br>- Besoins clairement traduits<br>- Critères d’acceptation validés</td>
+            <td data-i18n="s1.ac1.label">AC1 — Élaborer & implémenter les spécifications<br><br><em>Preuves : User stories, UML, traçabilité</em></td>
+            <td data-i18n="s1.ac1.notyet">- Exigences non comprises<br>- Manque de documents (user stories, cas d'utilisation…)<br>- Fonctionnalités absentes</td>
+            <td data-i18n="s1.ac1.inprogress">- Spécifications partielles<br>- Critères d'acceptation incomplets<br>- Contraintes non fonctionnelles oubliées</td>
+            <td class="acquis" data-i18n="s1.ac1.acquired">- Spécifications complètes et structurées<br>- Besoins clairement traduits<br>- Critères d'acceptation validés</td>
         </tr>
         <tr>
-            <td>AC2 — Accessibilité & ergonomie<br><br><em>Preuves : Captures, checklist ergonomique</em></td>
-            <td>- Interface difficile à utiliser<br>- Problèmes de lisibilité<br>- Navigation incohérente</td>
-            <td class="encours">- Interface fonctionnelle mais peu intuitive<br>- Accessibilité partielle<br>- Responsive partiel ou non testé</td>
-            <td>- Interface fluide et intuitive<br>- Respect de l'accessibilité (contrastes, ARIA)<br>- Navigation claire avec feedback</td>
+            <td data-i18n="s1.ac2.label">AC2 — Accessibilité & ergonomie<br><br><em>Preuves : Captures, checklist ergonomique</em></td>
+            <td data-i18n="s1.ac2.notyet">- Interface difficile à utiliser<br>- Problèmes de lisibilité<br>- Navigation incohérente</td>
+            <td class="encours" data-i18n="s1.ac2.inprogress">- Interface fonctionnelle mais peu intuitive<br>- Accessibilité partielle<br>- Responsive partiel ou non testé</td>
+            <td data-i18n="s1.ac2.acquired">- Interface fluide et intuitive<br>- Respect de l'accessibilité (contrastes, ARIA)<br>- Navigation claire avec feedback</td>
         </tr>
         <tr>
-            <td>AC3 — Conception & bonnes pratiques<br><br><em>Preuves : UML, Git propre, Code modulaire</em></td>
-            <td>- Code confus, non documenté<br>- Nom des variables peu clairs<br>- Pas de découpage logique</td>
-            <td>- Architecture présente mais améliorable<br>- Git utilisé mais désorganisé<br>- Quelques conventions respectées</td>
-            <td class="acquis">- Architecture propre (séparation responsabilités)<br>- Code lisible et documenté<br>- Git avec bonnes pratiques</td>
+            <td data-i18n="s1.ac3.label">AC3 — Conception & bonnes pratiques<br><br><em>Preuves : UML, Git propre, Code modulaire</em></td>
+            <td data-i18n="s1.ac3.notyet">- Code confus, non documenté<br>- Nom des variables peu clairs<br>- Pas de découpage logique</td>
+            <td data-i18n="s1.ac3.inprogress">- Architecture présente mais améliorable<br>- Git utilisé mais désorganisé<br>- Quelques conventions respectées</td>
+            <td class="acquis" data-i18n="s1.ac3.acquired">- Architecture propre (séparation responsabilités)<br>- Code lisible et documenté<br>- Git avec bonnes pratiques</td>
         </tr>
         <tr>
-            <td>AC4 — Tests & validation<br><br><em>Preuves : Rapport de tests, CI/Pipeline</em></td>
-            <td>- Aucun test écrit ou exécuté<br>- Bugs non identifiés<br>- Pas d’analyse des écarts</td>
-            <td class="encours">- Tests uniquement sur fonctionnalités principales<br>- Bugs identifiés, quelques corrections<br>- Pas d’automatisation</td>
-            <td>- Tests complets & analysés (unitaires + intégration)<br>- Automatisation des tests<br>- Validation claire des écarts</td>
+            <td data-i18n="s1.ac4.label">AC4 — Tests & validation<br><br><em>Preuves : Rapport de tests, CI/Pipeline</em></td>
+            <td data-i18n="s1.ac4.notyet">- Aucun test écrit ou exécuté<br>- Bugs non identifiés<br>- Pas d'analyse des écarts</td>
+            <td class="encours" data-i18n="s1.ac4.inprogress">- Tests uniquement sur fonctionnalités principales<br>- Bugs identifiés, quelques corrections<br>- Pas d'automatisation</td>
+            <td data-i18n="s1.ac4.acquired">- Tests complets & analysés (unitaires + intégration)<br>- Automatisation des tests<br>- Validation claire des écarts</td>
         </tr>
     </table>
 </section>
 
 <section>
-    <h2>Compétence 2 : Sélectionner les algorithmes adéquats (Semestre 3 - Parcours A)</h2>
+    <h2 data-i18n="s2.title">Compétence 2 : Sélectionner les algorithmes adéquats (Semestre 3 - Parcours A)</h2>
     <table>
         <tr>
-            <th>Apprentissage Critique</th>
-            <th>Situation Non Acquise</th>
-            <th>En Cours d’Acquisition</th>
-            <th>Acquis</th>
+            <th data-i18n="th.ac">Apprentissage Critique</th>
+            <th data-i18n="th.notyet">Situation Non Acquise</th>
+            <th data-i18n="th.inprogress">En Cours d'Acquisition</th>
+            <th data-i18n="th.acquired">Acquis</th>
         </tr>
         <tr>
-            <td>AC1 — Choisir les structures de données adaptées<br><br><em>Preuves : Analyse README, Code</em></td>
-            <td>- Structures inadaptées au problème<br>- Données dupliquées ou mal organisées<br>- Choix par habitude sans réflexion</td>
-            <td>- Structure cohérente mais choix non justifié<br>- Utilisation de structures avancées (Set, Map)<br>- Modification si problème rencontré</td>
-            <td class="acquis">- Comparaison avant choix<br>- Prise en compte perf/mémoire<br>- Justification pertinente du choix</td>
+            <td data-i18n="s2.ac1.label">AC1 — Choisir les structures de données adaptées<br><br><em>Preuves : Analyse README, Code</em></td>
+            <td data-i18n="s2.ac1.notyet">- Structures inadaptées au problème<br>- Données dupliquées ou mal organisées<br>- Choix par habitude sans réflexion</td>
+            <td data-i18n="s2.ac1.inprogress">- Structure cohérente mais choix non justifié<br>- Utilisation de structures avancées (Set, Map)<br>- Modification si problème rencontré</td>
+            <td class="acquis" data-i18n="s2.ac1.acquired">- Comparaison avant choix<br>- Prise en compte perf/mémoire<br>- Justification pertinente du choix</td>
         </tr>
         <tr>
-            <td>AC2 — Sélectionner les bons algorithmes<br><br><em>Preuves : Benchmarks, complexité</em></td>
-            <td>- Résultats faux ou incomplets<br>- Algorithme ne correspond pas au problème<br>- Solution appliquée au hasard</td>
-            <td class="encours">- Algorithme fonctionnel mais lent/lourd<br>- Optimisations sans mesure concrète<br>- Utilisation d'algos de cours</td>
-            <td>- Choix selon contraintes (temps, mémoire)<br>- Analyse complexité Big-O<br>- Améliorations pertinentes proposées</td>
+            <td data-i18n="s2.ac2.label">AC2 — Sélectionner les bons algorithmes<br><br><em>Preuves : Benchmarks, complexité</em></td>
+            <td data-i18n="s2.ac2.notyet">- Résultats faux ou incomplets<br>- Algorithme ne correspond pas au problème<br>- Solution appliquée au hasard</td>
+            <td class="encours" data-i18n="s2.ac2.inprogress">- Algorithme fonctionnel mais lent/lourd<br>- Optimisations sans mesure concrète<br>- Utilisation d'algos de cours</td>
+            <td data-i18n="s2.ac2.acquired">- Choix selon contraintes (temps, mémoire)<br>- Analyse complexité Big-O<br>- Améliorations pertinentes proposées</td>
         </tr>
         <tr>
-            <td>AC3 — Sécuriser les traitements algorithmiques<br><br><em>Preuves : Validation entrées, Logs</em></td>
-            <td>- Données non vérifiées<br>- Programme exploitable ou instable<br>- Pas de gestion des entrées malveillantes</td>
-            <td class="encours">- Filtrage partiel des données<br>- Gestion d’erreur partielle<br>- Données sensibles peu protégés</td>
-            <td>- Vérification systématique des données<br>- Protection injections/débordements<br>- Traçabilité et gestion erreurs</td>
+            <td data-i18n="s2.ac3.label">AC3 — Sécuriser les traitements algorithmiques<br><br><em>Preuves : Validation entrées, Logs</em></td>
+            <td data-i18n="s2.ac3.notyet">- Données non vérifiées<br>- Programme exploitable ou instable<br>- Pas de gestion des entrées malveillantes</td>
+            <td class="encours" data-i18n="s2.ac3.inprogress">- Filtrage partiel des données<br>- Gestion d'erreur partielle<br>- Données sensibles peu protégés</td>
+            <td data-i18n="s2.ac3.acquired">- Vérification systématique des données<br>- Protection injections/débordements<br>- Traçabilité et gestion erreurs</td>
         </tr>
         <tr>
-            <td>AC4 — Réduire l’impact environnemental<br><br><em>Preuves : Profiling, Rapport éco-conception</em></td>
-            <td>- Ressources ignorées<br>- Gaspillage CPU / mémoire<br>- Pas de réflexion sur l’impact</td>
-            <td class="encours">- Quelques optimisations sans justification<br>- Impact évoqué après coup<br>- Améliorations ponctuelles</td>
-            <td>- Optimisation dès la conception<br>- Solution économe en ressources<br>- Documentation des impacts réduits</td>
+            <td data-i18n="s2.ac4.label">AC4 — Réduire l'impact environnemental<br><br><em>Preuves : Profiling, Rapport éco-conception</em></td>
+            <td data-i18n="s2.ac4.notyet">- Ressources ignorées<br>- Gaspillage CPU / mémoire<br>- Pas de réflexion sur l'impact</td>
+            <td class="encours" data-i18n="s2.ac4.inprogress">- Quelques optimisations sans justification<br>- Impact évoqué après coup<br>- Améliorations ponctuelles</td>
+            <td data-i18n="s2.ac4.acquired">- Optimisation dès la conception<br>- Solution économe en ressources<br>- Documentation des impacts réduits</td>
         </tr>
     </table>
 </section>
 
 <section>
-    <h2>Compétence 3 : Déployer des services dans une architecture réseau</h2>
+    <h2 data-i18n="s3.title">Compétence 3 : Déployer des services dans une architecture réseau</h2>
     <table>
         <tr>
-            <th>Apprentissage Critique</th>
-            <th>Situation Non Acquise</th>
-            <th>En Cours d’Acquisition</th>
-            <th>Acquis</th>
+            <th data-i18n="th.ac">Apprentissage Critique</th>
+            <th data-i18n="th.notyet">Situation Non Acquise</th>
+            <th data-i18n="th.inprogress">En Cours d'Acquisition</th>
+            <th data-i18n="th.acquired">Acquis</th>
         </tr>
         <tr>
-            <td>AC1 — Concevoir des applications communicantes<br><br><em>Preuves : Postman, Wireshark, Logs</em></td>
-            <td>- Pas de communication entre services<br>- Protocole incorrect<br>- Aucune gestion erreurs réseau</td>
-            <td>- Communication fonctionnelle mais instable<br>- Protocole utilisé sans justification<br>- Tests réseaux incomplets</td>
-            <td class="acquis">- Communication fiable (API/Socket)<br>- Protocole adapté<br>- Gestion erreurs réseau documentée</td>
+            <td data-i18n="s3.ac1.label">AC1 — Concevoir des applications communicantes<br><br><em>Preuves : Postman, Wireshark, Logs</em></td>
+            <td data-i18n="s3.ac1.notyet">- Pas de communication entre services<br>- Protocole incorrect<br>- Aucune gestion erreurs réseau</td>
+            <td data-i18n="s3.ac1.inprogress">- Communication fonctionnelle mais instable<br>- Protocole utilisé sans justification<br>- Tests réseaux incomplets</td>
+            <td class="acquis" data-i18n="s3.ac1.acquired">- Communication fiable (API/Socket)<br>- Protocole adapté<br>- Gestion erreurs réseau documentée</td>
         </tr>
         <tr>
-            <td>AC2 — Déployer des services (Serveur/VM)<br><br><em>Preuves : Dockerfile, Manuel install</em></td>
-            <td>- Non déployée ou inaccessible<br>- Mauvaise config réseau<br>- Dépendances manquantes</td>
-            <td class="encours">- Déploiement fonctionnel mais instable<br>- Accessible localement seulement<br>- Config réseau partielle</td>
-            <td>- Service en ligne stable<br>- Déploiement structuré (Docker, VM)<br>- Documentation install/lancement</td>
+            <td data-i18n="s3.ac2.label">AC2 — Déployer des services (Serveur/VM)<br><br><em>Preuves : Dockerfile, Manuel install</em></td>
+            <td data-i18n="s3.ac2.notyet">- Non déployée ou inaccessible<br>- Mauvaise config réseau<br>- Dépendances manquantes</td>
+            <td class="encours" data-i18n="s3.ac2.inprogress">- Déploiement fonctionnel mais instable<br>- Accessible localement seulement<br>- Config réseau partielle</td>
+            <td data-i18n="s3.ac2.acquired">- Service en ligne stable<br>- Déploiement structuré (Docker, VM)<br>- Documentation install/lancement</td>
         </tr>
         <tr>
-            <td>AC3 — Sécuriser les services et données<br><br><em>Preuves : nmap, SSL, Firewall</em></td>
-            <td>- Aucun contrôle d’accès<br>- Ports ouverts sans protection<br>- Communications en clair</td>
-            <td class="encours">- Authentification non durcie<br>- Config partielle (Firewall/Certif)<br>- Failles non toutes corrigées</td>
-            <td>- Gestion précise des accès<br>- Sécurisation réseau (TLS, Pare-feu)<br>- Analyse vulnérabilités et corrections</td>
+            <td data-i18n="s3.ac3.label">AC3 — Sécuriser les services et données<br><br><em>Preuves : nmap, SSL, Firewall</em></td>
+            <td data-i18n="s3.ac3.notyet">- Aucun contrôle d'accès<br>- Ports ouverts sans protection<br>- Communications en clair</td>
+            <td class="encours" data-i18n="s3.ac3.inprogress">- Authentification non durcie<br>- Config partielle (Firewall/Certif)<br>- Failles non toutes corrigées</td>
+            <td data-i18n="s3.ac3.acquired">- Gestion précise des accès<br>- Sécurisation réseau (TLS, Pare-feu)<br>- Analyse vulnérabilités et corrections</td>
         </tr>
     </table>
 </section>
 
 <section>
-    <h2>Compétence 4 : Optimiser une BDD, interagir et sécuriser</h2>
+    <h2 data-i18n="s4.title">Compétence 4 : Optimiser une BDD, interagir et sécuriser</h2>
     <table>
         <tr>
-            <th>AC</th>
-            <th>Non Acquis</th>
-            <th>En Cours d’Acquisition</th>
-            <th>Acquis</th>
+            <th data-i18n="th.ac2">AC</th>
+            <th data-i18n="th.notyet2">Non Acquis</th>
+            <th data-i18n="th.inprogress">En Cours d'Acquisition</th>
+            <th data-i18n="th.acquired">Acquis</th>
         </tr>
         <tr>
-            <td>AC1 — Concevoir une BDD cohérente<br><br><em>Preuves : MCD/MLD, SQL création</em></td>
-            <td>- Structure incorrecte<br>- Redondances ou anomalies<br>- Pas de contraintes (PK, FK)</td>
-            <td>- Modèle correct mais perfectible<br>- Normalisation partielle<br>- Contraintes manquantes</td>
-            <td class="acquis">- Modèle normalisé et validé<br>- Contraintes intégrité définies<br>- Pensé pour perf et évolution</td>
+            <td data-i18n="s4.ac1.label">AC1 — Concevoir une BDD cohérente<br><br><em>Preuves : MCD/MLD, SQL création</em></td>
+            <td data-i18n="s4.ac1.notyet">- Structure incorrecte<br>- Redondances ou anomalies<br>- Pas de contraintes (PK, FK)</td>
+            <td data-i18n="s4.ac1.inprogress">- Modèle correct mais perfectible<br>- Normalisation partielle<br>- Contraintes manquantes</td>
+            <td class="acquis" data-i18n="s4.ac1.acquired">- Modèle normalisé et validé<br>- Contraintes intégrité définies<br>- Pensé pour perf et évolution</td>
         </tr>
         <tr>
-            <td>AC2 — Manipuler les données (SQL)<br><br><em>Preuves : Scripts SQL, résultats</em></td>
-            <td>- Requêtes mal écrites/fausses<br>- Résultats incomplets<br>- Problèmes de jointures</td>
-            <td>- Requêtes correctes non optimisées<br>- Fonctionnalités avancées partielles<br>- Vérification insuffisante</td>
-            <td class="acquis">- Requêtes efficaces et complexes<br>- Jointures/Agrégations maîtrisées<br>- Résultats vérifiés</td>
+            <td data-i18n="s4.ac2.label">AC2 — Manipuler les données (SQL)<br><br><em>Preuves : Scripts SQL, résultats</em></td>
+            <td data-i18n="s4.ac2.notyet">- Requêtes mal écrites/fausses<br>- Résultats incomplets<br>- Problèmes de jointures</td>
+            <td data-i18n="s4.ac2.inprogress">- Requêtes correctes non optimisées<br>- Fonctionnalités avancées partielles<br>- Vérification insuffisante</td>
+            <td class="acquis" data-i18n="s4.ac2.acquired">- Requêtes efficaces et complexes<br>- Jointures/Agrégations maîtrisées<br>- Résultats vérifiés</td>
         </tr>
         <tr>
-            <td>AC3 — Connecter proprement l'application<br><br><em>Preuves : Code DAO/ORM, config</em></td>
-            <td>- Pas de communication BDD<br>- Requêtes dans l’interface<br>- Plantages accès BDD</td>
-            <td>- Connexion fonctionnelle, archi floue<br>- Gestion erreurs limitée<br>- Config peu sécurisée</td>
-            <td class="acquis">- Connexion stable (DAO/Repository)<br>- Paramètres externes (.env)<br>- Logs et erreurs gérés</td>
+            <td data-i18n="s4.ac3.label">AC3 — Connecter proprement l'application<br><br><em>Preuves : Code DAO/ORM, config</em></td>
+            <td data-i18n="s4.ac3.notyet">- Pas de communication BDD<br>- Requêtes dans l'interface<br>- Plantages accès BDD</td>
+            <td data-i18n="s4.ac3.inprogress">- Connexion fonctionnelle, archi floue<br>- Gestion erreurs limitée<br>- Config peu sécurisée</td>
+            <td class="acquis" data-i18n="s4.ac3.acquired">- Connexion stable (DAO/Repository)<br>- Paramètres externes (.env)<br>- Logs et erreurs gérés</td>
         </tr>
         <tr>
-            <td>AC4 — Sécuriser la base et les échanges<br><br><em>Preuves : Tests injections, Rôles</em></td>
-            <td>- Mots de passe en clair<br>- Injections SQL possibles<br>- Droits trop ouverts</td>
-            <td class="encours">- Requêtes préparées partielles<br>- Politique de rôles partielle<br>- Stockage sécurisé perfectible</td>
-            <td>- Requêtes préparées systématiques<br>- Gestion droits minimes<br>- Données sensibles protégées</td>
+            <td data-i18n="s4.ac4.label">AC4 — Sécuriser la base et les échanges<br><br><em>Preuves : Tests injections, Rôles</em></td>
+            <td data-i18n="s4.ac4.notyet">- Mots de passe en clair<br>- Injections SQL possibles<br>- Droits trop ouverts</td>
+            <td class="encours" data-i18n="s4.ac4.inprogress">- Requêtes préparées partielles<br>- Politique de rôles partielle<br>- Stockage sécurisé perfectible</td>
+            <td data-i18n="s4.ac4.acquired">- Requêtes préparées systématiques<br>- Gestion droits minimes<br>- Données sensibles protégées</td>
         </tr>
     </table>
 </section>
 
 <section>
-    <h2>Compétence 5 : Suivi de projet, besoins clients et utilisateurs</h2>
+    <h2 data-i18n="s5.title">Compétence 5 : Suivi de projet, besoins clients et utilisateurs</h2>
     <table>
         <tr>
-            <th>Apprentissage Critique</th>
-            <th>Situation Non Acquise</th>
-            <th>En Cours d’Acquisition</th>
-            <th>Acquis</th>
+            <th data-i18n="th.ac">Apprentissage Critique</th>
+            <th data-i18n="th.notyet">Situation Non Acquise</th>
+            <th data-i18n="th.inprogress">En Cours d'Acquisition</th>
+            <th data-i18n="th.acquired">Acquis</th>
         </tr>
         <tr>
-            <td>AC1 — Comprendre et reformuler les besoins<br><br><em>Preuves : User stories, Validation</em></td>
-            <td>- Besoins non compris<br>- Attentes non reformulées<br>- Fonctionnalités hors-sujet</td>
-            <td>- Compréhension globale mais floue<br>- Traduction partielle en fonctionnalités<br>- Hypothèses non validées</td>
-            <td class="acquis">- Attentes expliquées clairement<br>- Besoins transformés en tâches<br>- Validation avant développement</td>
+            <td data-i18n="s5.ac1.label">AC1 — Comprendre et reformuler les besoins<br><br><em>Preuves : User stories, Validation</em></td>
+            <td data-i18n="s5.ac1.notyet">- Besoins non compris<br>- Attentes non reformulées<br>- Fonctionnalités hors-sujet</td>
+            <td data-i18n="s5.ac1.inprogress">- Compréhension globale mais floue<br>- Traduction partielle en fonctionnalités<br>- Hypothèses non validées</td>
+            <td class="acquis" data-i18n="s5.ac1.acquired">- Attentes expliquées clairement<br>- Besoins transformés en tâches<br>- Validation avant développement</td>
         </tr>
         <tr>
-            <td>AC2 — Planifier et suivre l'avancement<br><br><em>Preuves : Trello, Gantt, Jira</em></td>
-            <td>- Aucune planification<br>- Tâches au hasard<br>- Délais non respectés</td>
-            <td class="encours">- Organisation de base non maintenue<br>- Mise à jour irrégulière<br>- Difficulté à anticiper</td>
-            <td>- Planification mise à jour<br>- Priorités et risques gérés<br>- Suivi transparent</td>
+            <td data-i18n="s5.ac2.label">AC2 — Planifier et suivre l'avancement<br><br><em>Preuves : Trello, Gantt, Jira</em></td>
+            <td data-i18n="s5.ac2.notyet">- Aucune planification<br>- Tâches au hasard<br>- Délais non respectés</td>
+            <td class="encours" data-i18n="s5.ac2.inprogress">- Organisation de base non maintenue<br>- Mise à jour irrégulière<br>- Difficulté à anticiper</td>
+            <td data-i18n="s5.ac2.acquired">- Planification mise à jour<br>- Priorités et risques gérés<br>- Suivi transparent</td>
         </tr>
         <tr>
-            <td>AC3 — Communiquer efficacement<br><br><em>Preuves : Comptes-rendus, Slides</em></td>
-            <td>- Informations non transmises<br>- Pas de CR<br>- Mauvaise compréhension</td>
-            <td>- Communication peu claire<br>- CR incomplets<br>- Présentations peu adaptées</td>
-            <td class="acquis">- Communication régulière et pertinente<br>- CR structurés<br>- Présentations adaptées</td>
+            <td data-i18n="s5.ac3.label">AC3 — Communiquer efficacement<br><br><em>Preuves : Comptes-rendus, Slides</em></td>
+            <td data-i18n="s5.ac3.notyet">- Informations non transmises<br>- Pas de CR<br>- Mauvaise compréhension</td>
+            <td data-i18n="s5.ac3.inprogress">- Communication peu claire<br>- CR incomplets<br>- Présentations peu adaptées</td>
+            <td class="acquis" data-i18n="s5.ac3.acquired">- Communication régulière et pertinente<br>- CR structurés<br>- Présentations adaptées</td>
         </tr>
         <tr>
-            <td>AC4 — Contrôler la qualité et améliorer<br><br><em>Preuves : Rapport qualité, Rétro</em></td>
-            <td>- Pas de vérification des besoins<br>- Aucun indicateur qualité<br>- Pas de retour d'expérience</td>
-            <td class="encours">- Vérification sans méthode<br>- Problèmes vus après coup<br>- Idées d’amélioration non suivies</td>
-            <td>- Conformité mesurée<br>- Améliorations concrètes<br>- Analyse des retours</td>
+            <td data-i18n="s5.ac4.label">AC4 — Contrôler la qualité et améliorer<br><br><em>Preuves : Rapport qualité, Rétro</em></td>
+            <td data-i18n="s5.ac4.notyet">- Pas de vérification des besoins<br>- Aucun indicateur qualité<br>- Pas de retour d'expérience</td>
+            <td class="encours" data-i18n="s5.ac4.inprogress">- Vérification sans méthode<br>- Problèmes vus après coup<br>- Idées d'amélioration non suivies</td>
+            <td data-i18n="s5.ac4.acquired">- Conformité mesurée<br>- Améliorations concrètes<br>- Analyse des retours</td>
         </tr>
     </table>
 </section>
 
 <section>
-    <h2>Compétence 6 : Situer son rôle au sein d’une équipe</h2>
+    <h2 data-i18n="s6.title">Compétence 6 : Situer son rôle au sein d'une équipe</h2>
     <table>
         <tr>
-            <th>AC</th>
-            <th>Non Acquis</th>
-            <th>En cours d’Acquisition</th>
-            <th>Acquis</th>
+            <th data-i18n="th.ac2">AC</th>
+            <th data-i18n="th.notyet2">Non Acquis</th>
+            <th data-i18n="th.inprogress2">En cours d'Acquisition</th>
+            <th data-i18n="th.acquired">Acquis</th>
         </tr>
         <tr>
-            <td>AC1 — Se positionner dans l’équipe</td>
-            <td>- Ne participe pas aux réunions<br>- Ignore les documents<br>- Ne respecte pas les décisions</td>
-            <td>- Tâches faites sans vision globale<br>- Connaît son poste seulement<br>- Adaptation difficile</td>
-            <td class="acquis">- Comprend le fonctionnement global<br>- Respecte le cadre collectif<br>- Conscience de son impact</td>
+            <td data-i18n="s6.ac1.label">AC1 — Se positionner dans l'équipe</td>
+            <td data-i18n="s6.ac1.notyet">- Ne participe pas aux réunions<br>- Ignore les documents<br>- Ne respecte pas les décisions</td>
+            <td data-i18n="s6.ac1.inprogress">- Tâches faites sans vision globale<br>- Connaît son poste seulement<br>- Adaptation difficile</td>
+            <td class="acquis" data-i18n="s6.ac1.acquired">- Comprend le fonctionnement global<br>- Respecte le cadre collectif<br>- Conscience de son impact</td>
         </tr>
         <tr>
-            <td>AC2 — Communication au sein du groupe</td>
-            <td>- Ne signale pas les problèmes<br>- Ne lit pas les messages<br>- Aucun retour sur son travail</td>
-            <td>- Communication irrégulière<br>- Réponses peu utiles<br>- Communique seulement si sollicité</td>
-            <td class="acquis">- Partage infos utiles au bon moment<br>- Contribue aux échanges<br>- Favorise la compréhension</td>
+            <td data-i18n="s6.ac2.label">AC2 — Communication au sein du groupe</td>
+            <td data-i18n="s6.ac2.notyet">- Ne signale pas les problèmes<br>- Ne lit pas les messages<br>- Aucun retour sur son travail</td>
+            <td data-i18n="s6.ac2.inprogress">- Communication irrégulière<br>- Réponses peu utiles<br>- Communique seulement si sollicité</td>
+            <td class="acquis" data-i18n="s6.ac2.acquired">- Partage infos utiles au bon moment<br>- Contribue aux échanges<br>- Favorise la compréhension</td>
         </tr>
         <tr>
-            <td>AC3 — Organisation personnelle (collectif)</td>
-            <td>- Travail en retard<br>- Pas de priorisation<br>- Tâches non terminées</td>
-            <td class="encours">- Respect partiel des délais<br>- Organisation incohérente<br>- Difficulté multi-tâches</td>
-            <td>- Planification efficace<br>- Respect des délais<br>- Gestion de charge maîtrisée</td>
+            <td data-i18n="s6.ac3.label">AC3 — Organisation personnelle (collectif)</td>
+            <td data-i18n="s6.ac3.notyet">- Travail en retard<br>- Pas de priorisation<br>- Tâches non terminées</td>
+            <td class="encours" data-i18n="s6.ac3.inprogress">- Respect partiel des délais<br>- Organisation incohérente<br>- Difficulté multi-tâches</td>
+            <td data-i18n="s6.ac3.acquired">- Planification efficace<br>- Respect des délais<br>- Gestion de charge maîtrisée</td>
         </tr>
         <tr>
-            <td>AC4 — Attitude professionnelle en équipe</td>
-            <td>- Ignore les remarques<br>- Désengagement rapide<br>- Comportement perturbateur</td>
-            <td>- Accepte remarques sans agir<br>- Manque d’initiative<br>- Implication variable</td>
-            <td class="acquis">- Attitude constructive<br>- Participation active<br>- Preuve de responsabilité</td>
+            <td data-i18n="s6.ac4.label">AC4 — Attitude professionnelle en équipe</td>
+            <td data-i18n="s6.ac4.notyet">- Ignore les remarques<br>- Désengagement rapide<br>- Comportement perturbateur</td>
+            <td data-i18n="s6.ac4.inprogress">- Accepte remarques sans agir<br>- Manque d'initiative<br>- Implication variable</td>
+            <td class="acquis" data-i18n="s6.ac4.acquired">- Attitude constructive<br>- Participation active<br>- Preuve de responsabilité</td>
         </tr>
     </table>
 </section>
 
+<script>
+window.PAGE_TRANSLATIONS = {
+    fr: {
+        'page.title': 'Portfolio BUT Informatique – CORBIN Alix',
+        'h1': 'Portfolio BUT Informatique – Alix CORBIN',
+        'subtitle': 'Suivi de compétences et auto-évaluation (2ème Année)',
+        'th.ac': 'Apprentissage Critique', 'th.ac2': 'AC',
+        'th.notyet': 'Situation Non Acquise', 'th.notyet2': 'Non Acquis',
+        'th.inprogress': "En Cours d'Acquisition", 'th.inprogress2': "En cours d'Acquisition",
+        'th.acquired': 'Acquis',
+        's1.title': "Compétence 1 : Partir des exigences et aller jusqu'à une application complète",
+        's1.ac1.label': 'AC1 — Élaborer & implémenter les spécifications<br><br><em>Preuves : User stories, UML, traçabilité</em>',
+        's1.ac1.notyet': '- Exigences non comprises<br>- Manque de documents (user stories, cas d\'utilisation…)<br>- Fonctionnalités absentes',
+        's1.ac1.inprogress': '- Spécifications partielles<br>- Critères d\'acceptation incomplets<br>- Contraintes non fonctionnelles oubliées',
+        's1.ac1.acquired': '- Spécifications complètes et structurées<br>- Besoins clairement traduits<br>- Critères d\'acceptation validés',
+        's1.ac2.label': 'AC2 — Accessibilité & ergonomie<br><br><em>Preuves : Captures, checklist ergonomique</em>',
+        's1.ac2.notyet': '- Interface difficile à utiliser<br>- Problèmes de lisibilité<br>- Navigation incohérente',
+        's1.ac2.inprogress': '- Interface fonctionnelle mais peu intuitive<br>- Accessibilité partielle<br>- Responsive partiel ou non testé',
+        's1.ac2.acquired': '- Interface fluide et intuitive<br>- Respect de l\'accessibilité (contrastes, ARIA)<br>- Navigation claire avec feedback',
+        's1.ac3.label': 'AC3 — Conception & bonnes pratiques<br><br><em>Preuves : UML, Git propre, Code modulaire</em>',
+        's1.ac3.notyet': '- Code confus, non documenté<br>- Nom des variables peu clairs<br>- Pas de découpage logique',
+        's1.ac3.inprogress': '- Architecture présente mais améliorable<br>- Git utilisé mais désorganisé<br>- Quelques conventions respectées',
+        's1.ac3.acquired': '- Architecture propre (séparation responsabilités)<br>- Code lisible et documenté<br>- Git avec bonnes pratiques',
+        's1.ac4.label': 'AC4 — Tests & validation<br><br><em>Preuves : Rapport de tests, CI/Pipeline</em>',
+        's1.ac4.notyet': '- Aucun test écrit ou exécuté<br>- Bugs non identifiés<br>- Pas d\'analyse des écarts',
+        's1.ac4.inprogress': '- Tests uniquement sur fonctionnalités principales<br>- Bugs identifiés, quelques corrections<br>- Pas d\'automatisation',
+        's1.ac4.acquired': '- Tests complets & analysés (unitaires + intégration)<br>- Automatisation des tests<br>- Validation claire des écarts',
+        's2.title': 'Compétence 2 : Sélectionner les algorithmes adéquats (Semestre 3 - Parcours A)',
+        's2.ac1.label': 'AC1 — Choisir les structures de données adaptées<br><br><em>Preuves : Analyse README, Code</em>',
+        's2.ac1.notyet': '- Structures inadaptées au problème<br>- Données dupliquées ou mal organisées<br>- Choix par habitude sans réflexion',
+        's2.ac1.inprogress': '- Structure cohérente mais choix non justifié<br>- Utilisation de structures avancées (Set, Map)<br>- Modification si problème rencontré',
+        's2.ac1.acquired': '- Comparaison avant choix<br>- Prise en compte perf/mémoire<br>- Justification pertinente du choix',
+        's2.ac2.label': 'AC2 — Sélectionner les bons algorithmes<br><br><em>Preuves : Benchmarks, complexité</em>',
+        's2.ac2.notyet': '- Résultats faux ou incomplets<br>- Algorithme ne correspond pas au problème<br>- Solution appliquée au hasard',
+        's2.ac2.inprogress': "- Algorithme fonctionnel mais lent/lourd<br>- Optimisations sans mesure concrète<br>- Utilisation d'algos de cours",
+        's2.ac2.acquired': '- Choix selon contraintes (temps, mémoire)<br>- Analyse complexité Big-O<br>- Améliorations pertinentes proposées',
+        's2.ac3.label': 'AC3 — Sécuriser les traitements algorithmiques<br><br><em>Preuves : Validation entrées, Logs</em>',
+        's2.ac3.notyet': '- Données non vérifiées<br>- Programme exploitable ou instable<br>- Pas de gestion des entrées malveillantes',
+        's2.ac3.inprogress': '- Filtrage partiel des données<br>- Gestion d\'erreur partielle<br>- Données sensibles peu protégés',
+        's2.ac3.acquired': '- Vérification systématique des données<br>- Protection injections/débordements<br>- Traçabilité et gestion erreurs',
+        's2.ac4.label': 'AC4 — Réduire l\'impact environnemental<br><br><em>Preuves : Profiling, Rapport éco-conception</em>',
+        's2.ac4.notyet': '- Ressources ignorées<br>- Gaspillage CPU / mémoire<br>- Pas de réflexion sur l\'impact',
+        's2.ac4.inprogress': '- Quelques optimisations sans justification<br>- Impact évoqué après coup<br>- Améliorations ponctuelles',
+        's2.ac4.acquired': '- Optimisation dès la conception<br>- Solution économe en ressources<br>- Documentation des impacts réduits',
+        's3.title': 'Compétence 3 : Déployer des services dans une architecture réseau',
+        's3.ac1.label': 'AC1 — Concevoir des applications communicantes<br><br><em>Preuves : Postman, Wireshark, Logs</em>',
+        's3.ac1.notyet': '- Pas de communication entre services<br>- Protocole incorrect<br>- Aucune gestion erreurs réseau',
+        's3.ac1.inprogress': '- Communication fonctionnelle mais instable<br>- Protocole utilisé sans justification<br>- Tests réseaux incomplets',
+        's3.ac1.acquired': '- Communication fiable (API/Socket)<br>- Protocole adapté<br>- Gestion erreurs réseau documentée',
+        's3.ac2.label': 'AC2 — Déployer des services (Serveur/VM)<br><br><em>Preuves : Dockerfile, Manuel install</em>',
+        's3.ac2.notyet': '- Non déployée ou inaccessible<br>- Mauvaise config réseau<br>- Dépendances manquantes',
+        's3.ac2.inprogress': '- Déploiement fonctionnel mais instable<br>- Accessible localement seulement<br>- Config réseau partielle',
+        's3.ac2.acquired': '- Service en ligne stable<br>- Déploiement structuré (Docker, VM)<br>- Documentation install/lancement',
+        's3.ac3.label': 'AC3 — Sécuriser les services et données<br><br><em>Preuves : nmap, SSL, Firewall</em>',
+        's3.ac3.notyet': '- Aucun contrôle d\'accès<br>- Ports ouverts sans protection<br>- Communications en clair',
+        's3.ac3.inprogress': '- Authentification non durcie<br>- Config partielle (Firewall/Certif)<br>- Failles non toutes corrigées',
+        's3.ac3.acquired': '- Gestion précise des accès<br>- Sécurisation réseau (TLS, Pare-feu)<br>- Analyse vulnérabilités et corrections',
+        's4.title': 'Compétence 4 : Optimiser une BDD, interagir et sécuriser',
+        's4.ac1.label': 'AC1 — Concevoir une BDD cohérente<br><br><em>Preuves : MCD/MLD, SQL création</em>',
+        's4.ac1.notyet': '- Structure incorrecte<br>- Redondances ou anomalies<br>- Pas de contraintes (PK, FK)',
+        's4.ac1.inprogress': '- Modèle correct mais perfectible<br>- Normalisation partielle<br>- Contraintes manquantes',
+        's4.ac1.acquired': '- Modèle normalisé et validé<br>- Contraintes intégrité définies<br>- Pensé pour perf et évolution',
+        's4.ac2.label': 'AC2 — Manipuler les données (SQL)<br><br><em>Preuves : Scripts SQL, résultats</em>',
+        's4.ac2.notyet': '- Requêtes mal écrites/fausses<br>- Résultats incomplets<br>- Problèmes de jointures',
+        's4.ac2.inprogress': '- Requêtes correctes non optimisées<br>- Fonctionnalités avancées partielles<br>- Vérification insuffisante',
+        's4.ac2.acquired': '- Requêtes efficaces et complexes<br>- Jointures/Agrégations maîtrisées<br>- Résultats vérifiés',
+        's4.ac3.label': 'AC3 — Connecter proprement l\'application<br><br><em>Preuves : Code DAO/ORM, config</em>',
+        's4.ac3.notyet': '- Pas de communication BDD<br>- Requêtes dans l\'interface<br>- Plantages accès BDD',
+        's4.ac3.inprogress': '- Connexion fonctionnelle, archi floue<br>- Gestion erreurs limitée<br>- Config peu sécurisée',
+        's4.ac3.acquired': '- Connexion stable (DAO/Repository)<br>- Paramètres externes (.env)<br>- Logs et erreurs gérés',
+        's4.ac4.label': 'AC4 — Sécuriser la base et les échanges<br><br><em>Preuves : Tests injections, Rôles</em>',
+        's4.ac4.notyet': '- Mots de passe en clair<br>- Injections SQL possibles<br>- Droits trop ouverts',
+        's4.ac4.inprogress': '- Requêtes préparées partielles<br>- Politique de rôles partielle<br>- Stockage sécurisé perfectible',
+        's4.ac4.acquired': '- Requêtes préparées systématiques<br>- Gestion droits minimes<br>- Données sensibles protégées',
+        's5.title': 'Compétence 5 : Suivi de projet, besoins clients et utilisateurs',
+        's5.ac1.label': 'AC1 — Comprendre et reformuler les besoins<br><br><em>Preuves : User stories, Validation</em>',
+        's5.ac1.notyet': '- Besoins non compris<br>- Attentes non reformulées<br>- Fonctionnalités hors-sujet',
+        's5.ac1.inprogress': '- Compréhension globale mais floue<br>- Traduction partielle en fonctionnalités<br>- Hypothèses non validées',
+        's5.ac1.acquired': '- Attentes expliquées clairement<br>- Besoins transformés en tâches<br>- Validation avant développement',
+        's5.ac2.label': 'AC2 — Planifier et suivre l\'avancement<br><br><em>Preuves : Trello, Gantt, Jira</em>',
+        's5.ac2.notyet': '- Aucune planification<br>- Tâches au hasard<br>- Délais non respectés',
+        's5.ac2.inprogress': '- Organisation de base non maintenue<br>- Mise à jour irrégulière<br>- Difficulté à anticiper',
+        's5.ac2.acquired': '- Planification mise à jour<br>- Priorités et risques gérés<br>- Suivi transparent',
+        's5.ac3.label': 'AC3 — Communiquer efficacement<br><br><em>Preuves : Comptes-rendus, Slides</em>',
+        's5.ac3.notyet': '- Informations non transmises<br>- Pas de CR<br>- Mauvaise compréhension',
+        's5.ac3.inprogress': '- Communication peu claire<br>- CR incomplets<br>- Présentations peu adaptées',
+        's5.ac3.acquired': '- Communication régulière et pertinente<br>- CR structurés<br>- Présentations adaptées',
+        's5.ac4.label': 'AC4 — Contrôler la qualité et améliorer<br><br><em>Preuves : Rapport qualité, Rétro</em>',
+        's5.ac4.notyet': '- Pas de vérification des besoins<br>- Aucun indicateur qualité<br>- Pas de retour d\'expérience',
+        's5.ac4.inprogress': '- Vérification sans méthode<br>- Problèmes vus après coup<br>- Idées d\'amélioration non suivies',
+        's5.ac4.acquired': '- Conformité mesurée<br>- Améliorations concrètes<br>- Analyse des retours',
+        's6.title': "Compétence 6 : Situer son rôle au sein d'une équipe",
+        's6.ac1.label': "AC1 — Se positionner dans l'équipe",
+        's6.ac1.notyet': '- Ne participe pas aux réunions<br>- Ignore les documents<br>- Ne respecte pas les décisions',
+        's6.ac1.inprogress': '- Tâches faites sans vision globale<br>- Connaît son poste seulement<br>- Adaptation difficile',
+        's6.ac1.acquired': '- Comprend le fonctionnement global<br>- Respecte le cadre collectif<br>- Conscience de son impact',
+        's6.ac2.label': 'AC2 — Communication au sein du groupe',
+        's6.ac2.notyet': '- Ne signale pas les problèmes<br>- Ne lit pas les messages<br>- Aucun retour sur son travail',
+        's6.ac2.inprogress': '- Communication irrégulière<br>- Réponses peu utiles<br>- Communique seulement si sollicité',
+        's6.ac2.acquired': '- Partage infos utiles au bon moment<br>- Contribue aux échanges<br>- Favorise la compréhension',
+        's6.ac3.label': 'AC3 — Organisation personnelle (collectif)',
+        's6.ac3.notyet': '- Travail en retard<br>- Pas de priorisation<br>- Tâches non terminées',
+        's6.ac3.inprogress': '- Respect partiel des délais<br>- Organisation incohérente<br>- Difficulté multi-tâches',
+        's6.ac3.acquired': '- Planification efficace<br>- Respect des délais<br>- Gestion de charge maîtrisée',
+        's6.ac4.label': 'AC4 — Attitude professionnelle en équipe',
+        's6.ac4.notyet': '- Ignore les remarques<br>- Désengagement rapide<br>- Comportement perturbateur',
+        's6.ac4.inprogress': '- Accepte remarques sans agir<br>- Manque d\'initiative<br>- Implication variable',
+        's6.ac4.acquired': '- Attitude constructive<br>- Participation active<br>- Preuve de responsabilité'
+    },
+    en: {
+        'page.title': 'CS Bachelor Portfolio – CORBIN Alix',
+        'h1': 'CS Bachelor Portfolio – Alix CORBIN',
+        'subtitle': 'Skills tracking and self-assessment (2nd Year)',
+        'th.ac': 'Learning Outcome', 'th.ac2': 'LO',
+        'th.notyet': 'Not Yet Achieved', 'th.notyet2': 'Not Achieved',
+        'th.inprogress': 'In Progress', 'th.inprogress2': 'In Progress',
+        'th.acquired': 'Achieved',
+        's1.title': 'Skill 1: From requirements to a complete application',
+        's1.ac1.label': 'LO1 — Elaborate & implement specifications<br><br><em>Evidence: User stories, UML, traceability</em>',
+        's1.ac1.notyet': '- Requirements misunderstood<br>- Missing documents (user stories, use cases…)<br>- Features absent',
+        's1.ac1.inprogress': '- Partial specifications<br>- Incomplete acceptance criteria<br>- Non-functional constraints forgotten',
+        's1.ac1.acquired': '- Complete and structured specifications<br>- Needs clearly translated<br>- Acceptance criteria validated',
+        's1.ac2.label': 'LO2 — Accessibility & ergonomics<br><br><em>Evidence: Screenshots, ergonomic checklist</em>',
+        's1.ac2.notyet': '- Difficult-to-use interface<br>- Readability issues<br>- Inconsistent navigation',
+        's1.ac2.inprogress': '- Functional but unintuitive interface<br>- Partial accessibility<br>- Partial or untested responsive design',
+        's1.ac2.acquired': '- Smooth and intuitive interface<br>- Accessibility respected (contrast, ARIA)<br>- Clear navigation with feedback',
+        's1.ac3.label': 'LO3 — Design & best practices<br><br><em>Evidence: UML, clean Git, modular code</em>',
+        's1.ac3.notyet': '- Confusing, undocumented code<br>- Unclear variable names<br>- No logical structure',
+        's1.ac3.inprogress': '- Architecture present but improvable<br>- Git used but disorganized<br>- Some conventions respected',
+        's1.ac3.acquired': '- Clean architecture (separation of concerns)<br>- Readable and documented code<br>- Git with best practices',
+        's1.ac4.label': 'LO4 — Tests & validation<br><br><em>Evidence: Test report, CI/Pipeline</em>',
+        's1.ac4.notyet': '- No tests written or run<br>- Bugs not identified<br>- No gap analysis',
+        's1.ac4.inprogress': '- Tests only on main features<br>- Bugs identified, some fixes<br>- No automation',
+        's1.ac4.acquired': '- Complete & analyzed tests (unit + integration)<br>- Test automation<br>- Clear gap validation',
+        's2.title': 'Skill 2: Select appropriate algorithms (Semester 3 - Track A)',
+        's2.ac1.label': 'LO1 — Choose appropriate data structures<br><br><em>Evidence: README analysis, Code</em>',
+        's2.ac1.notyet': '- Structures ill-suited to the problem<br>- Duplicated or poorly organized data<br>- Choice by habit without reflection',
+        's2.ac1.inprogress': '- Consistent structure but choice unjustified<br>- Use of advanced structures (Set, Map)<br>- Modified when a problem arises',
+        's2.ac1.acquired': '- Comparison before choice<br>- Performance/memory considered<br>- Relevant justification of choice',
+        's2.ac2.label': 'LO2 — Select the right algorithms<br><br><em>Evidence: Benchmarks, complexity</em>',
+        's2.ac2.notyet': '- Wrong or incomplete results<br>- Algorithm does not match the problem<br>- Solution applied randomly',
+        's2.ac2.inprogress': '- Functional but slow/heavy algorithm<br>- Optimizations without concrete measurement<br>- Using course algorithms',
+        's2.ac2.acquired': '- Choice based on constraints (time, memory)<br>- Big-O complexity analysis<br>- Relevant improvements proposed',
+        's2.ac3.label': 'LO3 — Secure algorithmic processing<br><br><em>Evidence: Input validation, Logs</em>',
+        's2.ac3.notyet': '- Data not verified<br>- Program exploitable or unstable<br>- No handling of malicious inputs',
+        's2.ac3.inprogress': '- Partial data filtering<br>- Partial error handling<br>- Sensitive data poorly protected',
+        's2.ac3.acquired': '- Systematic data verification<br>- Protection against injections/overflows<br>- Traceability and error management',
+        's2.ac4.label': 'LO4 — Reduce environmental impact<br><br><em>Evidence: Profiling, Eco-design report</em>',
+        's2.ac4.notyet': '- Resources ignored<br>- CPU/memory wasted<br>- No reflection on impact',
+        's2.ac4.inprogress': '- Some optimizations without justification<br>- Impact mentioned after the fact<br>- Occasional improvements',
+        's2.ac4.acquired': '- Optimization from the design phase<br>- Resource-efficient solution<br>- Documentation of reduced impacts',
+        's3.title': 'Skill 3: Deploy services in a network architecture',
+        's3.ac1.label': 'LO1 — Design communicating applications<br><br><em>Evidence: Postman, Wireshark, Logs</em>',
+        's3.ac1.notyet': '- No communication between services<br>- Incorrect protocol<br>- No network error handling',
+        's3.ac1.inprogress': '- Functional but unstable communication<br>- Protocol used without justification<br>- Incomplete network tests',
+        's3.ac1.acquired': '- Reliable communication (API/Socket)<br>- Appropriate protocol<br>- Documented network error handling',
+        's3.ac2.label': 'LO2 — Deploy services (Server/VM)<br><br><em>Evidence: Dockerfile, Install manual</em>',
+        's3.ac2.notyet': '- Not deployed or inaccessible<br>- Bad network config<br>- Missing dependencies',
+        's3.ac2.inprogress': '- Functional but unstable deployment<br>- Accessible locally only<br>- Partial network config',
+        's3.ac2.acquired': '- Stable online service<br>- Structured deployment (Docker, VM)<br>- Install/launch documentation',
+        's3.ac3.label': 'LO3 — Secure services and data<br><br><em>Evidence: nmap, SSL, Firewall</em>',
+        's3.ac3.notyet': '- No access control<br>- Open ports without protection<br>- Plaintext communications',
+        's3.ac3.inprogress': '- Hardened authentication lacking<br>- Partial config (Firewall/Cert)<br>- Not all vulnerabilities fixed',
+        's3.ac3.acquired': '- Precise access management<br>- Network security (TLS, Firewall)<br>- Vulnerability analysis and fixes',
+        's4.title': 'Skill 4: Optimize, interact with and secure a database',
+        's4.ac1.label': 'LO1 — Design a coherent database<br><br><em>Evidence: ERD/Relational model, SQL creation</em>',
+        's4.ac1.notyet': '- Incorrect structure<br>- Redundancies or anomalies<br>- No constraints (PK, FK)',
+        's4.ac1.inprogress': '- Correct but improvable model<br>- Partial normalization<br>- Missing constraints',
+        's4.ac1.acquired': '- Normalized and validated model<br>- Integrity constraints defined<br>- Designed for performance and evolution',
+        's4.ac2.label': 'LO2 — Manipulate data (SQL)<br><br><em>Evidence: SQL scripts, results</em>',
+        's4.ac2.notyet': '- Poorly written/incorrect queries<br>- Incomplete results<br>- Join issues',
+        's4.ac2.inprogress': '- Correct but unoptimized queries<br>- Advanced features partial<br>- Insufficient verification',
+        's4.ac2.acquired': '- Efficient and complex queries<br>- Mastered joins/aggregations<br>- Verified results',
+        's4.ac3.label': 'LO3 — Connect the application cleanly<br><br><em>Evidence: DAO/ORM code, config</em>',
+        's4.ac3.notyet': '- No DB communication<br>- Queries in the interface<br>- DB access crashes',
+        's4.ac3.inprogress': '- Functional connection, unclear architecture<br>- Limited error handling<br>- Poorly secured config',
+        's4.ac3.acquired': '- Stable connection (DAO/Repository)<br>- External parameters (.env)<br>- Logs and errors handled',
+        's4.ac4.label': 'LO4 — Secure the database and exchanges<br><br><em>Evidence: Injection tests, Roles</em>',
+        's4.ac4.notyet': '- Passwords in plaintext<br>- SQL injections possible<br>- Permissions too open',
+        's4.ac4.inprogress': '- Partial prepared queries<br>- Partial role policy<br>- Improvable secure storage',
+        's4.ac4.acquired': '- Systematic prepared queries<br>- Minimal rights management<br>- Sensitive data protected',
+        's5.title': 'Skill 5: Project tracking, client and user needs',
+        's5.ac1.label': 'LO1 — Understand and rephrase needs<br><br><em>Evidence: User stories, Validation</em>',
+        's5.ac1.notyet': '- Needs misunderstood<br>- Expectations not rephrased<br>- Off-topic features',
+        's5.ac1.inprogress': '- Global understanding but vague<br>- Partial translation into features<br>- Unvalidated assumptions',
+        's5.ac1.acquired': '- Expectations clearly explained<br>- Needs turned into tasks<br>- Validated before development',
+        's5.ac2.label': 'LO2 — Plan and track progress<br><br><em>Evidence: Trello, Gantt, Jira</em>',
+        's5.ac2.notyet': '- No planning<br>- Random tasks<br>- Deadlines not met',
+        's5.ac2.inprogress': '- Basic, unmaintained organization<br>- Irregular updates<br>- Difficulty anticipating',
+        's5.ac2.acquired': '- Updated planning<br>- Priorities and risks managed<br>- Transparent tracking',
+        's5.ac3.label': 'LO3 — Communicate effectively<br><br><em>Evidence: Meeting notes, Slides</em>',
+        's5.ac3.notyet': '- Information not transmitted<br>- No meeting notes<br>- Misunderstanding',
+        's5.ac3.inprogress': '- Unclear communication<br>- Incomplete meeting notes<br>- Poorly adapted presentations',
+        's5.ac3.acquired': '- Regular and relevant communication<br>- Structured meeting notes<br>- Adapted presentations',
+        's5.ac4.label': 'LO4 — Control quality and improve<br><br><em>Evidence: Quality report, Retrospective</em>',
+        's5.ac4.notyet': '- No needs verification<br>- No quality indicator<br>- No feedback loop',
+        's5.ac4.inprogress': '- Verification without method<br>- Problems noticed after the fact<br>- Improvement ideas not followed up',
+        's5.ac4.acquired': '- Compliance measured<br>- Concrete improvements<br>- Feedback analysis',
+        's6.title': 'Skill 6: Situate your role within a team',
+        's6.ac1.label': 'LO1 — Position yourself in the team',
+        's6.ac1.notyet': '- Does not attend meetings<br>- Ignores documents<br>- Does not respect decisions',
+        's6.ac1.inprogress': '- Tasks done without global vision<br>- Only knows own role<br>- Difficult adaptation',
+        's6.ac1.acquired': '- Understands overall functioning<br>- Respects collective framework<br>- Aware of own impact',
+        's6.ac2.label': 'LO2 — Communication within the group',
+        's6.ac2.notyet': '- Does not report problems<br>- Does not read messages<br>- No feedback on own work',
+        's6.ac2.inprogress': '- Irregular communication<br>- Unhelpful responses<br>- Communicates only when asked',
+        's6.ac2.acquired': '- Shares useful info at the right time<br>- Contributes to exchanges<br>- Promotes understanding',
+        's6.ac3.label': 'LO3 — Personal organization (collective)',
+        's6.ac3.notyet': '- Work behind schedule<br>- No prioritization<br>- Tasks not completed',
+        's6.ac3.inprogress': '- Partial deadline respect<br>- Inconsistent organization<br>- Difficulty multitasking',
+        's6.ac3.acquired': '- Efficient planning<br>- Deadlines respected<br>- Workload managed',
+        's6.ac4.label': 'LO4 — Professional attitude in team',
+        's6.ac4.notyet': '- Ignores feedback<br>- Quick disengagement<br>- Disruptive behavior',
+        's6.ac4.inprogress': '- Accepts feedback without acting<br>- Lacks initiative<br>- Variable involvement',
+        's6.ac4.acquired': '- Constructive attitude<br>- Active participation<br>- Proof of responsibility'
+    }
+};
+</script>
+<script src="../assets/lang-switcher.js"></script>
 </body>
 </html>

@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blackjack Casino - Paris & Jetons</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../assets/lang-switcher.css">
 </head>
 <body>
 
     <div class="main-container">
-        
+
         <aside class="deck-container">
             <div class="shoe-stack">
                 <div id="visual-deck"></div>
@@ -18,7 +19,7 @@
 
         <main class="game-board">
             <div class="section dealer-section">
-                <h2>Croupier <span id="dealer-score" class="score-badge">0</span></h2>
+                <h2><span data-i18n="bj.dealer">Croupier</span> <span id="dealer-score" class="score-badge">0</span></h2>
                 <div id="dealer-hand" class="hand"></div>
             </div>
 
@@ -26,8 +27,8 @@
 
             <div class="section player-section">
                 <h2>
-                    Joueur <span id="player-score" class="score-badge">0</span>
-                    <span class="bankroll-display">Portefeuille : <span id="bankroll">1000</span> €</span>
+                    <span data-i18n="bj.player">Joueur</span> <span id="player-score" class="score-badge">0</span>
+                    <span class="bankroll-display"><span data-i18n="bj.wallet">Portefeuille</span> : <span id="bankroll">1000</span> €</span>
                 </h2>
                 <div id="player-hands-container">
                     <div id="hand-0" class="hand active-hand"></div>
@@ -35,9 +36,9 @@
             </div>
 
             <div class="controls-area">
-                
+
                 <div id="betting-controls" class="controls-group">
-                    <div class="bet-info">Mise actuelle : <span id="current-bet">0</span> €</div>
+                    <div class="bet-info"><span data-i18n="bj.currentbet">Mise actuelle</span> : <span id="current-bet">0</span> €</div>
                     <div class="chips-container">
                         <button class="chip chip-1" onclick="addBet(1)">1</button>
                         <button class="chip chip-5" onclick="addBet(5)">5</button>
@@ -47,23 +48,56 @@
                         <button class="chip chip-1000" onclick="addBet(1000)">1000</button>
                     </div>
                     <div class="bet-actions">
-                        <button id="btn-clear" class="btn btn-secondary">Effacer</button>
-                        <button id="btn-deal" class="btn" disabled>DISTRIBUER</button>
+                        <button id="btn-clear" class="btn btn-secondary" data-i18n="bj.clear">Effacer</button>
+                        <button id="btn-deal" class="btn" disabled data-i18n="bj.deal">DISTRIBUER</button>
                     </div>
                 </div>
 
                 <div id="game-controls" class="controls-group hidden">
-                    <button id="btn-hit" class="btn">Tirer</button>
-                    <button id="btn-stand" class="btn">Rester</button>
-                    <button id="btn-double" class="btn">Doubler</button>
-                    <button id="btn-split" class="btn" disabled>Séparer</button>
+                    <button id="btn-hit" class="btn" data-i18n="bj.hit">Tirer</button>
+                    <button id="btn-stand" class="btn" data-i18n="bj.stand">Rester</button>
+                    <button id="btn-double" class="btn" data-i18n="bj.double">Doubler</button>
+                    <button id="btn-split" class="btn" disabled data-i18n="bj.split">Séparer</button>
                 </div>
 
-                <button id="btn-restart" class="btn hidden">Nouvelle Mise</button>
+                <button id="btn-restart" class="btn hidden" data-i18n="bj.newbet">Nouvelle Mise</button>
             </div>
         </main>
     </div>
 
+    <script>
+    window.PAGE_TRANSLATIONS = {
+        fr: {
+            'page.title': 'Blackjack Casino - Paris & Jetons',
+            'bj.dealer': 'Croupier',
+            'bj.player': 'Joueur',
+            'bj.wallet': 'Portefeuille',
+            'bj.currentbet': 'Mise actuelle',
+            'bj.clear': 'Effacer',
+            'bj.deal': 'DISTRIBUER',
+            'bj.hit': 'Tirer',
+            'bj.stand': 'Rester',
+            'bj.double': 'Doubler',
+            'bj.split': 'Séparer',
+            'bj.newbet': 'Nouvelle Mise'
+        },
+        en: {
+            'page.title': 'Blackjack Casino - Bets & Chips',
+            'bj.dealer': 'Dealer',
+            'bj.player': 'Player',
+            'bj.wallet': 'Wallet',
+            'bj.currentbet': 'Current bet',
+            'bj.clear': 'Clear',
+            'bj.deal': 'DEAL',
+            'bj.hit': 'Hit',
+            'bj.stand': 'Stand',
+            'bj.double': 'Double',
+            'bj.split': 'Split',
+            'bj.newbet': 'New Bet'
+        }
+    };
+    </script>
+    <script src="../assets/lang-switcher.js"></script>
     <script src="cards.js"></script>
     <script src="script.js"></script>
 </body>

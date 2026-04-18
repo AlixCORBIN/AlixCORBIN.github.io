@@ -1207,16 +1207,15 @@ body.overlay-open .page-arrow { opacity: 0 !important; pointer-events: none !imp
    ========================================= */
 @media (max-width: 768px) {
 
-    /* --- Carousel : 2 colonnes sur tablette --- */
-    .grid-wrapper { height: 56vh; margin-bottom: 16vh; }
+    /* --- Carousel : grille 4×2 sur tablette (8 chaînes/page) --- */
+    .grid-wrapper { height: 44vh; margin-bottom: 18vh; }
     .grid-page {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(4, 1fr);
-        height: 56vh;
-        gap: 1.2vh;
-        width: 80vw;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        height: 44vh;
+        gap: 1.5vh;
+        width: 90vw;
     }
-    .channel.empty { display: none; }
     .page-arrow { width: 32px; height: 52px; }
     .page-arrow--left  { left: 6px; }
     .page-arrow--right { right: 6px; }
@@ -1339,14 +1338,14 @@ body.overlay-open .page-arrow { opacity: 0 !important; pointer-events: none !imp
    ========================================= */
 @media (max-width: 480px) {
 
-    /* --- Carousel : téléphone --- */
-    .grid-wrapper { height: 52vh; margin-bottom: 18vh; }
+    /* --- Carousel : grille 4×2 sur téléphone (8 chaînes/page) --- */
+    .grid-wrapper { height: 42vh; margin-bottom: 20vh; }
     .grid-page {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(4, 1fr);
-        height: 52vh;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        height: 42vh;
         gap: 1vh;
-        width: 86vw;
+        width: 96vw;
     }
     .channel { border-width: 3px; border-radius: 14px; }
     .page-arrow { width: 26px; height: 44px; }
@@ -1401,4 +1400,484 @@ body.overlay-open .page-arrow { opacity: 0 !important; pointer-events: none !imp
     .contact-card { padding: 16px; }
     .contact-name { font-size: 1rem; }
     .contact-item { font-size: 0.82rem; padding: 6px 10px; }
+}
+
+/* =========================================
+   20. SÉLECTEUR DE LANGUE
+   ========================================= */
+#lang-switcher {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 4px 6px;
+    gap: 2px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.13);
+    border: 1px solid rgba(0,0,0,0.07);
+    transition: background 0.3s;
+}
+
+.lang-btn {
+    display: flex;
+    align-items: center;
+    padding: 3px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), auto !important;
+    transition: transform 0.18s ease;
+    outline: none;
+}
+.lang-btn:hover { transform: scale(1.1); }
+.lang-btn.lang-active { background: transparent; }
+
+.lang-btn:hover:not(.lang-active) { background: rgba(255,255,255,0.5); }
+
+.flag-img {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(40%) opacity(0.6);
+    transition: filter 0.2s, box-shadow 0.2s;
+}
+.lang-btn.lang-active .flag-img {
+    filter: grayscale(0%) opacity(1);
+    box-shadow: 0 0 0 2px #4ac0e0;
+}
+.lang-btn:hover .flag-img { filter: grayscale(0%) opacity(0.9); }
+
+.lang-divider {
+    width: 1px;
+    height: 20px;
+    background: rgba(0,0,0,0.1);
+    flex-shrink: 0;
+}
+
+/* Dark mode */
+body.dark-mode #lang-switcher {
+    background: rgba(20,22,35,0.92);
+    border-color: rgba(255,255,255,0.07);
+}
+body.dark-mode .lang-btn { color: #444; }
+body.dark-mode .lang-btn.lang-active { background: #2e3350; color: #ddd; box-shadow: none; }
+body.dark-mode .lang-divider { background: rgba(255,255,255,0.08); }
+
+/* Masqué quand overlay ouvert */
+body.overlay-open #lang-switcher { opacity: 0; pointer-events: none; }
+
+/* =========================================
+   21. HINT DARK MODE (REBOND)
+   ========================================= */
+.dm-hint {
+    position: fixed;
+    bottom: 155px;
+    left: 22px;
+    background: linear-gradient(135deg, #4ac0e0, #6c5ce7);
+    color: white;
+    padding: 7px 13px;
+    border-radius: 16px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(108,92,231,0.45);
+    animation: dmBounce 1s ease-in-out infinite;
+    z-index: 150;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    letter-spacing: 0.3px;
+}
+
+/* Petite flèche pointant vers le bouton Wii */
+.dm-hint::after {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    left: 44px;
+    border: 5px solid transparent;
+    border-top-color: #6c5ce7;
+    border-bottom: none;
+}
+
+.dm-hint.dm-hint-hidden {
+    opacity: 0;
+    pointer-events: none;
+    animation: none;
+}
+
+@keyframes dmBounce {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-7px); }
+}
+
+/* Adaptation responsive */
+@media (max-width: 768px) {
+    .dm-hint { bottom: 125px; left: 10px; font-size: 0.7rem; padding: 6px 10px; }
+    .dm-hint::after { left: 34px; }
+}
+@media (max-width: 480px) {
+    .dm-hint { bottom: 112px; left: 8px; font-size: 0.65rem; padding: 5px 9px; }
+}
+
+/* =========================================
+   22. CHAÎNE & OVERLAY RÉCOMPENSES
+   ========================================= */
+
+/* ── Carte dans la grille ── */
+.awards-card-inner {
+    background: linear-gradient(135deg, #12100a, #211c08) !important;
+    justify-content: center;
+    gap: 4px;
+}
+.awards-trophy {
+    font-size: 2.8rem;
+    position: relative;
+    z-index: 2;
+    animation: trophyGlow 2s ease-in-out infinite;
+}
+.awards-card-label {
+    color: #f1c40f !important;
+    text-shadow: 0 0 10px rgba(241,196,15,0.5) !important;
+    position: relative;
+    z-index: 2;
+    margin: 2px 0 !important;
+}
+.awards-count {
+    font-size: 0.68rem;
+    color: #665e30;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 2;
+    text-transform: uppercase;
+}
+@keyframes trophyGlow {
+    0%, 100% { text-shadow: 0 0 20px rgba(255,200,0,0.35); }
+    50%       { text-shadow: 0 0 35px rgba(255,200,0,0.8), 0 0 55px rgba(255,150,0,0.3); }
+}
+
+/* ── Page overlay Récompenses ── */
+.awards-page {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #06070f;
+    position: relative;
+    padding-bottom: 24px;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(241,196,15,0.2) transparent;
+}
+
+/* Fond étoilé CSS pur */
+.awards-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+        radial-gradient(1px 1px at 10%  15%, rgba(255,220,100,0.35) 0, transparent 100%),
+        radial-gradient(1px 1px at 25%  40%, rgba(255,255,255,0.18) 0, transparent 100%),
+        radial-gradient(1px 1px at 42%  8%,  rgba(255,220,100,0.28) 0, transparent 100%),
+        radial-gradient(1px 1px at 60%  55%, rgba(255,255,255,0.14) 0, transparent 100%),
+        radial-gradient(1px 1px at 75%  22%, rgba(255,220,100,0.22) 0, transparent 100%),
+        radial-gradient(1px 1px at 88%  70%, rgba(255,255,255,0.16) 0, transparent 100%),
+        radial-gradient(1px 1px at 5%   80%, rgba(255,255,255,0.12) 0, transparent 100%),
+        radial-gradient(1px 1px at 50%  90%, rgba(255,220,100,0.2)  0, transparent 100%),
+        radial-gradient(2px 2px at 33%  65%, rgba(255,220,100,0.15) 0, transparent 100%),
+        radial-gradient(2px 2px at 80%  10%, rgba(255,220,100,0.18) 0, transparent 100%);
+}
+
+/* Marges latérales pour éviter le chevauchement avec les flèches de navigation (≈80px sur desktop) */
+.award-hero-card  { margin: 0 90px 14px !important; }
+.awards-bottom-row { margin: 0 90px !important; }
+
+/* ── En-tête ── */
+.awards-hero-header {
+    text-align: center;
+    padding: 28px 20px 18px;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+}
+.awards-hero-trophy-wrap {
+    display: inline-block;
+    animation: trophyGlow 2.5s ease-in-out infinite;
+    font-size: 3.2rem;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 0 16px rgba(241,196,15,0.6));
+}
+.awards-hero-title {
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: 6px;
+    color: #f1c40f;
+    text-shadow: 0 0 30px rgba(241,196,15,0.45), 0 0 60px rgba(241,196,15,0.18);
+    margin: 0;
+    text-transform: uppercase;
+}
+.awards-hero-sub {
+    font-size: 0.72rem;
+    color: #44402a;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin: 7px 0 0;
+}
+.awards-divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(241,196,15,0.4), transparent);
+    margin: 12px auto 0;
+}
+
+/* ── Hero card (1er prix 2026) ── */
+.award-hero-card {
+    margin: 0 20px 14px;
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    text-decoration: none;
+    color: white;
+    display: flex;
+    align-items: stretch;
+    min-height: 150px;
+    border: 1px solid rgba(241,196,15,0.22);
+    background: #0c0a02;
+    box-shadow: 0 0 0 0 rgba(241,196,15,0.1);
+    animation: heroCardPulse 4s ease-in-out infinite;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+    cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), pointer !important;
+    z-index: 1;
+    flex-shrink: 0;
+}
+.award-hero-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(241,196,15,0.55);
+}
+@keyframes heroCardPulse {
+    0%,100% { box-shadow: 0 0 18px rgba(241,196,15,0.08), 0 6px 28px rgba(0,0,0,0.55); }
+    50%      { box-shadow: 0 0 36px rgba(241,196,15,0.2),  0 6px 28px rgba(0,0,0,0.55); }
+}
+
+/* Image de fond de la hero card */
+.award-hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.18;
+}
+.award-hero-bg-fade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, rgba(6,7,15,0.96) 38%, rgba(6,7,15,0.5) 100%);
+}
+
+/* Barre gauche dorée */
+.award-hero-bar {
+    width: 4px;
+    flex-shrink: 0;
+    background: linear-gradient(to bottom, #f1c40f, #e67e22);
+    border-radius: 0;
+    position: relative;
+    z-index: 2;
+}
+
+/* Contenu texte */
+.award-hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 22px;
+    flex: 1;
+    gap: 12px;
+}
+.award-hero-left { display: flex; flex-direction: column; gap: 7px; flex: 1; }
+
+.award-rank-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 11px;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    width: fit-content;
+}
+.pill-gold   { background: rgba(241,196,15,0.15); border: 1px solid rgba(241,196,15,0.45); color: #f1c40f; }
+.pill-silver { background: rgba(192,192,192,0.1);  border: 1px solid rgba(192,192,192,0.3); color: #c0c0c0; }
+.pill-bronze { background: rgba(205,127,50,0.12);  border: 1px solid rgba(205,127,50,0.4); color: #cd7f32; }
+
+.award-hero-year-ghost {
+    position: absolute;
+    right: 54px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 4rem;
+    font-weight: 900;
+    color: rgba(241,196,15,0.07);
+    font-family: 'Orbitron', monospace;
+    letter-spacing: -2px;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 1;
+}
+.award-hero-name {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: white;
+    margin: 0;
+    line-height: 1.2;
+}
+.award-hero-event {
+    font-size: 0.78rem;
+    color: #666;
+    margin: 0;
+    line-height: 1.4;
+}
+.award-self-tag {
+    font-size: 0.74rem;
+    color: #f1c40f;
+    font-style: italic;
+}
+.award-hero-arrow {
+    font-size: 1.3rem;
+    color: rgba(241,196,15,0.3);
+    flex-shrink: 0;
+    transition: transform 0.2s, color 0.2s;
+    z-index: 2;
+    position: relative;
+}
+.award-hero-card:hover .award-hero-arrow {
+    transform: translateX(4px);
+    color: #f1c40f;
+}
+
+/* ── Ligne du bas : 2 cartes (2023 & 2021) ── */
+.awards-bottom-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 0 20px;
+    z-index: 1;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.award-small-card {
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    text-decoration: none;
+    color: white;
+    height: 190px;
+    display: block;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: #0c0a02;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+    cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), pointer !important;
+}
+.award-small-card:not(.award-no-link):hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,255,255,0.14);
+}
+.award-no-link { cursor: default !important; }
+
+.award-small-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.28;
+    transition: opacity 0.3s;
+}
+.award-small-card:not(.award-no-link):hover .award-small-img { opacity: 0.38; }
+
+.award-small-fade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(6,7,15,0.97) 35%, rgba(6,7,15,0.35) 100%);
+}
+
+.award-small-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    z-index: 3;
+}
+.bar-silver { background: linear-gradient(90deg, transparent, #c0c0c0, transparent); }
+.bar-bronze { background: linear-gradient(90deg, transparent, #cd7f32, transparent); }
+
+.award-small-content {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 14px 14px 16px;
+    z-index: 2;
+}
+.award-small-year {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: rgba(255,255,255,0.06);
+    font-family: 'Orbitron', monospace;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+.award-small-name {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: white;
+    line-height: 1.3;
+    margin: 5px 0 3px;
+}
+.award-small-event {
+    font-size: 0.7rem;
+    color: #555;
+    line-height: 1.4;
+}
+.award-small-stat {
+    font-size: 0.7rem;
+    color: #cd7f32;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .awards-hero-header  { padding: 18px 16px 12px; }
+    .awards-hero-title   { font-size: 1.5rem; letter-spacing: 4px; }
+    .awards-hero-trophy-wrap { font-size: 2.4rem; }
+    .award-hero-card     { margin: 0 52px 12px !important; min-height: 130px; }
+    .award-hero-content  { padding: 14px 16px; }
+    .award-hero-name     { font-size: 1.05rem; }
+    .award-hero-year-ghost { font-size: 3rem; right: 44px; }
+    .awards-bottom-row   { margin: 0 52px !important; gap: 10px; }
+    .award-small-card    { height: 160px; }
+    .award-small-year    { font-size: 1.7rem; }
+    .award-small-name    { font-size: 0.78rem; }
+}
+@media (max-width: 480px) {
+    .awards-hero-title   { font-size: 1.2rem; letter-spacing: 3px; }
+    .award-hero-name     { font-size: 0.95rem; }
+    .award-hero-year-ghost { display: none; }
+    .award-hero-card     { margin: 0 46px 10px !important; }
+    .awards-bottom-row   { margin: 0 46px !important; }
+    .award-small-card    { height: 140px; }
+    .award-small-name    { font-size: 0.72rem; }
+    .award-small-event   { font-size: 0.64rem; }
 }
