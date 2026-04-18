@@ -1243,11 +1243,11 @@ body.overlay-open .page-arrow { opacity: 0 !important; pointer-events: none !imp
 @media (max-width: 768px) {
 
     /* --- Carousel : grille 2×4 sur tablette (8 chaînes/page) --- */
-    .grid-wrapper { height: 72vh; margin-bottom: 6vh; }
+    .grid-wrapper { height: 58vh; margin-bottom: 14vh; }
     .grid-page {
         grid-template-columns: repeat(2, 1fr);
         grid-template-rows: repeat(4, 1fr);
-        height: 72vh;
+        height: 58vh;
         gap: 1.5vh;
         width: 90vw;
     }
@@ -1374,11 +1374,11 @@ body.overlay-open .page-arrow { opacity: 0 !important; pointer-events: none !imp
 @media (max-width: 480px) {
 
     /* --- Carousel : grille 2×4 sur téléphone (8 chaînes/page) --- */
-    .grid-wrapper { height: 72vh; margin-bottom: 6vh; }
+    .grid-wrapper { height: 58vh; margin-bottom: 14vh; }
     .grid-page {
         grid-template-columns: repeat(2, 1fr);
         grid-template-rows: repeat(4, 1fr);
-        height: 72vh;
+        height: 58vh;
         gap: 1vh;
         width: 96vw;
     }
