@@ -28,6 +28,7 @@ On va pas se mentir, c'est **full vibecoded**. Pas de framework, pas de bundler,
 | 🎲 **GlouGlou** | App mobile festive — WIP, publication prévue |
 | 🏆 **Récompenses** | Prix du Meilleur Portfolio 2026, Concours d'Éloquence 2023, Concours Castor 2021 |
 | 🌤️ **Météo** | Météo géolocalisée en temps réel + prévisions 5 jours |
+| 📊 **Statistiques** | Dashboard analytics temps réel — visites, chaînes les plus ouvertes, préférences, sessions de blackjack |
 
 ### Sur la chaîne BUT Informatique
 
@@ -48,6 +49,7 @@ C'est du bullshit. Ma prof m'a forcé à mettre ça sur mon CV pour avoir des po
 - ⌨️ **Raccourcis clavier** — Q/D + flèches pour naviguer (AZERTY), Échap pour fermer
 - 🌤️ **Météo géolocalisée** — prévisions 5 jours via OpenWeatherMap
 - 🏆 **Page Récompenses** — avec une vraie mise en scène or/argent/bronze
+- 📊 **Dashboard Statistiques** — visites totales/jour/semaine/mois, bar chart 7 jours, classement des chaînes, préférences (dark mode/musique/langue), stats blackjack en temps réel via Supabase
 
 ---
 
@@ -69,4 +71,4 @@ Un fichier index.html, un script.js, un style.css et de la bonne volonté.
 
 ---
 
-*Dernière mise à jour : Avril 2026*
+*Dernière mise à jour : Avril 2026 — ajout chaîne Statistiques*
