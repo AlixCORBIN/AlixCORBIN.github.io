@@ -25,6 +25,20 @@ html, body {
     min-height: 100vh;
 }
 
+/* ── Background image (générée avec Gemini) ── */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url('../assets/stats_bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.18;
+    z-index: -1;
+    pointer-events: none;
+}
+
 /* ─── Header ─── */
 .stats-header {
     display: flex;
