@@ -297,3 +297,86 @@ body {
     padding: 2px 6px;
     border-radius: 4px;
 }
+/* ── Bouton Terminer session ── */
+.btn-quit {
+    display: block;
+    margin: 14px auto 0;
+    background: linear-gradient(135deg, #7f1d1d, #991b1b);
+    border: 2px solid #dc2626;
+    color: #fca5a5;
+    font-size: 0.85rem;
+    padding: 8px 20px;
+    opacity: 0.75;
+    transition: opacity 0.2s, transform 0.1s;
+}
+.btn-quit:hover { opacity: 1; transform: scale(1.03); }
+
+/* ── Modal leaderboard ── */
+.quit-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.quit-modal-backdrop.hidden { display: none; }
+
+.quit-modal-card {
+    background: linear-gradient(135deg, #1a0a0a, #2d1010);
+    border: 1px solid rgba(220,38,38,0.4);
+    border-radius: 20px;
+    padding: 32px 36px;
+    width: 360px;
+    max-width: 92vw;
+    box-shadow: 0 0 40px rgba(220,38,38,0.2), 0 20px 60px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: center;
+}
+
+.quit-modal-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #fca5a5;
+    letter-spacing: 1px;
+}
+
+.quit-modal-bankroll {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.quit-modal-sub {
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+.quit-pseudo-input {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(220,38,38,0.4);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: #fff;
+    font-size: 1rem;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.quit-pseudo-input:focus { border-color: #dc2626; }
+.quit-pseudo-input::placeholder { color: #555; }
+
+.quit-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.quit-modal-note {
+    font-size: 0.72rem;
+    color: #555;
+}

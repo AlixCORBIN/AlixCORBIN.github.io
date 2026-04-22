@@ -63,8 +63,26 @@
                 </div>
 
                 <button id="btn-restart" class="btn hidden" data-i18n="bj.newbet">Nouvelle Mise</button>
+                <button id="btn-quit" class="btn btn-quit" data-i18n="bj.quit">🏁 Terminer la session</button>
             </div>
         </main>
+    </div>
+
+    <!-- Modal leaderboard -->
+    <div id="quit-modal" class="quit-modal-backdrop hidden">
+        <div class="quit-modal-card">
+            <h2 class="quit-modal-title" data-i18n="bj.quit.title">Fin de session</h2>
+            <div class="quit-modal-bankroll">
+                <span data-i18n="bj.quit.balance">Solde final</span> : <span id="quit-bankroll-display">0</span> €
+            </div>
+            <p class="quit-modal-sub" data-i18n="bj.quit.sub">Entre ton pseudo pour rejoindre le classement :</p>
+            <input id="quit-pseudo-input" class="quit-pseudo-input" type="text" maxlength="20" placeholder="Pseudo...">
+            <div class="quit-modal-actions">
+                <button id="quit-cancel-btn" class="btn btn-secondary" data-i18n="bj.quit.cancel">Annuler</button>
+                <button id="quit-confirm-btn" class="btn" data-i18n="bj.quit.confirm">Envoyer & Rejouer</button>
+            </div>
+            <p class="quit-modal-note" data-i18n="bj.quit.note">Ta mise repart de 1 000 € après envoi.</p>
+        </div>
     </div>
 
     <script>
@@ -81,7 +99,16 @@
             'bj.stand': 'Rester',
             'bj.double': 'Doubler',
             'bj.split': 'Séparer',
-            'bj.newbet': 'Nouvelle Mise'
+            'bj.newbet': 'Nouvelle Mise',
+            'bj.quit': '🏁 Terminer la session',
+            'bj.quit.title': 'Fin de session',
+            'bj.quit.balance': 'Solde final',
+            'bj.quit.sub': 'Entre ton pseudo pour rejoindre le classement :',
+            'bj.quit.cancel': 'Annuler',
+            'bj.quit.confirm': 'Envoyer & Rejouer',
+            'bj.quit.note': 'Ta mise repart de 1 000 € après envoi.',
+            'bj.quit.sending': 'Envoi...',
+            'bj.quit.done': '✅ Envoyé ! Bonne chance au prochain run.'
         },
         en: {
             'page.title': 'Blackjack Casino - Bets & Chips',
@@ -95,7 +122,16 @@
             'bj.stand': 'Stand',
             'bj.double': 'Double',
             'bj.split': 'Split',
-            'bj.newbet': 'New Bet'
+            'bj.newbet': 'New Bet',
+            'bj.quit': '🏁 End session',
+            'bj.quit.title': 'Session over',
+            'bj.quit.balance': 'Final balance',
+            'bj.quit.sub': 'Enter your username to join the leaderboard:',
+            'bj.quit.cancel': 'Cancel',
+            'bj.quit.confirm': 'Submit & Restart',
+            'bj.quit.note': 'Your bankroll resets to €1,000 after submitting.',
+            'bj.quit.sending': 'Sending...',
+            'bj.quit.done': '✅ Submitted! Good luck next run.'
         }
     };
     </script>
