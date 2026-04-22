@@ -172,6 +172,12 @@ const CHANNELS = [
         emoji: "🏆",
         cardLabel: "Récompenses", cardLabelEn: "Awards",
         type: "awards"
+    },
+    {
+        title: "Météo", titleEn: "Weather",
+        emoji: "🌤️",
+        cardLabel: "Météo", cardLabelEn: "Weather",
+        type: "meteo"
     }
 ];
 
@@ -304,9 +310,24 @@ function createChannelEl(data, index) {
         const sub   = currentLang === 'en' ? '3 prizes' : '3 prix';
         div.innerHTML = `
             <div class="channel-inner awards-card-inner">
+                <img src="assets/recompense.png" class="ch-bg awards-card-bg" alt="">
+                <div class="awards-card-overlay"></div>
                 <div class="awards-trophy">🏆</div>
                 <h2 class="ch-label awards-card-label">${label}</h2>
                 <div class="awards-count">${sub}</div>
+            </div>`;
+        return div;
+    }
+
+    if (data.type === 'meteo') {
+        const label = (currentLang === 'en' && data.cardLabelEn) ? data.cardLabelEn : data.cardLabel;
+        div.innerHTML = `
+            <div class="channel-inner meteo-card-inner">
+                <img src="assets/meteo.png" class="ch-bg meteo-card-bg" alt="">
+                <div class="meteo-card-overlay"></div>
+                <div class="meteo-card-icon">🌤️</div>
+                <h2 class="ch-label meteo-card-label">${label}</h2>
+                <div class="meteo-card-sub" id="meteo-card-sub">--°C</div>
             </div>`;
         return div;
     }
@@ -490,6 +511,14 @@ function renderOverlayContent(data) {
                         <div class="moi-name">Alix Corbin</div>
                         <div class="moi-role">${isEn ? 'Developer in training' : 'Développeur en formation'}</div>
                         <div class="moi-location">📍 Mayenne &amp; Sarthe</div>
+                        <div class="moi-socials">
+                            <a href="https://github.com/AlixCORBIN" target="_blank" rel="noopener" class="moi-social-btn" title="GitHub">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
+                            </a>
+                            <a href="https://www.linkedin.com/in/alix-corbin-6a89983a3/" target="_blank" rel="noopener" class="moi-social-btn" title="LinkedIn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                            </a>
+                        </div>
                     </div>
                     <div class="moi-right">
                         <div class="moi-card moi-card--highlight">
@@ -515,6 +544,18 @@ function renderOverlayContent(data) {
                                     <span class="skill-pill">Web</span>
                                     <span class="skill-pill">SQL</span>
                                     <span class="skill-pill">Arduino</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="moi-card">
+                            <div class="moi-card-icon">✨</div>
+                            <div class="moi-card-body">
+                                <div class="moi-card-title">${isEn ? 'Soft skills' : 'Qualités'}</div>
+                                <div class="moi-skills">
+                                    <span class="skill-pill">${isEn ? 'Analytical' : 'Esprit analytique'}</span>
+                                    <span class="skill-pill">${isEn ? 'Eloquent' : 'Éloquent'}</span>
+                                    <span class="skill-pill">${isEn ? 'Leadership' : 'Leadership'}</span>
+                                    <span class="skill-pill">${isEn ? 'Team player' : 'Sociable'}</span>
                                 </div>
                             </div>
                         </div>
@@ -610,7 +651,7 @@ function renderOverlayContent(data) {
                     </div>
 
                     <a href="https://www.univ-lemans.fr/fr/actualites/en-2026/ceremonie-des-walid.html"
-                       target="_self" class="award-hero-card">
+                       target="_blank" rel="noopener" class="award-hero-card">
                         <img src="https://iut-laval.univ-lemans.fr/_resource/08-Actualit%C3%A9s/2026/F%C3%A9vrier/mmi%20sa%C3%A9/Meilleur%20Portfolio.png"
                              class="award-hero-bg" alt="">
                         <div class="award-hero-bg-fade"></div>
@@ -630,7 +671,7 @@ function renderOverlayContent(data) {
                     <div class="awards-bottom-row">
 
                         <a href="https://www.stjoseph-lasalle.fr/concours-deloquence-2023/"
-                           target="_self" class="award-small-card">
+                           target="_blank" rel="noopener" class="award-small-card">
                             <div class="award-small-bar bar-silver"></div>
                             <img src="assets/eloquence.jpg" class="award-small-img" alt="">
                             <div class="award-small-fade"></div>
@@ -657,6 +698,18 @@ function renderOverlayContent(data) {
 
                     </div>
                 </div>`;
+            break;
+        }
+
+        case 'meteo': {
+            overlay.style.background = `url('assets/meteo.png') center/cover no-repeat`;
+            if (startBtn) startBtn.style.display = 'none';
+
+            if (weatherCache) {
+                renderWeatherOverlay(weatherCache, isEn);
+            } else {
+                overlayContentBox.innerHTML = `<div class="meteo-loading">${isEn ? 'Locating...' : 'Localisation...'} 📡</div>`;
+            }
             break;
         }
 
@@ -817,35 +870,150 @@ setInterval(updateClock, 1000);
 updateClock();
 
 /* =========================================
-   COMPTEUR DE VISITEURS (Supabase)
+   12. MÉTÉO
    ========================================= */
-(function () {
-    const SUPABASE_URL = 'https://njkbhgmwylletmdmsmyl.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw';
+const WEATHER_API_KEY = 'd9409f721206c46f1b0cda57aa74d801';
 
-    fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_views`, {
-        method: 'POST',
-        headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-            'Content-Type': 'application/json'
-        },
-        body: '{}'
-    })
-    .then(r => r.json())
-    .then(count => {
-        const el = document.getElementById('visitor-count');
-        if (el) el.textContent = '👁 ' + Number(count).toLocaleString('fr-FR') + ' visites';
-    })
-    .catch(() => {
-        const el = document.getElementById('visitor-count');
-        if (el) el.textContent = '';
+const WEATHER_ICONS = {
+    Thunderstorm: '⛈️', Drizzle: '🌦️', Rain: '🌧️',
+    Snow: '❄️', Mist: '🌫️', Smoke: '🌫️', Haze: '🌫️',
+    Dust: '🌫️', Fog: '🌫️', Sand: '🌫️', Ash: '🌫️',
+    Squall: '💨', Tornado: '🌪️', Clear: '☀️', Clouds: '☁️'
+};
+
+let weatherCache   = null;
+let forecastCache  = null;
+
+function buildForecastHTML(forecastData, isEn) {
+    if (!forecastData || !forecastData.list) return '';
+
+    const daysFr = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+    const daysEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayNames = isEn ? daysEn : daysFr;
+
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const byDay = {};
+
+    forecastData.list.forEach(entry => {
+        const day = entry.dt_txt.slice(0, 10);
+        if (day === todayStr) return;
+        if (!byDay[day]) byDay[day] = [];
+        byDay[day].push(entry);
     });
-})();
+
+    const days = Object.keys(byDay).slice(0, 5);
+    if (!days.length) return '';
+
+    const items = days.map(day => {
+        const entries  = byDay[day];
+        const midday   = entries.find(e => e.dt_txt.includes('12:00:00')) || entries[Math.floor(entries.length / 2)];
+        const icon     = WEATHER_ICONS[midday.weather[0].main] || '🌡️';
+        const tMin     = Math.round(Math.min(...entries.map(e => e.main.temp_min)));
+        const tMax     = Math.round(Math.max(...entries.map(e => e.main.temp_max)));
+        const dow      = dayNames[new Date(day).getDay()];
+        return `
+            <div class="meteo-forecast-day">
+                <div class="meteo-fc-name">${dow}</div>
+                <div class="meteo-fc-icon">${icon}</div>
+                <div class="meteo-fc-temps"><span class="meteo-fc-max">${tMax}°</span><span class="meteo-fc-min">${tMin}°</span></div>
+            </div>`;
+    }).join('');
+
+    return `<div class="meteo-forecast">${items}</div>`;
+}
+
+function renderWeatherOverlay(d, isEn) {
+    const icon     = WEATHER_ICONS[d.weather[0].main] || '🌡️';
+    const temp     = Math.round(d.main.temp);
+    const feels    = Math.round(d.main.feels_like);
+    const tMin     = Math.round(d.main.temp_min);
+    const tMax     = Math.round(d.main.temp_max);
+    const humidity = d.main.humidity;
+    const wind     = Math.round(d.wind.speed * 3.6);
+    const desc     = d.weather[0].description.charAt(0).toUpperCase() + d.weather[0].description.slice(1);
+    const city     = d.name;
+    const country  = d.sys.country;
+
+    const cardSub = document.getElementById('meteo-card-sub');
+    if (cardSub) cardSub.textContent = `${icon} ${temp}°C`;
+
+    overlayContentBox.innerHTML = `
+        <div class="meteo-overlay">
+            <div class="meteo-header">
+                <div class="meteo-icon-big">${icon}</div>
+                <div class="meteo-temp-big">${temp}°C</div>
+                <div class="meteo-desc">${desc}</div>
+                <div class="meteo-city">📍 ${city}, ${country}</div>
+            </div>
+            <div class="meteo-grid">
+                <div class="meteo-stat">
+                    <div class="meteo-stat-label">${isEn ? 'Feels like' : 'Ressenti'}</div>
+                    <div class="meteo-stat-value">${feels}°C</div>
+                </div>
+                <div class="meteo-stat">
+                    <div class="meteo-stat-label">Min / Max</div>
+                    <div class="meteo-stat-value">${tMin}° / ${tMax}°</div>
+                </div>
+                <div class="meteo-stat">
+                    <div class="meteo-stat-label">${isEn ? 'Humidity' : 'Humidité'}</div>
+                    <div class="meteo-stat-value">${humidity}%</div>
+                </div>
+                <div class="meteo-stat">
+                    <div class="meteo-stat-label">${isEn ? 'Wind' : 'Vent'}</div>
+                    <div class="meteo-stat-value">${wind} km/h</div>
+                </div>
+            </div>
+            ${buildForecastHTML(forecastCache, isEn)}
+        </div>`;
+}
+
+function prefetchWeather() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(pos => {
+        const { latitude: lat, longitude: lon } = pos.coords;
+        const base = `https://api.openweathermap.org/data/2.5`;
+
+        fetch(`${base}/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=fr`)
+            .then(r => r.json())
+            .then(d => {
+                if (!d.main) return;
+                weatherCache = d;
+                const icon = WEATHER_ICONS[d.weather[0].main] || '🌡️';
+                const temp = Math.round(d.main.temp);
+                const cardSub = document.getElementById('meteo-card-sub');
+                if (cardSub) cardSub.textContent = `${icon} ${temp}°C`;
+            })
+            .catch(() => {});
+
+        fetch(`${base}/forecast?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=fr`)
+            .then(r => r.json())
+            .then(d => { if (d.list) forecastCache = d; })
+            .catch(() => {});
+
+    }, () => {});
+}
 
 /* =========================================
-   12. INITIALISATION
+   13. RACCOURCIS CLAVIER
+   ========================================= */
+document.addEventListener('keydown', e => {
+    const inOverlay = !!activeCard;
+    const key = e.key;
+
+    if (inOverlay) {
+        if (key === 'ArrowLeft'  || key === 'q' || key === 'Q') { e.preventDefault(); navigate(-1); }
+        if (key === 'ArrowRight' || key === 'd' || key === 'D') { e.preventDefault(); navigate(1); }
+        if (key === 'Escape')                                    { e.preventDefault(); closeZoom(); }
+    } else {
+        if (key === 'ArrowLeft'  || key === 'q' || key === 'Q') { e.preventDefault(); navigatePage(-1); }
+        if (key === 'ArrowRight' || key === 'd' || key === 'D') { e.preventDefault(); navigatePage(1); }
+    }
+});
+
+/* =========================================
+   14. INITIALISATION
    ========================================= */
 renderGrid();
 applyTranslations(currentLang);
+prefetchWeather();
 

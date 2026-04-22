@@ -1,17 +1,25 @@
 /* =========================================
    1. CONFIGURATION GÉNÉRALE
    ========================================= */
-body, html {
+html {
     height: 100%;
+    overflow: hidden;
+}
+
+body {
+    height: 100%;
+    /* Fallback puis dvh pour mobile (exclut la barre d'adresse) */
+    height: 100dvh;
     margin: 0;
     overflow: hidden;
+    overscroll-behavior: none;
     font-family: 'Roboto', sans-serif;
     background-color: #e8e8e8;
     background-image: repeating-linear-gradient(
-        0deg, 
-        transparent, 
-        transparent 2px, 
-        #d4d4d4 2px, 
+        0deg,
+        transparent,
+        transparent 2px,
+        #d4d4d4 2px,
         #d4d4d4 4px
     );
     display: flex;
@@ -19,7 +27,7 @@ body, html {
     align-items: center;
     justify-content: center;
     user-select: none;
-    
+
     /* Curseur Wii personnalisé */
     cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), auto !important;
 }
@@ -430,14 +438,6 @@ button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
     font-weight: 500;
 }
 
-.visitor-count {
-    font-size: 0.72rem;
-    color: #aaa;
-    margin-top: 4px;
-    letter-spacing: 0.5px;
-    font-family: 'Orbitron', sans-serif;
-}
-body.dark-mode .visitor-count { color: #4a5568; }
 
 /* =========================================
    6. STYLE SPÉCIFIQUE PAGE "MOI"
@@ -796,6 +796,32 @@ body.dark-mode .visitor-count { color: #4a5568; }
     border-radius: 20px;
     font-size: 0.85rem;
     font-weight: 600;
+}
+
+.moi-socials {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.moi-social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #aaa;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.moi-social-btn:hover {
+    background: rgba(74,192,224,0.2);
+    border-color: rgba(74,192,224,0.5);
+    color: #4ac0e0;
 }
 
 .moi-cta {
@@ -1216,12 +1242,12 @@ body.overlay-open .page-arrow { opacity: 0 !important; pointer-events: none !imp
    ========================================= */
 @media (max-width: 768px) {
 
-    /* --- Carousel : grille 4×2 sur tablette (8 chaînes/page) --- */
-    .grid-wrapper { height: 44vh; margin-bottom: 18vh; }
+    /* --- Carousel : grille 2×4 sur tablette (8 chaînes/page) --- */
+    .grid-wrapper { height: 58vh; margin-bottom: 14vh; }
     .grid-page {
-        grid-template-columns: repeat(4, 1fr);
-        grid-template-rows: repeat(2, 1fr);
-        height: 44vh;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        height: 58vh;
         gap: 1.5vh;
         width: 90vw;
     }
@@ -1347,12 +1373,12 @@ body.overlay-open .page-arrow { opacity: 0 !important; pointer-events: none !imp
    ========================================= */
 @media (max-width: 480px) {
 
-    /* --- Carousel : grille 4×2 sur téléphone (8 chaînes/page) --- */
-    .grid-wrapper { height: 42vh; margin-bottom: 20vh; }
+    /* --- Carousel : grille 2×4 sur téléphone (8 chaînes/page) --- */
+    .grid-wrapper { height: 58vh; margin-bottom: 14vh; }
     .grid-page {
-        grid-template-columns: repeat(4, 1fr);
-        grid-template-rows: repeat(2, 1fr);
-        height: 42vh;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        height: 58vh;
         gap: 1vh;
         width: 96vw;
     }
@@ -1543,10 +1569,22 @@ body.overlay-open #lang-switcher {
 
 /* ── Carte dans la grille ── */
 .awards-card-inner {
-    background: linear-gradient(135deg, #12100a, #211c08) !important;
+    background: #12100a !important;
     justify-content: center;
     gap: 4px;
+    overflow: hidden;
 }
+.awards-card-bg {
+    object-fit: cover;
+    opacity: 0.55;
+}
+.awards-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10,8,2,0.85) 40%, rgba(0,0,0,0.2) 100%);
+    z-index: 1;
+}
+.awards-trophy, .awards-card-label, .awards-count { position: relative; z-index: 2; }
 .awards-trophy {
     font-size: 2.8rem;
     position: relative;
@@ -1892,3 +1930,156 @@ body.overlay-open #lang-switcher {
     .award-small-name    { font-size: 0.72rem; }
     .award-small-event   { font-size: 0.64rem; }
 }
+
+/* =========================================
+   CHAÎNE MÉTÉO
+   ========================================= */
+
+/* ── Carte dans la grille ── */
+.meteo-card-inner {
+    background: #0f2027 !important;
+    justify-content: center;
+    gap: 4px;
+    overflow: hidden;
+}
+.meteo-card-bg {
+    object-fit: cover;
+    opacity: 0.6;
+}
+.meteo-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,15,30,0.85) 40%, rgba(0,0,0,0.15) 100%);
+    z-index: 1;
+}
+.meteo-card-icon {
+    font-size: 2.4rem;
+    position: relative;
+    z-index: 2;
+}
+.meteo-card-label {
+    color: #fff !important;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.8) !important;
+    position: relative;
+    z-index: 2;
+}
+.meteo-card-sub {
+    font-size: 0.9rem;
+    color: #fff;
+    font-weight: 600;
+    position: relative;
+    z-index: 2;
+}
+
+/* ── Overlay ── */
+.meteo-loading {
+    font-size: 1.2rem;
+    color: #aaa;
+    text-align: center;
+}
+.meteo-overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    background: rgba(0, 10, 20, 0.55);
+    border-radius: 16px;
+    backdrop-filter: blur(4px);
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    color: white;
+}
+.meteo-header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+.meteo-icon-big {
+    font-size: 5rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 20px rgba(126,207,234,0.6));
+}
+.meteo-temp-big {
+    font-family: 'Orbitron', monospace;
+    font-size: 3.5rem;
+    color: #7ecfea;
+    text-shadow: 0 0 20px rgba(126,207,234,0.4);
+}
+.meteo-desc {
+    font-size: 1.1rem;
+    color: #cce8f0;
+    text-transform: capitalize;
+}
+.meteo-city {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-top: 2px;
+}
+.meteo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+}
+.meteo-stat {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(126,207,234,0.15);
+    border-radius: 10px;
+    padding: 12px 16px;
+    text-align: center;
+}
+.meteo-stat-label {
+    font-size: 0.7rem;
+    color: #aaa;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.meteo-stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #7ecfea;
+}
+
+.meteo-forecast {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
+    border-top: 1px solid rgba(126,207,234,0.15);
+    padding-top: 16px;
+}
+
+.meteo-forecast-day {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(126,207,234,0.1);
+    border-radius: 8px;
+    padding: 8px 4px;
+}
+
+.meteo-fc-name {
+    font-size: 0.7rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.meteo-fc-icon { font-size: 1.4rem; }
+
+.meteo-fc-temps {
+    display: flex;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.meteo-fc-max { color: #7ecfea; }
+.meteo-fc-min { color: #666; }
