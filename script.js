@@ -54,6 +54,7 @@ function setLanguage(lang) {
     applyTranslations(lang);
     renderGrid();
     if (activeCard) renderOverlayContent(activeCard._channelData);
+    sbPost('increment_preference', { p_event: 'lang_' + lang });
 }
 
 /* =========================================
@@ -178,6 +179,28 @@ const CHANNELS = [
         emoji: "🌤️",
         cardLabel: "Météo", cardLabelEn: "Weather",
         type: "meteo"
+    },
+    {
+        title: "Statistiques", titleEn: "Statistics",
+        emoji: "📊",
+        cardLabel: "Stats", cardLabelEn: "Stats",
+        bg: null,
+        cardBgColor: "#080c14",
+        cardGradient: "linear-gradient(135deg, rgba(8,12,20,0.6), rgba(34,211,238,0.08))",
+        cardEmojiShadow: "0 2px 10px rgba(34,211,238,0.7)",
+        cardLabelColor: "#22d3ee",
+        cardLabelShadow: "0 0 12px rgba(34,211,238,0.5)",
+        desc: "Visites, chaînes les plus ouvertes, préférences, sessions de blackjack — toutes les données en temps réel.",
+        descEn: "Visits, most opened channels, preferences, blackjack sessions — all data in real time.",
+        link: "stats/index.html",
+        type: "stats",
+        overlayTitle: "STATISTIQUES", overlayTitleEn: "STATISTICS",
+        overlayTitleSize: "3rem",
+        overlayTitleLetterSpacing: "3px",
+        overlayColor: "#22d3ee",
+        overlayTitleShadow: "0 0 20px rgba(34,211,238,0.5)",
+        overlayEmojiShadow: "0 4px 15px rgba(34,211,238,0.6)",
+        overlayBgOpacity: 0.15
     }
 ];
 
@@ -328,6 +351,26 @@ function createChannelEl(data, index) {
                 <div class="meteo-card-icon">🌤️</div>
                 <h2 class="ch-label meteo-card-label">${label}</h2>
                 <div class="meteo-card-sub" id="meteo-card-sub">--°C</div>
+            </div>`;
+        return div;
+    }
+
+    if (data.type === 'stats') {
+        const label = (currentLang === 'en' && data.cardLabelEn) ? data.cardLabelEn : data.cardLabel;
+        div.innerHTML = `
+            <div class="channel-inner stats-card-inner" style="background:#080c14">
+                <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(8,12,20,0.5),rgba(34,211,238,0.08))"></div>
+                <span class="ch-emoji" style="text-shadow:0 2px 10px rgba(34,211,238,0.7)">📊</span>
+                <h2 class="ch-label" style="color:#22d3ee;text-shadow:0 0 12px rgba(34,211,238,0.5)">${label}</h2>
+                <div class="stats-card-bars">
+                    <div class="stats-bar" style="height:60%"></div>
+                    <div class="stats-bar" style="height:35%"></div>
+                    <div class="stats-bar" style="height:80%"></div>
+                    <div class="stats-bar" style="height:50%"></div>
+                    <div class="stats-bar" style="height:95%"></div>
+                    <div class="stats-bar" style="height:40%"></div>
+                    <div class="stats-bar" style="height:70%"></div>
+                </div>
             </div>`;
         return div;
     }
@@ -701,6 +744,32 @@ function renderOverlayContent(data) {
             break;
         }
 
+        case 'stats': {
+            overlay.style.background = "linear-gradient(135deg, #080c14 0%, #0e1420 100%)";
+            overlayContentBox.style.padding = '0';
+            overlayContentBox.style.overflow = 'hidden';
+            const statsDesc = isEn ? data.descEn : data.desc;
+            overlayContentBox.innerHTML = `
+                <div class="overlay-image-bg">
+                    <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(8,12,20,0.9),rgba(34,211,238,0.05))"></div>
+                    <div class="overlay-text-block">
+                        <div class="ov-emoji" style="text-shadow:0 0 30px rgba(34,211,238,0.8)">📊</div>
+                        <h1 class="ov-title" style="font-size:3rem;letter-spacing:3px;color:#22d3ee;text-shadow:0 0 20px rgba(34,211,238,0.5)">${isEn ? 'STATISTICS' : 'STATISTIQUES'}</h1>
+                        <p class="ov-desc">${statsDesc}</p>
+                        <div class="stats-preview-bars">
+                            <div class="spb" style="height:60%"></div>
+                            <div class="spb" style="height:35%"></div>
+                            <div class="spb" style="height:80%"></div>
+                            <div class="spb" style="height:50%"></div>
+                            <div class="spb" style="height:95%"></div>
+                            <div class="spb" style="height:40%"></div>
+                            <div class="spb" style="height:70%"></div>
+                        </div>
+                    </div>
+                </div>`;
+            break;
+        }
+
         case 'meteo': {
             overlay.style.background = `url('assets/meteo.png') center/cover no-repeat`;
             if (startBtn) startBtn.style.display = 'none';
@@ -730,6 +799,9 @@ function zoomChannel(element) {
     playChannelSequence();
     activeCard = element;
     renderOverlayContent(element._channelData);
+    // Tracking clics chaînes
+    const chName = element._channelData.title || 'unknown';
+    sbPost('increment_channel_click', { p_channel: chName });
 
     const rect = element.getBoundingClientRect();
     overlay.style.display = 'flex';
@@ -812,6 +884,7 @@ function toggleMusic() {
         iconOff.style.display = 'none';
         btn.classList.remove('music-muted');
     }
+    sbPost('increment_preference', { p_event: musicMuted ? 'music_muted' : 'music_unmuted' });
 }
 
 /* =========================================
@@ -822,6 +895,7 @@ function toggleDarkMode() {
     localStorage.setItem('darkMode', isDark ? '1' : '0');
     sfxBack.currentTime = 0;
     sfxBack.play().catch(() => {});
+    sbPost('increment_preference', { p_event: isDark ? 'dark_mode_on' : 'dark_mode_off' });
 }
 
 if (localStorage.getItem('darkMode') === '1') {
@@ -870,31 +944,34 @@ setInterval(updateClock, 1000);
 updateClock();
 
 /* =========================================
-   COMPTEUR DE VISITEURS (Supabase)
+   SUPABASE — HELPERS + COMPTEURS
    ========================================= */
-(function () {
-    const SUPABASE_URL = 'https://njkbhgmwylletmdmsmyl.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw';
+const SUPABASE_URL = 'https://njkbhgmwylletmdmsmyl.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw';
 
-    fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_views`, {
+function sbPost(rpc, body) {
+    return fetch(`${SUPABASE_URL}/rest/v1/rpc/${rpc}`, {
         method: 'POST',
         headers: {
             'apikey': SUPABASE_KEY,
             'Authorization': `Bearer ${SUPABASE_KEY}`,
             'Content-Type': 'application/json'
         },
-        body: '{}'
-    })
-    .then(r => r.json())
+        body: JSON.stringify(body || {})
+    }).catch(() => {});
+}
+
+// Compteur total de visites (affiché dans le footer)
+sbPost('increment_views')
+    .then(r => r && r.json())
     .then(count => {
         const el = document.getElementById('visitor-count');
-        if (el) el.textContent = '👁 ' + Number(count).toLocaleString('fr-FR') + ' visites';
+        if (el && count) el.textContent = '👁 ' + Number(count).toLocaleString('fr-FR') + ' visites';
     })
-    .catch(() => {
-        const el = document.getElementById('visitor-count');
-        if (el) el.textContent = '';
-    });
-})();
+    .catch(() => {});
+
+// Compteur journalier (pour la page stats)
+sbPost('increment_daily_visit').catch(() => {});
 
 /* =========================================
    12. MÉTÉO

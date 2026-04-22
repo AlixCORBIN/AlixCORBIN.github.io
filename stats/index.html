@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques — Portfolio Alix Corbin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/lang-switcher.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="lang-switcher">
+        <button class="lang-btn lang-active" data-lang="fr" onclick="setLanguage('fr')" title="Français">
+            <img src="../assets/France.jpg" alt="FR" class="flag-img">
+        </button>
+        <div class="lang-divider"></div>
+        <button class="lang-btn" data-lang="en" onclick="setLanguage('en')" title="English">
+            <img src="../assets/UK.webp" alt="EN" class="flag-img">
+        </button>
+    </div>
+
+    <header class="stats-header">
+        <a href="../index.html" class="back-btn">← Portfolio</a>
+        <div class="header-title">
+            <span class="header-emoji">📊</span>
+            <div>
+                <h1 data-i18n="title">Statistiques</h1>
+                <p class="header-sub" data-i18n="subtitle">Données en temps réel du portfolio</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="stats-main">
+
+        <!-- Cartes visite -->
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="visits.title">👁 Visites</h2>
+            <div class="stat-cards">
+                <div class="stat-card accent-cyan">
+                    <div class="stat-card-label" data-i18n="visits.total">Total</div>
+                    <div class="stat-card-value" id="val-total">—</div>
+                </div>
+                <div class="stat-card accent-green">
+                    <div class="stat-card-label" data-i18n="visits.today">Aujourd'hui</div>
+                    <div class="stat-card-value" id="val-today">—</div>
+                </div>
+                <div class="stat-card accent-purple">
+                    <div class="stat-card-label" data-i18n="visits.week">7 derniers jours</div>
+                    <div class="stat-card-value" id="val-week">—</div>
+                </div>
+                <div class="stat-card accent-orange">
+                    <div class="stat-card-label" data-i18n="visits.month">30 derniers jours</div>
+                    <div class="stat-card-value" id="val-month">—</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bar chart 7 jours -->
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="chart.title">📈 Activité — 7 jours</h2>
+            <div class="chart-wrapper">
+                <div id="bar-chart" class="bar-chart"></div>
+            </div>
+        </section>
+
+        <!-- Deux colonnes -->
+        <div class="two-col">
+
+            <!-- Channel ranking -->
+            <section class="stat-section">
+                <h2 class="section-title" data-i18n="channels.title">🎮 Chaînes les plus ouvertes</h2>
+                <div id="channel-ranking" class="ranking-list"></div>
+            </section>
+
+            <!-- Préférences -->
+            <section class="stat-section">
+                <h2 class="section-title" data-i18n="prefs.title">⚙️ Préférences</h2>
+                <div id="prefs-list" class="prefs-list"></div>
+            </section>
+
+        </div>
+
+        <!-- Blackjack -->
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="bj.title">♠️ Blackjack — Sessions</h2>
+            <div class="bj-cards">
+                <div class="bj-card">
+                    <div class="bj-card-icon">🎰</div>
+                    <div class="bj-card-label" data-i18n="bj.sessions">Sessions jouées</div>
+                    <div class="bj-card-value" id="bj-sessions">—</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🃏</div>
+                    <div class="bj-card-label" data-i18n="bj.hands">Mains jouées</div>
+                    <div class="bj-card-value" id="bj-hands">—</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">📈</div>
+                    <div class="bj-card-label" data-i18n="bj.avg">Gain moyen/session</div>
+                    <div class="bj-card-value" id="bj-avg">—</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🏆</div>
+                    <div class="bj-card-label" data-i18n="bj.best">Meilleure session</div>
+                    <div class="bj-card-value" id="bj-best">—</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">💀</div>
+                    <div class="bj-card-label" data-i18n="bj.worst">Pire session</div>
+                    <div class="bj-card-value" id="bj-worst">—</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🃏</div>
+                    <div class="bj-card-label" data-i18n="bj.bj">Blackjacks naturels</div>
+                    <div class="bj-card-value" id="bj-bj">—</div>
+                </div>
+            </div>
+        </section>
+
+        <p class="refresh-note" data-i18n="refresh">Les données sont mises à jour en temps réel.</p>
+
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        window.PAGE_TRANSLATIONS = {
+            fr: {
+                'title': 'Statistiques',
+                'subtitle': 'Données en temps réel du portfolio',
+                'visits.title': '👁 Visites',
+                'visits.total': 'Total',
+                'visits.today': "Aujourd'hui",
+                'visits.week': '7 derniers jours',
+                'visits.month': '30 derniers jours',
+                'chart.title': '📈 Activité — 7 jours',
+                'channels.title': '🎮 Chaînes les plus ouvertes',
+                'prefs.title': '⚙️ Préférences',
+                'bj.title': '♠️ Blackjack — Sessions',
+                'bj.sessions': 'Sessions jouées',
+                'bj.hands': 'Mains jouées',
+                'bj.avg': 'Gain moyen/session',
+                'bj.best': 'Meilleure session',
+                'bj.worst': 'Pire session',
+                'bj.bj': 'Blackjacks naturels',
+                'refresh': 'Les données sont mises à jour en temps réel.',
+            },
+            en: {
+                'title': 'Statistics',
+                'subtitle': 'Real-time portfolio data',
+                'visits.title': '👁 Visits',
+                'visits.total': 'Total',
+                'visits.today': 'Today',
+                'visits.week': 'Last 7 days',
+                'visits.month': 'Last 30 days',
+                'chart.title': '📈 Activity — 7 days',
+                'channels.title': '🎮 Most opened channels',
+                'prefs.title': '⚙️ Preferences',
+                'bj.title': '♠️ Blackjack — Sessions',
+                'bj.sessions': 'Sessions played',
+                'bj.hands': 'Hands played',
+                'bj.avg': 'Avg gain/session',
+                'bj.best': 'Best session',
+                'bj.worst': 'Worst session',
+                'bj.bj': 'Natural blackjacks',
+                'refresh': 'Data updated in real time.',
+            }
+        };
+    </script>
+    <script src="../assets/lang-switcher.js"></script>
+</body>
+</html>

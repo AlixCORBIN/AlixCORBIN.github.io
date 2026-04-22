@@ -22,6 +22,41 @@ let bankroll = 1000;     // Portefeuille de départ
 let currentBetInput = 0; // Mise en cours de préparation
 let handBets = [];       // Tableau des mises par main (pour gérer le Split)
 
+// --- Supabase (tracking) ---
+const _SB_URL = 'https://njkbhgmwylletmdmsmyl.supabase.co';
+const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw';
+
+// Session stats
+let _sess = { hands_played:0, hands_won:0, hands_lost:0, hands_push:0, total_wagered:0, net_result:0, splits_used:0, doubles_used:0, blackjacks_hit:0 };
+const _bankrollStart = 1000;
+
+function _sendSession() {
+    if (_sess.hands_played === 0) return;
+    const payload = JSON.stringify({
+        hands_played:   _sess.hands_played,
+        hands_won:      _sess.hands_won,
+        hands_lost:     _sess.hands_lost,
+        hands_push:     _sess.hands_push,
+        total_wagered:  _sess.total_wagered,
+        net_result:     bankroll - _bankrollStart,
+        splits_used:    _sess.splits_used,
+        doubles_used:   _sess.doubles_used,
+        blackjacks_hit: _sess.blackjacks_hit,
+        final_bankroll: bankroll
+    });
+    // Insert direct dans la table (sendBeacon ne supporte pas les headers custom,
+    // on passe l'apikey en query string pour l'authentification anon)
+    navigator.sendBeacon(
+        `${_SB_URL}/rest/v1/blackjack_sessions?apikey=${_SB_KEY}`,
+        new Blob([payload], { type: 'application/json' })
+    );
+    _sess = { hands_played:0, hands_won:0, hands_lost:0, hands_push:0, total_wagered:0, net_result:0, splits_used:0, doubles_used:0, blackjacks_hit:0 };
+}
+
+window.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') _sendSession();
+});
+
 // --- Éléments DOM ---
 const dealerHandEl = document.getElementById('dealer-hand');
 const dealerScoreEl = document.getElementById('dealer-score');
@@ -259,6 +294,7 @@ function doubleDown() {
     // Paiement de la 2ème mise
     bankroll -= currentBet;
     handBets[currentHandIndex] += currentBet; // La mise double
+    _sess.doubles_used++;
     updateBankrollUI();
 
     // Action
@@ -287,7 +323,8 @@ function splitHand() {
     toggleGameControls(false); 
 
     // Paiement Split
-    bankroll -= currentBet; 
+    bankroll -= currentBet;
+    _sess.splits_used++;
     updateBankrollUI();
 
     // --- LOGIQUE DONNÉES ---
@@ -414,27 +451,34 @@ function determineWinner() {
         let outcome = "";
         let color = "white";
 
+        _sess.hands_played++;
+        _sess.total_wagered += bet;
+
         if (playerScore > 21) {
             outcome = "Perdu (Sauté)";
             color = "#ff6b6b";
+            _sess.hands_lost++;
             // Mise perdue
-        } 
+        }
         else if (dealerScore > 21 || playerScore > dealerScore) {
             // Victoire classique (1:1)
-            winAmount = bet * 2; 
+            winAmount = bet * 2;
             bankroll += winAmount;
             outcome = `Gagné (+${bet}€)`;
             color = "#51cf66";
-        } 
+            _sess.hands_won++;
+        }
         else if (playerScore < dealerScore) {
             outcome = "Perdu";
             color = "#ff6b6b";
-        } 
+            _sess.hands_lost++;
+        }
         else {
             // Push
             winAmount = bet;
             bankroll += winAmount;
             outcome = "Égalité (Mise rendue)";
+            _sess.hands_push++;
         }
 
         let prefix = playerHands.length > 1 ? `Main ${index + 1}: ` : "";
@@ -459,6 +503,10 @@ function checkForBlackjack() {
         // Blackjack paye 3:2
         let winAmount = bet + (bet * 1.5);
         bankroll += winAmount;
+        _sess.hands_played++;
+        _sess.hands_won++;
+        _sess.blackjacks_hit++;
+        _sess.total_wagered += bet;
         updateBankrollUI();
         
         showMessage(`BLACKJACK ! (+${bet * 1.5}€)`, "gold");
