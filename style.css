@@ -438,6 +438,15 @@ button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
     font-weight: 500;
 }
 
+.visitor-count {
+    font-size: 0.72rem;
+    color: #aaa;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+    font-family: 'Orbitron', sans-serif;
+}
+body.dark-mode .visitor-count { color: #4a5568; }
+
 
 /* =========================================
    6. STYLE SPÉCIFIQUE PAGE "MOI"

@@ -870,6 +870,33 @@ setInterval(updateClock, 1000);
 updateClock();
 
 /* =========================================
+   COMPTEUR DE VISITEURS (Supabase)
+   ========================================= */
+(function () {
+    const SUPABASE_URL = 'https://njkbhgmwylletmdmsmyl.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw';
+
+    fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_views`, {
+        method: 'POST',
+        headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json'
+        },
+        body: '{}'
+    })
+    .then(r => r.json())
+    .then(count => {
+        const el = document.getElementById('visitor-count');
+        if (el) el.textContent = '👁 ' + Number(count).toLocaleString('fr-FR') + ' visites';
+    })
+    .catch(() => {
+        const el = document.getElementById('visitor-count');
+        if (el) el.textContent = '';
+    });
+})();
+
+/* =========================================
    12. MÉTÉO
    ========================================= */
 const WEATHER_API_KEY = 'd9409f721206c46f1b0cda57aa74d801';
