@@ -359,6 +359,7 @@ function createChannelEl(data, index) {
         const label = (currentLang === 'en' && data.cardLabelEn) ? data.cardLabelEn : data.cardLabel;
         div.innerHTML = `
             <div class="channel-inner stats-card-inner" style="background:#080c14">
+                <img src="assets/stats_bg.png" class="ch-bg" style="opacity:0.25;object-fit:cover;">
                 <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(8,12,20,0.5),rgba(34,211,238,0.08))"></div>
                 <span class="ch-emoji" style="text-shadow:0 2px 10px rgba(34,211,238,0.7)">📊</span>
                 <h2 class="ch-label" style="color:#22d3ee;text-shadow:0 0 12px rgba(34,211,238,0.5)">${label}</h2>
@@ -759,7 +760,8 @@ function renderOverlayContent(data) {
             const statsDesc = isEn ? data.descEn : data.desc;
             overlayContentBox.innerHTML = `
                 <div class="overlay-image-bg">
-                    <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(8,12,20,0.9),rgba(34,211,238,0.05))"></div>
+                    <img class="overlay-bg-img" src="assets/stats_bg.png" style="opacity:0.2;object-fit:cover;">
+                    <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(8,12,20,0.75),rgba(34,211,238,0.05))"></div>
                     <div class="overlay-text-block">
                         <div class="ov-emoji" style="text-shadow:0 0 30px rgba(34,211,238,0.8)">📊</div>
                         <h1 class="ov-title" style="font-size:3rem;letter-spacing:3px;color:#22d3ee;text-shadow:0 0 20px rgba(34,211,238,0.5)">${isEn ? 'STATISTICS' : 'STATISTIQUES'}</h1>
