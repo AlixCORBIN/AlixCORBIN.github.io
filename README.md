@@ -50,13 +50,16 @@ C'est du bullshit. Ma prof m'a forcé à mettre ça sur mon CV pour avoir des po
 - 🌤️ **Météo géolocalisée** — prévisions 5 jours via OpenWeatherMap
 - 🏆 **Page Récompenses** — avec une vraie mise en scène or/argent/bronze
 - 📊 **Dashboard Statistiques** — visites totales/jour/semaine/mois, bar chart 7 jours, classement des chaînes, préférences (dark mode/musique/langue), stats blackjack en temps réel via Supabase
+- 🎵 **Footer Wii partagé** — bouton dark mode, musique, horloge et contact disponibles sur toutes les sous-pages
+- ⬛ **Transitions fondues** — fondu au noir entre chaque page pour laisser le son de démarrage se jouer
+- 🖼️ **Background génératif** — image de fond de la page Statistiques générée via Gemini
 
 ---
 
 ## Stack
 
 ```
-HTML · CSS · JavaScript
+HTML · CSS · JavaScript · Supabase (PostgreSQL)
 Aucun framework. Aucune dépendance npm. Aucun build step.
 Un fichier index.html, un script.js, un style.css et de la bonne volonté.
 ```
@@ -67,8 +70,9 @@ Un fichier index.html, un script.js, un style.css et de la bonne volonté.
 
 - Inspiré du travail de **Tobias Echenique**
 - Musique : Nintendo (menu Wii)
+- Background stats : généré avec **Gemini**
 - Vibe : 2006
 
 ---
 
-*Dernière mise à jour : Avril 2026 — ajout chaîne Statistiques*
+*Dernière mise à jour : Avril 2026 — footer partagé, transitions, background génératif*
