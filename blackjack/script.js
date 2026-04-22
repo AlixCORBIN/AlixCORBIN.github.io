@@ -118,6 +118,9 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         } catch (e) { /* silencieux */ }
 
+        // Envoyer aussi les stats de session (hands, wagered, net…) avant reset
+        _sendSession();
+
         // Réinitialiser la session
         _sess = { hands_played:0, hands_won:0, hands_lost:0, hands_push:0, total_wagered:0, net_result:0, splits_used:0, doubles_used:0, blackjacks_hit:0 };
         bankroll = 1000;
