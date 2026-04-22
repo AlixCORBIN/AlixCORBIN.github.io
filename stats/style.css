@@ -23,6 +23,7 @@ html, body {
     color: var(--text);
     font-family: 'Roboto', sans-serif;
     min-height: 100vh;
+    position: relative;
 }
 
 /* ── Background image (générée avec Gemini) ── */
@@ -35,8 +36,14 @@ body::before {
     background-position: center;
     background-repeat: no-repeat;
     opacity: 0.18;
-    z-index: -1;
+    z-index: 0;
     pointer-events: none;
+}
+
+/* S'assurer que le contenu passe par-dessus le fond */
+body > * {
+    position: relative;
+    z-index: 1;
 }
 
 /* ─── Header ─── */
