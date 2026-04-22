@@ -4,7 +4,7 @@
 (function () {
     // Chemin vers assets/ selon la profondeur de l'URL
     const depth = (window.location.pathname.match(/\//g) || []).length - 1;
-    const A = depth <= 1 ? 'assets/' : '../assets/';
+    const A = depth <= 0 ? 'assets/' : depth === 1 ? '../assets/' : '../../assets/';
 
     // Langue courante
     function getLang() { return localStorage.getItem('lang') || 'fr'; }
