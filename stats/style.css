@@ -374,3 +374,56 @@ body > * {
     .stat-cards { grid-template-columns: 1fr 1fr; }
     .bj-cards { grid-template-columns: 1fr 1fr; }
 }
+
+/* ── Leaderboard ── */
+.leaderboard-list {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.lb-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.lb-table thead tr {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+}
+
+.lb-table th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+.lb-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+}
+.lb-table tbody tr:last-child { border-bottom: none; }
+.lb-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+.lb-table tbody tr.lb-top { background: rgba(251,191,36,0.04); }
+
+.lb-table td {
+    padding: 10px 14px;
+    color: var(--text);
+}
+
+.lb-rank   { font-size: 1.1rem; width: 40px; text-align: center; }
+.lb-pseudo { font-weight: 600; }
+.lb-bankroll { font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; }
+.lb-hands  { color: var(--muted); }
+.lb-date   { color: var(--muted); font-size: 0.75rem; }
+
+@media (max-width: 480px) {
+    .lb-date { display: none; }
+    .lb-table th:last-child { display: none; }
+}

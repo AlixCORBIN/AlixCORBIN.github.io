@@ -57,6 +57,88 @@ window.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') _sendSession();
 });
 
+/* ── LEADERBOARD — Bouton Terminer ── */
+function _getLang() { return localStorage.getItem('lang') || 'fr'; }
+function _tr(key) {
+    const t = window.PAGE_TRANSLATIONS;
+    const l = _getLang();
+    return (t && t[l] && t[l][key]) || key;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const quitBtn    = document.getElementById('btn-quit');
+    const modal      = document.getElementById('quit-modal');
+    const cancelBtn  = document.getElementById('quit-cancel-btn');
+    const confirmBtn = document.getElementById('quit-confirm-btn');
+    const input      = document.getElementById('quit-pseudo-input');
+    const display    = document.getElementById('quit-bankroll-display');
+
+    if (!quitBtn) return;
+
+    // Ouvrir la modal
+    quitBtn.addEventListener('click', function () {
+        if (gameActive) return; // bloquer pendant une main en cours
+        display.textContent = bankroll;
+        input.value = '';
+        modal.classList.remove('hidden');
+        setTimeout(() => input.focus(), 100);
+    });
+
+    // Fermer sans envoyer
+    cancelBtn.addEventListener('click', function () {
+        modal.classList.add('hidden');
+    });
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) modal.classList.add('hidden');
+    });
+
+    // Envoyer au leaderboard + reset
+    confirmBtn.addEventListener('click', async function () {
+        const pseudo = input.value.trim();
+        if (!pseudo) { input.focus(); return; }
+
+        confirmBtn.textContent = _tr('bj.quit.sending');
+        confirmBtn.disabled = true;
+
+        try {
+            await fetch(`${_SB_URL}/rest/v1/blackjack_leaderboard`, {
+                method: 'POST',
+                headers: {
+                    'apikey': _SB_KEY,
+                    'Authorization': `Bearer ${_SB_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({
+                    pseudo:        pseudo,
+                    final_bankroll: bankroll,
+                    hands_played:  _sess.hands_played,
+                    hands_won:     _sess.hands_won
+                })
+            });
+        } catch (e) { /* silencieux */ }
+
+        // Réinitialiser la session
+        _sess = { hands_played:0, hands_won:0, hands_lost:0, hands_push:0, total_wagered:0, net_result:0, splits_used:0, doubles_used:0, blackjacks_hit:0 };
+        bankroll = 1000;
+        updateBankrollUI();
+
+        confirmBtn.textContent = _tr('bj.quit.done');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            confirmBtn.textContent = _tr('bj.quit.confirm');
+            confirmBtn.disabled = false;
+            resetToBettingPhase();
+        }, 1800);
+    });
+
+    // Entrée clavier
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') confirmBtn.click();
+        if (e.key === 'Escape') modal.classList.add('hidden');
+    });
+});
+
 // --- Éléments DOM ---
 const dealerHandEl = document.getElementById('dealer-hand');
 const dealerScoreEl = document.getElementById('dealer-score');

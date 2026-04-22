@@ -36,6 +36,19 @@ function d(key) {
 }
 
 /* ── Fetch stats ── */
+async function fetchLeaderboard() {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_blackjack_leaderboard`, {
+        method: 'POST',
+        headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json'
+        },
+        body: '{}'
+    });
+    return r.json();
+}
+
 async function fetchStats() {
     const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_stats_summary`, {
         method: 'POST',
@@ -164,6 +177,40 @@ function renderPrefs(prefs) {
         </div>`).join('');
 }
 
+/* ── Leaderboard ── */
+function renderLeaderboard(rows) {
+    const el = document.getElementById('leaderboard-list');
+    if (!el) return;
+    if (!rows || !rows.length) {
+        el.innerHTML = `<p style="color:var(--muted);font-size:.8rem;text-align:center">${d('lb.empty') || 'Aucune session.'}</p>`;
+        return;
+    }
+    const medals = ['🥇', '🥈', '🥉'];
+    const colorBankroll = n => n >= 1000 ? 'var(--green)' : n >= 500 ? 'var(--orange)' : '#f87171';
+    el.innerHTML = `
+        <table class="lb-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>${d('lb.pseudo') || 'Pseudo'}</th>
+                    <th>${d('lb.bankroll') || 'Solde'}</th>
+                    <th>${d('lb.hands') || 'Mains'}</th>
+                    <th>${d('lb.date') || 'Date'}</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${rows.map((row, i) => `
+                    <tr class="${i < 3 ? 'lb-top' : ''}">
+                        <td class="lb-rank">${medals[i] || (i + 1)}</td>
+                        <td class="lb-pseudo">${row.pseudo}</td>
+                        <td class="lb-bankroll" style="color:${colorBankroll(row.bankroll)}">${Number(row.bankroll).toLocaleString('fr-FR')} €</td>
+                        <td class="lb-hands">${row.hands}</td>
+                        <td class="lb-date">${row.date}</td>
+                    </tr>`).join('')}
+            </tbody>
+        </table>`;
+}
+
 /* ── Blackjack ── */
 function renderBlackjack(data) {
     const sign = n => n > 0 ? `+${n}€` : `${n}€`;
@@ -216,6 +263,7 @@ function setLanguage(lang) {
         renderBarChart(window._lastStats.daily_chart);
         renderChannelRanking(window._lastStats.channel_clicks);
         renderPrefs(window._lastStats.preferences);
+        renderLeaderboard(window._lastLb || []);
     }
 }
 
@@ -228,13 +276,15 @@ async function init() {
     if (savedLang !== 'fr') setLanguage(savedLang);
 
     try {
-        const data = await fetchStats();
+        const [data, lb] = await Promise.all([fetchStats(), fetchLeaderboard()]);
         window._lastStats = data;
+        window._lastLb    = lb;
         renderVisits(data);
         renderBarChart(data.daily_chart);
         renderChannelRanking(data.channel_clicks);
         renderPrefs(data.preferences);
         renderBlackjack(data);
+        renderLeaderboard(Array.isArray(lb) ? lb : []);
     } catch (e) {
         console.error('Stats fetch error:', e);
         ['val-total','val-today','val-week','val-month'].forEach(id => setVal(id, '?'));
