@@ -538,7 +538,15 @@ function renderOverlayContent(data) {
         startBtn.classList.remove('btn-disabled');
         startBtn.innerText = data.type === 'moi' ? t('overlay.cv') : t('overlay.start');
         startBtn.onclick = data.link
-            ? () => { playStartSound(); data.type === 'moi' ? window.open(data.link, '_blank') : (window.location.href = data.link); }
+            ? () => {
+                playStartSound();
+                if (data.type === 'moi') {
+                    window.open(data.link, '_blank');
+                } else {
+                    // Fondu au noir pour laisser le son se jouer
+                    fadeAndNavigate(data.link);
+                }
+            }
             : null;
     }
 
@@ -1113,6 +1121,29 @@ document.addEventListener('keydown', e => {
         if (key === 'ArrowRight' || key === 'd' || key === 'D') { e.preventDefault(); navigatePage(1); }
     }
 });
+
+/* =========================================
+   FONDU AU NOIR — Transition de page
+   ========================================= */
+const _pageFade = document.createElement('div');
+_pageFade.style.cssText = [
+    'position:fixed', 'inset:0', 'background:#000',
+    'opacity:1', 'pointer-events:none',
+    'transition:opacity 0.5s ease',
+    'z-index:99999'
+].join(';');
+document.body.appendChild(_pageFade);
+
+// Fade-in dès que la page est prête
+requestAnimationFrame(() => {
+    requestAnimationFrame(() => { _pageFade.style.opacity = '0'; });
+});
+
+function fadeAndNavigate(url) {
+    _pageFade.style.pointerEvents = 'all';
+    _pageFade.style.opacity = '1';
+    setTimeout(() => { window.location.href = url; }, 580);
+}
 
 /* =========================================
    14. INITIALISATION
