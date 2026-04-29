@@ -201,6 +201,25 @@ const CHANNELS = [
         overlayTitleShadow: "0 0 20px rgba(34,211,238,0.5)",
         overlayEmojiShadow: "0 4px 15px rgba(34,211,238,0.6)",
         overlayBgOpacity: 0.15
+    },
+    {
+        title: "Stage", titleEn: "Internship",
+        emoji: "🎓",
+        cardLabel: "Stage", cardLabelEn: "Internship",
+        cardBgColor: "#080c14",
+        cardGradient: "linear-gradient(135deg, rgba(8,12,20,0.6), rgba(251,191,36,0.08))",
+        cardEmojiShadow: "0 2px 10px rgba(251,191,36,0.7)",
+        cardLabelColor: "#fbbf24",
+        cardLabelShadow: "0 0 12px rgba(251,191,36,0.5)",
+        desc: "26 candidatures, 15 refus, 1 obtenu — la démarche complète de recherche de stage chez Faure Herman.",
+        descEn: "26 applications, 15 rejections, 1 offer — the full internship search journey at Faure Herman.",
+        link: "stage/index.html",
+        type: "stage",
+        overlayTitle: "STAGE", overlayTitleEn: "INTERNSHIP",
+        overlayColor: "#fbbf24",
+        overlayTitleShadow: "0 0 20px rgba(251,191,36,0.5)",
+        overlayEmojiShadow: "0 4px 15px rgba(251,191,36,0.6)",
+        overlayBgOpacity: 0.18
     }
 ];
 
@@ -371,6 +390,23 @@ function createChannelEl(data, index) {
                     <div class="stats-bar" style="height:95%"></div>
                     <div class="stats-bar" style="height:40%"></div>
                     <div class="stats-bar" style="height:70%"></div>
+                </div>
+            </div>`;
+        return div;
+    }
+
+    if (data.type === 'stage') {
+        const label = (currentLang === 'en' && data.cardLabelEn) ? data.cardLabelEn : data.cardLabel;
+        div.innerHTML = `
+            <div class="channel-inner" style="background:#080c14">
+                <img src="assets/stage_bg.png" class="ch-bg" style="opacity:0.22;object-fit:cover;">
+                <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(8,12,20,0.55),rgba(251,191,36,0.08))"></div>
+                <span class="ch-emoji" style="text-shadow:0 2px 10px rgba(251,191,36,0.7)">🎓</span>
+                <h2 class="ch-label" style="color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.5)">${label}</h2>
+                <div class="stage-card-pills">
+                    <span class="scp refused">15 ✕</span>
+                    <span class="scp pending">10 ○</span>
+                    <span class="scp accepted">1 ✓</span>
                 </div>
             </div>`;
         return div;
@@ -774,6 +810,29 @@ function renderOverlayContent(data) {
                             <div class="spb" style="height:95%"></div>
                             <div class="spb" style="height:40%"></div>
                             <div class="spb" style="height:70%"></div>
+                        </div>
+                    </div>
+                </div>`;
+            break;
+        }
+
+        case 'stage': {
+            overlay.style.background = "linear-gradient(135deg, #080c14 0%, #0e1420 100%)";
+            overlayContentBox.style.padding = '0';
+            overlayContentBox.style.overflow = 'hidden';
+            const stageDesc = isEn ? data.descEn : data.desc;
+            overlayContentBox.innerHTML = `
+                <div class="overlay-image-bg">
+                    <img class="overlay-bg-img" src="assets/stage_bg.png" style="opacity:0.2;object-fit:cover;">
+                    <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(8,12,20,0.75),rgba(251,191,36,0.05))"></div>
+                    <div class="overlay-text-block">
+                        <div class="ov-emoji" style="text-shadow:0 0 30px rgba(251,191,36,0.8)">🎓</div>
+                        <h1 class="ov-title" style="font-size:3rem;letter-spacing:3px;color:#fbbf24;text-shadow:0 0 20px rgba(251,191,36,0.5)">${isEn ? 'INTERNSHIP' : 'STAGE'}</h1>
+                        <p class="ov-desc">${stageDesc}</p>
+                        <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
+                            <span style="background:rgba(248,113,113,0.15);border:1px solid rgba(248,113,113,0.3);color:#f87171;padding:4px 12px;border-radius:12px;font-size:0.75rem">15 ${isEn ? 'rejected' : 'refus'}</span>
+                            <span style="background:rgba(251,146,60,0.15);border:1px solid rgba(251,146,60,0.3);color:#fb923c;padding:4px 12px;border-radius:12px;font-size:0.75rem">10 ${isEn ? 'pending' : 'en attente'}</span>
+                            <span style="background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.3);color:#4ade80;padding:4px 12px;border-radius:12px;font-size:0.75rem">✅ Faure Herman</span>
                         </div>
                     </div>
                 </div>`;
