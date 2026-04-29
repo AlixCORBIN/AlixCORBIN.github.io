@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche de Stage — Portfolio Alix Corbin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/lang-switcher.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="lang-switcher">
+        <button class="lang-btn lang-active" data-lang="fr" onclick="setLanguage('fr')" title="Français">
+            <img src="../assets/France.jpg" alt="FR" class="flag-img">
+        </button>
+        <div class="lang-divider"></div>
+        <button class="lang-btn" data-lang="en" onclick="setLanguage('en')" title="English">
+            <img src="../assets/UK.webp" alt="EN" class="flag-img">
+        </button>
+    </div>
+
+    <header class="stage-header">
+        <a href="../index.html" class="back-btn">← Portfolio</a>
+        <div class="header-title">
+            <span class="header-emoji">🎓</span>
+            <div>
+                <h1 data-i18n="title">Recherche de Stage</h1>
+                <p class="header-sub" data-i18n="subtitle">Démarche et suivi de candidatures</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="stage-main">
+
+        <!-- Hero : stage obtenu -->
+        <section class="hero-section">
+            <div class="hero-card">
+                <div class="hero-bg">
+                    <img src="../assets/stage_bg.png" alt="" class="hero-bg-img">
+                    <div class="hero-bg-gradient"></div>
+                </div>
+                <div class="hero-content">
+                    <div class="hero-badge" data-i18n="hero.badge">✅ Stage obtenu</div>
+                    <h2 class="hero-company">Faure Herman</h2>
+                    <p class="hero-poste" data-i18n="hero.poste">Stagiaire en développement logiciel H/F</p>
+                    <div class="hero-meta">
+                        <span class="hero-meta-item">📅 <span data-i18n="hero.since">Depuis</span> février 2026</span>
+                        <span class="hero-meta-sep">·</span>
+                        <span class="hero-meta-item">📍 Sablé-sur-Sarthe</span>
+                        <span class="hero-meta-sep">·</span>
+                        <span class="hero-meta-item">💻 <span data-i18n="hero.domain">Développement logiciel</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="stats.title">📊 Bilan des candidatures</h2>
+            <div class="stat-cards">
+                <div class="stat-card accent-cyan">
+                    <div class="stat-card-label" data-i18n="stats.total">Envoyées</div>
+                    <div class="stat-card-value">26</div>
+                </div>
+                <div class="stat-card accent-red">
+                    <div class="stat-card-label" data-i18n="stats.refused">Refusées</div>
+                    <div class="stat-card-value">15</div>
+                </div>
+                <div class="stat-card accent-orange">
+                    <div class="stat-card-label" data-i18n="stats.pending">En attente</div>
+                    <div class="stat-card-value">10</div>
+                </div>
+                <div class="stat-card accent-green">
+                    <div class="stat-card-label" data-i18n="stats.accepted">Obtenu</div>
+                    <div class="stat-card-value">1</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Barre de progression -->
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="progress.title">📈 Progression de la recherche</h2>
+            <div class="progress-card">
+                <div class="progress-row">
+                    <span class="progress-label" data-i18n="progress.refused">Refusées</span>
+                    <div class="progress-track">
+                        <div class="progress-fill red" style="width:57.7%"></div>
+                    </div>
+                    <span class="progress-pct" style="color:var(--red)">15 / 26</span>
+                </div>
+                <div class="progress-row">
+                    <span class="progress-label" data-i18n="progress.pending">En attente</span>
+                    <div class="progress-track">
+                        <div class="progress-fill orange" style="width:38.5%"></div>
+                    </div>
+                    <span class="progress-pct" style="color:var(--orange)">10 / 26</span>
+                </div>
+                <div class="progress-row">
+                    <span class="progress-label" data-i18n="progress.accepted">Obtenu</span>
+                    <div class="progress-track">
+                        <div class="progress-fill green" style="width:3.8%"></div>
+                    </div>
+                    <span class="progress-pct" style="color:var(--green)">1 / 26</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tableau des candidatures -->
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="table.title">📋 Toutes les candidatures</h2>
+
+            <!-- Filtre statut -->
+            <div class="filter-row" id="filter-row">
+                <button class="filter-btn active" data-filter="all" onclick="filterTable('all')" data-i18n="filter.all">Toutes</button>
+                <button class="filter-btn" data-filter="Refusé" onclick="filterTable('Refusé')">
+                    <span class="dot red"></span><span data-i18n="filter.refused">Refusées</span>
+                </button>
+                <button class="filter-btn" data-filter="En attente" onclick="filterTable('En attente')">
+                    <span class="dot orange"></span><span data-i18n="filter.pending">En attente</span>
+                </button>
+                <button class="filter-btn" data-filter="Accepté" onclick="filterTable('Accepté')">
+                    <span class="dot green"></span><span data-i18n="filter.accepted">Obtenu</span>
+                </button>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="cand-table" id="cand-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="col.status">Statut</th>
+                            <th data-i18n="col.company">Entreprise</th>
+                            <th data-i18n="col.job">Poste</th>
+                            <th data-i18n="col.date">Date d'envoi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cand-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Sources -->
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="sources.title">🔍 Sources utilisées</h2>
+            <div class="sources-grid">
+                <div class="source-card">
+                    <div class="source-icon">💼</div>
+                    <div class="source-name">Indeed</div>
+                    <div class="source-count">3 <span data-i18n="sources.apps">offres</span></div>
+                </div>
+                <div class="source-card">
+                    <div class="source-icon">🤝</div>
+                    <div class="source-name">HelloWork</div>
+                    <div class="source-count">4 <span data-i18n="sources.apps">offres</span></div>
+                </div>
+                <div class="source-card">
+                    <div class="source-icon">🔗</div>
+                    <div class="source-name">LinkedIn</div>
+                    <div class="source-count">8 <span data-i18n="sources.apps">offres</span></div>
+                </div>
+                <div class="source-card">
+                    <div class="source-icon">💬</div>
+                    <div class="source-name" data-i18n="sources.contact">Contacts perso</div>
+                    <div class="source-count">11 <span data-i18n="sources.apps">offres</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alternance -->
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="alt.title">🔄 Alternance</h2>
+            <div class="table-wrapper">
+                <table class="cand-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="col.status">Statut</th>
+                            <th data-i18n="col.company">Entreprise</th>
+                            <th data-i18n="col.job">Poste</th>
+                            <th data-i18n="col.date">Date d'envoi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alt-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        window.PAGE_TRANSLATIONS = {
+            fr: {
+                'title': 'Recherche de Stage',
+                'subtitle': 'Démarche et suivi de candidatures',
+                'hero.badge': '✅ Stage obtenu',
+                'hero.poste': 'Stagiaire en développement logiciel H/F',
+                'hero.since': 'Depuis',
+                'hero.domain': 'Développement logiciel',
+                'stats.title': '📊 Bilan des candidatures',
+                'stats.total': 'Envoyées',
+                'stats.refused': 'Refusées',
+                'stats.pending': 'En attente',
+                'stats.accepted': 'Obtenu',
+                'progress.title': '📈 Progression de la recherche',
+                'progress.refused': 'Refusées',
+                'progress.pending': 'En attente',
+                'progress.accepted': 'Obtenu',
+                'table.title': '📋 Toutes les candidatures',
+                'filter.all': 'Toutes',
+                'filter.refused': 'Refusées',
+                'filter.pending': 'En attente',
+                'filter.accepted': 'Obtenu',
+                'col.status': 'Statut',
+                'col.company': 'Entreprise',
+                'col.job': 'Poste',
+                'col.date': "Date d'envoi",
+                'alt.title': '🔄 Alternance',
+                'sources.title': '🔍 Sources utilisées',
+                'sources.apps': 'offres',
+                'sources.contact': 'Contacts perso',
+                'status.refused': 'Refusé',
+                'status.pending': 'En attente',
+                'status.accepted': 'Accepté',
+            },
+            en: {
+                'title': 'Internship Search',
+                'subtitle': 'Application tracking & process',
+                'hero.badge': '✅ Internship secured',
+                'hero.poste': 'Software Development Intern',
+                'hero.since': 'Since',
+                'hero.domain': 'Software development',
+                'stats.title': '📊 Application overview',
+                'stats.total': 'Sent',
+                'stats.refused': 'Rejected',
+                'stats.pending': 'Pending',
+                'stats.accepted': 'Secured',
+                'progress.title': '📈 Search progress',
+                'progress.refused': 'Rejected',
+                'progress.pending': 'Pending',
+                'progress.accepted': 'Secured',
+                'table.title': '📋 All applications',
+                'filter.all': 'All',
+                'filter.refused': 'Rejected',
+                'filter.pending': 'Pending',
+                'filter.accepted': 'Secured',
+                'col.status': 'Status',
+                'col.company': 'Company',
+                'col.job': 'Position',
+                'col.date': 'Sent on',
+                'alt.title': '🔄 Apprenticeship',
+                'sources.title': '🔍 Sources used',
+                'sources.apps': 'listings',
+                'sources.contact': 'Personal contacts',
+                'status.refused': 'Rejected',
+                'status.pending': 'Pending',
+                'status.accepted': 'Accepted',
+            }
+        };
+    </script>
+    <script src="../assets/lang-switcher.js"></script>
+</body>
+</html>

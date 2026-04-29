@@ -2131,3 +2131,26 @@ body.overlay-open #lang-switcher {
     min-height: 4px;
     box-shadow: 0 0 6px rgba(34,211,238,0.4);
 }
+
+/* =========================================
+   STAGE CHANNEL — Card pills
+   ========================================= */
+.stage-card-pills {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.scp {
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 8px;
+}
+.scp.refused  { background: rgba(248,113,113,0.18); color: #f87171; }
+.scp.pending  { background: rgba(251,146,60,0.18);  color: #fb923c; }
+.scp.accepted { background: rgba(74,222,128,0.18);  color: #4ade80; }
