@@ -175,10 +175,23 @@ const CHANNELS = [
         type: "awards"
     },
     {
-        title: "Météo", titleEn: "Weather",
-        emoji: "🌤️",
-        cardLabel: "Météo", cardLabelEn: "Weather",
-        type: "meteo"
+        title: "Stage", titleEn: "Internship",
+        emoji: "🎓",
+        cardLabel: "Stage", cardLabelEn: "Internship",
+        cardBgColor: "#080c14",
+        cardGradient: "linear-gradient(135deg, rgba(8,12,20,0.6), rgba(251,191,36,0.08))",
+        cardEmojiShadow: "0 2px 10px rgba(251,191,36,0.7)",
+        cardLabelColor: "#fbbf24",
+        cardLabelShadow: "0 0 12px rgba(251,191,36,0.5)",
+        desc: "26 candidatures, 15 refus, 1 obtenu — la démarche complète de recherche de stage chez Faure Herman.",
+        descEn: "26 applications, 15 rejections, 1 offer — the full internship search journey at Faure Herman.",
+        link: "stage/index.html",
+        type: "stage",
+        overlayTitle: "STAGE", overlayTitleEn: "INTERNSHIP",
+        overlayColor: "#fbbf24",
+        overlayTitleShadow: "0 0 20px rgba(251,191,36,0.5)",
+        overlayEmojiShadow: "0 4px 15px rgba(251,191,36,0.6)",
+        overlayBgOpacity: 0.18
     },
     {
         title: "Statistiques", titleEn: "Statistics",
@@ -203,23 +216,10 @@ const CHANNELS = [
         overlayBgOpacity: 0.15
     },
     {
-        title: "Stage", titleEn: "Internship",
-        emoji: "🎓",
-        cardLabel: "Stage", cardLabelEn: "Internship",
-        cardBgColor: "#080c14",
-        cardGradient: "linear-gradient(135deg, rgba(8,12,20,0.6), rgba(251,191,36,0.08))",
-        cardEmojiShadow: "0 2px 10px rgba(251,191,36,0.7)",
-        cardLabelColor: "#fbbf24",
-        cardLabelShadow: "0 0 12px rgba(251,191,36,0.5)",
-        desc: "26 candidatures, 15 refus, 1 obtenu — la démarche complète de recherche de stage chez Faure Herman.",
-        descEn: "26 applications, 15 rejections, 1 offer — the full internship search journey at Faure Herman.",
-        link: "stage/index.html",
-        type: "stage",
-        overlayTitle: "STAGE", overlayTitleEn: "INTERNSHIP",
-        overlayColor: "#fbbf24",
-        overlayTitleShadow: "0 0 20px rgba(251,191,36,0.5)",
-        overlayEmojiShadow: "0 4px 15px rgba(251,191,36,0.6)",
-        overlayBgOpacity: 0.18
+        title: "Météo", titleEn: "Weather",
+        emoji: "🌤️",
+        cardLabel: "Météo", cardLabelEn: "Weather",
+        type: "meteo"
     }
 ];
 

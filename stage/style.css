@@ -193,6 +193,14 @@ body > * {
     color: var(--border);
 }
 
+.hero-link {
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(251,191,36,0.3);
+    transition: border-color 0.2s;
+}
+.hero-link:hover { border-color: var(--gold); }
+
 /* ─── Stat cards ─── */
 .stat-cards {
     display: grid;
