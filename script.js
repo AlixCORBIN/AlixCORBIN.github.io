@@ -215,6 +215,31 @@ const CHANNELS = [
         overlayBgOpacity: 0.18
     },
     {
+        title: "Écri+", titleEn: "Écri+",
+        emoji: "✍️",
+        cardLabel: "Écri+", cardLabelEn: "Écri+",
+        cardBgColor: "#0a1a0f",
+        cardGradient: "linear-gradient(135deg, rgba(10,26,15,0.5), rgba(34,197,94,0.1))",
+        cardEmojiShadow: "0 2px 10px rgba(34,197,94,0.8)",
+        cardLabelColor: "#4ade80",
+        cardLabelShadow: "0 0 12px rgba(34,197,94,0.5)",
+        cardScore: 670,
+        desc: "Application de maîtrise de la langue française — exercices quotidiens d'orthographe, grammaire et vocabulaire.",
+        descEn: "French language mastery app — daily spelling, grammar and vocabulary exercises.",
+        type: "ecrip",
+        overlayTitle: "ÉCRI+", overlayTitleEn: "ÉCRI+",
+        overlayColor: "#4ade80",
+        overlayTitleShadow: "0 0 20px rgba(34,197,94,0.6)",
+        overlayEmojiShadow: "0 4px 15px rgba(34,197,94,0.7)",
+        overlayBgOpacity: 0.12
+    },
+    {
+        title: "Météo", titleEn: "Weather",
+        emoji: "🌤️",
+        cardLabel: "Météo", cardLabelEn: "Weather",
+        type: "meteo"
+    },
+    {
         title: "Statistiques", titleEn: "Statistics",
         emoji: "📊",
         cardLabel: "Stats", cardLabelEn: "Stats",
@@ -235,31 +260,6 @@ const CHANNELS = [
         overlayTitleShadow: "0 0 20px rgba(34,211,238,0.5)",
         overlayEmojiShadow: "0 4px 15px rgba(34,211,238,0.6)",
         overlayBgOpacity: 0.15
-    },
-    {
-        title: "Météo", titleEn: "Weather",
-        emoji: "🌤️",
-        cardLabel: "Météo", cardLabelEn: "Weather",
-        type: "meteo"
-    },
-    {
-        title: "Écri+", titleEn: "Écri+",
-        emoji: "✍️",
-        cardLabel: "Écri+", cardLabelEn: "Écri+",
-        cardBgColor: "#0a1a0f",
-        cardGradient: "linear-gradient(135deg, rgba(10,26,15,0.5), rgba(34,197,94,0.1))",
-        cardEmojiShadow: "0 2px 10px rgba(34,197,94,0.8)",
-        cardLabelColor: "#4ade80",
-        cardLabelShadow: "0 0 12px rgba(34,197,94,0.5)",
-        cardScore: 670,
-        desc: "Application de maîtrise de la langue française — exercices quotidiens d'orthographe, grammaire et vocabulaire.",
-        descEn: "French language mastery app — daily spelling, grammar and vocabulary exercises.",
-        type: "ecrip",
-        overlayTitle: "ÉCRI+", overlayTitleEn: "ÉCRI+",
-        overlayColor: "#4ade80",
-        overlayTitleShadow: "0 0 20px rgba(34,197,94,0.6)",
-        overlayEmojiShadow: "0 4px 15px rgba(34,197,94,0.7)",
-        overlayBgOpacity: 0.12
     }
 ];
 
