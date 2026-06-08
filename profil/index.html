@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil Professionnel — Alix CORBIN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/lang-switcher.css">
+    <style>
+        :root {
+            --bg:      #0d0f1a;
+            --bg2:     #111425;
+            --card:    #16192e;
+            --border:  rgba(108,92,231,0.25);
+            --accent:  #6c5ce7;
+            --cyan:    #4ac0e0;
+            --gold:    #f1c40f;
+            --green:   #4ade80;
+            --orange:  #fb923c;
+            --text:    #e2e8f0;
+            --muted:   #64748b;
+            --radius:  16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ── BACK BTN ── */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .back-btn:hover { background: rgba(108,92,231,0.2); color: var(--accent); }
+
+        /* ── HEADER ── */
+        .hero {
+            position: relative;
+            padding: 100px 40px 60px;
+            text-align: center;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% -10%, rgba(108,92,231,0.35) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 80% 80%, rgba(74,192,224,0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .hero-kicker {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.8rem, 5vw, 3.2rem);
+            font-weight: 900;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #fff 30%, var(--accent) 70%, var(--cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .hero-sub {
+            font-size: 1.1rem;
+            color: var(--muted);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        /* ── PROFIL CARD ── */
+        .profil-card {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 36px 40px;
+            display: flex;
+            align-items: center;
+            gap: 36px;
+            box-shadow: 0 0 60px rgba(108,92,231,0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .profil-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 3px solid var(--accent);
+            object-fit: cover;
+            flex-shrink: 0;
+            box-shadow: 0 0 30px rgba(108,92,231,0.4);
+        }
+
+        .profil-info { flex: 1; }
+        .profil-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 6px;
+        }
+        .profil-role {
+            font-size: 1rem;
+            color: var(--cyan);
+            margin-bottom: 14px;
+        }
+        .profil-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tag {
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .tag-purple { background: rgba(108,92,231,0.2); border: 1px solid rgba(108,92,231,0.5); color: #a78bfa; }
+        .tag-cyan   { background: rgba(74,192,224,0.15); border: 1px solid rgba(74,192,224,0.4); color: var(--cyan); }
+        .tag-gold   { background: rgba(241,196,15,0.12); border: 1px solid rgba(241,196,15,0.3); color: var(--gold); }
+        .tag-green  { background: rgba(74,222,128,0.12); border: 1px solid rgba(74,222,128,0.3); color: var(--green); }
+
+        .profil-context {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-shrink: 0;
+            text-align: right;
+        }
+        .ctx-item {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+        .ctx-item strong { color: var(--text); }
+
+        /* ── SECTION ── */
+        .section {
+            max-width: 900px;
+            margin: 64px auto 0;
+            padding: 0 20px;
+        }
+
+        .section-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.58rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .section-desc {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-bottom: 32px;
+            max-width: 600px;
+        }
+
+        /* ── CIBLE ROLE ── */
+        .role-banner {
+            background: linear-gradient(135deg, rgba(108,92,231,0.15), rgba(74,192,224,0.08));
+            border: 1px solid rgba(108,92,231,0.3);
+            border-radius: var(--radius);
+            padding: 36px 40px;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .role-banner::before {
+            content: '';
+            position: absolute;
+            top: -30px; right: -30px;
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(108,92,231,0.15), transparent 70%);
+        }
+
+        .role-emoji { font-size: 3.5rem; flex-shrink: 0; }
+
+        .role-main {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.3rem, 3vw, 2rem);
+            font-weight: 900;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .role-sub { font-size: 0.95rem; color: var(--cyan); margin-bottom: 12px; }
+
+        .role-source {
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-style: italic;
+            line-height: 1.5;
+        }
+
+        /* ── MISSIONS GRID ── */
+        .missions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .mission-card {
+            background: var(--card);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: var(--radius);
+            padding: 24px 26px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .mission-card:hover {
+            border-color: rgba(108,92,231,0.4);
+            transform: translateY(-2px);
+        }
+
+        .mission-card-full { grid-column: 1 / -1; }
+
+        .mission-num {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            color: rgba(255,255,255,0.04);
+            position: absolute;
+            top: 10px; right: 16px;
+            line-height: 1;
+        }
+
+        .mission-icon { font-size: 1.8rem; margin-bottom: 12px; }
+
+        .mission-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .mission-desc {
+            font-size: 0.83rem;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .mission-source {
+            font-size: 0.72rem;
+            color: rgba(108,92,231,0.8);
+            font-style: italic;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 10px;
+        }
+
+        .mission-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+        .mission-pill {
+            font-size: 0.68rem;
+            padding: 2px 10px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.06);
+            color: var(--muted);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        /* ── PREUVES ── */
+        .preuves-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .preuve-card {
+            background: var(--card);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: var(--radius);
+            padding: 22px 20px;
+            text-align: center;
+        }
+
+        .preuve-icon { font-size: 2rem; margin-bottom: 10px; }
+
+        .preuve-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 6px;
+        }
+
+        .preuve-desc {
+            font-size: 0.78rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .preuve-link {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.72rem;
+            color: var(--cyan);
+            text-decoration: none;
+            border: 1px solid rgba(74,192,224,0.3);
+            padding: 3px 10px;
+            border-radius: 20px;
+            transition: background 0.2s;
+        }
+        .preuve-link:hover { background: rgba(74,192,224,0.1); }
+
+        /* ── SKILLS RADAR (CSS) ── */
+        .skills-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .skill-group {
+            background: var(--card);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: var(--radius);
+            padding: 22px 24px;
+        }
+
+        .skill-group-title {
+            font-size: 0.72rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 16px;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .skill-bar {
+            margin-bottom: 14px;
+        }
+
+        .skill-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .skill-bar-name { font-size: 0.85rem; color: var(--text); }
+        .skill-bar-level {
+            font-size: 0.72rem;
+            color: var(--muted);
+            font-family: 'Orbitron', monospace;
+        }
+
+        .skill-bar-track {
+            height: 6px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .skill-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--cyan));
+            transition: width 1s ease;
+        }
+
+        /* ── COMPETENCES ACQUISES ── */
+        .comp-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .comp-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 18px;
+            border-left: 3px solid var(--accent);
+        }
+        .comp-card.encours { border-left-color: var(--orange); }
+
+        .comp-num {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .comp-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .comp-status {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .status-acquis { background: rgba(74,222,128,0.15); color: var(--green); }
+        .status-encours { background: rgba(251,146,60,0.15); color: var(--orange); }
+
+        /* ── DIVIDER ── */
+        .divider {
+            max-width: 900px;
+            margin: 64px auto 0;
+            padding: 0 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            max-width: 900px;
+            margin: 48px auto 0;
+            padding: 0 20px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .footer-note {
+            font-size: 0.78rem;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        .footer-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+
+        .footer-badge span {
+            background: rgba(108,92,231,0.15);
+            border: 1px solid rgba(108,92,231,0.3);
+            color: var(--accent);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 700px) {
+            .profil-card { flex-direction: column; text-align: center; gap: 20px; }
+            .profil-context { text-align: center; }
+            .profil-tags { justify-content: center; }
+            .missions-grid { grid-template-columns: 1fr; }
+            .mission-card-full { grid-column: 1; }
+            .preuves-grid { grid-template-columns: 1fr; }
+            .skills-section { grid-template-columns: 1fr; }
+            .comp-grid { grid-template-columns: 1fr 1fr; }
+            .role-banner { flex-direction: column; text-align: center; }
+            .hero { padding: 80px 20px 40px; }
+        }
+        @media (max-width: 480px) {
+            .profil-card { padding: 24px 20px; }
+            .section { margin-top: 48px; }
+            .comp-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<a href="../index.html" class="back-btn">← Portfolio</a>
+
+<!-- ── HERO ── -->
+<section class="hero">
+    <p class="hero-kicker">Semestre 4 · 2026</p>
+    <h1 class="hero-title">Mon Profil Professionnel</h1>
+    <p class="hero-sub">Projection sur le marché du travail à l'issue du S4 — missions souhaitées, compétences tracées, parcours argumenté.</p>
+
+    <div class="profil-card">
+        <img src="../assets/maphoto.png" class="profil-avatar" alt="Alix Corbin">
+        <div class="profil-info">
+            <div class="profil-name">Alix Corbin</div>
+            <div class="profil-role">Développeur Full-Stack · Apprenti développeur logiciel</div>
+            <div class="profil-tags">
+                <span class="tag tag-purple">Java</span>
+                <span class="tag tag-cyan">Web (HTML/CSS/JS)</span>
+                <span class="tag tag-cyan">SQL</span>
+                <span class="tag tag-green">Arduino / IoT</span>
+                <span class="tag tag-gold">Agile · Git</span>
+            </div>
+        </div>
+        <div class="profil-context">
+            <div class="ctx-item">🎓 <strong>2e année BUT Informatique</strong><br>IUT de Laval</div>
+            <div class="ctx-item">🏭 <strong>Stagiaire dev logiciel</strong><br>Faure Herman — La Ferté-Bernard</div>
+            <div class="ctx-item">📅 <strong>Avril – Juillet 2026</strong></div>
+        </div>
+    </div>
+</section>
+
+<!-- ── RÔLE CIBLE ── -->
+<section class="section">
+    <p class="section-label">01 · Profil cible</p>
+    <h2 class="section-title">Qui je veux être</h2>
+    <p class="section-desc">Si j'entrai sur le marché du travail fin S4, voici le rôle que je me projette.</p>
+
+    <div class="role-banner">
+        <div class="role-emoji">💻</div>
+        <div>
+            <div class="role-main">Développeur Full-Stack</div>
+            <div class="role-sub">Applications métier · Back-end Java · Front-end Web · Bases de données</div>
+            <p class="role-source">
+                Fondé sur : évaluation des 6 compétences BUT (C1 Réaliser, C4 BDD, C5 Projet, C6 Équipe — majoritairement Acquis)
+                · stage en développement logiciel industriel chez Faure Herman
+                · projets personnels à spectre large (web, Java, Arduino, IHM, SQL)
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ── MISSIONS ── -->
+<section class="section">
+    <p class="section-label">02 · Missions professionnelles</p>
+    <h2 class="section-title">Ce que je veux faire</h2>
+    <p class="section-desc">5 missions que je souhaiterais me voir confier dans le cadre d'un emploi.</p>
+
+    <div class="missions-grid">
+
+        <div class="mission-card">
+            <div class="mission-num">01</div>
+            <div class="mission-icon">🌐</div>
+            <div class="mission-title">Développement d'interfaces web interactives</div>
+            <p class="mission-desc">Concevoir et intégrer des interfaces utilisateur modernes, responsives et accessibles. Traduction fidèle des maquettes en code HTML/CSS/JS propre et maintenable.</p>
+            <div class="mission-pills">
+                <span class="mission-pill">HTML · CSS · JavaScript</span>
+                <span class="mission-pill">Responsive design</span>
+                <span class="mission-pill">UX / Accessibilité</span>
+            </div>
+            <div class="mission-source">📎 Sources : portfolio Wii (ce site), projet Blackjack, C1-AC2 (ergonomie) — niveau En cours → Acquis</div>
+        </div>
+
+        <div class="mission-card">
+            <div class="mission-num">02</div>
+            <div class="mission-icon">⚙️</div>
+            <div class="mission-title">Conception de services back-end & APIs</div>
+            <p class="mission-desc">Développer des services applicatifs robustes en Java, exposer des APIs RESTful, gérer la logique métier côté serveur avec séparation claire des responsabilités (DAO, Services).</p>
+            <div class="mission-pills">
+                <span class="mission-pill">Java</span>
+                <span class="mission-pill">API REST</span>
+                <span class="mission-pill">Architecture DAO</span>
+            </div>
+            <div class="mission-source">📎 Sources : TicTacToe Java, stage Faure Herman (dev logiciel S/W), C1-AC3 (conception) — Acquis</div>
+        </div>
+
+        <div class="mission-card">
+            <div class="mission-num">03</div>
+            <div class="mission-icon">🗄️</div>
+            <div class="mission-title">Modélisation et interrogation de bases de données</div>
+            <p class="mission-desc">Concevoir des schémas relationnels normalisés (MCD/MLD), écrire des requêtes SQL complexes (jointures, agrégations, vues), sécuriser les échanges et garantir l'intégrité des données.</p>
+            <div class="mission-pills">
+                <span class="mission-pill">SQL</span>
+                <span class="mission-pill">MCD / MLD</span>
+                <span class="mission-pill">PostgreSQL</span>
+                <span class="mission-pill">Supabase</span>
+            </div>
+            <div class="mission-source">📎 Sources : C4 (BDD) — AC1/AC2/AC3 Acquis · Supabase intégré dans ce portfolio (stats temps réel)</div>
+        </div>
+
+        <div class="mission-card">
+            <div class="mission-num">04</div>
+            <div class="mission-icon">🤖</div>
+            <div class="mission-title">Intégration de systèmes IoT & embarqués</div>
+            <p class="mission-desc">Développer des solutions Arduino/C++ pour des équipements physiques (automates, capteurs, actionneurs). Assurer le pont logiciel entre matériel et interfaces numériques — compétence rare à mon niveau.</p>
+            <div class="mission-pills">
+                <span class="mission-pill">Arduino / C++</span>
+                <span class="mission-pill">Électronique</span>
+                <span class="mission-pill">Protocoles série</span>
+                <span class="mission-pill">IHM tablette</span>
+            </div>
+            <div class="mission-source">📎 Sources : projet SAVI (installé au Mans), Roomba IHM, contexte industriel Faure Herman (instrumentation de débit)</div>
+        </div>
+
+        <div class="mission-card mission-card-full">
+            <div class="mission-num">05</div>
+            <div class="mission-icon">👥</div>
+            <div class="mission-title">Participation active à des cycles de développement Agile</div>
+            <p class="mission-desc">Contribuer à des sprints Scrum (planification, daily, revue), utiliser des outils de suivi (Git, Trello, Jira), rédiger des comptes-rendus clairs et m'intégrer efficacement dans une équipe pluridisciplinaire. Capacité à prendre la parole et défendre des choix techniques (concours d'éloquence 1er prix 2023).</p>
+            <div class="mission-pills">
+                <span class="mission-pill">Git / GitHub</span>
+                <span class="mission-pill">Méthode Agile / Scrum</span>
+                <span class="mission-pill">Communication technique</span>
+                <span class="mission-pill">Travail en équipe</span>
+            </div>
+            <div class="mission-source">📎 Sources : C5 (Projet) AC1/AC3/AC4 Acquis · C6 (Équipe) AC1/AC2/AC4 Acquis · 1er Prix concours d'éloquence 2023 · Prix Meilleur Portfolio Walides 2026</div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ── PREUVES ── -->
+<section class="section">
+    <p class="section-label">03 · Ce qui m'y prépare</p>
+    <h2 class="section-title">Mes preuves concrètes</h2>
+    <p class="section-desc">Projets, expériences et distinctions qui soutiennent ce profil.</p>
+
+    <div class="preuves-grid">
+
+        <div class="preuve-card">
+            <div class="preuve-icon">🏭</div>
+            <div class="preuve-title">Stage Faure Herman</div>
+            <p class="preuve-desc">Développement logiciel en environnement industriel (instrumentation de débit). Application concrète des compétences en développement logiciel professionnel.</p>
+            <a href="../stage/index.html" class="preuve-link">Voir la démarche →</a>
+        </div>
+
+        <div class="preuve-card">
+            <div class="preuve-icon">🌐</div>
+            <div class="preuve-title">Portfolio Wii</div>
+            <p class="preuve-desc">Site web full-stack : HTML/CSS/JS, dark mode, i18n, météo API, stats Supabase temps réel, musique, transitions fluides. Conception et développement 100% personnel.</p>
+            <a href="../index.html" class="preuve-link">Ce site même →</a>
+        </div>
+
+        <div class="preuve-card">
+            <div class="preuve-icon">🤖</div>
+            <div class="preuve-title">Projet SAVI (Arduino)</div>
+            <p class="preuve-desc">Vitrine animée installée dans un commerce au Mans. Système embarqué C++ fiable 24h/24, servomoteurs, relais. Projet livré à un client réel.</p>
+            <a href="../arduino/index.html" class="preuve-link">Voir le labo →</a>
+        </div>
+
+        <div class="preuve-card">
+            <div class="preuve-icon">🖥️</div>
+            <div class="preuve-title">IHM Roomba</div>
+            <p class="preuve-desc">Interface tablette pour contrôle total d'un robot Roomba via port série Arduino. Pont matériel/logiciel — parfaite illustration du profil Full-Stack embarqué.</p>
+            <a href="../ihm/index.html" class="preuve-link">Voir le projet →</a>
+        </div>
+
+        <div class="preuve-card">
+            <div class="preuve-icon">🏆</div>
+            <div class="preuve-title">Walides 2026 — Meilleur Portfolio</div>
+            <p class="preuve-desc">1er prix de la cérémonie des Walides (Université du Mans, 2026). Reconnaissance académique de la qualité de ce portfolio.</p>
+        </div>
+
+        <div class="preuve-card">
+            <div class="preuve-icon">🎤</div>
+            <div class="preuve-title">Éloquence — 1er Prix 2023</div>
+            <p class="preuve-desc">1er prix du concours d'éloquence du Lycée St Joseph La Salle (2023). Preuve de capacité à communiquer clairement dans un contexte professionnel.</p>
+        </div>
+
+    </div>
+</section>
+
+<!-- ── COMPÉTENCES ── -->
+<section class="section">
+    <p class="section-label">04 · Compétences BUT</p>
+    <h2 class="section-title">Où j'en suis</h2>
+    <p class="section-desc">Auto-évaluation issue du tableau de compétences (BUT Informatique, S4).</p>
+
+    <div class="comp-grid">
+        <div class="comp-card">
+            <div class="comp-num">C1 · RÉALISER</div>
+            <div class="comp-title">Applications complètes à partir d'exigences</div>
+            <span class="comp-status status-acquis">✓ Acquis (AC1, AC3)</span>
+        </div>
+        <div class="comp-card encours">
+            <div class="comp-num">C1 · RÉALISER</div>
+            <div class="comp-title">Accessibilité, tests & automatisation</div>
+            <span class="comp-status status-encours">⏳ En cours (AC2, AC4)</span>
+        </div>
+        <div class="comp-card">
+            <div class="comp-num">C3 · DÉPLOYER</div>
+            <div class="comp-title">Applications communicantes & protocoles</div>
+            <span class="comp-status status-acquis">✓ Acquis (AC1)</span>
+        </div>
+        <div class="comp-card">
+            <div class="comp-num">C4 · BASES DE DONNÉES</div>
+            <div class="comp-title">Conception, SQL, connexion applicative</div>
+            <span class="comp-status status-acquis">✓ Acquis (AC1, AC2, AC3)</span>
+        </div>
+        <div class="comp-card">
+            <div class="comp-num">C5 · PROJET</div>
+            <div class="comp-title">Besoins clients, communication, qualité</div>
+            <span class="comp-status status-acquis">✓ Acquis (AC1, AC3)</span>
+        </div>
+        <div class="comp-card">
+            <div class="comp-num">C6 · ÉQUIPE</div>
+            <div class="comp-title">Positionnement, communication, attitude</div>
+            <span class="comp-status status-acquis">✓ Acquis (AC1, AC2, AC4)</span>
+        </div>
+    </div>
+</section>
+
+<!-- ── SKILLS BARS ── -->
+<section class="section" style="margin-bottom: 0;">
+    <p class="section-label">05 · Compétences techniques</p>
+    <h2 class="section-title">Mes outils</h2>
+    <p class="section-desc">Technologies maîtrisées et niveau estimé à fin S4.</p>
+
+    <div class="skills-section">
+        <div class="skill-group">
+            <div class="skill-group-title">Développement</div>
+            <div class="skill-bar">
+                <div class="skill-bar-header">
+                    <span class="skill-bar-name">Java</span>
+                    <span class="skill-bar-level">Intermédiaire</span>
+                </div>
+                <div class="skill-bar-track"><div class="skill-bar-fill" style="width:68%"></div></div>
+            </div>
+            <div class="skill-bar">
+                <div class="skill-bar-header">
+                    <span class="skill-bar-name">HTML / CSS / JavaScript</span>
+                    <span class="skill-bar-level">Avancé</span>
+                </div>
+                <div class="skill-bar-track"><div class="skill-bar-fill" style="width:80%"></div></div>
+            </div>
+            <div class="skill-bar">
+                <div class="skill-bar-header">
+                    <span class="skill-bar-name">SQL</span>
+                    <span class="skill-bar-level">Intermédiaire</span>
+                </div>
+                <div class="skill-bar-track"><div class="skill-bar-fill" style="width:65%"></div></div>
+            </div>
+            <div class="skill-bar">
+                <div class="skill-bar-header">
+                    <span class="skill-bar-name">Arduino / C++</span>
+                    <span class="skill-bar-level">Intermédiaire</span>
+                </div>
+                <div class="skill-bar-track"><div class="skill-bar-fill" style="width:60%"></div></div>
+            </div>
+        </div>
+        <div class="skill-group">
+            <div class="skill-group-title">Outils & Méthodes</div>
+            <div class="skill-bar">
+                <div class="skill-bar-header">
+                    <span class="skill-bar-name">Git / GitHub</span>
+                    <span class="skill-bar-level">Avancé</span>
+                </div>
+                <div class="skill-bar-track"><div class="skill-bar-fill" style="width:78%"></div></div>
+            </div>
+            <div class="skill-bar">
+                <div class="skill-bar-header">
+                    <span class="skill-bar-name">Méthode Agile / Scrum</span>
+                    <span class="skill-bar-level">Débutant-Intermédiaire</span>
+                </div>
+                <div class="skill-bar-track"><div class="skill-bar-fill" style="width:50%"></div></div>
+            </div>
+            <div class="skill-bar">
+                <div class="skill-bar-header">
+                    <span class="skill-bar-name">Communication écrite/orale</span>
+                    <span class="skill-bar-level">Fort</span>
+                </div>
+                <div class="skill-bar-track"><div class="skill-bar-fill" style="width:85%"></div></div>
+            </div>
+            <div class="skill-bar">
+                <div class="skill-bar-header">
+                    <span class="skill-bar-name">UML / Modélisation</span>
+                    <span class="skill-bar-level">Intermédiaire</span>
+                </div>
+                <div class="skill-bar-track"><div class="skill-bar-fill" style="width:60%"></div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<footer>
+    <p class="footer-note">Profil établi en juin 2026 · Basé sur auto-évaluation compétences BUT, rapport de stage Faure Herman, PPP S4</p>
+    <div class="footer-badge">
+        <span>S4 · 2026</span>
+        Portfolio BUT Informatique — IUT Laval
+    </div>
+</footer>
+
+<script src="../assets/lang-switcher.js"></script>
+</body>
+</html>
