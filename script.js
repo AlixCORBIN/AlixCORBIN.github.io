@@ -69,22 +69,6 @@ const CHANNELS = [
         type: "moi"
     },
     {
-        title: "BUT Informatique", titleEn: "CS Bachelor",
-        emoji: "🎓",
-        cardLabel: "BUT Info", cardLabelEn: "CS Degree",
-        bg: "assets/but_bg.png",
-        cardBgOpacity: 0.7,
-        desc: "Compétences, Projets & Parcours.<br>Découvre le détail de ma formation et mon évolution.",
-        descEn: "Skills, Projects & Path.<br>Discover my training details and evolution.",
-        link: "BUT/index.html",
-        type: "image-bg",
-        overlayTitle: "BUT INFORMATIQUE", overlayTitleEn: "CS BACHELOR'S DEGREE",
-        overlayTitleSize: "2.5rem",
-        overlayTitleLetterSpacing: "2px",
-        overlayColor: "#4ac0e0",
-        overlayBgOpacity: 0.4
-    },
-    {
         title: "Profil Pro", titleEn: "Pro Profile",
         emoji: "💼",
         cardLabel: "Profil Pro", cardLabelEn: "Pro Profile",
@@ -104,6 +88,22 @@ const CHANNELS = [
         overlayTitleShadow: "0 0 20px rgba(108,92,231,0.6)",
         overlayEmojiShadow: "0 4px 15px rgba(108,92,231,0.7)",
         overlayBgOpacity: 0.15
+    },
+    {
+        title: "BUT Informatique", titleEn: "CS Bachelor",
+        emoji: "🎓",
+        cardLabel: "BUT Info", cardLabelEn: "CS Degree",
+        bg: "assets/but_bg.png",
+        cardBgOpacity: 0.7,
+        desc: "Compétences, Projets & Parcours.<br>Découvre le détail de ma formation et mon évolution.",
+        descEn: "Skills, Projects & Path.<br>Discover my training details and evolution.",
+        link: "BUT/index.html",
+        type: "image-bg",
+        overlayTitle: "BUT INFORMATIQUE", overlayTitleEn: "CS BACHELOR'S DEGREE",
+        overlayTitleSize: "2.5rem",
+        overlayTitleLetterSpacing: "2px",
+        overlayColor: "#4ac0e0",
+        overlayBgOpacity: 0.4
     },
     {
         title: "Blackjack",
