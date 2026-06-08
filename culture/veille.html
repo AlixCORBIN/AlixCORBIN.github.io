@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veille Technologique — Alix CORBIN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/lang-switcher.css">
+    <style>
+        :root {
+            --bg:      #f7f4ef;
+            --bg2:     #ede8e0;
+            --panel:   #ffffff;
+            --ink:     #1a1410;
+            --muted:   #8a7f74;
+            --accent:  #1a3a5c;
+            --accent2: #2563a8;
+            --gold:    #c9a84c;
+            --border:  #d8d0c4;
+            --red:     #b91c1c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 28px 48px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--muted);
+            border-bottom: 1px solid var(--border);
+        }
+        nav a { color: var(--accent); text-decoration: none; }
+        nav a:hover { text-decoration: underline; }
+        nav span { opacity: 0.5; }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 32px 100px;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            padding: 64px 0 48px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 56px;
+        }
+
+        .kicker {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.2rem, 5vw, 3.4rem);
+            font-weight: 900;
+            line-height: 1.08;
+            color: var(--ink);
+            margin-bottom: 20px;
+        }
+        h1 em { font-style: italic; color: var(--accent); }
+
+        .hero-lead {
+            font-size: 1rem;
+            line-height: 1.82;
+            color: #4a3f35;
+            max-width: 600px;
+            margin-bottom: 36px;
+        }
+
+        .method-box {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 20px;
+            background: var(--ink);
+            color: white;
+            padding: 18px 28px;
+            border-radius: 6px;
+            max-width: 540px;
+        }
+        .method-icon {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .method-text { font-size: 0.88rem; line-height: 1.65; }
+        .method-text strong { color: var(--gold); }
+
+        /* ── ARTICLES ── */
+        .articles { margin-bottom: 64px; }
+
+        .section-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 32px;
+        }
+
+        .article {
+            border-top: 1px solid var(--border);
+            padding: 40px 0;
+        }
+        .article:last-child { border-bottom: 1px solid var(--border); }
+
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .article-date {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .article-tag {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 2px 9px;
+            border-radius: 20px;
+            background: #e6ecf5;
+            color: var(--accent);
+        }
+        .article-tag.geo { background: #fce8e7; color: var(--red); }
+        .article-tag.energie { background: #fef3c7; color: #92400e; }
+        .article-tag.secu { background: #e8f0e6; color: #276121; }
+
+        .article h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.45rem;
+            font-weight: 700;
+            line-height: 1.25;
+            color: var(--ink);
+            margin-bottom: 18px;
+        }
+
+        .article p {
+            font-size: 0.92rem;
+            line-height: 1.85;
+            color: #4a3f35;
+            margin-bottom: 14px;
+            max-width: 640px;
+        }
+        .article p:last-child { margin-bottom: 0; }
+
+        .article p strong { color: var(--ink); font-weight: 600; }
+
+        .article-source {
+            margin-top: 18px;
+            padding: 12px 16px;
+            border-left: 3px solid var(--border);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+        .article-source a {
+            color: var(--accent2);
+            text-decoration: none;
+        }
+        .article-source a:hover { text-decoration: underline; }
+
+        /* ── BILAN ── */
+        .bilan {
+            background: var(--ink);
+            color: white;
+            border-radius: 10px;
+            padding: 40px 44px;
+            margin-bottom: 48px;
+        }
+        .bilan-kicker {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .bilan h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            margin-bottom: 16px;
+        }
+        .bilan p {
+            font-size: 0.92rem;
+            line-height: 1.85;
+            color: #c8bfb5;
+            max-width: 580px;
+        }
+        .bilan-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.4rem;
+            font-weight: 900;
+            color: var(--gold);
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 0.78rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 28px 48px 0;
+            padding: 8px 18px;
+            background: var(--accent);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .back-btn:hover { background: var(--accent2); transform: translateX(-3px); }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.88rem;
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .back-link:hover { text-decoration: underline; }
+
+        @media (max-width: 640px) {
+            nav { padding: 20px; }
+            .container { padding: 0 20px 60px; }
+            .bilan { padding: 28px 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<a href="../index.html" class="back-btn">← Portfolio</a>
+
+<nav>
+    <a href="../index.html">← Portfolio</a>
+    <span>/</span>
+    <a href="index.html">Culture G</a>
+    <span>/</span>
+    <span>Veille technologique</span>
+</nav>
+
+<div class="container">
+
+    <div class="hero">
+        <p class="kicker">Veille Technologique · Semestre 4 · 2026</p>
+        <h1>Ce qui se passe<br><em>en ce moment</em></h1>
+        <p class="hero-lead">
+            Quatre sujets que j'ai suivis ce semestre — pas des introductions générales,
+            mais des actualités en cours, des ruptures récentes, des choses qui bougent vraiment
+            dans le monde de la tech en 2025-2026. Pour chacune, j'essaie de comprendre
+            ce que ça change concrètement.
+        </p>
+
+        <div class="method-box">
+            <div class="method-icon">📰</div>
+            <div class="method-text">
+                <strong>Sources suivies régulièrement</strong><br>
+                The Verge, Ars Technica, MIT Technology Review, Hacker News,
+                Le Monde Informatique — lectures hebdomadaires depuis février 2026.
+            </div>
+        </div>
+    </div>
+
+    <div class="articles">
+        <p class="section-label">4 sujets · Février — Juin 2026</p>
+
+        <!-- ARTICLE 1 -->
+        <div class="article">
+            <div class="article-meta">
+                <span class="article-date">Février 2026</span>
+                <span class="article-tag">Intelligence artificielle</span>
+            </div>
+            <h2>Les agents IA : quand l'IA arrête de répondre et commence à agir</h2>
+            <p>
+                Pendant longtemps, les grands modèles de langage étaient des systèmes de question-réponse.
+                On écrit, ils répondent. Ce paradigme est en train de changer radicalement.
+                Depuis 2025, la tendance dominante dans l'industrie n'est plus le chatbot :
+                c'est l'<strong>agent autonome</strong> — un système capable de planifier une tâche,
+                l'exécuter en plusieurs étapes, corriger ses erreurs, et livrer un résultat
+                sans intervention humaine à chaque étape.
+            </p>
+            <p>
+                Ce changement est plus profond qu'il n'y paraît. Un chatbot échoue, et l'utilisateur
+                reformule. Un agent échoue, et il se reformule lui-même. C'est cette capacité d'itération
+                autonome qui crée une vraie rupture. Des outils comme Claude Code, Devin ou les assistants
+                de type "computer use" commencent à prouver que des tâches de développement
+                entières peuvent être déléguées — pas juste l'autocomplétion d'une ligne.
+            </p>
+            <p>
+                La question qui m'intéresse est moins "est-ce que l'IA va remplacer les développeurs"
+                (débat rebattu) que : <strong>à partir de quand déléguer à un agent est-il un risque ?</strong>
+                Quand la tâche est claire et bornée, c'est un gain de temps évident. Quand elle touche
+                à une architecture, à un choix de design, à quelque chose qu'on ne peut pas vérifier
+                facilement après coup — la délégation devient aveugle. Cette limite-là,
+                je commence à la percevoir concrètement.
+            </p>
+            <div class="article-source">
+                Sources consultées : Anthropic Blog — "Building effective agents" (déc. 2024) ·
+                MIT Technology Review — "The agentic AI era has arrived" (jan. 2025) ·
+                Ars Technica — "Claude Code and the rise of AI coding agents" (mars 2025)
+            </div>
+        </div>
+
+        <!-- ARTICLE 2 -->
+        <div class="article">
+            <div class="article-meta">
+                <span class="article-date">Janvier — Mars 2026</span>
+                <span class="article-tag geo">Géopolitique</span>
+            </div>
+            <h2>DeepSeek et la guerre des puces : l'IA comme enjeu d'État</h2>
+            <p>
+                En janvier 2025, un laboratoire chinois relativement inconnu publie DeepSeek R1 —
+                un modèle qui rivalise avec GPT-4 sur la plupart des benchmarks, distribué
+                en open source, entraîné pour une fraction du coût habituel. La réaction
+                des marchés est immédiate : le cours de NVIDIA perd 17 % en une journée,
+                effaçant près de 600 milliards de capitalisation boursière.
+            </p>
+            <p>
+                Ce qui rend cet épisode instructif, ce n'est pas uniquement la performance technique
+                du modèle. C'est ce qu'il révèle sur les hypothèses tacites de l'industrie américaine :
+                que la supériorité en IA était garantie par l'accès au matériel haut de gamme.
+                DeepSeek a montré qu'on peut contourner cette dépendance matérielle par
+                <strong>l'innovation algorithmique</strong> — notamment via une architecture
+                "mixture of experts" qui n'active qu'une partie du réseau à chaque inférence.
+            </p>
+            <p>
+                En parallèle, les États-Unis ont renforcé leurs contrôles à l'export sur les puces
+                NVIDIA H100 et H800 vers la Chine. La réponse de NVIDIA a été de concevoir des puces
+                dégradées spécifiquement pour le marché chinois — qui ont elles-mêmes fini par être
+                interdites. Ce jeu du chat et de la souris illustre quelque chose d'important :
+                <strong>l'IA est devenue un sujet de politique étrangère</strong>, au même titre que
+                l'armement ou l'énergie nucléaire dans le siècle précédent.
+            </p>
+            <div class="article-source">
+                Sources : The Verge — "DeepSeek's R1 shocked the AI world" (jan. 2025) ·
+                Reuters — "US tightens chip export controls to China" (oct. 2024) ·
+                Financial Times — "The semiconductor war" (fév. 2025)
+            </div>
+        </div>
+
+        <!-- ARTICLE 3 -->
+        <div class="article">
+            <div class="article-meta">
+                <span class="article-date">Mars — Avril 2026</span>
+                <span class="article-tag energie">Énergie</span>
+            </div>
+            <h2>L'IA consomme comme un pays. Le nucléaire revient par la fenêtre</h2>
+            <p>
+                En septembre 2024, Microsoft a annoncé la relance de Three Mile Island —
+                une centrale nucléaire américaine à l'arrêt depuis 2019 — pour alimenter
+                exclusivement ses data centers d'IA. Ce n'est pas une anecdote :
+                c'est le signe que la croissance de la consommation énergétique liée à l'IA
+                a atteint un seuil que les sources renouvelables intermittentes ne peuvent
+                plus absorber seules.
+            </p>
+            <p>
+                Les chiffres sont difficiles à ignorer. Selon l'Agence Internationale de l'Énergie,
+                les data centers représentaient en 2024 environ 1,5 % de la consommation électrique
+                mondiale. Avec la montée en puissance des infrastructures d'entraînement et d'inférence,
+                ce chiffre pourrait doubler d'ici 2030. Une requête à un LLM consomme environ
+                dix fois plus d'énergie qu'une recherche Google classique.
+                <strong>À l'échelle de milliards de requêtes quotidiennes, l'addition est massive.</strong>
+            </p>
+            <p>
+                Ce qui me frappe dans ce sujet, c'est la contradiction que l'industrie tech
+                peine à assumer. On se présente souvent comme un secteur propre — immatériel,
+                dématérialisé. L'IA rend cette image difficile à tenir. Entraîner GPT-4
+                aurait émis autant de CO₂ qu'environ 500 vols transatlantiques.
+                La question n'est pas de savoir si l'IA est "utile" — elle l'est manifestement —
+                mais d'avoir une comptabilité honnête de ce qu'elle coûte physiquement.
+            </p>
+            <div class="article-source">
+                Sources : The Guardian — "Microsoft restarts Three Mile Island" (sept. 2024) ·
+                AIE — "Electricity 2025" report · MIT Technology Review — "The carbon footprint of GPT-4" ·
+                Le Monde — "La sobriété numérique face à l'essor de l'IA" (mars 2025)
+            </div>
+        </div>
+
+        <!-- ARTICLE 4 -->
+        <div class="article">
+            <div class="article-meta">
+                <span class="article-date">Mai 2026</span>
+                <span class="article-tag secu">Cryptographie</span>
+            </div>
+            <h2>Post-quantique : le chiffrement qu'on utilise aujourd'hui a une date d'expiration</h2>
+            <p>
+                En août 2024, le NIST (l'institut américain des standards) a finalisé les trois
+                premiers algorithmes cryptographiques post-quantiques officiels : CRYSTALS-Kyber,
+                CRYSTALS-Dilithium et SPHINCS+. Ce sont les successeurs désignés de RSA et
+                de la cryptographie à courbe elliptique — deux systèmes sur lesquels repose
+                la quasi-totalité du chiffrement actuel sur Internet.
+            </p>
+            <p>
+                L'ordinateur quantique capable de casser RSA en temps utile n'existe pas encore.
+                Mais le raisonnement qui motive cette migration anticipée est solide :
+                <strong>la menace "harvest now, decrypt later"</strong>. Des acteurs étatiques
+                interceptent et stockent aujourd'hui des communications chiffrées,
+                dans l'attente d'une puissance quantique suffisante pour les déchiffrer
+                dans dix ou vingt ans. Pour des données médicales, diplomatiques ou industrielles
+                dont la confidentialité doit tenir sur le long terme, ce scénario est réaliste.
+            </p>
+            <p>
+                Ce sujet me semble important à connaître en tant que développeur — pas parce
+                qu'on va devoir réécrire nos applications demain, mais parce que les bibliothèques
+                et les protocoles vont changer. TLS 1.4, SSH, les certificats HTTPS :
+                tout ça va progressivement intégrer des primitives post-quantiques.
+                Comprendre pourquoi aide à ne pas subir ces migrations comme une contrainte
+                arbitraire, mais à les anticiper comme une évolution logique.
+            </p>
+            <div class="article-source">
+                Sources : NIST — "Post-Quantum Cryptography Standardization" (août 2024) ·
+                Ars Technica — "NIST finalizes its post-quantum encryption standards" ·
+                ANSSI — "Migration vers la cryptographie post-quantique" (guide 2024)
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bilan -->
+    <div class="bilan">
+        <p class="bilan-kicker">Ce que j'en retiens</p>
+        <h2>La tech ne se passe pas dans un vide</h2>
+        <p>
+            Ce qui m'a le plus frappé en suivant ces quatre sujets, c'est à quel point
+            les questions techniques et les questions politiques, économiques ou environnementales
+            sont intriquées. DeepSeek n'est pas qu'un modèle de langage — c'est un événement
+            géopolitique. L'énergie des data centers n'est pas qu'un problème d'infrastructure —
+            c'est un choix de société. La cryptographie post-quantique n'est pas qu'un standard
+            technique — c'est une réponse à une menace d'État. Suivre la tech en 2026,
+            c'est suivre bien autre chose que la tech.
+        </p>
+        <div class="bilan-stats">
+            <div>
+                <div class="stat-num">4</div>
+                <div class="stat-label">sujets de fond</div>
+            </div>
+            <div>
+                <div class="stat-num">~15h</div>
+                <div class="stat-label">de lecture et de veille</div>
+            </div>
+            <div>
+                <div class="stat-num">S4</div>
+                <div class="stat-label">semestre 4 · 2026</div>
+            </div>
+        </div>
+    </div>
+
+    <a class="back-link" href="index.html">← Retour au menu Culture</a>
+
+</div>
+
+<script>
+window.PAGE_TRANSLATIONS = {
+    fr: { 'page.title': 'Veille Technologique — Alix CORBIN' },
+    en: { 'page.title': 'Tech Watch — Alix CORBIN' }
+};
+</script>
+<script src="../assets/lang-switcher.js"></script>
+</body>
+</html>
