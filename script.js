@@ -85,6 +85,27 @@ const CHANNELS = [
         overlayBgOpacity: 0.4
     },
     {
+        title: "Profil Pro", titleEn: "Pro Profile",
+        emoji: "💼",
+        cardLabel: "Profil Pro", cardLabelEn: "Pro Profile",
+        cardBgColor: "#0d0f1a",
+        cardGradient: "linear-gradient(135deg, rgba(13,15,26,0.6), rgba(108,92,231,0.12))",
+        cardEmojiShadow: "0 2px 10px rgba(108,92,231,0.8)",
+        cardLabelColor: "#a78bfa",
+        cardLabelShadow: "0 0 12px rgba(108,92,231,0.6)",
+        desc: "Mon profil professionnel S4 — missions souhaitées, compétences tracées, parcours argumenté.",
+        descEn: "My S4 professional profile — desired missions, tracked skills, argued path.",
+        link: "profil/index.html",
+        type: "profil",
+        overlayTitle: "MON PROFIL PRO", overlayTitleEn: "MY PRO PROFILE",
+        overlayTitleSize: "2.2rem",
+        overlayTitleLetterSpacing: "2px",
+        overlayColor: "#a78bfa",
+        overlayTitleShadow: "0 0 20px rgba(108,92,231,0.6)",
+        overlayEmojiShadow: "0 4px 15px rgba(108,92,231,0.7)",
+        overlayBgOpacity: 0.15
+    },
+    {
         title: "Blackjack",
         bg: "assets/bj.png",
         link: "blackjack/index.html",
@@ -390,6 +411,21 @@ function createChannelEl(data, index) {
                     <div class="stats-bar" style="height:95%"></div>
                     <div class="stats-bar" style="height:40%"></div>
                     <div class="stats-bar" style="height:70%"></div>
+                </div>
+            </div>`;
+        return div;
+    }
+
+    if (data.type === 'profil') {
+        const label = (currentLang === 'en' && data.cardLabelEn) ? data.cardLabelEn : data.cardLabel;
+        div.innerHTML = `
+            <div class="channel-inner" style="background:#0d0f1a">
+                <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(13,15,26,0.4),rgba(108,92,231,0.18))"></div>
+                <span class="ch-emoji" style="text-shadow:0 2px 10px rgba(108,92,231,0.8)">💼</span>
+                <h2 class="ch-label" style="color:#a78bfa;text-shadow:0 0 12px rgba(108,92,231,0.6)">${label}</h2>
+                <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:4px;white-space:nowrap">
+                    <span style="font-size:0.6rem;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(108,92,231,0.18);color:#a78bfa">S4</span>
+                    <span style="font-size:0.6rem;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(74,192,224,0.15);color:#4ac0e0">Full-Stack</span>
                 </div>
             </div>`;
         return div;
@@ -833,6 +869,29 @@ function renderOverlayContent(data) {
                             <span style="background:rgba(248,113,113,0.15);border:1px solid rgba(248,113,113,0.3);color:#f87171;padding:4px 12px;border-radius:12px;font-size:0.75rem">15 ${isEn ? 'rejected' : 'refus'}</span>
                             <span style="background:rgba(251,146,60,0.15);border:1px solid rgba(251,146,60,0.3);color:#fb923c;padding:4px 12px;border-radius:12px;font-size:0.75rem">10 ${isEn ? 'pending' : 'en attente'}</span>
                             <span style="background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.3);color:#4ade80;padding:4px 12px;border-radius:12px;font-size:0.75rem">✅ Faure Herman</span>
+                        </div>
+                    </div>
+                </div>`;
+            break;
+        }
+
+        case 'profil': {
+            overlay.style.background = "linear-gradient(135deg, #0d0f1a 0%, #16192e 100%)";
+            overlayContentBox.style.padding = '0';
+            overlayContentBox.style.overflow = 'hidden';
+            const profilDesc = isEn ? data.descEn : data.desc;
+            overlayContentBox.innerHTML = `
+                <div class="overlay-image-bg">
+                    <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(13,15,26,0.6),rgba(108,92,231,0.12))"></div>
+                    <div class="overlay-text-block">
+                        <div class="ov-emoji" style="text-shadow:0 0 30px rgba(108,92,231,0.9)">💼</div>
+                        <h1 class="ov-title" style="font-size:2.2rem;letter-spacing:2px;color:#a78bfa;text-shadow:0 0 20px rgba(108,92,231,0.6)">${isEn ? 'MY PRO PROFILE' : 'MON PROFIL PRO'}</h1>
+                        <p class="ov-desc">${profilDesc}</p>
+                        <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap">
+                            <span style="background:rgba(108,92,231,0.15);border:1px solid rgba(108,92,231,0.35);color:#a78bfa;padding:4px 12px;border-radius:12px;font-size:0.75rem">💻 Full-Stack</span>
+                            <span style="background:rgba(74,192,224,0.12);border:1px solid rgba(74,192,224,0.3);color:#4ac0e0;padding:4px 12px;border-radius:12px;font-size:0.75rem">☕ Java</span>
+                            <span style="background:rgba(74,192,224,0.12);border:1px solid rgba(74,192,224,0.3);color:#4ac0e0;padding:4px 12px;border-radius:12px;font-size:0.75rem">🌐 Web</span>
+                            <span style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);color:#4ade80;padding:4px 12px;border-radius:12px;font-size:0.75rem">🤖 IoT</span>
                         </div>
                     </div>
                 </div>`;
