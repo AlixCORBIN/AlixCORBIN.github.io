@@ -241,6 +241,25 @@ const CHANNELS = [
         emoji: "🌤️",
         cardLabel: "Météo", cardLabelEn: "Weather",
         type: "meteo"
+    },
+    {
+        title: "Écri+", titleEn: "Écri+",
+        emoji: "✍️",
+        cardLabel: "Écri+", cardLabelEn: "Écri+",
+        cardBgColor: "#0a1a0f",
+        cardGradient: "linear-gradient(135deg, rgba(10,26,15,0.5), rgba(34,197,94,0.1))",
+        cardEmojiShadow: "0 2px 10px rgba(34,197,94,0.8)",
+        cardLabelColor: "#4ade80",
+        cardLabelShadow: "0 0 12px rgba(34,197,94,0.5)",
+        cardScore: 670,
+        desc: "Application de maîtrise de la langue française — exercices quotidiens d'orthographe, grammaire et vocabulaire.",
+        descEn: "French language mastery app — daily spelling, grammar and vocabulary exercises.",
+        type: "ecrip",
+        overlayTitle: "ÉCRI+", overlayTitleEn: "ÉCRI+",
+        overlayColor: "#4ade80",
+        overlayTitleShadow: "0 0 20px rgba(34,197,94,0.6)",
+        overlayEmojiShadow: "0 4px 15px rgba(34,197,94,0.7)",
+        overlayBgOpacity: 0.12
     }
 ];
 
@@ -420,6 +439,21 @@ function createChannelEl(data, index) {
                 <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:4px;white-space:nowrap">
                     <span style="font-size:0.6rem;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(108,92,231,0.18);color:#a78bfa">S4</span>
                     <span style="font-size:0.6rem;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(74,192,224,0.15);color:#4ac0e0">Full-Stack</span>
+                </div>
+            </div>`;
+        return div;
+    }
+
+    if (data.type === 'ecrip') {
+        const label = (currentLang === 'en' && data.cardLabelEn) ? data.cardLabelEn : data.cardLabel;
+        const scoreLbl = currentLang === 'en' ? 'pts' : 'pts';
+        div.innerHTML = `
+            <div class="channel-inner" style="background:#0a1a0f">
+                <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(10,26,15,0.4),rgba(34,197,94,0.14))"></div>
+                <span class="ch-emoji" style="text-shadow:0 2px 10px rgba(34,197,94,0.8)">✍️</span>
+                <h2 class="ch-label" style="color:#4ade80;text-shadow:0 0 12px rgba(34,197,94,0.5)">${label}</h2>
+                <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);white-space:nowrap">
+                    <span style="font-size:0.65rem;font-weight:700;padding:2px 9px;border-radius:8px;background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.3)">⭐ ${data.cardScore} ${scoreLbl}</span>
                 </div>
             </div>`;
         return div;
@@ -886,6 +920,33 @@ function renderOverlayContent(data) {
                             <span style="background:rgba(74,192,224,0.12);border:1px solid rgba(74,192,224,0.3);color:#4ac0e0;padding:4px 12px;border-radius:12px;font-size:0.75rem">☕ Java</span>
                             <span style="background:rgba(74,192,224,0.12);border:1px solid rgba(74,192,224,0.3);color:#4ac0e0;padding:4px 12px;border-radius:12px;font-size:0.75rem">🌐 Web</span>
                             <span style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);color:#4ade80;padding:4px 12px;border-radius:12px;font-size:0.75rem">🤖 IoT</span>
+                        </div>
+                    </div>
+                </div>`;
+            break;
+        }
+
+        case 'ecrip': {
+            overlay.style.background = "linear-gradient(135deg, #0a1a0f 0%, #0d2010 100%)";
+            overlayContentBox.style.padding = '0';
+            overlayContentBox.style.overflow = 'hidden';
+            if (startBtn) {
+                startBtn.classList.add('btn-disabled');
+                startBtn.innerText = isEn ? 'Launch' : 'Lancer';
+                startBtn.onclick = null;
+            }
+            const ecripDesc = isEn ? data.descEn : data.desc;
+            overlayContentBox.innerHTML = `
+                <div class="overlay-image-bg">
+                    <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(10,26,15,0.5),rgba(34,197,94,0.08))"></div>
+                    <div class="overlay-text-block">
+                        <div class="ov-emoji" style="text-shadow:0 0 30px rgba(34,197,94,0.9)">✍️</div>
+                        <h1 class="ov-title" style="font-size:3rem;letter-spacing:4px;color:#4ade80;text-shadow:0 0 20px rgba(34,197,94,0.6)">ÉCRI+</h1>
+                        <p class="ov-desc">${ecripDesc}</p>
+                        <div style="margin-top:22px;display:flex;flex-direction:column;align-items:center;gap:6px">
+                            <div style="font-size:0.62rem;letter-spacing:3px;text-transform:uppercase;color:rgba(74,222,128,0.6)">${isEn ? 'current score' : 'score actuel'}</div>
+                            <div style="font-size:3rem;font-weight:900;color:#4ade80;text-shadow:0 0 24px rgba(34,197,94,0.6);line-height:1">670</div>
+                            <div style="font-size:1rem;color:rgba(74,222,128,0.7);letter-spacing:2px">${isEn ? 'points' : 'points'}</div>
                         </div>
                     </div>
                 </div>`;
