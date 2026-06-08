@@ -244,23 +244,17 @@ const CHANNELS = [
     }
 ];
 
-// Pages bureau : toutes les chaînes sur une page + 1 page vide
-const PAGES_DESKTOP = [ CHANNELS, [] ];
-
 // Calcule les pages selon le viewport
-// Mobile (≤768px) : 8 chaînes par page (grille 4×2)
-// Desktop         : toutes les chaînes sur page 1, page 2 vide
+// Mobile (≤768px) : 8 chaînes par page (grille 2×4)
+// Desktop         : 12 chaînes par page (grille 4×3)
 function computeActivePAGES() {
-    if (window.innerWidth <= 768) {
-        const perPage = 8;
-        const result  = [];
-        for (let i = 0; i < CHANNELS.length; i += perPage) {
-            result.push(CHANNELS.slice(i, i + perPage));
-        }
-        result.push([]); // page vide supplémentaire
-        return result;
+    const perPage = window.innerWidth <= 768 ? 8 : 12;
+    const result  = [];
+    for (let i = 0; i < CHANNELS.length; i += perPage) {
+        result.push(CHANNELS.slice(i, i + perPage));
     }
-    return PAGES_DESKTOP;
+    result.push([]); // page vide supplémentaire
+    return result;
 }
 
 let activePAGES = computeActivePAGES();
