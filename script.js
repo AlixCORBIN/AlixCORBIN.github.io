@@ -499,7 +499,8 @@ function createChannelEl(data, index) {
         const label = (currentLang === 'en' && data.cardLabelEn) ? data.cardLabelEn : data.cardLabel;
         div.innerHTML = `
             <div class="channel-inner" style="background:#0A2540">
-                <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(10,37,64,0.55),rgba(0,145,213,0.14))"></div>
+                <img src="assets/alternance_bg.png" class="ch-bg" style="opacity:0.55;object-fit:cover;">
+                <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(10,37,64,0.6),rgba(0,145,213,0.16))"></div>
                 <span class="ch-emoji" style="text-shadow:0 2px 10px rgba(0,145,213,0.8)">🏭</span>
                 <h2 class="ch-label" style="color:#0091D5;text-shadow:0 0 12px rgba(0,145,213,0.6)">${label}</h2>
             </div>`;
@@ -940,7 +941,8 @@ function renderOverlayContent(data) {
             const altDesc = isEn ? data.descEn : data.desc;
             overlayContentBox.innerHTML = `
                 <div class="overlay-image-bg">
-                    <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(10,37,64,0.6),rgba(0,145,213,0.1))"></div>
+                    <img class="overlay-bg-img" src="assets/alternance_bg.png" style="opacity:0.3;object-fit:cover;">
+                    <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(10,37,64,0.75),rgba(0,145,213,0.08))"></div>
                     <div class="overlay-text-block">
                         <div class="ov-emoji" style="text-shadow:0 0 30px rgba(0,145,213,0.8)">🏭</div>
                         <h1 class="ov-title" style="font-size:2.1rem;letter-spacing:1px;color:#0091D5;text-shadow:0 0 20px rgba(0,145,213,0.5)">${isEn ? data.overlayTitleEn : data.overlayTitle}</h1>
