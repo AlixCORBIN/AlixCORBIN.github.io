@@ -215,6 +215,25 @@ const CHANNELS = [
         overlayBgOpacity: 0.18
     },
     {
+        title: "Alternance", titleEn: "Apprenticeship",
+        emoji: "🏭",
+        cardLabel: "Alternance", cardLabelEn: "Apprenticeship",
+        cardBgColor: "#0A2540",
+        cardGradient: "linear-gradient(135deg, rgba(10,37,64,0.55), rgba(0,145,213,0.14))",
+        cardEmojiShadow: "0 2px 10px rgba(0,145,213,0.8)",
+        cardLabelColor: "#0091D5",
+        cardLabelShadow: "0 0 12px rgba(0,145,213,0.6)",
+        desc: "Alternant développeur chez Faure Herman — IHM industrielle full-stack pour un banc de mesure de turbine.",
+        descEn: "Apprentice developer at Faure Herman — full-stack industrial HMI for a turbine measurement bench.",
+        link: "alternance/index.html",
+        type: "alternance",
+        overlayTitle: "ALTERNANCE — FAURE HERMAN", overlayTitleEn: "APPRENTICESHIP — FAURE HERMAN",
+        overlayColor: "#0091D5",
+        overlayTitleShadow: "0 0 20px rgba(0,145,213,0.5)",
+        overlayEmojiShadow: "0 4px 15px rgba(0,145,213,0.6)",
+        overlayBgOpacity: 0.18
+    },
+    {
         title: "Écri+", titleEn: "Écri+",
         emoji: "✍️",
         cardLabel: "Écri+", cardLabelEn: "Écri+",
@@ -472,6 +491,17 @@ function createChannelEl(data, index) {
                     <span class="scp pending">10 ○</span>
                     <span class="scp accepted">1 ✓</span>
                 </div>
+            </div>`;
+        return div;
+    }
+
+    if (data.type === 'alternance') {
+        const label = (currentLang === 'en' && data.cardLabelEn) ? data.cardLabelEn : data.cardLabel;
+        div.innerHTML = `
+            <div class="channel-inner" style="background:#0A2540">
+                <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(10,37,64,0.55),rgba(0,145,213,0.14))"></div>
+                <span class="ch-emoji" style="text-shadow:0 2px 10px rgba(0,145,213,0.8)">🏭</span>
+                <h2 class="ch-label" style="color:#0091D5;text-shadow:0 0 12px rgba(0,145,213,0.6)">${label}</h2>
             </div>`;
         return div;
     }
@@ -903,7 +933,29 @@ function renderOverlayContent(data) {
             break;
         }
 
-        case 'profil': {
+        case 'alternance': {
+            overlay.style.background = "linear-gradient(135deg, #0A2540 0%, #07192C 100%)";
+            overlayContentBox.style.padding = '0';
+            overlayContentBox.style.overflow = 'hidden';
+            const altDesc = isEn ? data.descEn : data.desc;
+            overlayContentBox.innerHTML = `
+                <div class="overlay-image-bg">
+                    <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(10,37,64,0.6),rgba(0,145,213,0.1))"></div>
+                    <div class="overlay-text-block">
+                        <div class="ov-emoji" style="text-shadow:0 0 30px rgba(0,145,213,0.8)">🏭</div>
+                        <h1 class="ov-title" style="font-size:2.1rem;letter-spacing:1px;color:#0091D5;text-shadow:0 0 20px rgba(0,145,213,0.5)">${isEn ? data.overlayTitleEn : data.overlayTitle}</h1>
+                        <p class="ov-desc">${altDesc}</p>
+                        <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap">
+                            <span style="background:rgba(0,145,213,0.15);border:1px solid rgba(0,145,213,0.35);color:#0091D5;padding:4px 12px;border-radius:12px;font-size:0.75rem">🔧 Embarqué</span>
+                            <span style="background:rgba(0,145,213,0.15);border:1px solid rgba(0,145,213,0.35);color:#0091D5;padding:4px 12px;border-radius:12px;font-size:0.75rem">⚙️ Backend</span>
+                            <span style="background:rgba(0,145,213,0.15);border:1px solid rgba(0,145,213,0.35);color:#0091D5;padding:4px 12px;border-radius:12px;font-size:0.75rem">🖥️ Frontend</span>
+                        </div>
+                    </div>
+                </div>`;
+            break;
+        }
+
+                case 'profil': {
             overlay.style.background = "linear-gradient(135deg, #0d0f1a 0%, #16192e 100%)";
             overlayContentBox.style.padding = '0';
             overlayContentBox.style.overflow = 'hidden';

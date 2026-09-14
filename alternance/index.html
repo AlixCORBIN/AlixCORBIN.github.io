@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alternance — Faure Herman — Alix Corbin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/lang-switcher.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="alt-body">
+
+    <div class="alt-utilitybar">
+        <div class="alt-container">
+            <a href="../index.html" class="alt-back">← <span data-i18n="back">Portfolio</span></a>
+            <span class="alt-utility-tag" data-i18n="utility.tag">Custody transfer · Métrologie industrielle</span>
+        </div>
+    </div>
+
+    <header class="alt-header">
+        <div class="alt-container">
+            <div class="alt-brand">
+                <span class="alt-brand-mark"></span>
+                <span>
+                    ALIX CORBIN
+                    <span class="alt-brand-sub" data-i18n="brand.sub">Alternant développeur — Faure Herman</span>
+                </span>
+            </div>
+            <nav class="alt-header-nav">
+                <a href="#mission" data-i18n="nav.mission">Mission</a>
+                <a href="#domaines" data-i18n="nav.domains">Domaines</a>
+                <a href="#stack" data-i18n="nav.stack">Stack</a>
+                <a href="#lab" data-i18n="nav.lab">Précision</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="alt-hero">
+        <div class="alt-container alt-hero-content">
+            <span class="alt-kicker" data-i18n="hero.kicker">Alternance — Développement logiciel</span>
+            <h1 data-i18n="hero.title">Interfaces industrielles de précision, chez Faure Herman</h1>
+            <p class="alt-hero-sub" data-i18n="hero.sub">
+                Développement full-stack — embarqué, backend et frontend — d'une IHM de banc de mesure de turbine,
+                au service de la métrologie de précision et du comptage transactionnel.
+            </p>
+            <div class="alt-hero-meta">
+                <span data-i18n="hero.dates">📅 Depuis avril 2026</span>
+                <span>📍 <a href="https://faureherman.com/fr/accueil/" target="_blank" rel="noopener">La Ferté-Bernard</a></span>
+                <span data-i18n="hero.since1925">🏭 Faure Herman — spécialiste de la mesure de débit depuis 1925</span>
+            </div>
+            <div class="alt-hero-actions">
+                <a href="../stage/index.html" class="fh-btn fh-btn--primary" data-i18n="hero.cta1">Voir la recherche de stage</a>
+                <a href="https://faureherman.com/fr/accueil/" target="_blank" rel="noopener" class="fh-btn fh-btn--outline" data-i18n="hero.cta2">faureherman.com</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="alt-section" id="mission">
+        <div class="alt-container">
+            <span class="alt-eyebrow" data-i18n="mission.eyebrow">La mission</span>
+            <h2 class="alt-section-title" data-i18n="mission.title">Un banc de mesure, une IHM entière à construire</h2>
+            <p class="alt-section-lede" data-i18n="mission.lede">
+                Développeur principal sur les trois couches du projet — acquisition embarquée, backend temps réel
+                et interface opérateur — pour un banc industriel de mesure et d'étalonnage de turbines. Chaque
+                fonctionnalité livrée doit répondre à la même exigence : garantir l'exactitude et la traçabilité
+                d'une mesure qui fait foi.
+            </p>
+        </div>
+    </section>
+
+    <section class="alt-section alt-section--subtle" id="domaines">
+        <div class="alt-container">
+            <span class="alt-eyebrow" data-i18n="domains.eyebrow">Domaines d'intervention</span>
+            <h2 class="alt-section-title" data-i18n="domains.title">Du capteur à l'écran opérateur</h2>
+            <div class="alt-grid-4">
+                <div class="fh-domain-card">
+                    <div class="fh-domain-icon">
+                        <svg viewBox="0 0 24 24"><path d="M9 9h6v6H9z"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
+                    </div>
+                    <h3 data-i18n="domains.embedded.title">Embarqué</h3>
+                    <p data-i18n="domains.embedded.desc">Acquisition NI cDAQ, firmware ESP32, mesure de fréquence en temps réel, gestion des signaux capteurs.</p>
+                </div>
+                <div class="fh-domain-card">
+                    <div class="fh-domain-icon">
+                        <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/></svg>
+                    </div>
+                    <h3 data-i18n="domains.backend.title">Backend</h3>
+                    <p data-i18n="domains.backend.desc">API temps réel, MQTT, Socket.io, authentification AD/RFID, génération de rapports PDF certifiés.</p>
+                </div>
+                <div class="fh-domain-card">
+                    <div class="fh-domain-icon">
+                        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="1"/><path d="M8 21h8M12 18v3"/></svg>
+                    </div>
+                    <h3 data-i18n="domains.frontend.title">Frontend</h3>
+                    <p data-i18n="domains.frontend.desc">Interface opérateur, visualisation de signaux, zoom temporel, thèmes par utilisateur, ergonomie industrielle.</p>
+                </div>
+                <div class="fh-domain-card">
+                    <div class="fh-domain-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                    </div>
+                    <h3 data-i18n="domains.metro.title">Métrologie</h3>
+                    <p data-i18n="domains.metro.desc">Traitement de signal, détection d'asymétrie, cohérence des mesures, traçabilité des configurations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="alt-section" id="stack">
+        <div class="alt-container">
+            <span class="alt-eyebrow" data-i18n="stack.eyebrow">Stack technique</span>
+            <h2 class="alt-section-title" data-i18n="stack.title">Outils utilisés au quotidien</h2>
+            <div class="table-wrapper">
+                <table class="fh-metrics-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="stack.col.layer">Couche</th>
+                            <th data-i18n="stack.col.tech">Technologies</th>
+                            <th data-i18n="stack.col.role">Rôle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-i18n="stack.row1.layer">Acquisition</td>
+                            <td><span class="fh-tag fh-tag--cyan">Python</span><span class="fh-tag fh-tag--cyan">NI cDAQ</span><span class="fh-tag fh-tag--cyan">ESP32</span></td>
+                            <td data-i18n="stack.row1.role">Lecture capteurs, filtrage du bruit, détection de fréquence</td>
+                        </tr>
+                        <tr>
+                            <td data-i18n="stack.row2.layer">Communication</td>
+                            <td><span class="fh-tag">MQTT</span><span class="fh-tag">Socket.io</span></td>
+                            <td data-i18n="stack.row2.role">Flux temps réel entre le banc, le serveur et l'interface</td>
+                        </tr>
+                        <tr>
+                            <td data-i18n="stack.row3.layer">Backend</td>
+                            <td><span class="fh-tag fh-tag--cyan">Node.js</span><span class="fh-tag fh-tag--cyan">LDAP</span><span class="fh-tag fh-tag--cyan">SQL Server</span></td>
+                            <td data-i18n="stack.row3.role">Authentification, base de données, génération de rapports</td>
+                        </tr>
+                        <tr>
+                            <td data-i18n="stack.row4.layer">Documents</td>
+                            <td><span class="fh-tag">pdf.js</span><span class="fh-tag">LaTeX</span></td>
+                            <td data-i18n="stack.row4.role">Rapports PDF certifiés, signature électronique</td>
+                        </tr>
+                        <tr>
+                            <td data-i18n="stack.row5.layer">Interface</td>
+                            <td><span class="fh-tag fh-tag--cyan">JavaScript</span><span class="fh-tag fh-tag--cyan">HTML/CSS</span></td>
+                            <td data-i18n="stack.row5.role">IHM opérateur, visualisation de signaux, ergonomie</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="alt-lab" id="lab">
+        <div class="alt-container">
+            <span class="alt-eyebrow" data-i18n="lab.eyebrow">Exigence de précision</span>
+            <h2 class="alt-section-title" data-i18n="lab.title">Chaque mesure engage une responsabilité</h2>
+            <p class="alt-lab-quote" data-i18n="lab.quote">
+                « Comme en comptage transactionnel, une IHM de mesure n'a pas droit à l'approximation :
+                l'interface doit être aussi fiable que le capteur qu'elle représente. »
+            </p>
+            <p class="alt-lab-body" data-i18n="lab.body">
+                Travailler chez Faure Herman, c'est appliquer au logiciel la même rigueur que l'entreprise applique
+                à ses instruments depuis 1925 : traçabilité des données, cohérence des mesures, robustesse face
+                aux conditions industrielles réelles. Un rapport de test généré par l'IHM doit pouvoir faire foi,
+                au même titre qu'un débitmètre étalonné en laboratoire.
+            </p>
+            <div class="alt-lab-stats">
+                <div>
+                    <div class="alt-lab-stat-value">1925</div>
+                    <div class="alt-lab-stat-label" data-i18n="lab.stat1">Fondation Faure Herman</div>
+                </div>
+                <div>
+                    <div class="alt-lab-stat-value">10 kHz</div>
+                    <div class="alt-lab-stat-label" data-i18n="lab.stat2">Fréquence d'acquisition du banc</div>
+                </div>
+                <div>
+                    <div class="alt-lab-stat-value">3</div>
+                    <div class="alt-lab-stat-label" data-i18n="lab.stat3">Couches développées (embarqué / back / front)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="alt-footer">
+        <div class="alt-container">
+            <div class="alt-footer-grid">
+                <div class="alt-footer-col">
+                    <h4 data-i18n="footer.about">À propos</h4>
+                    <a href="../index.html" data-i18n="footer.portfolio">← Retour au portfolio</a>
+                    <a href="../profil/index.html" data-i18n="footer.profil">Mon profil professionnel</a>
+                    <a href="../stage/index.html" data-i18n="footer.stage">Recherche de stage</a>
+                </div>
+                <div class="alt-footer-col">
+                    <h4 data-i18n="footer.company">Entreprise</h4>
+                    <a href="https://faureherman.com/fr/accueil/" target="_blank" rel="noopener">faureherman.com</a>
+                    <span data-i18n="footer.address">2, Lieu-dit l'Archette, 72400 La Ferté-Bernard</span>
+                </div>
+                <div class="alt-footer-col">
+                    <h4 data-i18n="footer.contact">Contact</h4>
+                    <a href="mailto:alix.corbin.pro@gmail.com">alix.corbin.pro@gmail.com</a>
+                    <a href="tel:+33768658968">07 68 65 89 68</a>
+                </div>
+            </div>
+            <div class="alt-footer-bottom">
+                <span data-i18n="footer.tagline">Conçu par Alix Corbin — inspiré de l'identité visuelle Faure Herman</span>
+                <span>© 2026</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        window.PAGE_TRANSLATIONS = {
+            fr: {
+                'page.title': 'Alternance — Faure Herman — Alix Corbin',
+                'back': 'Portfolio',
+                'utility.tag': 'Custody transfer · Métrologie industrielle',
+                'brand.sub': 'Alternant développeur — Faure Herman',
+                'nav.mission': 'Mission',
+                'nav.domains': 'Domaines',
+                'nav.stack': 'Stack',
+                'nav.lab': 'Précision',
+                'hero.kicker': 'Alternance — Développement logiciel',
+                'hero.title': 'Interfaces industrielles de précision, chez Faure Herman',
+                'hero.sub': "Développement full-stack — embarqué, backend et frontend — d'une IHM de banc de mesure de turbine, au service de la métrologie de précision et du comptage transactionnel.",
+                'hero.dates': '📅 Depuis avril 2026',
+                'hero.since1925': '🏭 Faure Herman — spécialiste de la mesure de débit depuis 1925',
+                'hero.cta1': 'Voir la recherche de stage',
+                'hero.cta2': 'faureherman.com',
+                'mission.eyebrow': 'La mission',
+                'mission.title': 'Un banc de mesure, une IHM entière à construire',
+                'mission.lede': "Développeur principal sur les trois couches du projet — acquisition embarquée, backend temps réel et interface opérateur — pour un banc industriel de mesure et d'étalonnage de turbines. Chaque fonctionnalité livrée doit répondre à la même exigence : garantir l'exactitude et la traçabilité d'une mesure qui fait foi.",
+                'domains.eyebrow': "Domaines d'intervention",
+                'domains.title': "Du capteur à l'écran opérateur",
+                'domains.embedded.title': 'Embarqué',
+                'domains.embedded.desc': 'Acquisition NI cDAQ, firmware ESP32, mesure de fréquence en temps réel, gestion des signaux capteurs.',
+                'domains.backend.title': 'Backend',
+                'domains.backend.desc': 'API temps réel, MQTT, Socket.io, authentification AD/RFID, génération de rapports PDF certifiés.',
+                'domains.frontend.title': 'Frontend',
+                'domains.frontend.desc': "Interface opérateur, visualisation de signaux, zoom temporel, thèmes par utilisateur, ergonomie industrielle.",
+                'domains.metro.title': 'Métrologie',
+                'domains.metro.desc': "Traitement de signal, détection d'asymétrie, cohérence des mesures, traçabilité des configurations.",
+                'stack.eyebrow': 'Stack technique',
+                'stack.title': 'Outils utilisés au quotidien',
+                'stack.col.layer': 'Couche',
+                'stack.col.tech': 'Technologies',
+                'stack.col.role': 'Rôle',
+                'stack.row1.layer': 'Acquisition',
+                'stack.row1.role': 'Lecture capteurs, filtrage du bruit, détection de fréquence',
+                'stack.row2.layer': 'Communication',
+                'stack.row2.role': "Flux temps réel entre le banc, le serveur et l'interface",
+                'stack.row3.layer': 'Backend',
+                'stack.row3.role': 'Authentification, base de données, génération de rapports',
+                'stack.row4.layer': 'Documents',
+                'stack.row4.role': 'Rapports PDF certifiés, signature électronique',
+                'stack.row5.layer': 'Interface',
+                'stack.row5.role': 'IHM opérateur, visualisation de signaux, ergonomie',
+                'lab.eyebrow': 'Exigence de précision',
+                'lab.title': 'Chaque mesure engage une responsabilité',
+                'lab.quote': "« Comme en comptage transactionnel, une IHM de mesure n'a pas droit à l'approximation : l'interface doit être aussi fiable que le capteur qu'elle représente. »",
+                'lab.body': "Travailler chez Faure Herman, c'est appliquer au logiciel la même rigueur que l'entreprise applique à ses instruments depuis 1925 : traçabilité des données, cohérence des mesures, robustesse face aux conditions industrielles réelles. Un rapport de test généré par l'IHM doit pouvoir faire foi, au même titre qu'un débitmètre étalonné en laboratoire.",
+                'lab.stat1': 'Fondation Faure Herman',
+                'lab.stat2': "Fréquence d'acquisition du banc",
+                'lab.stat3': 'Couches développées (embarqué / back / front)',
+                'footer.about': 'À propos',
+                'footer.portfolio': '← Retour au portfolio',
+                'footer.profil': 'Mon profil professionnel',
+                'footer.stage': 'Recherche de stage',
+                'footer.company': 'Entreprise',
+                'footer.address': "2, Lieu-dit l'Archette, 72400 La Ferté-Bernard",
+                'footer.contact': 'Contact',
+                'footer.tagline': "Conçu par Alix Corbin — inspiré de l'identité visuelle Faure Herman",
+            },
+            en: {
+                'page.title': 'Apprenticeship — Faure Herman — Alix Corbin',
+                'back': 'Portfolio',
+                'utility.tag': 'Custody transfer · Industrial metrology',
+                'brand.sub': 'Apprentice developer — Faure Herman',
+                'nav.mission': 'Mission',
+                'nav.domains': 'Domains',
+                'nav.stack': 'Stack',
+                'nav.lab': 'Precision',
+                'hero.kicker': 'Apprenticeship — Software development',
+                'hero.title': 'Precision industrial interfaces, at Faure Herman',
+                'hero.sub': 'Full-stack development — embedded, backend and frontend — of an HMI for a turbine measurement bench, serving precision metrology and custody transfer.',
+                'hero.dates': '📅 Since April 2026',
+                'hero.since1925': '🏭 Faure Herman — flow measurement specialist since 1925',
+                'hero.cta1': 'See the internship search',
+                'hero.cta2': 'faureherman.com',
+                'mission.eyebrow': 'The mission',
+                'mission.title': 'A measurement bench, a full HMI to build',
+                'mission.lede': 'Lead developer across all three layers of the project — embedded acquisition, real-time backend and operator interface — for an industrial turbine measurement and calibration bench. Every feature shipped answers to the same requirement: guaranteeing the accuracy and traceability of a measurement that must hold up.',
+                'domains.eyebrow': 'Areas of work',
+                'domains.title': 'From sensor to operator screen',
+                'domains.embedded.title': 'Embedded',
+                'domains.embedded.desc': 'NI cDAQ acquisition, ESP32 firmware, real-time frequency measurement, sensor signal handling.',
+                'domains.backend.title': 'Backend',
+                'domains.backend.desc': 'Real-time API, MQTT, Socket.io, AD/RFID authentication, certified PDF report generation.',
+                'domains.frontend.title': 'Frontend',
+                'domains.frontend.desc': 'Operator interface, signal visualization, temporal zoom, per-user themes, industrial ergonomics.',
+                'domains.metro.title': 'Metrology',
+                'domains.metro.desc': 'Signal processing, asymmetry detection, measurement coherence, configuration traceability.',
+                'stack.eyebrow': 'Tech stack',
+                'stack.title': 'Tools used daily',
+                'stack.col.layer': 'Layer',
+                'stack.col.tech': 'Technologies',
+                'stack.col.role': 'Role',
+                'stack.row1.layer': 'Acquisition',
+                'stack.row1.role': 'Sensor reading, noise filtering, frequency detection',
+                'stack.row2.layer': 'Communication',
+                'stack.row2.role': 'Real-time flow between the bench, the server and the interface',
+                'stack.row3.layer': 'Backend',
+                'stack.row3.role': 'Authentication, database, report generation',
+                'stack.row4.layer': 'Documents',
+                'stack.row4.role': 'Certified PDF reports, electronic signature',
+                'stack.row5.layer': 'Interface',
+                'stack.row5.role': 'Operator HMI, signal visualization, ergonomics',
+                'lab.eyebrow': 'Precision requirement',
+                'lab.title': 'Every measurement carries a responsibility',
+                'lab.quote': '"As in custody transfer, a measurement HMI has no room for approximation: the interface must be as reliable as the sensor it represents."',
+                'lab.body': "Working at Faure Herman means applying to software the same rigor the company applies to its instruments since 1925: data traceability, measurement consistency, robustness under real industrial conditions. A test report generated by the HMI must hold up, just like a lab-calibrated flow meter.",
+                'lab.stat1': 'Faure Herman founded',
+                'lab.stat2': "Bench acquisition frequency",
+                'lab.stat3': 'Layers developed (embedded / back / front)',
+                'footer.about': 'About',
+                'footer.portfolio': '← Back to portfolio',
+                'footer.profil': 'My professional profile',
+                'footer.stage': 'Internship search',
+                'footer.company': 'Company',
+                'footer.address': "2, Lieu-dit l'Archette, 72400 La Ferté-Bernard, France",
+                'footer.contact': 'Contact',
+                'footer.tagline': "Designed by Alix Corbin — inspired by the Faure Herman visual identity",
+            }
+        };
+    </script>
+    <script src="../assets/lang-switcher.js"></script>
+</body>
+</html>
