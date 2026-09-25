@@ -51,6 +51,8 @@ function applyTranslations(lang) {
 function setLanguage(lang) {
     currentLang = lang;
     localStorage.setItem('lang', lang);
+    weatherCache = null;   // la description météo dépend de la langue
+    forecastCache = null;
     applyTranslations(lang);
     renderGrid();
     if (activeCard) renderOverlayContent(activeCard._channelData);
@@ -93,7 +95,7 @@ const CHANNELS = [
         title: "BUT Informatique", titleEn: "CS Bachelor",
         emoji: "🎓",
         cardLabel: "BUT Info", cardLabelEn: "CS Degree",
-        bg: "assets/but_bg.png",
+        bg: "assets/but_bg.webp",
         cardBgOpacity: 0.7,
         desc: "Compétences, Projets & Parcours.<br>Découvre le détail de ma formation et mon évolution.",
         descEn: "Skills, Projects & Path.<br>Discover my training details and evolution.",
@@ -107,7 +109,7 @@ const CHANNELS = [
     },
     {
         title: "Blackjack",
-        bg: "assets/bj.png",
+        bg: "assets/bj.webp",
         link: "blackjack/index.html",
         type: "blackjack"
     },
@@ -120,7 +122,7 @@ const CHANNELS = [
         title: "Culture",
         emoji: "🎬",
         cardLabel: "Culture", cardLabelEn: "Culture",
-        bg: "assets/culture_bg.png",
+        bg: "assets/culture_bg.webp",
         cardBgOpacity: 0.6,
         desc: "Cinéma, Séries & Réflexions.<br>Découvre mes analyses et les leçons que j'en tire.",
         descEn: "Cinema, TV Series & Reflections.<br>Discover my analyses and lessons learned.",
@@ -136,7 +138,7 @@ const CHANNELS = [
         title: "Arduino",
         emoji: "🤖",
         cardLabel: "Arduino", cardLabelEn: "Arduino",
-        bg: "assets/arduino_bg.png",
+        bg: "assets/arduino_bg.webp",
         cardBgOpacity: 0.7,
         desc: "Prototypage électronique & C++.<br>Un projet terminé et plusieurs en développement.",
         descEn: "Electronic prototyping & C++.<br>One completed project and several in development.",
@@ -178,7 +180,7 @@ const CHANNELS = [
         title: "Projet Jeu", titleEn: "Game Project",
         emoji: "🍻",
         cardLabel: "GlouGlou", cardLabelEn: "GlouGlou",
-        bg: "assets/jeu_bg.png",
+        bg: "assets/jeu_bg.webp",
         cardBgOpacity: 0.6,
         cardLabelColor: "white",
         cardLabelShadow: "0 0 10px rgba(0,0,0,1)",
@@ -395,7 +397,7 @@ function createChannelEl(data, index) {
     if (data.type === 'tictactoe') {
         div.innerHTML = `
             <div class="channel-inner">
-                <img src="assets/tictactoe.png" class="ch-fullimg" alt="Morpion">
+                <img src="assets/tictactoe.webp" class="ch-fullimg" alt="Morpion">
             </div>`;
         return div;
     }
@@ -405,7 +407,7 @@ function createChannelEl(data, index) {
         const sub   = currentLang === 'en' ? '3 prizes' : '3 prix';
         div.innerHTML = `
             <div class="channel-inner awards-card-inner">
-                <img src="assets/recompense.png" class="ch-bg awards-card-bg" alt="">
+                <img src="assets/recompense.webp" class="ch-bg awards-card-bg" alt="">
                 <div class="awards-card-overlay"></div>
                 <div class="awards-trophy">🏆</div>
                 <h2 class="ch-label awards-card-label">${label}</h2>
@@ -418,7 +420,7 @@ function createChannelEl(data, index) {
         const label = (currentLang === 'en' && data.cardLabelEn) ? data.cardLabelEn : data.cardLabel;
         div.innerHTML = `
             <div class="channel-inner meteo-card-inner">
-                <img src="assets/meteo.png" class="ch-bg meteo-card-bg" alt="">
+                <img src="assets/meteo.webp" class="ch-bg meteo-card-bg" alt="">
                 <div class="meteo-card-overlay"></div>
                 <div class="meteo-card-icon">🌤️</div>
                 <h2 class="ch-label meteo-card-label">${label}</h2>
@@ -431,7 +433,7 @@ function createChannelEl(data, index) {
         const label = (currentLang === 'en' && data.cardLabelEn) ? data.cardLabelEn : data.cardLabel;
         div.innerHTML = `
             <div class="channel-inner stats-card-inner" style="background:#080c14">
-                <img src="assets/stats_bg.png" class="ch-bg" style="opacity:0.25;object-fit:cover;">
+                <img src="assets/stats_bg.webp" class="ch-bg" style="opacity:0.25;object-fit:cover;">
                 <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(8,12,20,0.5),rgba(34,211,238,0.08))"></div>
                 <span class="ch-emoji" style="text-shadow:0 2px 10px rgba(34,211,238,0.7)">📊</span>
                 <h2 class="ch-label" style="color:#22d3ee;text-shadow:0 0 12px rgba(34,211,238,0.5)">${label}</h2>
@@ -482,7 +484,7 @@ function createChannelEl(data, index) {
         const label = (currentLang === 'en' && data.cardLabelEn) ? data.cardLabelEn : data.cardLabel;
         div.innerHTML = `
             <div class="channel-inner" style="background:#080c14">
-                <img src="assets/stage_bg.png" class="ch-bg" style="opacity:0.22;object-fit:cover;">
+                <img src="assets/stage_bg.webp" class="ch-bg" style="opacity:0.22;object-fit:cover;">
                 <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(8,12,20,0.55),rgba(251,191,36,0.08))"></div>
                 <span class="ch-emoji" style="text-shadow:0 2px 10px rgba(251,191,36,0.7)">🎓</span>
                 <h2 class="ch-label" style="color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.5)">${label}</h2>
@@ -499,7 +501,7 @@ function createChannelEl(data, index) {
         const label = (currentLang === 'en' && data.cardLabelEn) ? data.cardLabelEn : data.cardLabel;
         div.innerHTML = `
             <div class="channel-inner" style="background:#0A2540">
-                <img src="assets/alternance_bg.png" class="ch-bg" style="opacity:0.55;object-fit:cover;">
+                <img src="assets/alternance_bg.webp" class="ch-bg" style="opacity:0.55;object-fit:cover;">
                 <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(10,37,64,0.6),rgba(0,145,213,0.16))"></div>
                 <span class="ch-emoji" style="text-shadow:0 2px 10px rgba(0,145,213,0.8)">🏭</span>
                 <h2 class="ch-label" style="color:#0091D5;text-shadow:0 0 12px rgba(0,145,213,0.6)">${label}</h2>
@@ -760,7 +762,7 @@ function renderOverlayContent(data) {
             overlayContentBox.style.overflow = 'hidden';
             overlayContentBox.innerHTML = `
                 <div class="overlay-image-bg">
-                    <img class="overlay-bg-img" src="assets/tictactoe.png" style="opacity:0.35;object-fit:cover;">
+                    <img class="overlay-bg-img" src="assets/tictactoe.webp" style="opacity:0.35;object-fit:cover;">
                     <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(10,10,30,0.7),rgba(0,80,120,0.4))"></div>
                     <div class="overlay-text-block">
                         <div class="ov-emoji" style="text-shadow:0 0 20px #4ac0e0">⭕❌</div>
@@ -891,7 +893,7 @@ function renderOverlayContent(data) {
             const statsDesc = isEn ? data.descEn : data.desc;
             overlayContentBox.innerHTML = `
                 <div class="overlay-image-bg">
-                    <img class="overlay-bg-img" src="assets/stats_bg.png" style="opacity:0.2;object-fit:cover;">
+                    <img class="overlay-bg-img" src="assets/stats_bg.webp" style="opacity:0.2;object-fit:cover;">
                     <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(8,12,20,0.75),rgba(34,211,238,0.05))"></div>
                     <div class="overlay-text-block">
                         <div class="ov-emoji" style="text-shadow:0 0 30px rgba(34,211,238,0.8)">📊</div>
@@ -918,7 +920,7 @@ function renderOverlayContent(data) {
             const stageDesc = isEn ? data.descEn : data.desc;
             overlayContentBox.innerHTML = `
                 <div class="overlay-image-bg">
-                    <img class="overlay-bg-img" src="assets/stage_bg.png" style="opacity:0.2;object-fit:cover;">
+                    <img class="overlay-bg-img" src="assets/stage_bg.webp" style="opacity:0.2;object-fit:cover;">
                     <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(8,12,20,0.75),rgba(251,191,36,0.05))"></div>
                     <div class="overlay-text-block">
                         <div class="ov-emoji" style="text-shadow:0 0 30px rgba(251,191,36,0.8)">🎓</div>
@@ -941,7 +943,7 @@ function renderOverlayContent(data) {
             const altDesc = isEn ? data.descEn : data.desc;
             overlayContentBox.innerHTML = `
                 <div class="overlay-image-bg">
-                    <img class="overlay-bg-img" src="assets/alternance_bg.png" style="opacity:0.3;object-fit:cover;">
+                    <img class="overlay-bg-img" src="assets/alternance_bg.webp" style="opacity:0.3;object-fit:cover;">
                     <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(10,37,64,0.75),rgba(0,145,213,0.08))"></div>
                     <div class="overlay-text-block">
                         <div class="ov-emoji" style="text-shadow:0 0 30px rgba(0,145,213,0.8)">🏭</div>
@@ -1008,13 +1010,14 @@ function renderOverlayContent(data) {
         }
 
         case 'meteo': {
-            overlay.style.background = `url('assets/meteo.png') center/cover no-repeat`;
+            overlay.style.background = `url('assets/meteo.webp') center/cover no-repeat`;
             if (startBtn) startBtn.style.display = 'none';
 
             if (weatherCache) {
                 renderWeatherOverlay(weatherCache, isEn);
             } else {
                 overlayContentBox.innerHTML = `<div class="meteo-loading">${isEn ? 'Locating...' : 'Localisation...'} 📡</div>`;
+                loadWeather();
             }
             break;
         }
@@ -1308,30 +1311,38 @@ function renderWeatherOverlay(d, isEn) {
         </div>`;
 }
 
-function prefetchWeather() {
-    if (!navigator.geolocation) return;
+// La géolocalisation n'est demandée qu'à l'ouverture de la chaîne Météo (pas au chargement)
+let weatherLoading = false;
+
+function isMeteoOpen() {
+    return !!(activeCard && activeCard._channelData && activeCard._channelData.type === 'meteo');
+}
+
+function showWeatherError() {
+    if (!isMeteoOpen()) return;
+    const en = currentLang === 'en';
+    overlayContentBox.innerHTML = `<div class="meteo-loading">${en ? 'Location unavailable or denied.' : 'Localisation refusée ou indisponible.'} 📍</div>`;
+}
+
+function loadWeather() {
+    if (weatherLoading || weatherCache) return;
+    if (!navigator.geolocation) { showWeatherError(); return; }
+    weatherLoading = true;
     navigator.geolocation.getCurrentPosition(pos => {
         const { latitude: lat, longitude: lon } = pos.coords;
-        const base = `https://api.openweathermap.org/data/2.5`;
-
-        fetch(`${base}/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=fr`)
-            .then(r => r.json())
-            .then(d => {
-                if (!d.main) return;
-                weatherCache = d;
-                const icon = WEATHER_ICONS[d.weather[0].main] || '🌡️';
-                const temp = Math.round(d.main.temp);
-                const cardSub = document.getElementById('meteo-card-sub');
-                if (cardSub) cardSub.textContent = `${icon} ${temp}°C`;
-            })
-            .catch(() => {});
-
-        fetch(`${base}/forecast?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=fr`)
-            .then(r => r.json())
-            .then(d => { if (d.list) forecastCache = d; })
-            .catch(() => {});
-
-    }, () => {});
+        const base = 'https://api.openweathermap.org/data/2.5';
+        const q = `lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=${currentLang}`;
+        Promise.all([
+            fetch(`${base}/weather?${q}`).then(r => r.json()),
+            fetch(`${base}/forecast?${q}`).then(r => r.json()).catch(() => null)
+        ]).then(([w, f]) => {
+            if (!w || !w.main) throw new Error('weather');
+            weatherCache = w;
+            if (f && f.list) forecastCache = f;
+            if (isMeteoOpen()) renderWeatherOverlay(weatherCache, currentLang === 'en');
+        }).catch(() => showWeatherError())
+          .finally(() => { weatherLoading = false; });
+    }, () => { weatherLoading = false; showWeatherError(); });
 }
 
 /* =========================================
@@ -1379,5 +1390,4 @@ function fadeAndNavigate(url) {
    ========================================= */
 renderGrid();
 applyTranslations(currentLang);
-prefetchWeather();
 

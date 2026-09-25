@@ -30,7 +30,7 @@ body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: url('../assets/stage_bg.png');
+    background-image: url('../assets/stage_bg.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

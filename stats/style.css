@@ -31,7 +31,7 @@ body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: url('../assets/stats_bg.png');
+    background-image: url('../assets/stats_bg.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

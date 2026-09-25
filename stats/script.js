@@ -35,6 +35,11 @@ function d(key) {
     return (DYN[currentLang] || DYN.fr)[key];
 }
 
+// Échappe le HTML des valeurs venant de la base (pseudo, nom de chaîne...)
+function esc(v) {
+    return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 /* ── Fetch stats ── */
 async function fetchLeaderboard() {
     const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_blackjack_leaderboard`, {
@@ -120,9 +125,9 @@ function renderChannelRanking(clicks) {
         return `
             <div class="rank-item">
                 <span class="rank-num ${cls}">${i + 1}</span>
-                <span class="rank-name">${item.channel}</span>
+                <span class="rank-name">${esc(item.channel)}</span>
                 <div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:${pct}%"></div></div>
-                <span class="rank-count">${item.count}</span>
+                <span class="rank-count">${Number(item.count) || 0}</span>
             </div>`;
     }).join('');
 }
@@ -202,10 +207,10 @@ function renderLeaderboard(rows) {
                 ${rows.map((row, i) => `
                     <tr class="${i < 3 ? 'lb-top' : ''}">
                         <td class="lb-rank">${medals[i] || (i + 1)}</td>
-                        <td class="lb-pseudo">${row.pseudo}</td>
+                        <td class="lb-pseudo">${esc(row.pseudo)}</td>
                         <td class="lb-bankroll" style="color:${colorBankroll(row.bankroll)}">${Number(row.bankroll).toLocaleString('fr-FR')} €</td>
-                        <td class="lb-hands">${row.hands}</td>
-                        <td class="lb-date">${row.date}</td>
+                        <td class="lb-hands">${esc(row.hands)}</td>
+                        <td class="lb-date">${esc(row.date)}</td>
                     </tr>`).join('')}
             </tbody>
         </table>`;
