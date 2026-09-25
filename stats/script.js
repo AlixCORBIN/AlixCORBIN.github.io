@@ -220,7 +220,11 @@ function renderBlackjack(data) {
     setVal('bj-hands',    Number(data.bj_total_hands || 0).toLocaleString('fr-FR'));
     setValColored('bj-avg',  sign(data.bj_avg_net  || 0), color(data.bj_avg_net  || 0));
     setValColored('bj-best', sign(data.bj_best  || 0), color(data.bj_best  || 0));
-    setValColored('bj-worst',sign(data.bj_worst || 0), color(data.bj_worst || 0));
+    const fmt = n => Number(n || 0).toLocaleString('fr-FR', { maximumFractionDigits: 0 });
+    const dd = Number(data.bj_max_drawdown || 0);
+    setValColored('bj-peak', `${fmt(data.bj_peak)}€`, 'var(--green)');
+    setValColored('bj-drawdown', dd > 0 ? `-${fmt(dd)}€` : '0€', dd > 0 ? '#f87171' : 'var(--green)');
+    setVal('bj-credit', `${fmt(data.bj_total_credit)}€`);
     setVal('bj-bj',  Number(data.bj_total_bj || 0).toLocaleString('fr-FR'));
 }
 
@@ -237,7 +241,7 @@ function setValColored(id, val, color) {
 
 function setLoading() {
     ['val-total','val-today','val-week','val-month',
-     'bj-sessions','bj-hands','bj-avg','bj-best','bj-worst','bj-bj'
+     'bj-sessions','bj-hands','bj-avg','bj-best','bj-peak','bj-drawdown','bj-bj','bj-credit'
     ].forEach(id => {
         const el = document.getElementById(id);
         if (el) { el.textContent = '—'; el.classList.add('loading'); }

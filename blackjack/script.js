@@ -26,38 +26,68 @@ let handBets = [];       // Tableau des mises par main (pour gérer le Split)
 const _SB_URL = 'https://njkbhgmwylletmdmsmyl.supabase.co';
 const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw';
 
-// Session stats
-let _sess = { hands_played:0, hands_won:0, hands_lost:0, hands_push:0, total_wagered:0, net_result:0, splits_used:0, doubles_used:0, blackjacks_hit:0 };
+// Session stats (cumulées sur toute la session : une seule ligne par session en base)
 const _bankrollStart = 1000;
+const CREDIT_AMOUNT = 500;
+function _newSess() {
+    return { hands_played:0, hands_won:0, hands_lost:0, hands_push:0, total_wagered:0, splits_used:0, doubles_used:0, blackjacks_hit:0 };
+}
+function _uuid() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+}
+let _sess = _newSess();
+let _credit = 0;                 // total emprunté pendant la session
+let _peak = _bankrollStart;      // pic de richesse nette atteint
+let _maxDrawdown = 0;            // plus grosse chute depuis un pic
+let _sessionId = _uuid();
+
+// Richesse nette : emprunter ne change pas la richesse (bankroll - dette)
+function _equity() { return bankroll - _credit; }
+function _trackEquity() {
+    const e = _equity();
+    if (e > _peak) _peak = e;
+    if (_peak - e > _maxDrawdown) _maxDrawdown = _peak - e;
+}
+function _resetSession() {
+    _sess = _newSess();
+    _credit = 0;
+    _peak = _bankrollStart;
+    _maxDrawdown = 0;
+    _sessionId = _uuid();
+}
 
 function _sendSession() {
     if (_sess.hands_played === 0) return;
-    const payload = JSON.stringify({
-        hands_played:   _sess.hands_played,
-        hands_won:      _sess.hands_won,
-        hands_lost:     _sess.hands_lost,
-        hands_push:     _sess.hands_push,
-        total_wagered:  _sess.total_wagered,
-        net_result:     bankroll - _bankrollStart,
-        splits_used:    _sess.splits_used,
-        doubles_used:   _sess.doubles_used,
-        blackjacks_hit: _sess.blackjacks_hit,
-        final_bankroll: bankroll
-    });
-    // fetch + keepalive (survit à la fermeture de page). sendBeacon échouait en CORS
-    // (Blob JSON => requête avec credentials, refusée) et n'envoyait rien.
-    fetch(`${_SB_URL}/rest/v1/blackjack_sessions`, {
+    // Upsert via RPC : rappeler avec le même session_id met à jour la même ligne
+    fetch(`${_SB_URL}/rest/v1/rpc/save_blackjack_session`, {
         method: 'POST',
         keepalive: true,
         headers: {
             'apikey': _SB_KEY,
             'Authorization': `Bearer ${_SB_KEY}`,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=minimal'
+            'Content-Type': 'application/json'
         },
-        body: payload
+        body: JSON.stringify({
+            p_id:             _sessionId,
+            p_hands_played:   _sess.hands_played,
+            p_hands_won:      _sess.hands_won,
+            p_hands_lost:     _sess.hands_lost,
+            p_hands_push:     _sess.hands_push,
+            p_total_wagered:  _sess.total_wagered,
+            p_net_result:     _equity() - _bankrollStart,
+            p_splits_used:    _sess.splits_used,
+            p_doubles_used:   _sess.doubles_used,
+            p_blackjacks_hit: _sess.blackjacks_hit,
+            p_final_bankroll: _equity(),
+            p_peak:           _peak,
+            p_drawdown:       _maxDrawdown,
+            p_credit:         _credit
+        })
     }).catch(() => {});
-    _sess = { hands_played:0, hands_won:0, hands_lost:0, hands_push:0, total_wagered:0, net_result:0, splits_used:0, doubles_used:0, blackjacks_hit:0 };
 }
 
 window.addEventListener('visibilitychange', () => {
@@ -85,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Ouvrir la modal
     quitBtn.addEventListener('click', function () {
         if (gameActive) return; // bloquer pendant une main en cours
-        display.textContent = bankroll;
+        display.textContent = _equity();
         input.value = '';
         modal.classList.remove('hidden');
         setTimeout(() => input.focus(), 100);
@@ -118,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
                 body: JSON.stringify({
                     pseudo:        pseudo,
-                    final_bankroll: bankroll,
+                    final_bankroll: _equity(),
                     hands_played:  _sess.hands_played,
                     hands_won:     _sess.hands_won
                 })
@@ -129,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
         _sendSession();
 
         // Réinitialiser la session
-        _sess = { hands_played:0, hands_won:0, hands_lost:0, hands_push:0, total_wagered:0, net_result:0, splits_used:0, doubles_used:0, blackjacks_hit:0 };
+        _resetSession();
         bankroll = 1000;
         updateBankrollUI();
 
@@ -173,6 +203,8 @@ const btnRestart = document.getElementById('btn-restart'); // Sert de bouton "No
 // Boutons Paris
 const btnDeal = document.getElementById('btn-deal');
 const btnClear = document.getElementById('btn-clear');
+const btnCredit = document.getElementById('btn-credit');
+const creditDisplayEl = document.getElementById('credit-display');
 
 // --- Initialisation ---
 window.onload = initGame;
@@ -190,6 +222,7 @@ function initGame() {
     // Listeners Paris
     btnDeal.addEventListener('click', startNewGame);
     btnClear.addEventListener('click', clearBet);
+    btnCredit.addEventListener('click', takeCredit);
 
     initVisualDeck();
     updateBankrollUI();
@@ -230,6 +263,16 @@ function updateBetUI() {
 
 function updateBankrollUI() {
     bankrollEl.innerText = bankroll;
+    // Crédit proposé quand il ne reste plus de quoi miser
+    if (btnCredit) btnCredit.classList.toggle('hidden', bankroll >= 1);
+    if (creditDisplayEl) creditDisplayEl.innerText = _credit > 0 ? ` (${_tr('bj.debt')} : ${_credit} €)` : '';
+}
+
+function takeCredit() {
+    if (gameActive || bankroll >= 1) return;
+    bankroll += CREDIT_AMOUNT;
+    _credit += CREDIT_AMOUNT;
+    updateBankrollUI();
 }
 
 function resetToBettingPhase() {
@@ -577,6 +620,7 @@ function determineWinner() {
         resultText += `<span style="color:${color}">${prefix}${outcome}</span><br>`;
     });
 
+    _trackEquity();
     updateBankrollUI();
     showMessage(resultText);
     toggleGameControls(false);
@@ -599,6 +643,7 @@ function checkForBlackjack() {
         _sess.hands_won++;
         _sess.blackjacks_hit++;
         _sess.total_wagered += bet;
+        _trackEquity();
         updateBankrollUI();
         
         showMessage(`BLACKJACK ! (+${bet * 1.5}€)`, "gold");
