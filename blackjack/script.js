@@ -44,12 +44,19 @@ function _sendSession() {
         blackjacks_hit: _sess.blackjacks_hit,
         final_bankroll: bankroll
     });
-    // Insert direct dans la table (sendBeacon ne supporte pas les headers custom,
-    // on passe l'apikey en query string pour l'authentification anon)
-    navigator.sendBeacon(
-        `${_SB_URL}/rest/v1/blackjack_sessions?apikey=${_SB_KEY}`,
-        new Blob([payload], { type: 'application/json' })
-    );
+    // fetch + keepalive (survit à la fermeture de page). sendBeacon échouait en CORS
+    // (Blob JSON => requête avec credentials, refusée) et n'envoyait rien.
+    fetch(`${_SB_URL}/rest/v1/blackjack_sessions`, {
+        method: 'POST',
+        keepalive: true,
+        headers: {
+            'apikey': _SB_KEY,
+            'Authorization': `Bearer ${_SB_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+        },
+        body: payload
+    }).catch(() => {});
     _sess = { hands_played:0, hands_won:0, hands_lost:0, hands_push:0, total_wagered:0, net_result:0, splits_used:0, doubles_used:0, blackjacks_hit:0 };
 }
 
