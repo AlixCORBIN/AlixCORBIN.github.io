@@ -95,20 +95,9 @@ function filterTable(filter) {
     });
 }
 
-/* ── setLanguage (called by lang-switcher) ── */
+/* ── setLanguage (hook appelé par assets/lang-switcher.js après application des traductions) ── */
 function setLanguage(lang) {
     currentLang = lang;
-    localStorage.setItem('lang', lang);
-    document.documentElement.lang = lang;
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (window.PAGE_TRANSLATIONS && window.PAGE_TRANSLATIONS[lang] && window.PAGE_TRANSLATIONS[lang][key] !== undefined) {
-            el.innerHTML = window.PAGE_TRANSLATIONS[lang][key];
-        }
-    });
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('lang-active', btn.dataset.lang === lang);
-    });
     // Re-render tables with new lang
     renderTable(CANDIDATURES, 'cand-tbody');
     renderTable(ALTERNANCES,  'alt-tbody');
@@ -116,11 +105,11 @@ function setLanguage(lang) {
 }
 
 /* ── Init ── */
-(function init() {
+// Attendre le DOM : PAGE_TRANSLATIONS est défini dans un script inline placé après celui-ci
+// (sinon les statuts s'affichaient sous forme de clés brutes, ex. "status.refused")
+document.addEventListener('DOMContentLoaded', function init() {
     const savedLang = localStorage.getItem('lang') || 'fr';
-    if (savedLang !== 'fr') {
-        currentLang = savedLang;
-    }
+    currentLang = savedLang;
     renderTable(CANDIDATURES, 'cand-tbody');
     renderTable(ALTERNANCES,  'alt-tbody');
-})();
+});

@@ -46,6 +46,7 @@ function applyTranslations(lang) {
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.toggle('lang-active', btn.dataset.lang === lang);
     });
+    document.documentElement.lang = lang;
 }
 
 function setLanguage(lang) {
@@ -371,6 +372,9 @@ function createChannelEl(data, index) {
     div.className = 'channel';
     div._channelData = data;
     div.onclick = () => zoomChannel(div);
+    div.setAttribute('role', 'button');
+    div.tabIndex = 0;
+    div.setAttribute('aria-label', (currentLang === 'en' && data.titleEn) ? data.titleEn : data.title);
 
     if (data.type === 'moi') {
         div.innerHTML = `
@@ -1186,21 +1190,6 @@ updateClock();
 /* =========================================
    SUPABASE — HELPERS + COMPTEURS
    ========================================= */
-const SUPABASE_URL = 'https://njkbhgmwylletmdmsmyl.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw';
-
-function sbPost(rpc, body) {
-    return fetch(`${SUPABASE_URL}/rest/v1/rpc/${rpc}`, {
-        method: 'POST',
-        headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body || {})
-    }).catch(() => {});
-}
-
 // Compteur total de visites (affiché dans le footer)
 sbPost('increment_views')
     .then(r => r && r.json())
@@ -1349,6 +1338,12 @@ function loadWeather() {
    13. RACCOURCIS CLAVIER
    ========================================= */
 document.addEventListener('keydown', e => {
+    // Éléments cliquables non natifs (role="button") : Entrée / Espace = clic
+    if ((e.key === 'Enter' || e.key === ' ') && e.target && e.target.getAttribute && e.target.getAttribute('role') === 'button') {
+        e.preventDefault();
+        e.target.click();
+        return;
+    }
     const inOverlay = !!activeCard;
     const key = e.key;
 

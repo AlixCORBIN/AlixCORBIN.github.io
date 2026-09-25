@@ -23,9 +23,6 @@ let currentBetInput = 0; // Mise en cours de préparation
 let handBets = [];       // Tableau des mises par main (pour gérer le Split)
 
 // --- Supabase (tracking) ---
-const _SB_URL = 'https://njkbhgmwylletmdmsmyl.supabase.co';
-const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw';
-
 // Session stats (cumulées sur toute la session : une seule ligne par session en base)
 const _bankrollStart = 1000;
 const CREDIT_AMOUNT = 500;
@@ -63,31 +60,22 @@ function _resetSession() {
 function _sendSession() {
     if (_sess.hands_played === 0) return;
     // Upsert via RPC : rappeler avec le même session_id met à jour la même ligne
-    fetch(`${_SB_URL}/rest/v1/rpc/save_blackjack_session`, {
-        method: 'POST',
-        keepalive: true,
-        headers: {
-            'apikey': _SB_KEY,
-            'Authorization': `Bearer ${_SB_KEY}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            p_id:             _sessionId,
-            p_hands_played:   _sess.hands_played,
-            p_hands_won:      _sess.hands_won,
-            p_hands_lost:     _sess.hands_lost,
-            p_hands_push:     _sess.hands_push,
-            p_total_wagered:  _sess.total_wagered,
-            p_net_result:     _equity() - _bankrollStart,
-            p_splits_used:    _sess.splits_used,
-            p_doubles_used:   _sess.doubles_used,
-            p_blackjacks_hit: _sess.blackjacks_hit,
-            p_final_bankroll: _equity(),
-            p_peak:           _peak,
-            p_drawdown:       _maxDrawdown,
-            p_credit:         _credit
-        })
-    }).catch(() => {});
+    sbPost('save_blackjack_session', {
+        p_id:             _sessionId,
+        p_hands_played:   _sess.hands_played,
+        p_hands_won:      _sess.hands_won,
+        p_hands_lost:     _sess.hands_lost,
+        p_hands_push:     _sess.hands_push,
+        p_total_wagered:  _sess.total_wagered,
+        p_net_result:     _equity() - _bankrollStart,
+        p_splits_used:    _sess.splits_used,
+        p_doubles_used:   _sess.doubles_used,
+        p_blackjacks_hit: _sess.blackjacks_hit,
+        p_final_bankroll: _equity(),
+        p_peak:           _peak,
+        p_drawdown:       _maxDrawdown,
+        p_credit:         _credit
+    }, { keepalive: true });
 }
 
 window.addEventListener('visibilitychange', () => {
@@ -138,19 +126,13 @@ document.addEventListener('DOMContentLoaded', function () {
         confirmBtn.disabled = true;
 
         try {
-            await fetch(`${_SB_URL}/rest/v1/blackjack_leaderboard`, {
-                method: 'POST',
-                headers: {
-                    'apikey': _SB_KEY,
-                    'Authorization': `Bearer ${_SB_KEY}`,
-                    'Content-Type': 'application/json',
-                    'Prefer': 'return=minimal'
-                },
+            await sbFetch('blackjack_leaderboard', {
+                headers: { 'Prefer': 'return=minimal' },
                 body: JSON.stringify({
-                    pseudo:        pseudo,
+                    pseudo:         pseudo,
                     final_bankroll: _equity(),
-                    hands_played:  _sess.hands_played,
-                    hands_won:     _sess.hands_won
+                    hands_played:   _sess.hands_played,
+                    hands_won:      _sess.hands_won
                 })
             });
         } catch (e) { /* silencieux */ }
@@ -334,7 +316,7 @@ function startNewGame() {
     setTimeout(() => { dealerHand.push(drawCard()); updateUI(); }, 300);
     
     // Carte Joueur 2 (t=600)
-    setTimeout(() => { playerHands[0].push(drawCard()); updateUI(); }, 300);
+    setTimeout(() => { playerHands[0].push(drawCard()); updateUI(); }, 600);
 
     // Déverrouillage après animations (t=1300)
     setTimeout(() => {
@@ -422,7 +404,7 @@ function doubleDown() {
     // Vérification Fonds
     let currentBet = handBets[currentHandIndex];
     if (bankroll < currentBet) {
-        showMessage("Fonds insuffisants !", "orange");
+        showMessage(_tr('bj.nofunds'), "orange");
         return;
     }
 
@@ -440,7 +422,7 @@ function doubleDown() {
 
     setTimeout(() => {
          const score = calculateScore(playerHands[currentHandIndex]);
-         if (score > 21) showMessage("Double... et sauté !", "#ff6b6b");
+         if (score > 21) showMessage(_tr('bj.dbl.bust'), "#ff6b6b");
          nextHandOrEnd();
     }, 600);
 }
@@ -451,7 +433,7 @@ function splitHand() {
     // Vérification Fonds
     let currentBet = handBets[currentHandIndex];
     if (bankroll < currentBet) {
-        showMessage("Fonds insuffisants !", "orange");
+        showMessage(_tr('bj.nofunds'), "orange");
         return;
     }
 
@@ -590,7 +572,7 @@ function determineWinner() {
         _sess.total_wagered += bet;
 
         if (playerScore > 21) {
-            outcome = "Perdu (Sauté)";
+            outcome = _tr('bj.res.bust');
             color = "#ff6b6b";
             _sess.hands_lost++;
             // Mise perdue
@@ -599,12 +581,12 @@ function determineWinner() {
             // Victoire classique (1:1)
             winAmount = bet * 2;
             bankroll += winAmount;
-            outcome = `Gagné (+${bet}€)`;
+            outcome = `${_tr('bj.res.win')} (+${bet}€)`;
             color = "#51cf66";
             _sess.hands_won++;
         }
         else if (playerScore < dealerScore) {
-            outcome = "Perdu";
+            outcome = _tr('bj.res.lose');
             color = "#ff6b6b";
             _sess.hands_lost++;
         }
@@ -612,11 +594,11 @@ function determineWinner() {
             // Push
             winAmount = bet;
             bankroll += winAmount;
-            outcome = "Égalité (Mise rendue)";
+            outcome = _tr('bj.res.push');
             _sess.hands_push++;
         }
 
-        let prefix = playerHands.length > 1 ? `Main ${index + 1}: ` : "";
+        let prefix = playerHands.length > 1 ? `${_tr('bj.res.hand')} ${index + 1}: ` : "";
         resultText += `<span style="color:${color}">${prefix}${outcome}</span><br>`;
     });
 
@@ -625,7 +607,7 @@ function determineWinner() {
     showMessage(resultText);
     toggleGameControls(false);
     
-    btnRestart.innerText = "Nouvelle Mise";
+    btnRestart.innerText = _tr('bj.newbet');
     btnRestart.classList.remove('hidden');
 }
 
@@ -646,8 +628,8 @@ function checkForBlackjack() {
         _trackEquity();
         updateBankrollUI();
         
-        showMessage(`BLACKJACK ! (+${bet * 1.5}€)`, "gold");
-        btnRestart.innerText = "Nouvelle Mise";
+        showMessage(`${_tr('bj.blackjack')} (+${bet * 1.5}€)`, "gold");
+        btnRestart.innerText = _tr('bj.newbet');
         btnRestart.classList.remove('hidden');
     }
 }

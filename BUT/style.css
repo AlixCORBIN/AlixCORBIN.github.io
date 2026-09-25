@@ -119,3 +119,11 @@ td.acquis::after { background-color: #27ae60; }
 section {
     margin-bottom: 80px;
 }
+
+/* Mobile : les tableaux défilent dans leur section au lieu d'élargir la page */
+@media (max-width: 700px) {
+    body { margin: 16px; }
+    h1 { font-size: 1.8em; }
+    section { overflow-x: auto; }
+    th, td { padding: 12px; }
+}

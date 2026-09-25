@@ -79,6 +79,7 @@ button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
     line-height: 1.6;
     font-size: 1.2rem;
     color: #b0b0b0;
+    text-transform: uppercase;
 }
 
 .highlight {
@@ -510,9 +511,6 @@ body.dark-mode .visitor-count { color: #4a5568; }
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
-}
-.intro-text {
-    text-transform: uppercase;
 }
 /* --- STYLE RUBANS DE CHANTIER (EN TRAVAUX) --- */
 
@@ -1831,7 +1829,6 @@ body.overlay-open #lang-switcher {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 14px;
-    margin: 0 20px;
     z-index: 1;
     position: relative;
     flex-shrink: 0;
@@ -2154,3 +2151,21 @@ body.overlay-open #lang-switcher {
 .scp.refused  { background: rgba(248,113,113,0.18); color: #f87171; }
 .scp.pending  { background: rgba(251,146,60,0.18);  color: #fb923c; }
 .scp.accepted { background: rgba(74,222,128,0.18);  color: #4ade80; }
+
+/* ── Accessibilité ── */
+.channel:focus-visible,
+[role="button"]:focus-visible,
+.lang-btn:focus-visible,
+.contact-close:focus-visible {
+    outline: 3px solid #0091d5;
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

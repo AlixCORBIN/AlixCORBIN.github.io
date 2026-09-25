@@ -2,9 +2,6 @@
    Stats page — script.js
    ══════════════════════════════════════ */
 
-const SUPABASE_URL = 'https://njkbhgmwylletmdmsmyl.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw';
-
 let currentLang = localStorage.getItem('lang') || 'fr';
 
 /* ── Texts (dynamic parts) ── */
@@ -42,28 +39,12 @@ function esc(v) {
 
 /* ── Fetch stats ── */
 async function fetchLeaderboard() {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_blackjack_leaderboard`, {
-        method: 'POST',
-        headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-            'Content-Type': 'application/json'
-        },
-        body: '{}'
-    });
+    const r = await sbFetch('rpc/get_blackjack_leaderboard', { body: '{}' });
     return r.json();
 }
 
 async function fetchStats() {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_stats_summary`, {
-        method: 'POST',
-        headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-            'Content-Type': 'application/json'
-        },
-        body: '{}'
-    });
+    const r = await sbFetch('rpc/get_stats_summary', { body: '{}' });
     return r.json();
 }
 
@@ -253,20 +234,9 @@ function setLoading() {
     });
 }
 
-/* ── Language re-render ── */
+/* ── Language hook (appelé par assets/lang-switcher.js une fois les traductions appliquées) ── */
 function setLanguage(lang) {
     currentLang = lang;
-    localStorage.setItem('lang', lang);
-    document.documentElement.lang = lang;
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (window.PAGE_TRANSLATIONS && window.PAGE_TRANSLATIONS[lang] && window.PAGE_TRANSLATIONS[lang][key] !== undefined) {
-            el.innerHTML = window.PAGE_TRANSLATIONS[lang][key];
-        }
-    });
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('lang-active', btn.dataset.lang === lang);
-    });
     // Re-render dynamic parts with new lang
     if (window._lastStats) {
         renderBarChart(window._lastStats.daily_chart);

@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blackjack Casino - Paris & Jetons</title>
+    <meta name="description" content="Jeu de blackjack jouable en ligne avec mises, split, double et classement, par Alix Corbin.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Portfolio Alix Corbin">
+    <meta property="og:title" content="Blackjack Casino - Paris &amp; Jetons">
+    <meta property="og:description" content="Jeu de blackjack jouable en ligne avec mises, split, double et classement, par Alix Corbin.">
+    <meta property="og:url" content="https://alixcorbin.github.io/blackjack/">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="../assets/lang-switcher.css">
 </head>
@@ -103,6 +109,14 @@
             'bj.newbet': 'Nouvelle Mise',
             'bj.credit': 'Emprunter 500 €',
             'bj.debt': 'dette',
+            'bj.res.bust': 'Perdu (Sauté)',
+            'bj.res.win': 'Gagné',
+            'bj.res.lose': 'Perdu',
+            'bj.res.push': 'Égalité (Mise rendue)',
+            'bj.res.hand': 'Main',
+            'bj.nofunds': 'Fonds insuffisants !',
+            'bj.dbl.bust': 'Double... et sauté !',
+            'bj.blackjack': 'BLACKJACK !',
             'bj.quit': '🏁 Terminer la session',
             'bj.quit.title': 'Fin de session',
             'bj.quit.balance': 'Solde final',
@@ -128,6 +142,14 @@
             'bj.newbet': 'New Bet',
             'bj.credit': 'Borrow €500',
             'bj.debt': 'debt',
+            'bj.res.bust': 'Lost (Bust)',
+            'bj.res.win': 'Won',
+            'bj.res.lose': 'Lost',
+            'bj.res.push': 'Push (Bet returned)',
+            'bj.res.hand': 'Hand',
+            'bj.nofunds': 'Insufficient funds!',
+            'bj.dbl.bust': 'Double... and bust!',
+            'bj.blackjack': 'BLACKJACK!',
             'bj.quit': '🏁 End session',
             'bj.quit.title': 'Session over',
             'bj.quit.balance': 'Final balance',
@@ -142,6 +164,7 @@
     </script>
     <script src="../assets/lang-switcher.js"></script>
     <script src="cards.js"></script>
+    <script src="../assets/supabase.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
