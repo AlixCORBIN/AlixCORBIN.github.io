@@ -109,7 +109,7 @@ const CHANNELS = [
         overlayBgOpacity: 0.4
     },
     {
-        title: "Jeux", titleEn: "Games",
+        title: "Casino", titleEn: "Casino",
         bg: "assets/bj.webp",
         link: "jeux/index.html",
         type: "blackjack"
