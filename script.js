@@ -368,6 +368,12 @@ function playStartSound() {
    4. GÉNÉRATION DE LA GRILLE
    ========================================= */
 function createChannelEl(data, index) {
+    // Chaînes redessinées style Wii (channels-wii.js)
+    const wiiCard = createWiiCard(data);
+    if (wiiCard) return wiiCard;
+    if (data.type === 'moi') return createWiiPhotoCard(data, 'assets/maphoto.png', 'Alix Corbin', 'wii-photo--moi');
+    if (data.type === 'ihm') return createWiiPhotoCard(data, data.bg, (currentLang === 'en' && data.cardLabelEn) ? data.cardLabelEn : data.cardLabel);
+
     const div = document.createElement('div');
     div.className = 'channel';
     div._channelData = data;

@@ -2197,3 +2197,80 @@ body.wii3d-on.dark-mode .channel:not(.empty):hover {
 }
 body.wii3d-on .channel-inner { border-radius: 14px; }
 body.wii3d-on.dark-mode .channel { box-shadow: 0 6px 14px rgba(0,0,0,0.45); }
+
+/* =========================================
+   CHAÎNES STYLE WII (channels-wii.js)
+   ========================================= */
+.wii-card .wii-card-inner {
+    background:
+        radial-gradient(120% 90% at 50% 0%, #ffffff 0%, #f1f4f7 70%, #e6eaef 100%);
+    gap: 4px;
+}
+.wii-icon {
+    width: 34%;
+    max-width: 92px;
+    height: auto;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.12));
+    transition: transform 0.25s cubic-bezier(.3,1.6,.5,1);
+}
+.wii-card:hover .wii-icon { transform: translateY(-3px) scale(1.06); }
+.wii-title {
+    font-family: 'Nunito', 'Roboto', sans-serif;
+    font-weight: 900;
+    font-size: clamp(0.95rem, 1.5vw, 1.45rem);
+    color: var(--ch);
+    letter-spacing: 0.2px;
+    line-height: 1.1;
+    text-align: center;
+}
+.wii-sub {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    min-height: 16px;
+}
+.wii-pill {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 1px 7px;
+    border-radius: 8px;
+    background: #e3e7ec;
+    color: #5b6270;
+}
+.wii-pill--ok { background: #dff3e6; color: #2a8a4c; }
+.wii-pill--no { background: #fbe3e1; color: #c0453b; }
+.wii-sub-text {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #8a919c;
+}
+
+/* Cartes photo : image nette + bandeau blanc en bas */
+.wii-photo .ch-bg { opacity: 1 !important; object-fit: cover; }
+.wii-photo--moi .ch-bg { object-position: center 30%; }
+.wii-photo:not(.wii-photo--moi) .ch-bg { object-fit: contain; background: #f1f4f7; padding-bottom: 28px; box-sizing: border-box; }
+body.dark-mode .wii-photo:not(.wii-photo--moi) .ch-bg { background: #1e2130; }
+.wii-photo-band {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.92);
+    border-top: 1px solid #dfe3e8;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+    color: #4a5260;
+    text-align: center;
+    z-index: 2;
+}
+
+/* Dark mode */
+body.dark-mode .wii-card .wii-card-inner {
+    background: radial-gradient(120% 90% at 50% 0%, #262a3b 0%, #1e2130 70%, #191c29 100%);
+}
+body.dark-mode .wii-pill { background: #2b3045; color: #a3aac0; }
+body.dark-mode .wii-pill--ok { background: #1d3a2a; color: #5fd28a; }
+body.dark-mode .wii-pill--no { background: #3e2224; color: #f08a80; }
+body.dark-mode .wii-photo-band { background: rgba(30,33,48,0.92); border-top-color: #2e3350; color: #c4cad8; }
