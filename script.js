@@ -1274,7 +1274,7 @@ function renderWeatherOverlay(d, isEn) {
     const country  = d.sys.country;
 
     const cardSub = document.getElementById('meteo-card-sub');
-    if (cardSub) cardSub.textContent = `${icon} ${temp}°C`;
+    if (cardSub) cardSub.textContent = `${temp}°C`;
 
     overlayContentBox.innerHTML = `
         <div class="meteo-overlay">
