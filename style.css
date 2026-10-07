@@ -2169,3 +2169,31 @@ body.overlay-open #lang-switcher {
         scroll-behavior: auto !important;
     }
 }
+
+
+/* =========================================
+   WII 3D (Three.js) : actif seulement si WebGL a démarré
+   ========================================= */
+#wii3d-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 20;
+    transition: opacity 0.6s ease;
+}
+body.wii3d-on .channel,
+body.wii3d-on.dark-mode .channel {
+    border-color: transparent;
+    background-clip: padding-box;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.10);
+    transition: box-shadow 0.2s;
+}
+body.wii3d-on .channel:not(.empty):hover,
+body.wii3d-on.dark-mode .channel:not(.empty):hover {
+    border-color: transparent;
+    box-shadow: 0 14px 26px rgba(0,0,0,0.16);
+}
+body.wii3d-on .channel-inner { border-radius: 14px; }
+body.wii3d-on.dark-mode .channel { box-shadow: 0 6px 14px rgba(0,0,0,0.45); }
