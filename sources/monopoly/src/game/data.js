@@ -63,47 +63,49 @@ export const STATIONS = [5, 15, 25, 35]
 export const UTILITIES = [12, 28]
 
 // Cartes : kind = money | move | moveRel | jail | jailCard | repairs | each
+// Cartes : kind = money | move | moveRel | jail | jailCard | repairs | each | nearest
+// Listes alignées sur le livret Hasbro (édition française, Euros)
 export const CHANCE = [
-  { text: 'Avancez jusqu’à la case Départ.', kind: 'move', to: 0 },
-  { text: 'Rendez-vous Rue de la Paix.', kind: 'move', to: 39 },
-  { text: 'Rendez-vous Avenue Henri-Martin. Si vous passez par la case Départ, recevez 200 €.', kind: 'move', to: 24 },
-  { text: 'Avancez au Boulevard de la Villette. Si vous passez par la case Départ, recevez 200 €.', kind: 'move', to: 11 },
-  { text: 'Allez à la Gare de Lyon. Si vous passez par la case Départ, recevez 200 €.', kind: 'move', to: 15 },
-  { text: 'Reculez de trois cases.', kind: 'moveRel', n: -3 },
-  { text: 'Allez en prison. Ne passez pas par la case Départ.', kind: 'jail' },
+  { text: 'Avancez jusqu’à la case Départ. Encaissez 200 €.', kind: 'move', to: 0 },
+  { text: 'Rendez-vous à la Rue de la Paix.', kind: 'move', to: 39 },
+  { text: 'Rendez-vous à l’Avenue Henri-Martin. Si vous passez par la case Départ, encaissez 200 €.', kind: 'move', to: 24 },
+  { text: 'Avancez au Boulevard de la Villette. Si vous passez par la case Départ, encaissez 200 €.', kind: 'move', to: 11 },
+  { text: 'Avancez jusqu’à la Gare de Lyon. Si vous passez par la case Départ, encaissez 200 €.', kind: 'move', to: 15 },
+  { text: 'Rendez-vous à la gare la plus proche. Si elle appartient à un joueur, payez-lui le double du loyer.', kind: 'nearest', what: 'station' },
+  { text: 'Rendez-vous à la gare la plus proche. Si elle appartient à un joueur, payez-lui le double du loyer.', kind: 'nearest', what: 'station' },
+  { text: 'Rendez-vous à la compagnie la plus proche. Si elle appartient à un joueur, lancez les dés et payez 10 fois le montant.', kind: 'nearest', what: 'utility' },
   { text: 'La banque vous verse un dividende de 50 €.', kind: 'money', amount: 50 },
+  { text: 'Votre immeuble et votre prêt rapportent. Encaissez 150 €.', kind: 'money', amount: 150 },
   { text: 'Vous êtes libéré de prison. Conservez cette carte.', kind: 'jailCard' },
-  { text: 'Réparations : 25 € par maison, 100 € par hôtel.', kind: 'repairs', house: 25, hotel: 100 },
+  { text: 'Reculez de 3 cases.', kind: 'moveRel', n: -3 },
+  { text: 'Allez en prison. Ne passez pas par la case Départ.', kind: 'jail' },
+  { text: 'Faites des réparations : 25 € par maison, 100 € par hôtel.', kind: 'repairs', house: 25, hotel: 100 },
+  { text: 'Réparations de voirie : 40 € par maison, 115 € par hôtel.', kind: 'repairs', house: 40, hotel: 115 },
   { text: 'Amende pour excès de vitesse : 15 €.', kind: 'money', amount: -15 },
-  { text: 'Votre immeuble et votre prêt rapportent. Recevez 150 €.', kind: 'money', amount: 150 },
-  { text: 'Vous avez gagné le concours de mots croisés. Recevez 100 €.', kind: 'money', amount: 100 },
-  { text: 'Amende pour ivresse : 20 €.', kind: 'money', amount: -20 },
-  { text: 'Payez pour frais de scolarité : 150 €.', kind: 'money', amount: -150 },
-  { text: 'Vous êtes élu président du conseil. Versez 50 € à chaque joueur.', kind: 'each', amount: -50 },
 ]
 
 export const CAISSE = [
-  { text: 'Avancez jusqu’à la case Départ.', kind: 'move', to: 0 },
-  { text: 'Erreur de la banque en votre faveur. Recevez 200 €.', kind: 'money', amount: 200 },
+  { text: 'Avancez jusqu’à la case Départ. Encaissez 200 €.', kind: 'move', to: 0 },
+  { text: 'Erreur de la banque en votre faveur. Encaissez 200 €.', kind: 'money', amount: 200 },
   { text: 'Payez la note du médecin : 50 €.', kind: 'money', amount: -50 },
   { text: 'La vente de votre stock vous rapporte 50 €.', kind: 'money', amount: 50 },
   { text: 'Vous êtes libéré de prison. Conservez cette carte.', kind: 'jailCard' },
   { text: 'Allez en prison. Ne passez pas par la case Départ.', kind: 'jail' },
-  { text: 'Retournez au Boulevard de Belleville.', kind: 'move', to: 1, noGo: true },
-  { text: 'Recevez votre revenu annuel : 100 €.', kind: 'money', amount: 100 },
-  { text: 'Remboursement des contributions : 20 €.', kind: 'money', amount: 20 },
   { text: 'C’est votre anniversaire : chaque joueur vous donne 10 €.', kind: 'each', amount: 10 },
-  { text: 'Votre assurance-vie arrive à échéance. Recevez 100 €.', kind: 'money', amount: 100 },
-  { text: 'Payez l’hôpital : 100 €.', kind: 'money', amount: -100 },
+  { text: 'Les contributions vous remboursent 20 €.', kind: 'money', amount: 20 },
+  { text: 'Recevez votre intérêt sur l’emprunt à 7 % : 25 €.', kind: 'money', amount: 25 },
   { text: 'Payez votre police d’assurance : 50 €.', kind: 'money', amount: -50 },
+  { text: 'Payez des frais d’hôpital : 100 €.', kind: 'money', amount: -100 },
+  { text: 'Payez les frais de scolarité : 50 €.', kind: 'money', amount: -50 },
+  { text: 'Vous avez gagné le deuxième prix de beauté : recevez 10 €.', kind: 'money', amount: 10 },
   { text: 'Vous héritez de 100 €.', kind: 'money', amount: 100 },
-  { text: 'Deuxième prix de beauté : recevez 10 €.', kind: 'money', amount: 10 },
-  { text: 'Réparations de voirie : 40 € par maison, 115 € par hôtel.', kind: 'repairs', house: 40, hotel: 115 },
+  { text: 'Le fonds de vacances arrive à échéance : recevez 100 €.', kind: 'money', amount: 100 },
+  { text: 'Avancez jusqu’au Boulevard de Belleville.', kind: 'move', to: 1 },
 ]
 
-export const PLAYER_COLORS = ['#e53935', '#1e88e5', '#43a047', '#fdd835', '#8e24aa', '#fb8c00']
-export const PAWNS = ['chapeau', 'cone', 'diamant', 'cube', 'anneau', 'etoile']
-export const BOT_NAMES = ['Bot Gaston', 'Bot Mireille', 'Bot Hector', 'Bot Louise', 'Bot Marcel']
+export const PLAYER_COLORS = ['#e53935', '#1e88e5', '#43a047', '#fdd835', '#8e24aa', '#fb8c00', '#00bcd4', '#ec407a']
+export const PAWNS = ['chapeau', 'cone', 'diamant', 'cube', 'anneau', 'etoile', 'cylindre', 'pyramide']
+export const BOT_NAMES = ['Bot Gaston', 'Bot Mireille', 'Bot Hector', 'Bot Louise', 'Bot Marcel', 'Bot Odette', 'Bot Firmin']
 export const START_MONEY = 1500
 export const GO_SALARY = 200
 export const JAIL_FINE = 50

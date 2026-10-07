@@ -45,6 +45,15 @@ export function botDecide(s, id) {
   // Dette
   const debt = s.debts.find((d) => d.player === id)
   if (debt) return raiseFunds(s, me) || { type: 'BANKRUPT' }
+  if (s.auction) {
+    const A = s.auction
+    if (A.passed.includes(id) || A.leader === id) return null
+    const sq = SQUARES[A.square]
+    const max = Math.min(value(s, id, A.square) * 0.95, me.money - 80)
+    const step = A.bid < 100 ? 10 : 20
+    const next = Math.max(A.bid + step, Math.round(sq.price * 0.3))
+    return next <= max ? { type: 'BID', amount: next } : { type: 'PASS_AUCTION' }
+  }
   if (s.debts.length) return null
   if (cur(s).id !== id) return null
 

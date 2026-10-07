@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { hostRoom, joinRoom, newCode, getClientId } from './net.js'
-import { createLobby, lobbyAdd, lobbyRemove, startGame, applyAction } from '../game/engine.js'
+import { createLobby, lobbyAdd, lobbyRemove, startGame, applyAction, auctionTimeout } from '../game/engine.js'
 import { botDecide } from '../game/bot.js'
 import { BOT_NAMES } from '../game/data.js'
 
@@ -157,6 +157,16 @@ export function useGame() {
       }
     }
   }, [game, role, hostApply])
+
+  // Fin d'enchère au chrono (hôte)
+  useEffect(() => {
+    if (role !== 'host' || !game?.auction) return
+    const t = setTimeout(() => {
+      const next = auctionTimeout(gameRef.current)
+      if (next !== gameRef.current) commit(next)
+    }, Math.max(0, game.auction.deadline - Date.now()) + 50)
+    return () => clearTimeout(t)
+  }, [game, role, commit])
 
   useEffect(() => () => net.current?.destroy(), [])
 

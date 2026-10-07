@@ -85,12 +85,12 @@ function Lobby({ g }) {
               {host && p.id !== g.myId && <button className="x" onClick={() => g.lobby.remove(p.id)}>✕</button>}
             </li>
           ))}
-          {Array.from({ length: 6 - s.players.length }).map((_, i) => <li key={i} className="empty">Place libre</li>)}
+          {Array.from({ length: 8 - s.players.length }).map((_, i) => <li key={i} className="empty">Place libre</li>)}
         </ul>
         {host ? (
           <>
             <div className="row">
-              <button className="btn" disabled={s.players.length >= 6} onClick={g.lobby.addBot}>+ Ajouter un bot</button>
+              <button className="btn" disabled={s.players.length >= 8} onClick={g.lobby.addBot}>+ Ajouter un bot</button>
               <select value={s.settings.maxRounds} onChange={(e) => g.lobby.setRounds(+e.target.value)}>
                 {[15, 20, 30, 50, 0].map((n) => <option key={n} value={n}>{n ? `${n} tours max` : 'Sans limite'}</option>)}
               </select>
@@ -131,6 +131,7 @@ function GameView({ g }) {
       {modal === 'manage' && me && <Manage s={s} me={me} act={g.act} onClose={() => setModal(null)} />}
       {modal === 'trade' && me && <TradeBuilder s={s} me={me} act={g.act} onClose={() => setModal(null)} />}
       <TradeIncoming s={s} me={me} act={g.act} />
+      {s.auction && <Auction s={s} me={me} act={g.act} />}
       {s.phase === 'over' && <GameOver s={s} />}
       <Toast toast={g.toast} />
     </div>
@@ -174,6 +175,7 @@ function ActionBar({ g, me, onManage, onTrade }) {
     <span className="warn">Dette : {fmt(me.money)} — vends ou hypothèque</span>
     <button className="btn danger" onClick={() => confirm('Déclarer faillite ?') && a({ type: 'BANKRUPT' })}>Faillite</button>
   </>)
+  else if (s.auction) main = <span className="wait">Enchères en cours…</span>
   else if (blocked) main = <span className="wait">{s.players.find((p) => p.id === s.debts[0].player)?.name} règle une dette…</span>
   else if (!myTurn) main = <span className="wait"><span className="dot" style={{ background: cur.color }} /> Tour de {cur.name}…</span>
   else if (pend) main = (<>
@@ -198,6 +200,39 @@ function ActionBar({ g, me, onManage, onTrade }) {
           <button className="btn ghost" disabled={!!s.trade} onClick={onTrade}>🤝 Échanger</button>
         </div>
       )}
+    </div>
+  )
+}
+
+function Auction({ s, me, act }) {
+  const A = s.auction
+  const sq = SQUARES[A.square]
+  const [now, setNow] = useState(Date.now())
+  const [amt, setAmt] = useState('')
+  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 250); return () => clearInterval(t) }, [])
+  const leader = s.players.find((p) => p.id === A.leader)
+  const left = Math.max(0, Math.ceil((A.deadline - now) / 1000))
+  const canAct = me && !me.bankrupt && !A.passed.includes(me.id) && A.leader !== me.id
+  const bid = (n) => act({ type: 'BID', amount: n })
+  return (
+    <div className="auction">
+      <div className="sq-head" style={{ background: sq.group ? GROUPS[sq.group].color : '#24453a', color: ['yellow', 'lightblue'].includes(sq.group) ? '#111' : '#fff' }}>Enchères · {sq.name}</div>
+      <div className="pad">
+        <div className="kv"><span>Prix plateau</span><b>{fmt(sq.price)}</b></div>
+        <div className="kv"><span>Meilleure offre</span><b style={{ color: leader?.color }}>{A.bid ? `${fmt(A.bid)} · ${leader?.name}` : 'aucune'}</b></div>
+        <div className="kv"><span>Temps restant</span><b>{left} s</b></div>
+        <div className="muted small">Ont passé : {A.passed.map((id) => s.players.find((p) => p.id === id)?.name).join(', ') || 'personne'}</div>
+        {canAct ? (<>
+          <div className="row" style={{ marginTop: 8 }}>
+            {[1, 10, 50, 100].map((d) => <button key={d} className="btn sm" disabled={A.bid + d > me.money} onClick={() => bid(A.bid + d)}>+{d}</button>)}
+          </div>
+          <div className="row" style={{ marginTop: 6 }}>
+            <input type="number" min={A.bid + 1} max={me.money} value={amt} placeholder="Montant" onChange={(e) => setAmt(e.target.value)} style={{ width: 110 }} />
+            <button className="btn sm" disabled={!(+amt > A.bid) || +amt > me.money} onClick={() => { bid(+amt); setAmt('') }}>Miser</button>
+            <button className="btn sm" onClick={() => act({ type: 'PASS_AUCTION' })}>Passer</button>
+          </div>
+        </>) : <p className="muted small">{A.leader === me?.id ? 'Tu mènes l’enchère.' : 'Tu as passé.'}</p>}
+      </div>
     </div>
   )
 }

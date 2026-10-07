@@ -17,7 +17,8 @@ const shuffle = (arr) => {
   return a
 }
 
-export const MAX_PLAYERS = 6
+export const MAX_PLAYERS = 8
+export const AUCTION_MS = 15000
 
 export function createLobby(host) {
   return {
@@ -76,6 +77,8 @@ export function startGame(s) {
     pending: null,
     debts: [],
     trade: null,
+    auction: null,
+    auctionQueue: [],
     lastCard: null,
     decks: { chance: shuffle(CHANCE.map((_, i) => i)), caisse: shuffle(CAISSE.map((_, i) => i)) },
     houses: 32,
@@ -179,8 +182,15 @@ function land(s, p) {
       s.pending = { type: 'buy', square: pl.pos }
       return
     }
-    if (pr.owner === pl.id || pr.mortgaged) return
-    const rent = rentFor(s, pl.pos, s.dice[0] + s.dice[1])
+    if (pr.owner === pl.id || pr.mortgaged) { s.rentMod = null; return }
+    let rent = rentFor(s, pl.pos, s.dice[0] + s.dice[1])
+    if (s.rentMod === 'double') rent *= 2
+    if (s.rentMod === 'utility10') {
+      const d1 = rnd(6) + 1, d2 = rnd(6) + 1
+      log(s, `${pl.name} relance les dés : ${d1} + ${d2}.`)
+      rent = 10 * (d1 + d2)
+    }
+    s.rentMod = null
     pay(s, p, idxOf(s, pr.owner), rent, `loyer ${sq.name}`)
     return
   }
@@ -207,6 +217,12 @@ function drawCard(s, p, deck) {
       return moveBy(s, p, c.n)
     case 'jail':
       return sendToJail(s, p)
+    case 'nearest': {
+      const list = c.what === 'station' ? STATIONS : UTILITIES
+      const to = list.find((k) => k > pl.pos) ?? list[0]
+      s.rentMod = c.what === 'station' ? 'double' : 'utility10'
+      return moveTo(s, p, to, true)
+    }
     case 'repairs': {
       let cost = 0
       for (const pr of Object.values(s.props)) {
@@ -224,8 +240,46 @@ function drawCard(s, p, deck) {
   }
 }
 
+function startAuction(s, square, fromLanding) {
+  s.auction = { square, bid: 0, leader: null, passed: [], fromLanding, deadline: Date.now() + AUCTION_MS }
+  log(s, `Enchères : ${SQUARES[square].name} (mise de départ 1 €).`)
+}
+function nextAuction(s) {
+  while (!s.auction && s.auctionQueue.length) {
+    const k = s.auctionQueue.shift()
+    if (!s.props[k]) startAuction(s, k, false)
+  }
+}
+function closeAuctionIfDone(s) {
+  const a = s.auction
+  if (!a) return
+  const active = s.players.filter((p) => !p.bankrupt && !a.passed.includes(p.id))
+  const done = a.leader ? active.every((p) => p.id === a.leader) : active.length === 0
+  if (!done) return
+  const sq = SQUARES[a.square]
+  if (a.leader) {
+    const w = s.players[idxOf(s, a.leader)]
+    w.money -= a.bid
+    s.props[a.square] = { owner: w.id, houses: 0, mortgaged: false }
+    log(s, `${w.name} remporte ${sq.name} aux enchères pour ${fmt(a.bid)}.`)
+    if (w.money < 0 && !s.debts.some((d) => d.player === w.id)) s.debts.push({ player: w.id, creditor: null })
+  } else log(s, `Aucune offre : ${sq.name} reste à la banque.`)
+  s.auction = null
+  if (a.fromLanding) finishMove(s)
+  nextAuction(s)
+}
+export function auctionTimeout(s0) {
+  const s = structuredClone(s0)
+  const a = s.auction
+  if (!a || Date.now() < a.deadline) return s0
+  s.players.forEach((p) => { if (!p.bankrupt && p.id !== a.leader && !a.passed.includes(p.id)) a.passed.push(p.id) })
+  closeAuctionIfDone(s)
+  s.rev++
+  return s
+}
+
 function finishMove(s) {
-  if (s.pending) return
+  if (s.pending || s.auction) return
   const pl = cur(s)
   s.turnPhase = s.extraRoll && !pl.inJail ? 'roll' : 'end'
 }
@@ -277,11 +331,16 @@ function bankrupt(s, p) {
   if (creditorIdx >= 0) {
     const cr = s.players[creditorIdx]
     cr.money += pl.money // si négatif, récupère le découvert déjà versé
-    for (const pr of Object.values(s.props)) if (pr.owner === pl.id) pr.owner = cr.id
+    let interest = 0
+    for (const [k, pr] of Object.entries(s.props)) if (pr.owner === pl.id) {
+      pr.owner = cr.id
+      if (pr.mortgaged) interest += Math.ceil(SQUARES[k].price / 2 * 0.1)
+    }
     cr.jailCards.push(...pl.jailCards)
     log(s, `${pl.name} fait faillite au profit de ${cr.name}.`)
+    if (interest) pay(s, creditorIdx, null, interest, 'intérêts 10 % sur hypothèques reçues')
   } else {
-    for (const k of Object.keys(s.props)) if (s.props[k].owner === pl.id) delete s.props[k]
+    for (const k of Object.keys(s.props)) if (s.props[k].owner === pl.id) { delete s.props[k]; s.auctionQueue.push(+k) }
     for (const d of pl.jailCards) s.decks[d].push(d === 'chance' ? CHANCE.findIndex((c) => c.kind === 'jailCard') : CAISSE.findIndex((c) => c.kind === 'jailCard'))
     log(s, `${pl.name} fait faillite.`)
   }
@@ -292,7 +351,13 @@ function bankrupt(s, p) {
   if (s.trade && (s.trade.from === pl.id || s.trade.to === pl.id)) s.trade = null
   const alive = s.players.filter((x) => !x.bankrupt)
   if (alive.length <= 1) return endGame(s, 'Plus qu’un joueur en lice')
+  if (s.auction) {
+    if (!s.auction.passed.includes(pl.id)) s.auction.passed.push(pl.id)
+    if (s.auction.leader === pl.id) { s.auction.leader = null; s.auction.bid = 0 }
+  }
   if (s.turn === p) nextTurn(s)
+  closeAuctionIfDone(s)
+  nextAuction(s)
 }
 
 function validateSide(s, pid, side) {
@@ -319,6 +384,7 @@ export function applyAction(s0, actorId, a) {
   const needTurn = () => {
     if (!isTurn) throw new Error('Ce n’est pas votre tour')
     if (blocked) throw new Error('Un joueur doit régler sa dette')
+    if (s.auction) throw new Error('Enchères en cours')
   }
 
   switch (a.type) {
@@ -372,6 +438,7 @@ export function applyAction(s0, actorId, a) {
       s.props[s.pending.square] = { owner: me.id, houses: 0, mortgaged: false }
       log(s, `${me.name} achète ${sq.name} pour ${fmt(sq.price)}.`)
       s.pending = null
+      s.rentMod = null
       finishMove(s)
       break
     }
@@ -379,8 +446,10 @@ export function applyAction(s0, actorId, a) {
       needTurn()
       if (s.pending?.type !== 'buy') throw new Error('Rien à refuser')
       log(s, `${me.name} n’achète pas ${SQUARES[s.pending.square].name}.`)
+      const sqI = s.pending.square
       s.pending = null
-      finishMove(s)
+      s.rentMod = null
+      startAuction(s, sqI, true)
       break
     }
     case 'END_TURN': {
@@ -409,7 +478,6 @@ export function applyAction(s0, actorId, a) {
     case 'BUILD': {
       const i = a.square, sq = SQUARES[i], pr = s.props[i]
       if (!pr || pr.owner !== me.id || sq.type !== 'property') throw new Error('Propriété invalide')
-      if (!isTurn) throw new Error('Construisez pendant votre tour')
       const mem = groupMembers(sq.group)
       if (!ownsGroup(s, me.id, sq.group)) throw new Error('Il faut tout le groupe de couleur')
       if (mem.some((k) => s.props[k].mortgaged)) throw new Error('Une propriété du groupe est hypothéquée')
@@ -462,6 +530,26 @@ export function applyAction(s0, actorId, a) {
       log(s, `${me.name} lève l’hypothèque de ${sq.name} (-${fmt(cost)}).`)
       break
     }
+    case 'BID': {
+      const a2 = s.auction
+      if (!a2) throw new Error('Pas d’enchères')
+      if (a2.passed.includes(me.id)) throw new Error('Vous avez passé')
+      const amt = Math.floor(+a.amount)
+      if (!(amt > a2.bid) || amt < 1) throw new Error('Offre trop basse')
+      if (amt > me.money) throw new Error('Fonds insuffisants')
+      a2.bid = amt; a2.leader = me.id; a2.deadline = Date.now() + AUCTION_MS
+      log(s, `${me.name} enchérit : ${fmt(amt)}.`)
+      closeAuctionIfDone(s)
+      break
+    }
+    case 'PASS_AUCTION': {
+      const a2 = s.auction
+      if (!a2 || a2.passed.includes(me.id) || a2.leader === me.id) throw new Error('Impossible de passer')
+      a2.passed.push(me.id)
+      log(s, `${me.name} passe.`)
+      closeAuctionIfDone(s)
+      break
+    }
     case 'BANKRUPT': {
       bankrupt(s, ai)
       break
@@ -491,6 +579,10 @@ export function applyAction(s0, actorId, a) {
       for (let k = 0; k < t.give.jailCards; k++) B.jailCards.push(A.jailCards.pop())
       for (let k = 0; k < t.get.jailCards; k++) A.jailCards.push(B.jailCards.pop())
       log(s, `${B.name} accepte l’échange avec ${A.name}.`)
+      const intr = (list) => list.filter((k) => s.props[k].mortgaged).reduce((x, k) => x + Math.ceil(SQUARES[k].price / 2 * 0.1), 0)
+      const iB = intr(t.give.props), iA = intr(t.get.props)
+      if (iB) pay(s, idxOf(s, B.id), null, iB, 'intérêts 10 % sur hypothèques reçues')
+      if (iA) pay(s, idxOf(s, A.id), null, iA, 'intérêts 10 % sur hypothèques reçues')
       s.trade = null
       break
     }
@@ -520,6 +612,7 @@ function norm(x = {}) {
 // Qui doit agir maintenant ? (pour bots et indicateurs)
 export function whoMustAct(s) {
   if (s.phase !== 'playing') return null
+  if (s.auction) return null
   if (s.debts.length) return s.debts[0].player
   return cur(s).id
 }

@@ -106,6 +106,10 @@ function PawnShape({ type, color }) {
       return <mesh castShadow position={[0, 0.2, 0]}><coneGeometry args={[0.15, 0.4, 24]} />{mat}</mesh>
     case 'diamant':
       return <mesh castShadow position={[0, 0.2, 0]} scale={[1, 1.4, 1]}><octahedronGeometry args={[0.15]} />{mat}</mesh>
+    case 'cylindre':
+      return <mesh castShadow position={[0, 0.16, 0]}><cylinderGeometry args={[0.13, 0.13, 0.32, 6]} />{mat}</mesh>
+    case 'pyramide':
+      return <mesh castShadow position={[0, 0.17, 0]}><coneGeometry args={[0.18, 0.34, 4]} />{mat}</mesh>
     case 'cube':
       return <mesh castShadow position={[0, 0.13, 0]}><boxGeometry args={[0.24, 0.24, 0.24]} />{mat}</mesh>
     case 'anneau':
