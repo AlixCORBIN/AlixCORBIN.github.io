@@ -106,30 +106,76 @@ function Lobby({ g }) {
   )
 }
 
+
+
+
+
+
+
 // ---------- Partie ----------
+const textOn = (g) => (['yellow', 'lightblue'].includes(g) ? '#111' : '#fff')
+const sqColor = (sq) => (sq.group ? GROUPS[sq.group].color : sq.type === 'station' ? '#3b4a42' : sq.type === 'utility' ? '#4a5a52' : '#24453a')
+
+// Suivi des variations d'argent pour afficher +/- sur les joueurs
+function useMoneyDeltas(players) {
+  const prev = useRef({})
+  const [deltas, setDeltas] = useState({})
+  useEffect(() => {
+    const d = {}
+    players.forEach((p) => {
+      const old = prev.current[p.id]
+      if (old != null && old !== p.money) d[p.id] = { v: p.money - old, k: Date.now() + Math.random() }
+      prev.current[p.id] = p.money
+    })
+    if (Object.keys(d).length) {
+      setDeltas((x) => ({ ...x, ...d }))
+      const t = setTimeout(() => setDeltas((x) => { const y = { ...x }; Object.keys(d).forEach((id) => { if (y[id]?.k === d[id].k) delete y[id] }); return y }), 2200)
+      return () => clearTimeout(t)
+    }
+  }, [players.map((p) => p.money).join()])
+  return deltas
+}
+
 function GameView({ g }) {
   const s = g.game
   const me = s.players.find((p) => p.id === g.myId)
   const [sel, setSel] = useState(null)
-  const [modal, setModal] = useState(null) // 'manage' | 'trade'
-  const [logOpen, setLogOpen] = useState(true)
+  const [modal, setModal] = useState(null) // 'manage' | 'trade' | 'rules' | {player}
+  const [logOpen, setLogOpen] = useState(() => window.innerWidth > 760)
+  const close = () => setModal(null)
+  const main = useMainAction(s, me, g.act)
+
+  // Raccourcis clavier
+  useEffect(() => {
+    const h = (e) => {
+      if (e.target.closest('input, textarea, select')) return
+      if (e.key === 'Escape') { setModal(null); setSel(null) }
+      else if (e.key === ' ' || e.key === 'Enter') { if (main?.run && !modal) { e.preventDefault(); main.run() } }
+      else if (e.key.toLowerCase() === 'p') setModal((m) => (m === 'manage' ? null : 'manage'))
+      else if (e.key.toLowerCase() === 'e' && !s.trade) setModal((m) => (m === 'trade' ? null : 'trade'))
+      else if (e.key.toLowerCase() === 'j') setLogOpen((o) => !o)
+    }
+    window.addEventListener('keydown', h)
+    return () => window.removeEventListener('keydown', h)
+  }, [main, modal, s.trade])
+
+  const pend = s.pending?.type === 'buy' && me && s.players[s.turn].id === me.id && !s.debts.length ? s.pending.square : null
 
   return (
     <div className="game">
       <Scene game={s} selected={sel} onPick={setSel} myId={g.myId} />
-      <div className="hud-top">
-        <button className="back small" onClick={back}>←</button>
-        <div className="pill">Salle <b>{g.code}</b></div>
-        <div className="pill">Tour <b>{Math.min(s.round, s.settings.maxRounds || s.round)}</b>{s.settings.maxRounds ? ` / ${s.settings.maxRounds}` : ''}</div>
-        <div className="pill">🏠 {s.houses} · 🏨 {s.hotels}</div>
-      </div>
-      <Players s={s} myId={g.myId} />
-      <ActionBar g={g} me={me} onManage={() => setModal('manage')} onTrade={() => setModal('trade')} />
-      {sel != null && <SquareCard s={s} i={sel} me={me} act={g.act} onClose={() => setSel(null)} />}
-      <Log s={s} open={logOpen} setOpen={setLogOpen} chat={g.chat} />
+      <TopBar s={s} code={g.code} notify={g.notify} onRules={() => setModal('rules')} logOpen={logOpen} toggleLog={() => setLogOpen(!logOpen)} />
+      <Players s={s} myId={g.myId} onPick={(p) => setModal({ player: p.id })} />
+      <DebtBanner s={s} me={me} act={g.act} onManage={() => setModal('manage')} />
+      <Dock s={s} me={me} act={g.act} main={main} onManage={() => setModal('manage')} onTrade={() => setModal('trade')} />
+      {sel != null && !modal && <SquareCard s={s} i={sel} me={me} act={g.act} onClose={() => setSel(null)} />}
+      {logOpen && <Log s={s} chat={g.chat} onClose={() => setLogOpen(false)} />}
       <CardPopup s={s} />
-      {modal === 'manage' && me && <Manage s={s} me={me} act={g.act} onClose={() => setModal(null)} />}
-      {modal === 'trade' && me && <TradeBuilder s={s} me={me} act={g.act} onClose={() => setModal(null)} />}
+      {pend != null && !modal && <BuyPrompt s={s} i={pend} me={me} act={g.act} />}
+      {modal === 'manage' && me && <Manage s={s} me={me} act={g.act} onClose={close} />}
+      {modal === 'trade' && me && <TradeBuilder s={s} me={me} act={g.act} onClose={close} />}
+      {modal === 'rules' && <Rules onClose={close} />}
+      {modal?.player && <PlayerSheet s={s} id={modal.player} me={me} onClose={close} onTrade={() => setModal('trade')} onPick={(i) => { setModal(null); setSel(i) }} />}
       <TradeIncoming s={s} me={me} act={g.act} />
       {s.auction && <Auction s={s} me={me} act={g.act} />}
       {s.phase === 'over' && <GameOver s={s} />}
@@ -138,194 +184,56 @@ function GameView({ g }) {
   )
 }
 
-function Players({ s, myId }) {
+function TopBar({ s, code, notify, onRules, logOpen, toggleLog }) {
+  const copy = () => {
+    const link = `${location.origin}${location.pathname}?room=${code}`
+    navigator.clipboard?.writeText(code === 'SOLO' ? code : link).then(() => notify(code === 'SOLO' ? 'Partie solo' : 'Lien d’invitation copié'))
+  }
+  return (
+    <div className="topbar">
+      <button className="ibtn" onClick={back} title="Retour au Casino">←</button>
+      <button className="chip" onClick={copy} title="Copier le lien">Salle <b>{code}</b></button>
+      <span className="chip">Tour <b>{Math.min(s.round, s.settings.maxRounds || s.round)}</b>{s.settings.maxRounds ? <span className="muted"> / {s.settings.maxRounds}</span> : null}</span>
+      <span className="chip hide-m" title="Bâtiments disponibles à la banque">🏠 {s.houses} · 🏨 {s.hotels}</span>
+      <span className="grow" />
+      <button className={`ibtn ${logOpen ? 'on' : ''}`} onClick={toggleLog} title="Journal (J)">💬</button>
+      <button className="ibtn" onClick={onRules} title="Règles et raccourcis">?</button>
+    </div>
+  )
+}
+
+function OwnedStrip({ s, id }) {
+  const owned = Object.keys(s.props).map(Number).filter((k) => s.props[k].owner === id).sort((a, b) => a - b)
+  if (!owned.length) return null
+  return (
+    <div className="strip">
+      {owned.map((k) => <i key={k} title={SQUARES[k].name} className={s.props[k].mortgaged ? 'mort' : ''} style={{ background: sqColor(SQUARES[k]) }} />)}
+    </div>
+  )
+}
+
+function Players({ s, myId, onPick }) {
+  const deltas = useMoneyDeltas(s.players)
   return (
     <div className="players">
-      {s.players.map((p, i) => (
-        <div key={p.id} className={`pl ${i === s.turn && s.phase === 'playing' ? 'turn' : ''} ${p.bankrupt ? 'out' : ''}`}>
-          <span className="dot" style={{ background: p.color }} />
-          <div className="pl-main">
-            <div className="pl-name">
-              {p.name}{p.id === myId && ' (toi)'} {p.isBot && <span className="tag">BOT</span>}
-              {!p.isBot && !p.connected && <span className="tag red">hors ligne · bot</span>}
-            </div>
-            <div className="pl-sub">
-              {p.bankrupt ? 'Faillite' : <>{fmt(p.money)} <span className="muted">· patrimoine {fmt(netWorth(s, p))}</span></>}
-              {p.inJail && ' 🔒'}{p.jailCards.length > 0 && ' 🎟️'.repeat(p.jailCards.length)}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function ActionBar({ g, me, onManage, onTrade }) {
-  const s = g.game
-  if (s.phase !== 'playing') return null
-  const cur = s.players[s.turn]
-  const myTurn = me && cur.id === me.id
-  const myDebt = me && s.debts.find((d) => d.player === me.id)
-  const blocked = s.debts.length > 0
-  const pend = s.pending?.type === 'buy' ? SQUARES[s.pending.square] : null
-  const a = g.act
-  let main
-  if (!me || me.bankrupt) main = <span className="wait">Spectateur · tour de {cur.name}</span>
-  else if (myDebt) main = (<>
-    <span className="warn">Dette : {fmt(me.money)} — vends ou hypothèque</span>
-    <button className="btn danger" onClick={() => confirm('Déclarer faillite ?') && a({ type: 'BANKRUPT' })}>Faillite</button>
-  </>)
-  else if (s.auction) main = <span className="wait">Enchères en cours…</span>
-  else if (blocked) main = <span className="wait">{s.players.find((p) => p.id === s.debts[0].player)?.name} règle une dette…</span>
-  else if (!myTurn) main = <span className="wait"><span className="dot" style={{ background: cur.color }} /> Tour de {cur.name}…</span>
-  else if (pend) main = (<>
-    <span className="buy-name" style={{ borderColor: pend.group ? GROUPS[pend.group].color : '#888' }}>{pend.name}</span>
-    <button className="btn primary" disabled={me.money < pend.price} onClick={() => a({ type: 'BUY' })}>Acheter {fmt(pend.price)}</button>
-    <button className="btn" onClick={() => a({ type: 'DECLINE' })}>Passer</button>
-  </>)
-  else if (s.turnPhase === 'roll') main = (<>
-    {me.inJail && <button className="btn" disabled={me.money < JAIL_FINE} onClick={() => a({ type: 'PAY_JAIL' })}>Payer {JAIL_FINE} €</button>}
-    {me.inJail && me.jailCards.length > 0 && <button className="btn" onClick={() => a({ type: 'USE_JAIL_CARD' })}>Carte prison</button>}
-    <button className="btn primary big" onClick={() => a({ type: 'ROLL' })}>🎲 {me.inJail ? 'Tenter un double' : s.extraRoll ? 'Relancer (double)' : 'Lancer les dés'}</button>
-  </>)
-  else main = <button className="btn primary big" onClick={() => a({ type: 'END_TURN' })}>Fin du tour ➜</button>
-
-  return (
-    <div className="actionbar">
-      <div className="dice-read">{s.dice[0]} + {s.dice[1]}</div>
-      <div className="main-actions">{main}</div>
-      {me && !me.bankrupt && (
-        <div className="side-actions">
-          <button className="btn ghost" onClick={onManage}>🏘️ Propriétés</button>
-          <button className="btn ghost" disabled={!!s.trade} onClick={onTrade}>🤝 Échanger</button>
-        </div>
-      )}
-    </div>
-  )
-}
-
-function Auction({ s, me, act }) {
-  const A = s.auction
-  const sq = SQUARES[A.square]
-  const [now, setNow] = useState(Date.now())
-  const [amt, setAmt] = useState('')
-  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 250); return () => clearInterval(t) }, [])
-  const leader = s.players.find((p) => p.id === A.leader)
-  const left = Math.max(0, Math.ceil((A.deadline - now) / 1000))
-  const canAct = me && !me.bankrupt && !A.passed.includes(me.id) && A.leader !== me.id
-  const bid = (n) => act({ type: 'BID', amount: n })
-  return (
-    <div className="auction">
-      <div className="sq-head" style={{ background: sq.group ? GROUPS[sq.group].color : '#24453a', color: ['yellow', 'lightblue'].includes(sq.group) ? '#111' : '#fff' }}>Enchères · {sq.name}</div>
-      <div className="pad">
-        <div className="kv"><span>Prix plateau</span><b>{fmt(sq.price)}</b></div>
-        <div className="kv"><span>Meilleure offre</span><b style={{ color: leader?.color }}>{A.bid ? `${fmt(A.bid)} · ${leader?.name}` : 'aucune'}</b></div>
-        <div className="kv"><span>Temps restant</span><b>{left} s</b></div>
-        <div className="muted small">Ont passé : {A.passed.map((id) => s.players.find((p) => p.id === id)?.name).join(', ') || 'personne'}</div>
-        {canAct ? (<>
-          <div className="row" style={{ marginTop: 8 }}>
-            {[1, 10, 50, 100].map((d) => <button key={d} className="btn sm" disabled={A.bid + d > me.money} onClick={() => bid(A.bid + d)}>+{d}</button>)}
-          </div>
-          <div className="row" style={{ marginTop: 6 }}>
-            <input type="number" min={A.bid + 1} max={me.money} value={amt} placeholder="Montant" onChange={(e) => setAmt(e.target.value)} style={{ width: 110 }} />
-            <button className="btn sm" disabled={!(+amt > A.bid) || +amt > me.money} onClick={() => { bid(+amt); setAmt('') }}>Miser</button>
-            <button className="btn sm" onClick={() => act({ type: 'PASS_AUCTION' })}>Passer</button>
-          </div>
-        </>) : <p className="muted small">{A.leader === me?.id ? 'Tu mènes l’enchère.' : 'Tu as passé.'}</p>}
-      </div>
-    </div>
-  )
-}
-
-function rentLines(sq) {
-  if (sq.type === 'property')
-    return [['Loyer', sq.rent[0]], ['Groupe complet', sq.rent[0] * 2], ['1 maison', sq.rent[1]], ['2 maisons', sq.rent[2]], ['3 maisons', sq.rent[3]], ['4 maisons', sq.rent[4]], ['Hôtel', sq.rent[5]]]
-  if (sq.type === 'station') return [['1 gare', 25], ['2 gares', 50], ['3 gares', 100], ['4 gares', 200]]
-  if (sq.type === 'utility') return [['1 compagnie', '4 × dés'], ['2 compagnies', '10 × dés']]
-  return []
-}
-
-function SquareCard({ s, i, me, act, onClose }) {
-  const sq = SQUARES[i]
-  const pr = s.props[i]
-  const owner = pr && s.players.find((p) => p.id === pr.owner)
-  const mine = me && pr?.owner === me.id
-  const desc = { go: 'Recevez 200 € à chaque passage.', jail: 'Simple visite… ou séjour forcé.', parking: 'Repos !', gotojail: 'Direction la prison, sans passer par Départ.', chance: 'Tirez une carte Chance.', caisse: 'Tirez une carte Caisse de communauté.', tax: `Payez ${sq.amount} €.` }[sq.type]
-  return (
-    <div className="sqcard">
-      <button className="x" onClick={onClose}>✕</button>
-      <div className="sq-head" style={{ background: sq.group ? GROUPS[sq.group].color : '#24453a', color: ['yellow', 'lightblue'].includes(sq.group) ? '#111' : '#fff' }}>
-        {sq.name}
-      </div>
-      {desc && <p className="muted pad">{desc}</p>}
-      {sq.price && (
-        <div className="pad">
-          <table className="rents"><tbody>
-            {rentLines(sq).map(([k, v]) => <tr key={k}><td>{k}</td><td>{typeof v === 'number' ? fmt(v) : v}</td></tr>)}
-          </tbody></table>
-          <div className="kv"><span>Prix</span><b>{fmt(sq.price)}</b></div>
-          {sq.group && <div className="kv"><span>Maison / hôtel</span><b>{fmt(GROUPS[sq.group].house)}</b></div>}
-          <div className="kv"><span>Hypothèque</span><b>{fmt(sq.price / 2)}</b></div>
-          <div className="kv"><span>Propriétaire</span><b style={{ color: owner?.color }}>{owner ? owner.name : 'Banque'}</b></div>
-          {pr && <div className="kv"><span>Loyer actuel</span><b>{pr.mortgaged ? 'Hypothéquée' : sq.type === 'utility' ? (rentFor(s, i, 1) === 10 ? '10 × dés' : '4 × dés') : fmt(rentFor(s, i, 7))}</b></div>}
-          {mine && <PropButtons s={s} i={i} act={act} />}
-        </div>
-      )}
-    </div>
-  )
-}
-
-function PropButtons({ s, i, act }) {
-  const sq = SQUARES[i], pr = s.props[i]
-  const full = sq.group && ownsGroup(s, pr.owner, sq.group)
-  return (
-    <div className="prop-btns">
-      {sq.type === 'property' && full && !pr.mortgaged && pr.houses < 5 && <button className="btn sm" onClick={() => act({ type: 'BUILD', square: i })}>+ {pr.houses === 4 ? 'Hôtel' : 'Maison'}</button>}
-      {pr.houses > 0 && <button className="btn sm" onClick={() => act({ type: 'SELL_HOUSE', square: i })}>− Vendre</button>}
-      {!pr.mortgaged && !pr.houses && <button className="btn sm" onClick={() => act({ type: 'MORTGAGE', square: i })}>Hypothéquer</button>}
-      {pr.mortgaged && <button className="btn sm" onClick={() => act({ type: 'UNMORTGAGE', square: i })}>Lever ({fmt(Math.ceil(sq.price * 0.55))})</button>}
-    </div>
-  )
-}
-
-function Manage({ s, me, act, onClose }) {
-  const mine = Object.keys(s.props).map(Number).filter((k) => s.props[k].owner === me.id).sort((a, b) => a - b)
-  return (
-    <div className="modal-bg" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <button className="x" onClick={onClose}>✕</button>
-        <h2>Mes propriétés <span className="muted">· {fmt(me.money)}</span></h2>
-        {!mine.length && <p className="muted">Aucune propriété pour l’instant.</p>}
-        <div className="manage-list">
-          {mine.map((k) => {
-            const sq = SQUARES[k], pr = s.props[k]
-            return (
-              <div key={k} className={`mrow ${pr.mortgaged ? 'mort' : ''}`}>
-                <span className="band" style={{ background: sq.group ? GROUPS[sq.group].color : '#777' }} />
-                <div className="mname">{sq.name}<div className="muted small">{pr.mortgaged ? 'hypothéquée' : pr.houses === 5 ? '🏨 hôtel' : pr.houses ? '🏠'.repeat(pr.houses) : sq.type === 'property' ? 'terrain nu' : ''}</div></div>
-                <PropButtons s={s} i={k} act={act} />
-              </div>
-            )
-          })}
-        </div>
-        <p className="muted small">Construction pendant ton tour, de façon uniforme dans le groupe.</p>
-      </div>
-    </div>
-  )
-}
-
-function PropPicker({ s, owner, value, onChange }) {
-  const list = Object.keys(s.props).map(Number).filter((k) => s.props[k].owner === owner).sort((a, b) => a - b)
-  if (!list.length) return <p className="muted small">Aucune propriété</p>
-  return (
-    <div className="picker">
-      {list.map((k) => {
-        const sq = SQUARES[k]
-        const blocked = sq.group && groupMembers(sq.group).some((i) => s.props[i]?.houses)
-        const on = value.includes(k)
+      {s.players.map((p, i) => {
+        const turn = i === s.turn && s.phase === 'playing'
+        const d = deltas[p.id]
         return (
-          <button key={k} disabled={blocked} className={`chip ${on ? 'on' : ''}`} onClick={() => onChange(on ? value.filter((x) => x !== k) : [...value, k])}>
-            <span className="band" style={{ background: sq.group ? GROUPS[sq.group].color : '#777' }} />{sq.name}{s.props[k].mortgaged ? ' (H)' : ''}
+          <button key={p.id} className={`pl ${turn ? 'turn' : ''} ${p.bankrupt ? 'out' : ''} ${p.id === myId ? 'me' : ''}`} style={{ '--c': p.color }} onClick={() => onPick(p)}>
+            <span className="avatar">{p.name.replace('Bot ', '')[0]?.toUpperCase()}</span>
+            <span className="pl-main">
+              <span className="pl-name">
+                {p.name}{p.id === myId && <em> · toi</em>}
+                {p.isBot && <span className="tag">BOT</span>}
+                {!p.isBot && !p.connected && <span className="tag red">hors ligne</span>}
+                {p.inJail && <span className="tag" title="En prison">🔒</span>}
+                {p.jailCards.length > 0 && <span className="tag" title="Carte libéré de prison">🎟️{p.jailCards.length > 1 ? p.jailCards.length : ''}</span>}
+              </span>
+              <span className="pl-money">{p.bankrupt ? 'Faillite' : fmt(p.money)}</span>
+              {!p.bankrupt && <OwnedStrip s={s} id={p.id} />}
+            </span>
+            {d && <span key={d.k} className={`delta ${d.v > 0 ? 'pos' : 'neg'}`}>{d.v > 0 ? '+' : '−'}{fmt(Math.abs(d.v))}</span>}
           </button>
         )
       })}
@@ -333,50 +241,470 @@ function PropPicker({ s, owner, value, onChange }) {
   )
 }
 
-function TradeBuilder({ s, me, act, onClose }) {
-  const others = s.players.filter((p) => p.id !== me.id && !p.bankrupt)
-  const [to, setTo] = useState(others[0]?.id)
-  const [give, setGive] = useState({ money: 0, props: [], jailCards: 0 })
-  const [get, setGet] = useState({ money: 0, props: [], jailCards: 0 })
-  const other = s.players.find((p) => p.id === to)
-  useEffect(() => setGet({ money: 0, props: [], jailCards: 0 }), [to])
-  const send = () => { act({ type: 'PROPOSE_TRADE', to, give, get }); onClose() }
+// Action principale contextuelle (bouton du dock + Espace)
+function useMainAction(s, me, a) {
+  if (s.phase !== 'playing' || !me || me.bankrupt) return null
+  const cur = s.players[s.turn]
+  if (cur.id !== me.id || s.debts.length || s.auction || s.pending) return null
+  if (s.turnPhase === 'roll') return { label: me.inJail ? 'Tenter un double' : s.extraRoll ? 'Relancer (double)' : 'Lancer les dés', icon: '🎲', run: () => a({ type: 'ROLL' }) }
+  return { label: 'Fin du tour', icon: '➜', run: () => a({ type: 'END_TURN' }) }
+}
+
+function DiceMini({ d }) {
+  return <span className="dmini">{d.map((v, i) => <i key={i}>{['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'][v - 1]}</i>)}</span>
+}
+
+function Dock({ s, me, act, main, onManage, onTrade }) {
+  if (s.phase !== 'playing') return null
+  const cur = s.players[s.turn]
+  const myTurn = me && cur.id === me.id
+  let status
+  if (!me || me.bankrupt) status = <>Spectateur · tour de <b style={{ color: cur.color }}>{cur.name}</b></>
+  else if (s.auction) status = 'Enchères en cours'
+  else if (s.debts.length && !s.debts.some((d) => d.player === me.id)) status = <>{s.players.find((p) => p.id === s.debts[0].player)?.name} règle une dette…</>
+  else if (myTurn) status = s.pending ? 'Décide de l’achat' : s.turnPhase === 'roll' ? (me.inJail ? 'Tu es en prison' : 'À toi de jouer') : 'Tour terminé ?'
+  else status = <>Tour de <b style={{ color: cur.color }}>{cur.name}</b></>
+  return (
+    <div className="dock">
+      <div className="dock-status">
+        <DiceMini d={s.dice} />
+        <span>{status}</span>
+      </div>
+      <div className="dock-main">
+        {myTurn && me.inJail && s.turnPhase === 'roll' && !s.debts.length && (
+          <JailOptions me={me} act={act} />
+        )}
+        {main ? (
+          <button className={`btn primary big ${main.icon === '🎲' ? 'roll' : ''}`} onClick={main.run}>
+            <span>{main.icon}</span> {main.label} <kbd>Espace</kbd>
+          </button>
+        ) : (
+          !myTurn && <span className="waiting"><span className="spinner" style={{ borderTopColor: cur.color }} /></span>
+        )}
+      </div>
+      {me && !me.bankrupt && (
+        <div className="dock-side">
+          <button className="tool" onClick={onManage} title="Mes propriétés (P)"><span>🏘️</span><small>Propriétés</small></button>
+          <button className="tool" disabled={!!s.trade} onClick={onTrade} title="Échanger (E)"><span>🤝</span><small>Échanger</small></button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function JailOptions({ me, act: g }) {
+  return (
+    <div className="jailopts">
+      <button className="btn" disabled={me.money < JAIL_FINE} onClick={() => g({ type: 'PAY_JAIL' })}>Payer {JAIL_FINE} €</button>
+      {me.jailCards.length > 0 && <button className="btn" onClick={() => g({ type: 'USE_JAIL_CARD' })}>🎟️ Utiliser la carte</button>}
+    </div>
+  )
+}
+
+function DebtBanner({ s, me, act, onManage }) {
+  if (!me || !s.debts?.some((d) => d.player === me.id)) return null
+  return (
+    <div className="debt">
+      <div><b>Tu es à découvert : {fmt(me.money)}</b><small>Vends des maisons ou hypothèque pour revenir à 0 €.</small></div>
+      <button className="btn" onClick={onManage}>Gérer mes biens</button>
+      <button className="btn danger" onClick={() => confirm('Déclarer faillite ? Tu seras éliminé.') && act({ type: 'BANKRUPT' })}>Faillite</button>
+    </div>
+  )
+}
+
+function rentLines(sq) {
+  if (sq.type === 'property')
+    return [['Terrain nu', sq.rent[0]], ['Groupe complet', sq.rent[0] * 2], ['1 maison', sq.rent[1]], ['2 maisons', sq.rent[2]], ['3 maisons', sq.rent[3]], ['4 maisons', sq.rent[4]], ['Hôtel', sq.rent[5]]]
+  if (sq.type === 'station') return [['1 gare', 25], ['2 gares', 50], ['3 gares', 100], ['4 gares', 200]]
+  if (sq.type === 'utility') return [['1 compagnie', '4 × dés'], ['2 compagnies', '10 × dés']]
+  return []
+}
+
+// Titre de propriété façon carte
+function Deed({ s, i, compact }) {
+  const sq = SQUARES[i]
+  const pr = s.props[i]
+  const owner = pr && s.players.find((p) => p.id === pr.owner)
+  const level = pr ? (sq.type === 'property' ? (pr.houses ? pr.houses + 1 : ownsGroup(s, pr.owner, sq.group) ? 1 : 0) : sq.type === 'station' ? [5, 15, 25, 35].filter((k) => s.props[k]?.owner === pr.owner).length - 1 : [12, 28].filter((k) => s.props[k]?.owner === pr.owner).length - 1) : -1
+  return (
+    <div className="deed">
+      <div className="deed-head" style={{ background: sqColor(sq), color: textOn(sq.group) }}>
+        <small>{sq.type === 'property' ? 'Titre de propriété' : sq.type === 'station' ? 'Gare' : 'Compagnie'}</small>
+        <b>{sq.name}</b>
+      </div>
+      <table className="rents"><tbody>
+        {rentLines(sq).map(([k, v], n) => <tr key={k} className={!pr?.mortgaged && n === level ? 'cur' : ''}><td>{k}</td><td>{typeof v === 'number' ? fmt(v) : v}</td></tr>)}
+      </tbody></table>
+      {!compact && (
+        <div className="deed-foot">
+          <span>Prix <b>{fmt(sq.price)}</b></span>
+          {sq.group && <span>Maison <b>{fmt(GROUPS[sq.group].house)}</b></span>}
+          <span>Hypothèque <b>{fmt(sq.price / 2)}</b></span>
+        </div>
+      )}
+      {pr && <div className="deed-owner" style={{ '--c': owner?.color }}>{pr.mortgaged ? 'Hypothéquée · ' : ''}Propriétaire : <b>{owner?.name}</b></div>}
+    </div>
+  )
+}
+
+function SquareCard({ s, i, me, act, onClose }) {
+  const sq = SQUARES[i]
+  const pr = s.props[i]
+  const mine = me && pr?.owner === me.id
+  const here = s.players.filter((p) => !p.bankrupt && p.pos === i)
+  const desc = { go: 'Recevez 200 € à chaque passage.', jail: 'Simple visite… ou séjour forcé.', parking: 'Case neutre, rien ne se passe.', gotojail: 'Direction la prison, sans passer par Départ.', chance: 'Tirez une carte Chance.', caisse: 'Tirez une carte Caisse de communauté.', tax: `Payez ${sq.amount} € à la banque.` }[sq.type]
+  return (
+    <div className="sqcard">
+      <button className="x" onClick={onClose}>✕</button>
+      {sq.price ? <Deed s={s} i={i} /> : (
+        <div className="deed"><div className="deed-head" style={{ background: '#24453a', color: '#fff' }}><small>Case</small><b>{sq.name}</b></div><p className="pad muted">{desc}</p></div>
+      )}
+      {here.length > 0 && <div className="here">{here.map((p) => <span key={p.id}><i style={{ background: p.color }} />{p.name}</span>)}</div>}
+      {mine && <div className="pad"><PropButtons s={s} i={i} act={act} me={me} /></div>}
+    </div>
+  )
+}
+
+function BuyPrompt({ s, i, me, act }) {
+  const sq = SQUARES[i]
+  const can = me.money >= sq.price
+  return (
+    <div className="modal-bg soft">
+      <div className="buy">
+        <Deed s={s} i={i} />
+        <div className="buy-side">
+          <h3>Acheter cette propriété ?</h3>
+          <div className="kv"><span>Ton argent</span><b>{fmt(me.money)}</b></div>
+          <div className="kv"><span>Après achat</span><b className={can ? '' : 'neg'}>{fmt(me.money - sq.price)}</b></div>
+          {!can && <p className="small warn">Fonds insuffisants : hypothèque un bien ou passe aux enchères.</p>}
+          <button className="btn primary big" disabled={!can} onClick={() => act({ type: 'BUY' })}>Acheter {fmt(sq.price)}</button>
+          <button className="btn" onClick={() => act({ type: 'DECLINE' })}>Mettre aux enchères</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Auction({ s, me, act }) {
+  const A = s.auction
+  const [now, setNow] = useState(Date.now())
+  const [amt, setAmt] = useState('')
+  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 200); return () => clearInterval(t) }, [])
+  const leader = s.players.find((p) => p.id === A.leader)
+  const left = Math.max(0, (A.deadline - now) / 1000)
+  const canAct = me && !me.bankrupt && !A.passed.includes(me.id) && A.leader !== me.id
+  const bid = (n) => act({ type: 'BID', amount: n })
+  const alive = s.players.filter((p) => !p.bankrupt)
+  return (
+    <div className="modal-bg soft">
+      <div className="buy auction2">
+        <Deed s={s} i={A.square} compact />
+        <div className="buy-side">
+          <h3>Enchères</h3>
+          <div className="bidbox" style={{ '--c': leader?.color || '#5d6b63' }}>
+            <small>Meilleure offre</small>
+            <b>{A.bid ? fmt(A.bid) : '—'}</b>
+            <span>{leader ? leader.name : 'Aucune offre'}</span>
+          </div>
+          <div className="timer"><i style={{ width: `${Math.min(100, (left / 15) * 100)}%` }} /></div>
+          <div className="bidders">{alive.map((p) => <span key={p.id} className={A.passed.includes(p.id) ? 'passed' : p.id === A.leader ? 'lead' : ''} style={{ '--c': p.color }}>{p.name}</span>)}</div>
+          {canAct ? (<>
+            <div className="quick">
+              {[1, 10, 50, 100].map((d) => <button key={d} className="btn" disabled={A.bid + d > me.money} onClick={() => bid(A.bid + d)}>+{d} €</button>)}
+            </div>
+            <form className="row" onSubmit={(e) => { e.preventDefault(); if (+amt > A.bid && +amt <= me.money) { bid(+amt); setAmt('') } }}>
+              <input type="number" min={A.bid + 1} max={me.money} value={amt} placeholder={`> ${A.bid} €`} onChange={(e) => setAmt(e.target.value)} />
+              <button className="btn primary" disabled={!(+amt > A.bid) || +amt > me.money}>Miser</button>
+            </form>
+            <button className="btn ghost" onClick={() => act({ type: 'PASS_AUCTION' })}>Je passe</button>
+          </>) : <p className="muted small center">{!me ? '' : A.leader === me.id ? 'Tu mènes l’enchère.' : 'Tu as passé.'}</p>}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function PlayerSheet({ s, id, me, onClose, onTrade, onPick }) {
+  const p = s.players.find((x) => x.id === id)
+  if (!p) return null
+  const owned = Object.keys(s.props).map(Number).filter((k) => s.props[k].owner === id).sort((a, b) => a - b)
   return (
     <div className="modal-bg" onClick={onClose}>
-      <div className="modal trade" onClick={(e) => e.stopPropagation()}>
-        <button className="x" onClick={onClose}>✕</button>
-        <h2>Proposer un échange</h2>
-        <div className="row">
-          <span>Avec</span>
-          <select value={to} onChange={(e) => setTo(e.target.value)}>
-            {others.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-          </select>
+      <div className="modal sheet" onClick={(e) => e.stopPropagation()}>
+        <div className="sheet-head">
+          <span className="avatar lg" style={{ '--c': p.color }}>{p.name.replace('Bot ', '')[0]?.toUpperCase()}</span>
+          <div><h2>{p.name}</h2><small className="muted">{p.bankrupt ? 'Faillite' : `${fmt(p.money)} en poche · patrimoine ${fmt(netWorth(s, p))}`}</small></div>
+          <button className="x" onClick={onClose}>✕</button>
         </div>
-        <div className="trade-cols">
-          <div>
-            <h3>Je donne</h3>
-            <PropPicker s={s} owner={me.id} value={give.props} onChange={(props) => setGive({ ...give, props })} />
-            <label className="small">Argent (max {fmt(Math.max(0, me.money))})</label>
-            <input type="number" min={0} max={Math.max(0, me.money)} step={10} value={give.money} onChange={(e) => setGive({ ...give, money: Math.max(0, +e.target.value) })} />
-            {me.jailCards.length > 0 && <label className="small"><input type="checkbox" checked={give.jailCards > 0} onChange={(e) => setGive({ ...give, jailCards: e.target.checked ? 1 : 0 })} /> Carte prison</label>}
-          </div>
-          <div>
-            <h3>Je reçois</h3>
-            {other && <PropPicker s={s} owner={other.id} value={get.props} onChange={(props) => setGet({ ...get, props })} />}
-            <label className="small">Argent (max {fmt(Math.max(0, other?.money || 0))})</label>
-            <input type="number" min={0} step={10} value={get.money} onChange={(e) => setGet({ ...get, money: Math.max(0, +e.target.value) })} />
-            {other?.jailCards.length > 0 && <label className="small"><input type="checkbox" checked={get.jailCards > 0} onChange={(e) => setGet({ ...get, jailCards: e.target.checked ? 1 : 0 })} /> Carte prison</label>}
+        <div className="groups">
+          {!owned.length && <p className="muted">Aucune propriété.</p>}
+          <div className="tiles">
+            {owned.map((k) => (
+              <button key={k} className={`tile ${s.props[k].mortgaged ? 'mort' : ''}`} style={{ '--c': sqColor(SQUARES[k]) }} onClick={() => onPick(k)}>
+                <span className="tname">{SQUARES[k].name}</span>
+                <span className="tprice">{s.props[k].mortgaged ? 'Hypothéquée' : s.props[k].houses === 5 ? 'Hôtel' : s.props[k].houses ? `${s.props[k].houses} maison(s)` : fmt(SQUARES[k].price)}</span>
+              </button>
+            ))}
           </div>
         </div>
-        <button className="btn primary big" onClick={send}>Envoyer la proposition</button>
+        {me && !me.bankrupt && p.id !== me.id && !p.bankrupt && (
+          <div className="tfoot"><button className="btn primary" disabled={!!s.trade} onClick={onTrade}>🤝 Proposer un échange</button></div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function Rules({ onClose }) {
+  return (
+    <div className="modal-bg" onClick={onClose}>
+      <div className="modal sheet" onClick={(e) => e.stopPropagation()}>
+        <div className="sheet-head"><h2>Aide</h2><button className="x" onClick={onClose}>✕</button></div>
+        <div className="groups rules">
+          <section><h4>Raccourcis</h4>
+            <p><kbd>Espace</kbd> lancer les dés / fin du tour · <kbd>P</kbd> propriétés · <kbd>E</kbd> échange · <kbd>J</kbd> journal · <kbd>Échap</kbd> fermer</p></section>
+          <section><h4>Tour de jeu</h4>
+            <p>Lance les dés et avance. Un double permet de rejouer, trois doubles d’affilée envoient en prison. Passer par Départ rapporte 200 €.</p></section>
+          <section><h4>Achat et enchères</h4>
+            <p>Sur une propriété libre, tu peux l’acheter au prix affiché. Si tu refuses, elle part aux enchères (tout le monde peut miser, toi compris).</p></section>
+          <section><h4>Construire</h4>
+            <p>Il faut posséder tout le groupe de couleur, sans hypothèque. On construit uniformément : une maison sur chaque terrain avant la deuxième. Après 4 maisons, un hôtel. La revente rapporte la moitié du prix.</p></section>
+          <section><h4>Hypothèques</h4>
+            <p>Un terrain sans bâtiment s’hypothèque pour la moitié de son prix. Le lever coûte cette somme + 10 %. Recevoir un terrain hypothéqué coûte 10 % immédiatement.</p></section>
+          <section><h4>Prison</h4>
+            <p>Pour sortir : payer 50 €, utiliser une carte, ou faire un double (3 essais, puis amende obligatoire). Tu touches tes loyers même en prison.</p></section>
+          <section><h4>Fin de partie</h4>
+            <p>Le dernier joueur non ruiné gagne. Avec une limite de tours, le plus gros patrimoine l’emporte.</p></section>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Log({ s, chat, onClose }) {
+  const ref = useRef()
+  const [msg, setMsg] = useState('')
+  useEffect(() => { ref.current && (ref.current.scrollTop = 1e9) }, [s.log.length])
+  return (
+    <div className="log">
+      <div className="log-head"><b>Journal</b><button className="x" onClick={onClose}>✕</button></div>
+      <div className="log-body" ref={ref}>
+        {s.log.slice(-60).map((l, i) => <div key={i} className={l.msg.startsWith('—') ? 'sep' : ''}>{l.msg.replace(/^— | —$/g, '')}</div>)}
+      </div>
+      <form onSubmit={(e) => { e.preventDefault(); chat(msg); setMsg('') }}>
+        <input value={msg} onChange={(e) => setMsg(e.target.value)} placeholder="Écrire un message…" maxLength={200} />
+      </form>
+    </div>
+  )
+}
+
+// ---------- Gestion des propriétés ----------
+const HOUSE_LABEL = (h) => (h === 5 ? 'Hôtel' : h ? `${h} maison${h > 1 ? 's' : ''}` : 'Terrain nu')
+const unmortgageCost = (sq) => Math.ceil((sq.price / 2) * 1.1)
+
+// Calcule les actions possibles sur une propriété, avec prix et raison si bloqué
+function propActions(s, i, me) {
+  const sq = SQUARES[i], pr = s.props[i]
+  const out = []
+  if (!pr || pr.owner !== me.id) return out
+  const mem = sq.group ? groupMembers(sq.group) : []
+  const full = sq.group && ownsGroup(s, me.id, sq.group)
+  const groupBuilt = mem.some((k) => s.props[k]?.houses)
+  if (sq.type === 'property' && pr.houses < 5) {
+    const cost = GROUPS[sq.group].house
+    let why = null
+    if (!full) why = 'Il faut tout le groupe'
+    else if (mem.some((k) => s.props[k].mortgaged)) why = 'Groupe hypothéqué'
+    else if (pr.houses > Math.min(...mem.map((k) => s.props[k].houses))) why = 'Construis d’abord sur les autres'
+    else if (pr.houses === 4 ? s.hotels < 1 : s.houses < 1) why = 'Banque à court'
+    else if (me.money < cost) why = 'Pas assez d’argent'
+    out.push({ key: 'build', label: pr.houses === 4 ? 'Hôtel' : 'Maison', price: -cost, why, action: { type: 'BUILD', square: i }, primary: true })
+  }
+  if (pr.houses > 0) {
+    const why = pr.houses < Math.max(...mem.map((k) => s.props[k].houses)) ? 'Vends d’abord sur les autres' : null
+    out.push({ key: 'sell', label: pr.houses === 5 ? 'Vendre l’hôtel' : 'Vendre', price: GROUPS[sq.group].house / 2, why, action: { type: 'SELL_HOUSE', square: i } })
+  }
+  if (!pr.mortgaged && !pr.houses)
+    out.push({ key: 'mort', label: 'Hypothéquer', price: sq.price / 2, why: groupBuilt ? 'Vends les maisons du groupe' : null, action: { type: 'MORTGAGE', square: i } })
+  if (pr.mortgaged) {
+    const c = unmortgageCost(sq)
+    out.push({ key: 'unmort', label: 'Lever', price: -c, why: me.money < c ? 'Pas assez d’argent' : null, action: { type: 'UNMORTGAGE', square: i } })
+  }
+  return out
+}
+
+function ActBtn({ a, act }) {
+  return (
+    <button className={`abtn ${a.primary ? 'pri' : ''}`} disabled={!!a.why} title={a.why || ''} onClick={() => act(a.action)}>
+      <span>{a.label}</span>
+      <b className={a.price < 0 ? 'neg' : 'pos'}>{a.price < 0 ? '−' : '+'}{fmt(Math.abs(a.price))}</b>
+    </button>
+  )
+}
+
+function PropButtons({ s, i, act, me }) {
+  if (!me) return null
+  const acts = propActions(s, i, me)
+  if (!acts.length) return null
+  return <div className="prop-btns">{acts.map((a) => <ActBtn key={a.key} a={a} act={act} />)}</div>
+}
+
+function HouseDots({ h }) {
+  if (h === 5) return <span className="hdots"><i className="hotel" /></span>
+  return <span className="hdots">{[0, 1, 2, 3].map((k) => <i key={k} className={k < h ? 'on' : ''} />)}</span>
+}
+
+function Manage({ s, me, act, onClose }) {
+  const mine = Object.keys(s.props).map(Number).filter((k) => s.props[k].owner === me.id).sort((a, b) => a - b)
+  // regroupe par groupe de couleur (gares et compagnies à part)
+  const groups = []
+  for (const k of mine) {
+    const g = SQUARES[k].group || SQUARES[k].type
+    let e = groups.find((x) => x.g === g)
+    if (!e) groups.push((e = { g, items: [] }))
+    e.items.push(k)
+  }
+  const title = (g) => (g === 'station' ? 'Gares' : g === 'utility' ? 'Compagnies' : null)
+  return (
+    <div className="modal-bg" onClick={onClose}>
+      <div className="modal sheet" onClick={(e) => e.stopPropagation()}>
+        <div className="sheet-head">
+          <h2>Mes propriétés</h2>
+          <span className="cash">{fmt(me.money)}</span>
+          <button className="x" onClick={onClose}>✕</button>
+        </div>
+        {!mine.length && <p className="muted empty-msg">Aucune propriété pour l’instant.</p>}
+        <div className="groups">
+          {groups.map(({ g, items }) => {
+            const col = GROUPS[g]?.color || '#5d6b63'
+            const total = GROUPS[g] ? groupMembers(g).length : items.length
+            const full = GROUPS[g] && ownsGroup(s, me.id, g)
+            return (
+              <section key={g} className="grp" style={{ '--c': col }}>
+                <header>
+                  <span>{title(g) || (full ? 'Groupe complet' : `${items.length} / ${total}`)}</span>
+                  {GROUPS[g] && <small>Maison / hôtel {fmt(GROUPS[g].house)}</small>}
+                </header>
+                {items.map((k) => {
+                  const sq = SQUARES[k], pr = s.props[k]
+                  return (
+                    <div key={k} className={`prow ${pr.mortgaged ? 'mort' : ''}`}>
+                      <div className="pinfo">
+                        <b>{sq.name}</b>
+                        <small>
+                          {pr.mortgaged ? 'Hypothéquée' : <>Loyer {sq.type === 'utility' ? (rentFor(s, k, 1) === 10 ? '10× dés' : '4× dés') : fmt(rentFor(s, k, 7))}</>}
+                          {sq.type === 'property' && <> · <HouseDots h={pr.houses} /></>}
+                        </small>
+                      </div>
+                      <div className="pacts">{propActions(s, k, me).map((a) => <ActBtn key={a.key} a={a} act={act} />)}</div>
+                    </div>
+                  )
+                })}
+              </section>
+            )
+          })}
+        </div>
+        <p className="muted small foot">Règle : construction et vente uniformes dans un groupe. Un bouton grisé indique pourquoi au survol.</p>
+      </div>
+    </div>
+  )
+}
+
+// ---------- Échanges ----------
+function Tiles({ s, owner, value, onChange }) {
+  const list = Object.keys(s.props).map(Number).filter((k) => s.props[k].owner === owner).sort((a, b) => a - b)
+  if (!list.length) return <p className="muted small">Aucune propriété</p>
+  return (
+    <div className="tiles">
+      {list.map((k) => {
+        const sq = SQUARES[k]
+        const blocked = sq.group && groupMembers(sq.group).some((i) => s.props[i]?.houses)
+        const on = value.includes(k)
+        return (
+          <button key={k} disabled={blocked} title={blocked ? 'Groupe construit' : ''} className={`tile ${on ? 'on' : ''} ${s.props[k].mortgaged ? 'mort' : ''}`}
+            style={{ '--c': sq.group ? GROUPS[sq.group].color : '#5d6b63' }}
+            onClick={() => onChange(on ? value.filter((x) => x !== k) : [...value, k])}>
+            <span className="tname">{sq.name}</span>
+            <span className="tprice">{s.props[k].mortgaged ? 'Hyp.' : fmt(sq.price)}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function MoneyField({ value, max, onChange }) {
+  return (
+    <div className="moneyf">
+      <input type="range" min={0} max={Math.max(0, max)} step={10} value={Math.min(value, Math.max(0, max))} onChange={(e) => onChange(+e.target.value)} />
+      <input type="number" min={0} max={Math.max(0, max)} step={10} value={value} onChange={(e) => onChange(Math.max(0, Math.min(+e.target.value || 0, Math.max(0, max))))} />
+    </div>
+  )
+}
+
+const sideValue = (side) => side.money + side.props.reduce((a, k) => a + SQUARES[k].price, 0)
+
+function TradeSide({ s, who, side, set, mine }) {
+  return (
+    <div className="tside">
+      <div className="tside-head"><span className="dot" style={{ background: who.color }} /><b>{mine ? 'Tu donnes' : `${who.name} donne`}</b><small>{fmt(who.money)}</small></div>
+      <Tiles s={s} owner={who.id} value={side.props} onChange={(props) => set({ ...side, props })} />
+      <label className="small muted">Argent</label>
+      <MoneyField value={side.money} max={who.money} onChange={(money) => set({ ...side, money })} />
+      {who.jailCards.length > 0 && (
+        <label className="chk"><input type="checkbox" checked={side.jailCards > 0} onChange={(e) => set({ ...side, jailCards: e.target.checked ? 1 : 0 })} /> Carte « Libéré de prison »</label>
+      )}
+    </div>
+  )
+}
+
+function TradeBuilder({ s, me, act, onClose }) {
+  const others = s.players.filter((p) => p.id !== me.id && !p.bankrupt)
+  const empty = { money: 0, props: [], jailCards: 0 }
+  const [to, setTo] = useState(others[0]?.id)
+  const [give, setGive] = useState(empty)
+  const [get, setGet] = useState(empty)
+  const other = s.players.find((p) => p.id === to)
+  useEffect(() => setGet(empty), [to])
+  const isEmpty = !give.money && !give.props.length && !give.jailCards && !get.money && !get.props.length && !get.jailCards
+  return (
+    <div className="modal-bg" onClick={onClose}>
+      <div className="modal sheet trade" onClick={(e) => e.stopPropagation()}>
+        <div className="sheet-head">
+          <h2>Échange</h2>
+          <button className="x" onClick={onClose}>✕</button>
+        </div>
+        <div className="partners">
+          {others.map((p) => (
+            <button key={p.id} className={`partner ${p.id === to ? 'on' : ''}`} style={{ '--c': p.color }} onClick={() => setTo(p.id)}>
+              <span className="dot" style={{ background: p.color }} />{p.name}
+            </button>
+          ))}
+        </div>
+        {other && (
+          <div className="tcols">
+            <TradeSide s={s} who={me} side={give} set={setGive} mine />
+            <div className="tarrow">⇄</div>
+            <TradeSide s={s} who={other} side={get} set={setGet} />
+          </div>
+        )}
+        <div className="tfoot">
+          <span className="muted small">Valeur plateau : {fmt(sideValue(give))} ⇄ {fmt(sideValue(get))}</span>
+          <button className="btn primary" disabled={isEmpty} onClick={() => { act({ type: 'PROPOSE_TRADE', to, give, get }); onClose() }}>Proposer</button>
+        </div>
       </div>
     </div>
   )
 }
 
 function TradeSummary({ s, side }) {
-  const items = [...side.props.map((k) => SQUARES[k].name), side.money ? fmt(side.money) : null, side.jailCards ? 'Carte prison' : null].filter(Boolean)
-  return <ul className="tsum">{items.length ? items.map((x) => <li key={x}>{x}</li>) : <li className="muted">rien</li>}</ul>
+  const items = [
+    ...side.props.map((k) => ({ k, name: SQUARES[k].name, c: SQUARES[k].group ? GROUPS[SQUARES[k].group].color : '#5d6b63', sub: s.props[k]?.mortgaged ? 'hypothéquée' : fmt(SQUARES[k].price) })),
+    side.money ? { k: 'm', name: fmt(side.money), c: '#e8c468', sub: 'argent' } : null,
+    side.jailCards ? { k: 'j', name: 'Libéré de prison', c: '#9fb3a6', sub: 'carte' } : null,
+  ].filter(Boolean)
+  if (!items.length) return <p className="muted small">Rien</p>
+  return <div className="tsum">{items.map((x) => <div key={x.k} className="tsum-item" style={{ '--c': x.c }}><b>{x.name}</b><small>{x.sub}</small></div>)}</div>
 }
 
 function TradeIncoming({ s, me, act }) {
@@ -389,15 +717,16 @@ function TradeIncoming({ s, me, act }) {
   if (t.to !== me.id) return null
   return (
     <div className="modal-bg">
-      <div className="modal">
-        <h2>{from.name} te propose un échange</h2>
-        <div className="trade-cols">
-          <div><h3>Tu reçois</h3><TradeSummary s={s} side={t.give} /></div>
-          <div><h3>Tu donnes</h3><TradeSummary s={s} side={t.get} /></div>
+      <div className="modal sheet">
+        <div className="sheet-head"><h2><span className="dot" style={{ background: from.color }} /> {from.name} propose un échange</h2></div>
+        <div className="tcols">
+          <div className="tside"><div className="tside-head"><b>Tu reçois</b></div><TradeSummary s={s} side={t.give} /></div>
+          <div className="tarrow">⇄</div>
+          <div className="tside"><div className="tside-head"><b>Tu donnes</b></div><TradeSummary s={s} side={t.get} /></div>
         </div>
-        <div className="row">
-          <button className="btn primary" onClick={() => act({ type: 'ACCEPT_TRADE' })}>Accepter</button>
+        <div className="tfoot">
           <button className="btn" onClick={() => act({ type: 'REJECT_TRADE' })}>Refuser</button>
+          <button className="btn primary" onClick={() => act({ type: 'ACCEPT_TRADE' })}>Accepter</button>
         </div>
       </div>
     </div>
@@ -425,22 +754,6 @@ function CardPopup({ s }) {
   )
 }
 
-function Log({ s, open, setOpen, chat }) {
-  const ref = useRef()
-  const [msg, setMsg] = useState('')
-  useEffect(() => { ref.current && (ref.current.scrollTop = 1e9) }, [s.log.length, open])
-  return (
-    <div className={`log ${open ? '' : 'closed'}`}>
-      <div className="log-head" onClick={() => setOpen(!open)}>Journal {open ? '▾' : '▸'}</div>
-      {open && (<>
-        <div className="log-body" ref={ref}>{s.log.slice(-40).map((l, i) => <div key={i}>{l.msg}</div>)}</div>
-        <form onSubmit={(e) => { e.preventDefault(); chat(msg); setMsg('') }}>
-          <input value={msg} onChange={(e) => setMsg(e.target.value)} placeholder="Message…" maxLength={200} />
-        </form>
-      </>)}
-    </div>
-  )
-}
 
 function GameOver({ s }) {
   return (
