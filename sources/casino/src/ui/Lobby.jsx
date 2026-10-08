@@ -57,6 +57,26 @@ export function Lobby({ onStart }) {
   const broke = bankroll < 5;
   return (
     <div className="lobby hub">
+      <a
+        className="back-portfolio"
+        href="../index.html"
+        style={{
+          position: "fixed",
+          top: 14,
+          left: 14,
+          zIndex: 10,
+          padding: "9px 16px",
+          borderRadius: 999,
+          border: "1px solid var(--line)",
+          background: "#0009",
+          color: "var(--ink)",
+          textDecoration: "none",
+          fontWeight: 600,
+          fontSize: 14,
+        }}
+      >
+        ← Portfolio
+      </a>
       <div className="hub-card">
         <div className="logo">
           <span>♠</span>
@@ -158,7 +178,7 @@ export function Lobby({ onStart }) {
           </button>
         </div>
         <button className="link" onClick={() => setShowBoard(true)}>
-          Classement du blackjack
+          Classement général des jetons
         </button>
       </div>
       {showBoard && <Leaderboard onClose={() => setShowBoard(false)} />}

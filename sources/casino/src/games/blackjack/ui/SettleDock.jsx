@@ -42,10 +42,10 @@ export function SettleDock({ ctrl, me }) {
         </button>
         <button className="btn ghost" disabled={saved === true} onClick={save}>
           {saved === true
-            ? "Score enregistre"
+            ? "Jetons enregistrés"
             : saved === "err"
               ? "Echec, reessayer"
-              : "Enregistrer mon score"}
+              : "Enregistrer mes jetons"}
         </button>
       </div>
     </div>

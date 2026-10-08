@@ -70,7 +70,7 @@ export function BlackjackHud({ ctrl, state, me, onQuit }) {
         <button
           className="icon"
           onClick={() => setShowBoard(true)}
-          title="Classement"
+          title="Classement général des jetons"
         >
           🏆
         </button>

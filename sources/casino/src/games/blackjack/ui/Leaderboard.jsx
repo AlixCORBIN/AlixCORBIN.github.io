@@ -12,7 +12,8 @@ export function Leaderboard({ onClose }) {
   return (
     <div className="modal" onClick={onClose}>
       <div className="panel" onClick={(ev) => ev.stopPropagation()}>
-        <h2>Classement</h2>
+        <h2>Classement général des jetons</h2>
+        <p className="hint">Tes jetons sont partagés entre tous les jeux du casino.</p>
         {error && <p className="err">{error}</p>}
         {!rows && !error && <div className="spinner" />}
         {rows && rows.length === 0 && <p>Aucun score pour le moment.</p>}
@@ -22,8 +23,7 @@ export function Leaderboard({ onClose }) {
               <tr>
                 <th>#</th>
                 <th>Joueur</th>
-                <th>Solde</th>
-                <th>Mains</th>
+                <th>Jetons</th>
                 <th>Date</th>
               </tr>
             </thead>
@@ -32,8 +32,7 @@ export function Leaderboard({ onClose }) {
                 <tr key={i}>
                   <td>{i + 1}</td>
                   <td>{row.pseudo}</td>
-                  <td>{row.bankroll}</td>
-                  <td>{row.hands}</td>
+                  <td>{Math.round(row.bankroll).toLocaleString("fr-FR")}</td>
                   <td>{row.date}</td>
                 </tr>
               ))}
