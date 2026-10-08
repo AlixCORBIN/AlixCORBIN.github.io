@@ -207,3 +207,23 @@ button.chip{cursor:pointer}button.chip:hover{border-color:var(--gold)}
   .buy .deed .rents{font-size:.78rem}
 }
 .buy>.deed{align-self:start}
+/* menu son */
+.pop-bg{position:fixed;inset:0;z-index:19}
+.soundmenu{position:absolute;top:54px;right:10px;z-index:20;width:290px;background:#10251b;border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,.5);animation:rise .18s ease-out;display:flex;flex-direction:column;gap:10px}
+.sm-head{display:flex;align-items:center;justify-content:space-between}
+.switch{width:42px;height:24px;border-radius:12px;border:none;background:rgba(255,255,255,.18);position:relative;cursor:pointer;transition:.2s}
+.switch i{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.switch.on{background:var(--accent)}.switch.on i{left:21px}
+.sm-vol{display:flex;align-items:center;gap:8px}.sm-vol input{flex:1;accent-color:var(--accent);padding:0}.sm-vol small{width:34px;text-align:right;color:var(--muted)}
+.sm-cats{display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--line);padding-top:8px}.sm-cats.off{opacity:.4}
+.sm-cat{display:flex;align-items:center;gap:8px;font-size:.86rem;padding:4px 0;cursor:pointer}
+.sm-cat span{flex:1}.sm-cat input{accent-color:var(--accent);width:16px;height:16px;padding:0}
+.ibtn.sm{width:26px;height:26px;font-size:.65rem}
+/* défilement des fenêtres longues */
+.modal.sheet>.groups,.modal.sheet>.tcols{min-height:0;flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain}
+.modal.sheet{max-height:min(88vh,88dvh)}
+.groups,.tcols,.tiles,.log-body,.players{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.35) transparent}
+.groups::-webkit-scrollbar,.tcols::-webkit-scrollbar,.tiles::-webkit-scrollbar,.log-body::-webkit-scrollbar{width:8px}
+.groups::-webkit-scrollbar-thumb,.tcols::-webkit-scrollbar-thumb,.tiles::-webkit-scrollbar-thumb,.log-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.3);border-radius:4px}
+.tcols .tiles{max-height:none}
+.groups>*,.tside>*{flex-shrink:0}

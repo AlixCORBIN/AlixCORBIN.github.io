@@ -3,6 +3,8 @@ import { useGame } from '../net/useGame.js'
 import Scene from '../three/Scene.jsx'
 import { SQUARES, GROUPS, groupMembers, JAIL_FINE } from '../game/data.js'
 import { fmt, netWorth, ownsGroup, rentFor } from '../game/engine.js'
+import { usePresented } from './present.js'
+import { sfx, getSfx, setSfx, onSfx, CATEGORIES } from './sfx.js'
 
 const back = () => (window.location.href = '../jeux/index.html')
 
@@ -137,13 +139,14 @@ function useMoneyDeltas(players) {
 }
 
 function GameView({ g }) {
-  const s = g.game
+  const { hud: s, scene, anim } = usePresented(g.game, g.myId)
   const me = s.players.find((p) => p.id === g.myId)
   const [sel, setSel] = useState(null)
   const [modal, setModal] = useState(null) // 'manage' | 'trade' | 'rules' | {player}
   const [logOpen, setLogOpen] = useState(() => window.innerWidth > 760)
+  const [soundOpen, setSoundOpen] = useState(false)
   const close = () => setModal(null)
-  const main = useMainAction(s, me, g.act)
+  const main = anim ? null : useMainAction(s, me, g.act)
 
   // Raccourcis clavier
   useEffect(() => {
@@ -154,6 +157,7 @@ function GameView({ g }) {
       else if (e.key.toLowerCase() === 'p') setModal((m) => (m === 'manage' ? null : 'manage'))
       else if (e.key.toLowerCase() === 'e' && !s.trade) setModal((m) => (m === 'trade' ? null : 'trade'))
       else if (e.key.toLowerCase() === 'j') setLogOpen((o) => !o)
+      else if (e.key.toLowerCase() === 'm') setSfx({ muted: !getSfx().muted })
     }
     window.addEventListener('keydown', h)
     return () => window.removeEventListener('keydown', h)
@@ -163,14 +167,14 @@ function GameView({ g }) {
 
   return (
     <div className="game">
-      <Scene game={s} selected={sel} onPick={setSel} myId={g.myId} />
-      <TopBar s={s} code={g.code} notify={g.notify} onRules={() => setModal('rules')} logOpen={logOpen} toggleLog={() => setLogOpen(!logOpen)} />
+      <Scene game={scene} card={s.lastCard && { ...s.lastCard, who: s.players.find((p) => p.id === s.lastCard.player)?.name }} selected={sel} onPick={setSel} myId={g.myId} />
+      <TopBar s={s} code={g.code} notify={g.notify} onSound={() => setSoundOpen(!soundOpen)} onRules={() => setModal('rules')} logOpen={logOpen} toggleLog={() => setLogOpen(!logOpen)} />
       <Players s={s} myId={g.myId} onPick={(p) => setModal({ player: p.id })} />
       <DebtBanner s={s} me={me} act={g.act} onManage={() => setModal('manage')} />
-      <Dock s={s} me={me} act={g.act} main={main} onManage={() => setModal('manage')} onTrade={() => setModal('trade')} />
+      <Dock s={s} me={me} act={g.act} main={main} anim={anim} onManage={() => setModal('manage')} onTrade={() => setModal('trade')} />
       {sel != null && !modal && <SquareCard s={s} i={sel} me={me} act={g.act} onClose={() => setSel(null)} />}
       {logOpen && <Log s={s} chat={g.chat} onClose={() => setLogOpen(false)} />}
-      <CardPopup s={s} />
+      {soundOpen && <SoundMenu onClose={() => setSoundOpen(false)} />}
       {pend != null && !modal && <BuyPrompt s={s} i={pend} me={me} act={g.act} />}
       {modal === 'manage' && me && <Manage s={s} me={me} act={g.act} onClose={close} />}
       {modal === 'trade' && me && <TradeBuilder s={s} me={me} act={g.act} onClose={close} />}
@@ -184,7 +188,43 @@ function GameView({ g }) {
   )
 }
 
-function TopBar({ s, code, notify, onRules, logOpen, toggleLog }) {
+function useSfxSettings() {
+  const [v, setV] = useState(getSfx())
+  useEffect(() => onSfx(setV), [])
+  return v
+}
+
+function SoundMenu({ onClose }) {
+  const st = useSfxSettings()
+  return (
+    <>
+      <div className="pop-bg" onClick={onClose} />
+      <div className="soundmenu">
+        <div className="sm-head">
+          <b>Bruitages</b>
+          <button className={`switch ${st.muted ? '' : 'on'}`} onClick={() => setSfx({ muted: !st.muted })} title="Activer / couper le son"><i /></button>
+        </div>
+        <label className="sm-vol">
+          <span>{st.muted || st.volume === 0 ? '🔇' : st.volume < 0.4 ? '🔈' : '🔊'}</span>
+          <input type="range" min={0} max={1} step={0.05} value={st.volume} disabled={st.muted} onChange={(e) => setSfx({ volume: +e.target.value })} onPointerUp={() => sfx('land')} />
+          <small>{Math.round(st.volume * 100)}%</small>
+        </label>
+        <div className={`sm-cats ${st.muted ? 'off' : ''}`}>
+          {Object.entries(CATEGORIES).map(([k, label]) => (
+            <label key={k} className="sm-cat">
+              <input type="checkbox" checked={st.cats[k]} disabled={st.muted} onChange={(e) => setSfx({ cats: { [k]: e.target.checked } })} />
+              <span>{label}</span>
+              <button className="ibtn sm" disabled={st.muted || !st.cats[k]} title="Écouter" onClick={(e) => { e.preventDefault(); sfx({ dice: 'roll', move: 'step', money: 'gain', events: 'buy', turn: 'turn' }[k]) }}>▶</button>
+            </label>
+          ))}
+        </div>
+      </div>
+    </>
+  )
+}
+
+function TopBar({ s, code, notify, onRules, onSound, logOpen, toggleLog }) {
+  const st = useSfxSettings()
   const copy = () => {
     const link = `${location.origin}${location.pathname}?room=${code}`
     navigator.clipboard?.writeText(code === 'SOLO' ? code : link).then(() => notify(code === 'SOLO' ? 'Partie solo' : 'Lien d’invitation copié'))
@@ -196,6 +236,8 @@ function TopBar({ s, code, notify, onRules, logOpen, toggleLog }) {
       <span className="chip">Tour <b>{Math.min(s.round, s.settings.maxRounds || s.round)}</b>{s.settings.maxRounds ? <span className="muted"> / {s.settings.maxRounds}</span> : null}</span>
       <span className="chip hide-m" title="Bâtiments disponibles à la banque">🏠 {s.houses} · 🏨 {s.hotels}</span>
       <span className="grow" />
+      <button className="ibtn" onClick={() => setSfx({ muted: !st.muted })} title="Couper / remettre le son (M)">{st.muted ? '🔇' : '🔊'}</button>
+      <button className="ibtn" onClick={onSound} title="Réglages des bruitages">⚙</button>
       <button className={`ibtn ${logOpen ? 'on' : ''}`} onClick={toggleLog} title="Journal (J)">💬</button>
       <button className="ibtn" onClick={onRules} title="Règles et raccourcis">?</button>
     </div>
@@ -254,15 +296,16 @@ function DiceMini({ d }) {
   return <span className="dmini">{d.map((v, i) => <i key={i}>{['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'][v - 1]}</i>)}</span>
 }
 
-function Dock({ s, me, act, main, onManage, onTrade }) {
+function Dock({ s, me, act, main, anim, onManage, onTrade }) {
   if (s.phase !== 'playing') return null
   const cur = s.players[s.turn]
   const myTurn = me && cur.id === me.id
   let status
-  if (!me || me.bankrupt) status = <>Spectateur · tour de <b style={{ color: cur.color }}>{cur.name}</b></>
+  if (anim) status = <>🎲 {cur.name} lance les dés…</>
+  else if (!me || me.bankrupt) status = <>Spectateur · tour de <b style={{ color: cur.color }}>{cur.name}</b></>
   else if (s.auction) status = 'Enchères en cours'
   else if (s.debts.length && !s.debts.some((d) => d.player === me.id)) status = <>{s.players.find((p) => p.id === s.debts[0].player)?.name} règle une dette…</>
-  else if (myTurn) status = s.pending ? 'Décide de l’achat' : s.turnPhase === 'roll' ? (me.inJail ? 'Tu es en prison' : 'À toi de jouer') : 'Tour terminé ?'
+  else if (myTurn) status = s.pending ? 'Décide de l’achat' : s.turnPhase === 'roll' ? (me.inJail ? 'Tu es en prison' : 'À toi de jouer') : 'Termine ton tour'
   else status = <>Tour de <b style={{ color: cur.color }}>{cur.name}</b></>
   return (
     <div className="dock">
@@ -271,7 +314,7 @@ function Dock({ s, me, act, main, onManage, onTrade }) {
         <span>{status}</span>
       </div>
       <div className="dock-main">
-        {myTurn && me.inJail && s.turnPhase === 'roll' && !s.debts.length && (
+        {!anim && myTurn && me.inJail && s.turnPhase === 'roll' && !s.debts.length && (
           <JailOptions me={me} act={act} />
         )}
         {main ? (
@@ -462,7 +505,7 @@ function Rules({ onClose }) {
         <div className="sheet-head"><h2>Aide</h2><button className="x" onClick={onClose}>✕</button></div>
         <div className="groups rules">
           <section><h4>Raccourcis</h4>
-            <p><kbd>Espace</kbd> lancer les dés / fin du tour · <kbd>P</kbd> propriétés · <kbd>E</kbd> échange · <kbd>J</kbd> journal · <kbd>Échap</kbd> fermer</p></section>
+            <p><kbd>Espace</kbd> lancer les dés / fin du tour · <kbd>P</kbd> propriétés · <kbd>E</kbd> échange · <kbd>J</kbd> journal · <kbd>M</kbd> couper le son · <kbd>Échap</kbd> fermer</p></section>
           <section><h4>Tour de jeu</h4>
             <p>Lance les dés et avance. Un double permet de rejouer, trois doubles d’affilée envoient en prison. Passer par Départ rapporte 200 €.</p></section>
           <section><h4>Achat et enchères</h4>

@@ -3,6 +3,8 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls, ContactShadows, RoundedBox } from '@react-three/drei'
 import * as THREE from 'three'
 import { SQUARES } from '../game/data.js'
+import { sfx } from '../ui/sfx.js'
+import Cards3D from './Cards3D.jsx'
 import { drawBoard, squareCenter, inward, isCorner, CORNER, HALF } from './layout.js'
 
 const Y = 0.12 // hauteur de la surface du plateau
@@ -135,6 +137,7 @@ function Pawn({ player, offset, active }) {
       s.direct = fwd > 12 || fwd === 0
       s.cur = s.direct ? s.target : (s.cur + 1) % 40
       s.t = 0
+      if (!s.direct) sfx('step')
     }
     if (s.t < 1) s.t = Math.min(1, s.t + dt * (s.direct ? 1.4 : 6.5))
     const [ax, az] = squareCenter(s.from)
@@ -214,7 +217,7 @@ function FitCamera() {
   return null
 }
 
-export default function Scene({ game, selected, onPick, myId }) {
+export default function Scene({ game, selected, onPick, myId, card }) {
   const players = game.players.filter((p) => !p.bankrupt)
   const offsets = useMemo(() => {
     const by = {}
@@ -243,6 +246,7 @@ export default function Scene({ game, selected, onPick, myId }) {
       <FitCamera />
       <Board onPick={onPick} selected={selected} />
       <Ownership game={game} />
+      <Cards3D card={card} />
       {players.map((p) => (
         <Pawn key={p.id} player={p} offset={offsets[p.id] || [0, 0]} active={p.id === current} />
       ))}

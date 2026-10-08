@@ -4,6 +4,7 @@ import { createLobby, lobbyAdd, lobbyRemove, startGame, applyAction, auctionTime
 import { botDecide } from '../game/bot.js'
 import { BOT_NAMES } from '../game/data.js'
 import { saveMonopolyGame } from './stats.js'
+import { DICE_MS, moveDelay } from '../ui/present.js'
 
 export function useGame() {
   const myId = useRef(getClientId()).current
@@ -141,6 +142,15 @@ export function useGame() {
     start: () => { try { commit(startGame(gameRef.current)) } catch (e) { notify(e.message) } },
   }
 
+  // Temps d'animation (dés + pion) à laisser passer avant qu'un bot rejoue
+  const animUntil = useRef(0)
+  const prevGame = useRef(null)
+  useEffect(() => {
+    const p = prevGame.current
+    if (p && game && p.phase === 'playing' && game.diceRev !== p.diceRev) animUntil.current = Date.now() + DICE_MS + moveDelay(p, game)
+    prevGame.current = game
+  }, [game])
+
   // Boucle des bots (hôte uniquement) : bots + joueurs déconnectés
   useEffect(() => {
     if (role !== 'host' || !game || game.phase !== 'playing') return
@@ -148,7 +158,8 @@ export function useGame() {
     for (const p of actors) {
       const a = botDecide(game, p.id)
       if (a) {
-        const delay = a.type === 'ROLL' ? 1100 : a.type === 'END_TURN' ? 1500 : 800
+        const base = a.type === 'ROLL' ? 900 : a.type === 'END_TURN' ? 1100 : 700
+        const delay = Math.max(base, animUntil.current - Date.now() + base)
         const t = setTimeout(() => {
           if (gameRef.current.rev !== game.rev) return
           const err = hostApply(p.id, a)

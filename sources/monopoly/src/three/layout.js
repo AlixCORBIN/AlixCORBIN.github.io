@@ -67,8 +67,6 @@ export function drawBoard(S = 2048) {
     g.fillText(label, 0, 0)
     g.restore()
   }
-  card(S * 0.33, S * 0.33, -Math.PI / 4, '#f9a8c8', '?  CHANCE')
-  card(S * 0.67, S * 0.67, -Math.PI / 4 + Math.PI, '#a8d8f9', 'CAISSE')
 
   g.strokeStyle = '#1d2b20'
   g.lineWidth = 3
