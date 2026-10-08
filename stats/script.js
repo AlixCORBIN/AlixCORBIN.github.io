@@ -43,6 +43,14 @@ async function fetchLeaderboard() {
     return r.json();
 }
 
+async function fetchGameLeaderboard(fn) {
+    try {
+        const r = await sbFetch('rpc/' + fn, { body: '{}' });
+        const rows = await r.json();
+        return Array.isArray(rows) ? rows : [];
+    } catch { return []; }
+}
+
 async function fetchStats() {
     const r = await sbFetch('rpc/get_stats_summary', { body: '{}' });
     return r.json();
@@ -214,6 +222,67 @@ function renderBlackjack(data) {
     setVal('bj-bj',  Number(data.bj_total_bj || 0).toLocaleString('fr-FR'));
 }
 
+/* ── Roulette ── */
+function renderRoulette(data) {
+    const n = v => Number(v || 0).toLocaleString('fr-FR', { maximumFractionDigits: 0 });
+    const sign = v => (v > 0 ? '+' : '') + n(v) + '€';
+    const color = v => v >= 0 ? 'var(--green)' : '#f87171';
+    const spins = Number(data.ro_spins || 0);
+    const pct = v => spins ? ` (${Math.round(100 * Number(v || 0) / spins)}%)` : '';
+    setVal('ro-sessions', n(data.ro_sessions));
+    setVal('ro-spins', n(spins));
+    setVal('ro-wagered', n(data.ro_wagered) + '€');
+    setValColored('ro-avg', sign(Number(data.ro_avg_net || 0)), color(Number(data.ro_avg_net || 0)));
+    setValColored('ro-best', sign(Number(data.ro_best || 0)), color(Number(data.ro_best || 0)));
+    setVal('ro-red', n(data.ro_red) + pct(data.ro_red));
+    setVal('ro-black', n(data.ro_black) + pct(data.ro_black));
+    setVal('ro-zero', n(data.ro_zero) + pct(data.ro_zero));
+}
+
+/* ── Monopoly ── */
+function renderMonopoly(data) {
+    const n = v => Number(v || 0).toLocaleString('fr-FR');
+    ['games', 'turns', 'players', 'bots', 'props', 'hotels', 'trades', 'bankrupt']
+        .forEach(k => setVal('mo-' + k, n(data['mo_' + k])));
+}
+
+/* ── Leaderboards Roulette / Monopoly (même table que le blackjack) ── */
+function renderGameLeaderboard(panel, rows, cols) {
+    const el = document.querySelector(`.game-panel[data-panel="${panel}"] .leaderboard-list`);
+    if (!el) return;
+    if (!rows.length) {
+        el.innerHTML = `<p class="lb-empty">${d('lb.empty') || 'Aucune session.'}</p>`;
+        return;
+    }
+    const medals = ['🥇', '🥈', '🥉'];
+    el.innerHTML = `
+        <table class="lb-table">
+            <thead><tr><th>#</th>${cols.map(c => `<th>${c.label}</th>`).join('')}</tr></thead>
+            <tbody>
+                ${rows.map((row, i) => `
+                    <tr class="${i < 3 ? 'lb-top' : ''}">
+                        <td class="lb-rank">${medals[i] || (i + 1)}</td>
+                        ${cols.map(c => `<td class="${c.cls || ''}"${c.style ? ` style="${c.style(row)}"` : ''}>${c.render(row)}</td>`).join('')}
+                    </tr>`).join('')}
+            </tbody>
+        </table>`;
+}
+
+function renderGameLeaderboards(ro, mo) {
+    const n = v => Number(v || 0).toLocaleString('fr-FR');
+    renderGameLeaderboard('ro', ro, [
+        { label: d('lb.pseudo') || 'Pseudo', cls: 'lb-pseudo', render: r => esc(r.pseudo) },
+        { label: 'Gain', cls: 'lb-bankroll', style: r => `color:${r.net >= 0 ? 'var(--green)' : '#f87171'}`, render: r => (r.net > 0 ? '+' : '') + n(r.net) + ' €' },
+        { label: 'Tirages', cls: 'lb-hands', render: r => n(r.spins) },
+        { label: d('lb.date') || 'Date', cls: 'lb-date', render: r => esc(r.date) },
+    ]);
+    renderGameLeaderboard('mo', mo, [
+        { label: d('lb.pseudo') || 'Pseudo', cls: 'lb-pseudo', render: r => esc(r.pseudo) },
+        { label: 'Victoires', cls: 'lb-bankroll', style: () => 'color:var(--green)', render: r => n(r.wins) },
+        { label: d('lb.date') || 'Date', cls: 'lb-date', render: r => esc(r.date) },
+    ]);
+}
+
 /* ── Helpers ── */
 function setVal(id, val) {
     const el = document.getElementById(id);
@@ -255,7 +324,10 @@ async function init() {
     if (savedLang !== 'fr') setLanguage(savedLang);
 
     try {
-        const [data, lb] = await Promise.all([fetchStats(), fetchLeaderboard()]);
+        const [data, lb, roLb, moLb] = await Promise.all([
+            fetchStats(), fetchLeaderboard(),
+            fetchGameLeaderboard('get_roulette_leaderboard'), fetchGameLeaderboard('get_monopoly_leaderboard'),
+        ]);
         window._lastStats = data;
         window._lastLb    = lb;
         renderVisits(data);
@@ -263,14 +335,17 @@ async function init() {
         renderChannelRanking(data.channel_clicks);
         renderPrefs(data.preferences);
         renderBlackjack(data);
+        renderRoulette(data);
+        renderMonopoly(data);
         renderLeaderboard(Array.isArray(lb) ? lb : []);
+        renderGameLeaderboards(roLb, moLb);
     } catch (e) {
         console.error('Stats fetch error:', e);
         ['val-total','val-today','val-week','val-month'].forEach(id => setVal(id, '?'));
     }
 }
 
-/* ── Onglets jeux (Roulette / Monopoly à 0 tant qu'aucune table n'existe) ── */
+/* ── Onglets jeux ── */
 function initGameTabs() {
     const tabs = document.querySelectorAll('.game-tab');
     const show = g => {

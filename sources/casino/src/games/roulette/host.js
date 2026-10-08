@@ -15,6 +15,7 @@ import {
   takeCredit,
   undoBet,
 } from "./engine.js";
+import { recordSpin } from "./api.js";
 import { ROULETTE_RULES } from "./rules.js";
 import { fetchRandomIntegers } from "../../lib/random.js";
 import { HostController } from "../../net/controller.js";
@@ -133,6 +134,7 @@ export class RouletteHost extends HostController {
         this.arm("spin", ROULETTE_RULES.spinMs, () => {
           resolveSpin(g);
           this.settledAt = Date.now();
+          recordSpin(g.result);
         });
       } else if (g.phase === "settle") {
         this.arm("next", 9000, () => nextRound(g));

@@ -3,6 +3,7 @@ import { saveBlackjackSession } from "./games/blackjack/api.js";
 import { sessionStats } from "./games/blackjack/engine.js";
 import { BlackjackScene } from "./games/blackjack/three/BlackjackScene.jsx";
 import { BlackjackHud } from "./games/blackjack/ui/BlackjackHud.jsx";
+import { saveRouletteSession } from "./games/roulette/api.js";
 import { RouletteScreen } from "./games/roulette/ui/RouletteScreen.jsx";
 import { sound } from "./lib/sound.js";
 import { loadWallet, saveWallet, settledBankroll } from "./lib/wallet.js";
@@ -38,6 +39,15 @@ export function GameScreen({ ctrl, onQuit }) {
     ) {
       savedRound.current = state.round;
       saveBlackjackSession(sessionStats(me));
+    }
+    if (
+      state?.game === "roulette" &&
+      state?.phase === "settle" &&
+      me?.bets.length &&
+      savedRound.current !== state.round
+    ) {
+      savedRound.current = state.round;
+      saveRouletteSession(me);
     }
   }, [state?.phase, state?.round]);
   const prev = React.useRef({});

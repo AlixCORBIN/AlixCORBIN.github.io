@@ -3,6 +3,7 @@ import { hostRoom, joinRoom, newCode, getClientId } from './net.js'
 import { createLobby, lobbyAdd, lobbyRemove, startGame, applyAction, auctionTimeout } from '../game/engine.js'
 import { botDecide } from '../game/bot.js'
 import { BOT_NAMES } from '../game/data.js'
+import { saveMonopolyGame } from './stats.js'
 
 export function useGame() {
   const myId = useRef(getClientId()).current
@@ -167,6 +168,14 @@ export function useGame() {
     }, Math.max(0, game.auction.deadline - Date.now()) + 50)
     return () => clearTimeout(t)
   }, [game, role, commit])
+
+  // Fin de partie : l'hôte enregistre la partie une seule fois (id unique côté base)
+  const savedGame = useRef(null)
+  useEffect(() => {
+    if (role !== 'host' || game?.phase !== 'over' || savedGame.current === game.id) return
+    savedGame.current = game.id
+    saveMonopolyGame(game)
+  }, [game, role])
 
   useEffect(() => () => net.current?.destroy(), [])
 

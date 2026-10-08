@@ -40,6 +40,7 @@ export function addPlayer(g, id, name, bankroll = 1000) {
     id,
     name: String(name || "Joueur").slice(0, 16),
     bankroll: Math.max(0, Math.floor(bankroll)),
+    startBankroll: Math.max(0, Math.floor(bankroll)),
     bets: [],
     lastBets: [],
     ready: false,

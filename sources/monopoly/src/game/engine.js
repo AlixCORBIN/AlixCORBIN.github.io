@@ -85,6 +85,9 @@ export function startGame(s) {
     hotels: 12,
     winner: null,
     log: [],
+    id: crypto.randomUUID(),
+    startedAt: Date.now(),
+    stats: { buys: 0, hotels: 0, trades: 0, bankruptcies: 0 },
   })
   log(s, `La partie commence ! ${s.players[0].name} joue en premier.`)
   s.rev++
@@ -261,6 +264,7 @@ function closeAuctionIfDone(s) {
     const w = s.players[idxOf(s, a.leader)]
     w.money -= a.bid
     s.props[a.square] = { owner: w.id, houses: 0, mortgaged: false }
+    if (s.stats) s.stats.buys++
     log(s, `${w.name} remporte ${sq.name} aux enchères pour ${fmt(a.bid)}.`)
     if (w.money < 0 && !s.debts.some((d) => d.player === w.id)) s.debts.push({ player: w.id, creditor: null })
   } else log(s, `Aucune offre : ${sq.name} reste à la banque.`)
@@ -306,6 +310,7 @@ function endGame(s, why) {
   const alive = s.players.filter((p) => !p.bankrupt)
   const ranking = [...alive].sort((a, b) => netWorth(s, b) - netWorth(s, a))
   s.phase = 'over'
+  s.endReason = why
   s.winner = ranking[0]?.id
   s.ranking = ranking.map((p) => ({ id: p.id, worth: netWorth(s, p) }))
   log(s, `${why}. ${ranking[0]?.name} remporte la partie !`)
@@ -347,6 +352,7 @@ function bankrupt(s, p) {
   pl.jailCards = []
   pl.money = 0
   pl.bankrupt = true
+  if (s.stats) s.stats.bankruptcies++
   s.debts = s.debts.filter((d) => d.player !== pl.id)
   if (s.trade && (s.trade.from === pl.id || s.trade.to === pl.id)) s.trade = null
   const alive = s.players.filter((x) => !x.bankrupt)
@@ -436,6 +442,7 @@ export function applyAction(s0, actorId, a) {
       if (me.money < sq.price) throw new Error('Fonds insuffisants')
       me.money -= sq.price
       s.props[s.pending.square] = { owner: me.id, houses: 0, mortgaged: false }
+      if (s.stats) s.stats.buys++
       log(s, `${me.name} achète ${sq.name} pour ${fmt(sq.price)}.`)
       s.pending = null
       s.rentMod = null
@@ -488,6 +495,7 @@ export function applyAction(s0, actorId, a) {
       if (pr.houses === 4) {
         if (s.hotels < 1) throw new Error('Plus d’hôtels en banque')
         s.hotels--; s.houses += 4
+        if (s.stats) s.stats.hotels++
       } else {
         if (s.houses < 1) throw new Error('Plus de maisons en banque')
         s.houses--
@@ -579,6 +587,7 @@ export function applyAction(s0, actorId, a) {
       for (let k = 0; k < t.give.jailCards; k++) B.jailCards.push(A.jailCards.pop())
       for (let k = 0; k < t.get.jailCards; k++) A.jailCards.push(B.jailCards.pop())
       log(s, `${B.name} accepte l’échange avec ${A.name}.`)
+      if (s.stats) s.stats.trades++
       const intr = (list) => list.filter((k) => s.props[k].mortgaged).reduce((x, k) => x + Math.ceil(SQUARES[k].price / 2 * 0.1), 0)
       const iB = intr(t.give.props), iA = intr(t.get.props)
       if (iB) pay(s, idxOf(s, B.id), null, iB, 'intérêts 10 % sur hypothèques reçues')
