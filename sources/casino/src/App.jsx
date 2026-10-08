@@ -1,6 +1,7 @@
 import React from "react";
 import { BlackjackHost } from "./games/blackjack/host.js";
 import { RouletteHost } from "./games/roulette/host.js";
+import { WerewolfHost } from "./games/werewolf/host.js";
 import { GameScreen } from "./GameScreen.jsx";
 import { ClientController } from "./net/controller.js";
 import { Lobby } from "./ui/Lobby.jsx";
@@ -8,7 +9,8 @@ import { Lobby } from "./ui/Lobby.jsx";
 export function App() {
   const [ctrl, setCtrl] = React.useState(null);
   const start = (game, mode, name, code, bankroll) => {
-    const Host = game === "roulette" ? RouletteHost : BlackjackHost;
+    const Host =
+      game === "roulette" ? RouletteHost : game === "werewolf" ? WerewolfHost : BlackjackHost;
     setCtrl(
       mode === "solo"
         ? new Host(name, {

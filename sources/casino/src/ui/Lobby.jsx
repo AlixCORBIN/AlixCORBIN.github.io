@@ -19,6 +19,15 @@ const GAMES = [
     icon: "◉",
     hue: "#a31a2a",
   },
+  {
+    id: "werewolf",
+    title: "Loup-Garou",
+    tag: "5 à 16 joueurs · bots",
+    desc: "Village 3D jour/nuit, rôles secrets, chat de salle et de meute.",
+    icon: "🐺",
+    hue: "#2a3a8a",
+    free: true,
+  },
 ];
 
 export function Lobby({ onStart }) {
@@ -117,14 +126,14 @@ export function Lobby({ onStart }) {
               <div className="row">
                 <button
                   className="btn primary"
-                  disabled={broke}
+                  disabled={broke && !game.free}
                   onClick={() => start(game.id, "solo")}
                 >
                   Solo
                 </button>
                 <button
                   className="btn"
-                  disabled={broke}
+                  disabled={broke && !game.free}
                   onClick={() => start(game.id, "host")}
                 >
                   Créer une salle

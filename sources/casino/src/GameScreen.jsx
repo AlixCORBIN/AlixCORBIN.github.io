@@ -4,6 +4,7 @@ import { sessionStats } from "./games/blackjack/engine.js";
 import { BlackjackScene } from "./games/blackjack/three/BlackjackScene.jsx";
 import { BlackjackHud } from "./games/blackjack/ui/BlackjackHud.jsx";
 import { saveRouletteSession } from "./games/roulette/api.js";
+import { WerewolfScreen } from "./games/werewolf/ui/WerewolfScreen.jsx";
 import { RouletteScreen } from "./games/roulette/ui/RouletteScreen.jsx";
 import { sound } from "./lib/sound.js";
 import { loadWallet, saveWallet, settledBankroll } from "./lib/wallet.js";
@@ -52,7 +53,7 @@ export function GameScreen({ ctrl, onQuit }) {
   }, [state?.phase, state?.round]);
   const prev = React.useRef({});
   React.useEffect(() => {
-    if (!state || state.game === "roulette") return;
+    if (!state || state.game !== "blackjack") return;
     const last = prev.current;
     const cardCount =
       state.players.reduce(
@@ -96,6 +97,8 @@ export function GameScreen({ ctrl, onQuit }) {
         <p>Connexion a la table...</p>
       </div>
     </div>
+  ) : state.game === "werewolf" ? (
+    <WerewolfScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
   ) : state.game === "roulette" ? (
     <RouletteScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
   ) : (

@@ -1,6 +1,6 @@
 # Casino 3D (sources)
 
-Blackjack + roulette européenne, React + three.js, multijoueur via Supabase Realtime.
+Blackjack, roulette européenne et Loup-Garou, React + three.js, multijoueur via Supabase Realtime.
 Le build sort directement dans `/jeux` du portfolio.
 
 ```bash
@@ -21,6 +21,7 @@ src/
   games/
     blackjack/  cards, engine (règles pures), host, api (stats Supabase), three/, ui/
     roulette/   rules (mises, roue), engine (règles pures), host, chips, three/, ui/
+    werewolf/   roles, engine (règles pures + vue filtrée par joueur), bots, host, api (stats), three/, ui/ (chat)
 public/monopoly-card.js   carte Monopoly injectée dans le lobby (script séparé)
 ```
 
