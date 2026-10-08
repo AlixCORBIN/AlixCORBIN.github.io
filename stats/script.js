@@ -246,6 +246,13 @@ function renderMonopoly(data) {
         .forEach(k => setVal('mo-' + k, n(data['mo_' + k])));
 }
 
+/* ── Loup-garou ── */
+function renderWerewolf(data) {
+    const n = v => Number(v || 0).toLocaleString('fr-FR');
+    ['games', 'players', 'nights', 'village', 'wolves', 'votes', 'kills'].forEach(k => setVal('ww-' + k, n(data['ww_' + k])));
+    setVal('ww-avg', n(data.ww_avg_minutes) + ' min');
+}
+
 /* ── Leaderboards Roulette / Monopoly (même table que le blackjack) ── */
 function renderGameLeaderboard(panel, rows, cols) {
     const el = document.querySelector(`.game-panel[data-panel="${panel}"] .leaderboard-list`);
@@ -268,7 +275,7 @@ function renderGameLeaderboard(panel, rows, cols) {
         </table>`;
 }
 
-function renderGameLeaderboards(ro, mo) {
+function renderGameLeaderboards(ro, mo, ww = []) {
     const n = v => Number(v || 0).toLocaleString('fr-FR');
     renderGameLeaderboard('ro', ro, [
         { label: d('lb.pseudo') || 'Pseudo', cls: 'lb-pseudo', render: r => esc(r.pseudo) },
@@ -279,6 +286,12 @@ function renderGameLeaderboards(ro, mo) {
     renderGameLeaderboard('mo', mo, [
         { label: d('lb.pseudo') || 'Pseudo', cls: 'lb-pseudo', render: r => esc(r.pseudo) },
         { label: 'Victoires', cls: 'lb-bankroll', style: () => 'color:var(--green)', render: r => n(r.wins) },
+        { label: d('lb.date') || 'Date', cls: 'lb-date', render: r => esc(r.date) },
+    ]);
+    renderGameLeaderboard('ww', ww, [
+        { label: d('lb.pseudo') || 'Pseudo', cls: 'lb-pseudo', render: r => esc(r.pseudo) },
+        { label: 'Victoires', cls: 'lb-bankroll', style: () => 'color:var(--green)', render: r => n(r.wins) },
+        { label: 'Parties', cls: 'lb-hands', render: r => n(r.games) },
         { label: d('lb.date') || 'Date', cls: 'lb-date', render: r => esc(r.date) },
     ]);
 }
@@ -324,9 +337,10 @@ async function init() {
     if (savedLang !== 'fr') setLanguage(savedLang);
 
     try {
-        const [data, lb, roLb, moLb] = await Promise.all([
+        const [data, lb, roLb, moLb, wwLb] = await Promise.all([
             fetchStats(), fetchLeaderboard(),
             fetchGameLeaderboard('get_roulette_leaderboard'), fetchGameLeaderboard('get_monopoly_leaderboard'),
+            fetchGameLeaderboard('get_werewolf_leaderboard'),
         ]);
         window._lastStats = data;
         window._lastLb    = lb;
@@ -337,8 +351,9 @@ async function init() {
         renderBlackjack(data);
         renderRoulette(data);
         renderMonopoly(data);
+        renderWerewolf(data);
         renderLeaderboard(Array.isArray(lb) ? lb : []);
-        renderGameLeaderboards(roLb, moLb);
+        renderGameLeaderboards(roLb, moLb, wwLb);
     } catch (e) {
         console.error('Stats fetch error:', e);
         ['val-total','val-today','val-week','val-month'].forEach(id => setVal(id, '?'));
