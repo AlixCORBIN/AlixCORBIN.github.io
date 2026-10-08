@@ -270,4 +270,19 @@ async function init() {
     }
 }
 
+/* ── Onglets jeux (Roulette / Monopoly à 0 tant qu'aucune table n'existe) ── */
+function initGameTabs() {
+    const tabs = document.querySelectorAll('.game-tab');
+    const show = g => {
+        tabs.forEach(t => t.classList.toggle('active', t.dataset.game === g));
+        document.querySelectorAll('.game-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === g));
+        try { localStorage.setItem('statsGame', g); } catch (e) {}
+    };
+    tabs.forEach(t => t.addEventListener('click', () => show(t.dataset.game)));
+    let saved = null;
+    try { saved = localStorage.getItem('statsGame'); } catch (e) {}
+    if (saved && document.querySelector(`.game-tab[data-game="${saved}"]`)) show(saved);
+}
+
+initGameTabs();
 init();

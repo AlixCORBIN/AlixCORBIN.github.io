@@ -1,14 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Statistiques — Portfolio Alix Corbin</title>
-    <meta name="description" content="Statistiques du portfolio en temps réel : visites, chaînes les plus ouvertes, préférences et sessions de blackjack.">
+    <meta name="description" content="Statistiques du portfolio en temps réel : visites, chaînes les plus ouvertes, préférences et statistiques des jeux du Casino (blackjack, roulette, monopoly).">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Portfolio Alix Corbin">
     <meta property="og:title" content="Statistiques — Portfolio Alix Corbin">
-    <meta property="og:description" content="Statistiques du portfolio en temps réel : visites, chaînes les plus ouvertes, préférences et sessions de blackjack.">
+    <meta property="og:description" content="Statistiques du portfolio en temps réel : visites, chaînes les plus ouvertes, préférences et statistiques des jeux du Casino (blackjack, roulette, monopoly).">
     <meta property="og:url" content="https://alixcorbin.github.io/stats/">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/lang-switcher.css">
@@ -87,6 +87,14 @@
 
         </div>
 
+        <!-- Jeux du Casino -->
+        <div class="game-tabs" role="tablist">
+            <button class="game-tab active" data-game="bj" data-i18n="tab.bj">♠️ Blackjack</button>
+            <button class="game-tab" data-game="ro" data-i18n="tab.ro">🎡 Roulette</button>
+            <button class="game-tab" data-game="mo" data-i18n="tab.mo">🎲 Monopoly</button>
+        </div>
+
+        <div class="game-panel active" data-panel="bj">
         <!-- Blackjack -->
         <section class="stat-section">
             <h2 class="section-title" data-i18n="bj.title">♠️ Blackjack — Sessions</h2>
@@ -140,6 +148,112 @@
             <div id="leaderboard-list" class="leaderboard-list"></div>
         </section>
 
+        </div>
+
+        <div class="game-panel" data-panel="ro">
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="ro.title">🎡 Roulette — Sessions</h2>
+            <div class="bj-cards">
+                <div class="bj-card">
+                    <div class="bj-card-icon">🎡</div>
+                    <div class="bj-card-label" data-i18n="ro.sessions"></div>
+                    <div class="bj-card-value" id="ro-sessions">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🎯</div>
+                    <div class="bj-card-label" data-i18n="ro.spins"></div>
+                    <div class="bj-card-value" id="ro-spins">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">💰</div>
+                    <div class="bj-card-label" data-i18n="ro.wagered"></div>
+                    <div class="bj-card-value" id="ro-wagered">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">📈</div>
+                    <div class="bj-card-label" data-i18n="ro.avg"></div>
+                    <div class="bj-card-value" id="ro-avg">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🏆</div>
+                    <div class="bj-card-label" data-i18n="ro.best"></div>
+                    <div class="bj-card-value" id="ro-best">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🔴</div>
+                    <div class="bj-card-label" data-i18n="ro.red"></div>
+                    <div class="bj-card-value" id="ro-red">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">⚫</div>
+                    <div class="bj-card-label" data-i18n="ro.black"></div>
+                    <div class="bj-card-value" id="ro-black">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🟢</div>
+                    <div class="bj-card-label" data-i18n="ro.zero"></div>
+                    <div class="bj-card-value" id="ro-zero">0</div>
+                </div>
+            </div>
+        </section>
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="ro.lb">🏆 Leaderboard Roulette</h2>
+            <div class="leaderboard-list"><p class="lb-empty" data-i18n="lb.empty"></p></div>
+        </section>
+        </div>
+
+        <div class="game-panel" data-panel="mo">
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="mo.title">🎲 Monopoly — Parties</h2>
+            <div class="bj-cards">
+                <div class="bj-card">
+                    <div class="bj-card-icon">🎲</div>
+                    <div class="bj-card-label" data-i18n="mo.games"></div>
+                    <div class="bj-card-value" id="mo-games">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🔄</div>
+                    <div class="bj-card-label" data-i18n="mo.turns"></div>
+                    <div class="bj-card-value" id="mo-turns">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">👥</div>
+                    <div class="bj-card-label" data-i18n="mo.players"></div>
+                    <div class="bj-card-value" id="mo-players">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🤖</div>
+                    <div class="bj-card-label" data-i18n="mo.bots"></div>
+                    <div class="bj-card-value" id="mo-bots">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🏠</div>
+                    <div class="bj-card-label" data-i18n="mo.props"></div>
+                    <div class="bj-card-value" id="mo-props">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🏨</div>
+                    <div class="bj-card-label" data-i18n="mo.hotels"></div>
+                    <div class="bj-card-value" id="mo-hotels">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🤝</div>
+                    <div class="bj-card-label" data-i18n="mo.trades"></div>
+                    <div class="bj-card-value" id="mo-trades">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">💸</div>
+                    <div class="bj-card-label" data-i18n="mo.bankrupt"></div>
+                    <div class="bj-card-value" id="mo-bankrupt">0</div>
+                </div>
+            </div>
+        </section>
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="mo.lb">🏆 Leaderboard Monopoly</h2>
+            <div class="leaderboard-list"><p class="lb-empty" data-i18n="lb.empty"></p></div>
+        </section>
+        </div>
+
         <p class="refresh-note" data-i18n="refresh">Les données sont mises à jour en temps réel.</p>
 
     </main>
@@ -150,6 +264,9 @@
         window.PAGE_TRANSLATIONS = {
             fr: {
                 'title': 'Statistiques',
+                'tab.bj': '♠️ Blackjack', 'tab.ro': '🎡 Roulette', 'tab.mo': '🎲 Monopoly',
+                'ro.title': '🎡 Roulette — Sessions', 'ro.sessions': 'Sessions jouées', 'ro.spins': 'Tours joués', 'ro.wagered': 'Total misé', 'ro.avg': 'Gain moyen/session', 'ro.best': 'Plus gros gain', 'ro.red': 'Sorties rouge', 'ro.black': 'Sorties noir', 'ro.zero': 'Sorties zéro', 'ro.lb': '🏆 Leaderboard Roulette',
+                'mo.title': '🎲 Monopoly — Parties', 'mo.games': 'Parties jouées', 'mo.turns': 'Tours joués', 'mo.players': 'Joueurs en ligne', 'mo.bots': 'Parties vs bots', 'mo.props': 'Propriétés achetées', 'mo.hotels': 'Hôtels construits', 'mo.trades': 'Échanges', 'mo.bankrupt': 'Faillites', 'mo.lb': '🏆 Leaderboard Monopoly',
                 'subtitle': 'Données en temps réel du portfolio',
                 'visits.title': '👁 Visites',
                 'visits.total': 'Total',
@@ -180,6 +297,9 @@
             },
             en: {
                 'title': 'Statistics',
+                'tab.bj': '♠️ Blackjack', 'tab.ro': '🎡 Roulette', 'tab.mo': '🎲 Monopoly',
+                'ro.title': '🎡 Roulette — Sessions', 'ro.sessions': 'Sessions played', 'ro.spins': 'Spins played', 'ro.wagered': 'Total wagered', 'ro.avg': 'Avg gain/session', 'ro.best': 'Biggest win', 'ro.red': 'Red hits', 'ro.black': 'Black hits', 'ro.zero': 'Zero hits', 'ro.lb': '🏆 Roulette Leaderboard',
+                'mo.title': '🎲 Monopoly — Games', 'mo.games': 'Games played', 'mo.turns': 'Turns played', 'mo.players': 'Online players', 'mo.bots': 'Games vs bots', 'mo.props': 'Properties bought', 'mo.hotels': 'Hotels built', 'mo.trades': 'Trades', 'mo.bankrupt': 'Bankruptcies', 'mo.lb': '🏆 Monopoly Leaderboard',
                 'subtitle': 'Real-time portfolio data',
                 'visits.title': '👁 Visits',
                 'visits.total': 'Total',

@@ -427,3 +427,15 @@ body > * {
     .lb-date { display: none; }
     .lb-table th:last-child { display: none; }
 }
+
+/* ── Onglets jeux ── */
+.game-tabs { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; margin:1.5rem 0 1rem; }
+.game-tab {
+    font:inherit; font-weight:700; cursor:pointer; padding:.6rem 1.3rem; border-radius:999px;
+    border:2px solid var(--cyan); background:transparent; color:var(--cyan); transition:.2s;
+}
+.game-tab:hover { background:rgba(34,211,238,.12); }
+.game-tab.active { background:var(--cyan); color:#0f172a; }
+.game-panel { display:none; }
+.game-panel.active { display:block; }
+.lb-empty { color:var(--muted); font-size:.8rem; text-align:center; }
