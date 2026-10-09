@@ -5,13 +5,22 @@ import { sfx } from './sfx.js'
 export const DICE_MS = 1150
 export const STEP_MS = 155
 
-export function moveDelay(prev, next) {
+export const CARD_MS = 3300
+const segDelay = (from, to) => {
+  const fwd = (to - from + 40) % 40
+  if (!fwd) return 150
+  return fwd > 12 ? 950 : fwd * STEP_MS + 300
+}
+// Étapes d'un lancer : déplacement(s), carte, prison… jouées une par une
+export function rollSteps(prev, next) {
+  if (next.steps?.length) return next.steps
   const p = prev.players?.[prev.turn]
   const np = p && next.players.find((x) => x.id === p.id)
-  if (!np) return 0
-  const fwd = (np.pos - p.pos + 40) % 40
-  if (!fwd) return 150
-  return fwd > 12 ? 900 : fwd * STEP_MS + 250
+  return np ? [{ t: 'move', id: p.id, from: p.pos, to: np.pos }] : []
+}
+const stepDelay = (st) => (st.t === 'card' ? CARD_MS : st.t === 'jail' ? 1000 : segDelay(st.from, st.to))
+export function moveDelay(prev, next) {
+  return rollSteps(prev, next).reduce((a, st) => a + stepDelay(st), 0) + 200
 }
 
 function playDiff(prev, next, myId) {
@@ -20,8 +29,9 @@ function playDiff(prev, next, myId) {
   const meP = prev.players.find((p) => p.id === myId), meN = next.players.find((p) => p.id === myId)
   const cnt = (s) => Object.keys(s.props || {}).length
   const houses = (s) => Object.values(s.props || {}).reduce((a, p) => a + p.houses, 0)
-  if (next.lastCard && next.lastCard.rev !== prev.lastCard?.rev) sfx('card')
-  if (next.players.some((p, i) => p.inJail && !prev.players.find((x) => x.id === p.id)?.inJail)) sfx('jail')
+  const rolled = next.diceRev !== prev.diceRev
+  if (!rolled && next.lastCard && next.lastCard.rev !== prev.lastCard?.rev) sfx('card')
+  if (!rolled && next.players.some((p) => p.inJail && !prev.players.find((x) => x.id === p.id)?.inJail)) sfx('jail')
   else if (cnt(next) > cnt(prev)) sfx('buy')
   else if (houses(next) > houses(prev)) sfx('build')
   if (meP && meN && meN.money !== meP.money) setTimeout(() => sfx(meN.money > meP.money ? 'gain' : 'pay'), 120)
@@ -45,6 +55,7 @@ export function usePresented(game, myId) {
     setHud(next)
     setScene(next)
   }
+  const [card, setCard] = useState(game?.lastCard)
   const advance = () => {
     const prev = shown.current, next = latest.current
     if (next === prev) return
@@ -52,19 +63,38 @@ export function usePresented(game, myId) {
       busy.current = true
       setAnim(true)
       sfx('roll')
-      setScene({ ...prev, dice: next.dice, diceRev: next.diceRev })
+      // 1) les dés roulent, rien d'autre ne bouge
+      let view = { ...prev, dice: next.dice, diceRev: next.diceRev }
+      setScene(view)
+      const steps = rollSteps(prev, next)
+      const run = (i) => {
+        if (i >= steps.length) {
+          busy.current = false
+          setAnim(false)
+          setCard(next.lastCard)
+          commit(next)
+          advance()
+          return
+        }
+        const st = steps[i]
+        if (st.t === 'card') {
+          // 3) le pion est arrivé : on tire la carte, puis on applique son effet
+          setCard(next.lastCard)
+          sfx('card')
+        } else {
+          // 2) le pion se déplace (lancer, carte, prison)
+          view = { ...view, players: view.players.map((p) => (p.id === st.id ? { ...p, pos: st.to, inJail: st.t === 'jail' } : p)) }
+          setScene(view)
+          if (st.t === 'jail') sfx('jail')
+        }
+        timers.current.push(setTimeout(() => run(i + 1), stepDelay(st)))
+      }
       timers.current.push(setTimeout(() => {
         sfx('land')
         if (next.dice[0] === next.dice[1]) sfx('double')
-        setScene({ ...next, props: prev.props })
-        timers.current.push(setTimeout(() => {
-          busy.current = false
-          setAnim(false)
-          commit(next)
-          advance()
-        }, moveDelay(prev, next)))
+        run(0)
       }, DICE_MS))
-    } else commit(next)
+    } else { setCard(next.lastCard); commit(next) }
   }
 
   useEffect(() => {
@@ -72,5 +102,5 @@ export function usePresented(game, myId) {
     if (!busy.current) advance()
   }, [game])
   useEffect(() => () => timers.current.forEach(clearTimeout), [])
-  return { hud, scene, anim }
+  return { hud, scene, anim, card }
 }

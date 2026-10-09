@@ -154,6 +154,7 @@ const gain = (s, p, amount, why) => {
 
 function sendToJail(s, p) {
   const pl = s.players[p]
+  if (s.steps) s.steps.push({ t: 'jail', id: pl.id, from: pl.pos, to: 10 })
   pl.pos = 10
   pl.inJail = true
   pl.jailTurns = 0
@@ -165,6 +166,7 @@ function sendToJail(s, p) {
 function moveTo(s, p, target, collectGo = true) {
   const pl = s.players[p]
   if (collectGo && target < pl.pos) gain(s, p, GO_SALARY, 'case Départ')
+  if (s.steps) s.steps.push({ t: 'move', id: pl.id, from: pl.pos, to: target })
   pl.pos = target
   land(s, p)
 }
@@ -172,6 +174,7 @@ function moveBy(s, p, n) {
   const pl = s.players[p]
   const t = (pl.pos + n + 40) % 40
   if (n > 0 && t < pl.pos) gain(s, p, GO_SALARY, 'case Départ')
+  if (s.steps) s.steps.push({ t: 'move', id: pl.id, from: pl.pos, to: t })
   pl.pos = t
   land(s, p)
 }
@@ -208,6 +211,7 @@ function drawCard(s, p, deck) {
   const c = list[ci]
   const pl = s.players[p]
   s.lastCard = { deck, text: c.text, player: pl.id, rev: s.rev + 1 }
+  if (s.steps) s.steps.push({ t: 'card', id: pl.id })
   log(s, `${pl.name} tire ${deck === 'chance' ? 'Chance' : 'Caisse de communauté'} : « ${c.text} »`)
   if (c.kind === 'jailCard') pl.jailCards.push(deck)
   else s.decks[deck].push(ci)
@@ -407,6 +411,7 @@ export function applyAction(s0, actorId, a) {
       const dbl = d1 === d2
       s.dice = [d1, d2]
       s.diceRev++
+      s.steps = []
       log(s, `${me.name} lance ${d1} + ${d2}${dbl ? ' (double !)' : ''}.`)
       if (me.inJail) {
         if (dbl) {

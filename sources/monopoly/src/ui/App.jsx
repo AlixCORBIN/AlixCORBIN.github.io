@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useGame } from '../net/useGame.js'
+import { useGame, loadSession, clearSession } from '../net/useGame.js'
 import Scene from '../three/Scene.jsx'
 import { SQUARES, GROUPS, groupMembers, JAIL_FINE } from '../game/data.js'
 import { fmt, netWorth, ownsGroup, rentFor } from '../game/engine.js'
@@ -40,11 +40,22 @@ function Home({ g }) {
     m === 'solo' ? g.createOffline(n) : g.create(n)
   }, [])
   const save = () => { try { localStorage.setItem('mono-name', name.trim()) } catch {} }
+  const [saved, setSaved] = useState(() => loadSession())
   return (
     <div className="screen home">
       <button className="back" onClick={back}>← Casino</button>
       <div className="panel center-panel">
         <div className="logo"><span>🎩</span><h1>Monopoly 3D</h1><p>Édition Paris · multijoueur en ligne</p></div>
+        {saved && (
+          <div className="resume">
+            <div>
+              <b>Partie en cours</b>
+              <small>{saved.role === 'solo' ? 'Solo contre des bots' : `Salle ${saved.code}${saved.role === 'host' ? ' · tu es l’hôte' : ''}`} · {saved.name}</small>
+            </div>
+            <button className="btn primary" onClick={() => g.resume()}>Reprendre</button>
+            <button className="x" title="Oublier cette partie" onClick={() => { clearSession(); setSaved(null) }}>✕</button>
+          </div>
+        )}
         <label>Ton pseudo</label>
         <input value={name} maxLength={16} onChange={(e) => setName(e.target.value)} placeholder="Pseudo" />
         <button className="btn primary big" disabled={!ok} onClick={() => { save(); g.create(name.trim()) }}>Créer une salle</button>
@@ -139,7 +150,7 @@ function useMoneyDeltas(players) {
 }
 
 function GameView({ g }) {
-  const { hud: s, scene, anim } = usePresented(g.game, g.myId)
+  const { hud: s, scene, anim, card: shownCard } = usePresented(g.game, g.myId)
   const me = s.players.find((p) => p.id === g.myId)
   const [sel, setSel] = useState(null)
   const [modal, setModal] = useState(null) // 'manage' | 'trade' | 'rules' | {player}
@@ -167,13 +178,14 @@ function GameView({ g }) {
 
   return (
     <div className="game">
-      <Scene game={scene} card={s.lastCard && { ...s.lastCard, who: s.players.find((p) => p.id === s.lastCard.player)?.name }} selected={sel} onPick={setSel} myId={g.myId} />
+      {g.status && <div className="netbanner"><span className="spinner" /> {g.status}</div>}
+      <Scene game={scene} card={shownCard && { ...shownCard, who: s.players.find((p) => p.id === shownCard.player)?.name }} selected={sel} onPick={setSel} myId={g.myId} />
       <TopBar s={s} code={g.code} notify={g.notify} onSound={() => setSoundOpen(!soundOpen)} onRules={() => setModal('rules')} logOpen={logOpen} toggleLog={() => setLogOpen(!logOpen)} />
       <Players s={s} myId={g.myId} onPick={(p) => setModal({ player: p.id })} />
       <DebtBanner s={s} me={me} act={g.act} onManage={() => setModal('manage')} />
       <Dock s={s} me={me} act={g.act} main={main} anim={anim} onManage={() => setModal('manage')} onTrade={() => setModal('trade')} />
       {sel != null && !modal && <SquareCard s={s} i={sel} me={me} act={g.act} onClose={() => setSel(null)} />}
-      {logOpen && <Log s={s} chat={g.chat} onClose={() => setLogOpen(false)} />}
+      {logOpen && <Log s={s} chats={g.chats} chat={g.chat} onClose={() => setLogOpen(false)} />}
       {soundOpen && <SoundMenu onClose={() => setSoundOpen(false)} />}
       {pend != null && !modal && <BuyPrompt s={s} i={pend} me={me} act={g.act} />}
       {modal === 'manage' && me && <Manage s={s} me={me} act={g.act} onClose={close} />}
@@ -524,15 +536,16 @@ function Rules({ onClose }) {
   )
 }
 
-function Log({ s, chat, onClose }) {
+function Log({ s, chats = [], chat, onClose }) {
   const ref = useRef()
   const [msg, setMsg] = useState('')
-  useEffect(() => { ref.current && (ref.current.scrollTop = 1e9) }, [s.log.length])
+  useEffect(() => { ref.current && (ref.current.scrollTop = 1e9) }, [s.log.length, chats.length])
+  const items = [...s.log.slice(-60).map((l) => ({ ...l, kind: 'log' })), ...chats.map((c) => ({ ...c, kind: 'chat' }))].sort((a, b) => a.t - b.t)
   return (
     <div className="log">
       <div className="log-head"><b>Journal</b><button className="x" onClick={onClose}>✕</button></div>
       <div className="log-body" ref={ref}>
-        {s.log.slice(-60).map((l, i) => <div key={i} className={l.msg.startsWith('—') ? 'sep' : ''}>{l.msg.replace(/^— | —$/g, '')}</div>)}
+        {items.map((l, i) => l.kind === 'chat' ? <div key={i} className="chatline"><b>{l.from}</b> {l.msg}</div> : <div key={i} className={l.msg.startsWith('—') ? 'sep' : ''}>{l.msg.replace(/^— | —$/g, '')}</div>)}
       </div>
       <form onSubmit={(e) => { e.preventDefault(); chat(msg); setMsg('') }}>
         <input value={msg} onChange={(e) => setMsg(e.target.value)} placeholder="Écrire un message…" maxLength={200} />
