@@ -246,6 +246,7 @@ function drawCard(s, p, deck) {
 function startAuction(s, square, fromLanding) {
   s.auction = { square, bid: 0, leader: null, passed: [], fromLanding, deadline: Date.now() + AUCTION_MS }
   log(s, `Enchères : ${SQUARES[square].name} (mise de départ 1 €).`)
+  closeAuctionIfDone(s)
 }
 function nextAuction(s) {
   while (!s.auction && s.auctionQueue.length) {
@@ -256,6 +257,11 @@ function nextAuction(s) {
 function closeAuctionIfDone(s) {
   const a = s.auction
   if (!a) return
+  // passe automatiquement ceux qui ne peuvent pas surenchérir (moins que l'offre + 1 €)
+  s.players.forEach((p) => {
+    if (p.bankrupt || a.passed.includes(p.id) || p.id === a.leader) return
+    if (p.money < a.bid + 1) { a.passed.push(p.id); log(s, `${p.name} passe (fonds insuffisants).`) }
+  })
   const active = s.players.filter((p) => !p.bankrupt && !a.passed.includes(p.id))
   const done = a.leader ? active.every((p) => p.id === a.leader) : active.length === 0
   if (!done) return
