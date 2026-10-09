@@ -127,3 +127,18 @@ section {
     section { overflow-x: auto; }
     th, td { padding: 12px; }
 }
+
+/* Téléphone : chaque AC devient une carte avec seulement mon niveau */
+@media (max-width: 600px) {
+    section { overflow-x: visible; }
+    table, tbody, tr, td { display: block; width: 100% !important; box-sizing: border-box; }
+    table { border-spacing: 0; margin: 12px 0; }
+    tr:first-child { display: none; }
+    tr { margin-bottom: 14px; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+    td { border: 0; padding: 14px 16px; transform: none !important; box-shadow: none !important; }
+    td:first-child { width: 100%; font-size: 0.98em; }
+    tr:has(td.acquis, td.encours) td:not(:first-child):not(.acquis):not(.encours) { display: none; }
+    td.acquis, td.encours { border-width: 0 0 0 4px !important; border-radius: 0; font-weight: 600; }
+    h2 { font-size: 1.25em; }
+    p { font-size: 1em; }
+}

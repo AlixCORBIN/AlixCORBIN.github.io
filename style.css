@@ -2282,3 +2282,92 @@ body.wii3d-on.dark-mode .channel { box-shadow: 0 6px 14px rgba(0,0,0,0.45); }
 body.dark-mode .wii-scene { filter: brightness(.82) saturate(.95); }
 body.dark-mode .wii-photo-band { background: rgba(30,33,48,0.94); border-top-color: #2e3350; color: #c4cad8; }
 body.dark-mode .wii-photo:not(.wii-photo--moi) .ch-bg { background: #1e2130; }
+
+/* =========================================
+   MOBILE (téléphone, ≤ 600px) : mise en page dédiée
+   ========================================= */
+#page-dots { display: none; }
+
+@media (max-width: 600px) {
+    /* Grille : occupe tout l'espace entre le haut et le footer */
+    .grid-wrapper {
+        height: calc(100dvh - 190px);
+        margin: 34px 0 120px;
+    }
+    .grid-page {
+        width: 92vw;
+        height: calc(100dvh - 190px);
+        gap: 10px;
+    }
+    .grid-track { gap: 8vw; }
+    .channel, body.wii3d-on .channel { border-radius: 16px; }
+    .wii-photo-band { font-size: 0.82rem; padding: 4px 8px 5px; }
+    .wii-scene { bottom: 23px; height: calc(100% - 23px); }
+    .wii-temp { font-size: 1.5rem; }
+
+    /* Navigation : swipe + points, plus de flèches qui mordent sur les tuiles */
+    .page-arrow { display: none !important; }
+    #page-dots {
+        position: fixed;
+        left: 0; right: 0;
+        bottom: 104px;
+        z-index: 60;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        pointer-events: none;
+        transition: opacity .3s;
+    }
+    .page-dot {
+        width: 9px; height: 9px;
+        padding: 0;
+        border-radius: 50%;
+        border: 0;
+        background: #b9c0c9;
+        pointer-events: auto;
+        transition: width .25s, background .25s;
+    }
+    .page-dot.on { width: 22px; border-radius: 5px; background: #4ac0e0; }
+    body.dark-mode .page-dot { background: #3a4058; }
+    body.dark-mode .page-dot.on { background: #4ac0e0; }
+
+    /* Langue : plus compact */
+    #lang-switcher { top: 10px; right: 10px; padding: 3px 5px; }
+    #lang-switcher .flag-img { width: 22px; height: 22px; }
+
+    /* Le bandeau "Dark mode" gêne sur petit écran */
+    .dm-hint { display: none !important; }
+
+    /* Overlay : swipe à la place des flèches latérales */
+    .side-arrow { display: none !important; }
+    .overlay-content { padding-left: 0; padding-right: 0; }
+    .overlay-text-block, .ov-desc { max-width: 100%; padding-left: 18px; padding-right: 18px; box-sizing: border-box; }
+    .overlay-footer { padding-bottom: env(safe-area-inset-bottom); }
+
+    /* Overlay "Moi" : en-tête compact sur 3 colonnes */
+    .moi-layout { width: 100%; box-sizing: border-box; padding: 70px 16px 16px; justify-content: flex-start; }
+    .moi-left {
+        display: grid;
+        grid-template-columns: 68px 1fr auto;
+        grid-template-rows: auto auto auto;
+        column-gap: 14px;
+        row-gap: 2px;
+        align-items: center;
+        text-align: left;
+    }
+    .moi-avatar-ring { grid-row: 1 / 4; width: 68px; height: 68px; margin: 0; }
+    .moi-name, .moi-role, .moi-location { grid-column: 2; margin: 0; text-align: left; }
+    .moi-socials { grid-column: 3; grid-row: 1 / 4; flex-direction: column; gap: 8px; margin: 0; }
+    .moi-right { width: 100%; }
+    .moi-card { box-sizing: border-box; width: 100%; }
+
+    /* Intro : pas d'icône souris sur tactile */
+    body.is-touch .mouse-icon { display: none; }
+    .intro-text { padding: 0 20px; }
+}
+
+@media (max-width: 600px) and (max-height: 700px) {
+    .grid-wrapper, .grid-page { height: calc(100dvh - 170px); }
+    .grid-wrapper { margin: 24px 0 110px; }
+    #page-dots { bottom: 98px; }
+}

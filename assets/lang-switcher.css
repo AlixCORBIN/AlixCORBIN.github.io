@@ -66,3 +66,16 @@
     background: rgba(15,18,30,0.9);
     border-color: rgba(255,255,255,0.08);
 }
+
+/* Téléphone : pastille compacte en bas à droite pour ne plus cacher les titres */
+@media (max-width: 600px) {
+    #lang-switcher {
+        top: auto;
+        bottom: calc(14px + env(safe-area-inset-bottom));
+        right: 12px;
+        padding: 3px 5px;
+        gap: 2px;
+    }
+    .flag-img { width: 22px; height: 22px; }
+    .lang-divider { height: 14px; }
+}

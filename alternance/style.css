@@ -434,3 +434,9 @@ body.alt-body {
 }
 
 /* Lang switcher override on light page (site default is white/dark card, keep as-is) */
+
+/* Téléphone : le hero gardait 0 de marge latérale */
+@media (max-width: 600px) {
+  .alt-hero-content { padding: 48px 20px; }
+  .alt-hero { min-height: 0; }
+}
