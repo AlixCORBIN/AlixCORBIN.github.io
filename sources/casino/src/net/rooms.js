@@ -50,5 +50,6 @@ export const GAME_INFO = {
   blackjack: { title: "Blackjack", icon: "♠", max: 5 },
   roulette: { title: "Roulette", icon: "◉", max: 8 },
   werewolf: { title: "Loup-Garou", icon: "🐺", max: 16 },
+  uno: { title: "UNO 3D", icon: "🃏", max: 10 },
   monopoly: { title: "Monopoly 3D", icon: "🎩", max: 8 },
 };

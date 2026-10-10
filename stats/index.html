@@ -93,6 +93,7 @@
             <button class="game-tab" data-game="ro" data-i18n="tab.ro">🎡 Roulette</button>
             <button class="game-tab" data-game="mo" data-i18n="tab.mo">🎲 Monopoly</button>
             <button class="game-tab" data-game="ww" data-i18n="tab.ww">🐺 Loup-garou</button>
+            <button class="game-tab" data-game="un" data-i18n="tab.un">🃏 UNO</button>
         </div>
 
         <div class="game-panel active" data-panel="bj">
@@ -307,6 +308,58 @@
         </section>
         </div>
 
+        <div class="game-panel" data-panel="un">
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="un.title">🃏 UNO — Parties</h2>
+            <div class="bj-cards">
+                <div class="bj-card">
+                    <div class="bj-card-icon">🎲</div>
+                    <div class="bj-card-label" data-i18n="un.games"></div>
+                    <div class="bj-card-value" id="un-games">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">👥</div>
+                    <div class="bj-card-label" data-i18n="un.players"></div>
+                    <div class="bj-card-value" id="un-players">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🔁</div>
+                    <div class="bj-card-label" data-i18n="un.rounds"></div>
+                    <div class="bj-card-value" id="un-rounds">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">⏱️</div>
+                    <div class="bj-card-label" data-i18n="un.avg"></div>
+                    <div class="bj-card-value" id="un-avg">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🃏</div>
+                    <div class="bj-card-label" data-i18n="un.turns"></div>
+                    <div class="bj-card-value" id="un-turns">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">⚡</div>
+                    <div class="bj-card-label" data-i18n="un.specials"></div>
+                    <div class="bj-card-value" id="un-specials">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">⚔️</div>
+                    <div class="bj-card-label" data-i18n="un.challenges"></div>
+                    <div class="bj-card-value" id="un-challenges">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">📣</div>
+                    <div class="bj-card-label" data-i18n="un.catches"></div>
+                    <div class="bj-card-value" id="un-catches">0</div>
+                </div>
+            </div>
+        </section>
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="un.lb">🏆 Leaderboard UNO</h2>
+            <div class="leaderboard-list"><p class="lb-empty" data-i18n="lb.empty"></p></div>
+        </section>
+        </div>
+
         <p class="refresh-note" data-i18n="refresh">Les données sont mises à jour en temps réel.</p>
 
     </main>
@@ -320,6 +373,7 @@
                 'tab.bj': '♠️ Blackjack', 'tab.ro': '🎡 Roulette', 'tab.mo': '🎲 Monopoly',
                 'ro.title': '🎡 Roulette — Sessions', 'ro.sessions': 'Sessions jouées', 'ro.spins': 'Tours joués', 'ro.wagered': 'Total misé', 'ro.avg': 'Gain moyen/session', 'ro.best': 'Plus gros gain', 'ro.red': 'Sorties rouge', 'ro.black': 'Sorties noir', 'ro.zero': 'Sorties zéro', 'ro.lb': '🏆 Leaderboard Roulette',
                 'mo.title': '🎲 Monopoly — Parties', 'mo.games': 'Parties jouées', 'mo.turns': 'Tours joués', 'mo.players': 'Joueurs en ligne', 'mo.bots': 'Parties vs bots', 'mo.props': 'Propriétés achetées', 'mo.hotels': 'Hôtels construits', 'mo.trades': 'Échanges', 'mo.bankrupt': 'Faillites', 'mo.lb': '🏆 Leaderboard Monopoly',
+                'tab.un': '🃏 UNO', 'un.title': '🃏 UNO — Parties', 'un.games': 'Parties jouées', 'un.players': 'Joueurs', 'un.rounds': 'Manches jouées', 'un.avg': 'Durée moyenne', 'un.turns': 'Tours joués', 'un.specials': 'Cartes spéciales', 'un.challenges': 'Défis du +4', 'un.catches': 'UNO oubliés punis', 'un.lb': '🏆 Leaderboard UNO',
                 'tab.ww': '🐺 Loup-garou', 'ww.title': '🐺 Loup-garou — Parties', 'ww.games': 'Parties jouées', 'ww.players': 'Joueurs', 'ww.nights': 'Nuits jouées', 'ww.avg': 'Durée moyenne', 'ww.village': 'Victoires village', 'ww.wolves': 'Victoires loups', 'ww.votes': 'Éliminés au vote', 'ww.kills': 'Dévorés la nuit', 'ww.lb': '🏆 Leaderboard Loup-garou',
                 'subtitle': 'Données en temps réel du portfolio',
                 'visits.title': '👁 Visites',
@@ -354,6 +408,7 @@
                 'tab.bj': '♠️ Blackjack', 'tab.ro': '🎡 Roulette', 'tab.mo': '🎲 Monopoly',
                 'ro.title': '🎡 Roulette — Sessions', 'ro.sessions': 'Sessions played', 'ro.spins': 'Spins played', 'ro.wagered': 'Total wagered', 'ro.avg': 'Avg gain/session', 'ro.best': 'Biggest win', 'ro.red': 'Red hits', 'ro.black': 'Black hits', 'ro.zero': 'Zero hits', 'ro.lb': '🏆 Roulette Leaderboard',
                 'mo.title': '🎲 Monopoly — Games', 'mo.games': 'Games played', 'mo.turns': 'Turns played', 'mo.players': 'Online players', 'mo.bots': 'Games vs bots', 'mo.props': 'Properties bought', 'mo.hotels': 'Hotels built', 'mo.trades': 'Trades', 'mo.bankrupt': 'Bankruptcies', 'mo.lb': '🏆 Monopoly Leaderboard',
+                'tab.un': '🃏 UNO', 'un.title': '🃏 UNO — Games', 'un.games': 'Games played', 'un.players': 'Players', 'un.rounds': 'Rounds played', 'un.avg': 'Average length', 'un.turns': 'Turns played', 'un.specials': 'Action cards', 'un.challenges': '+4 challenges', 'un.catches': 'Missed UNO calls caught', 'un.lb': '🏆 UNO Leaderboard',
                 'tab.ww': '🐺 Werewolf', 'ww.title': '🐺 Werewolf — Games', 'ww.games': 'Games played', 'ww.players': 'Players', 'ww.nights': 'Nights played', 'ww.avg': 'Average length', 'ww.village': 'Village wins', 'ww.wolves': 'Werewolf wins', 'ww.votes': 'Voted out', 'ww.kills': 'Killed at night', 'ww.lb': '🏆 Werewolf Leaderboard',
                 'subtitle': 'Real-time portfolio data',
                 'visits.title': '👁 Visits',

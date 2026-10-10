@@ -20,7 +20,7 @@ On va pas se mentir, c'est **full vibecoded**. Pas de framework, pas de bundler,
 |--------|---------|
 | 🧑 **Moi** | Présentation, soft skills, liens GitHub/LinkedIn + CV téléchargeable |
 | 🎓 **BUT Informatique** | Suivi de compétences, auto-évaluation |
-| 🎰 **Casino** | Casino 3D en ligne : blackjack (side bets, assurance) et roulette européenne, multijoueur, RNG random.org |
+| 🎰 **Casino** | Casino 3D en ligne : blackjack (side bets, assurance), roulette européenne, loup-garou et UNO (règles officielles, +4 avec défi, UNO!, manches), multijoueur, RNG random.org |
 | 🎮 **TicTacToe** | TicTacToe classique |
 | 📚 **Culture Générale** | Voir ci-dessous |
 | 🤖 **Arduino** | Projets électronique : vitrine SAVI, serrure RFID, VMC... |

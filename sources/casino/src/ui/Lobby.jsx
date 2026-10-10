@@ -8,6 +8,7 @@ const GAMES = [
   { id: "blackjack", title: "Blackjack", tag: "1 à 5 joueurs", desc: "Assurance, Perfect Pairs, 21+3, double, split.", icon: "♠", hue: "#14804a" },
   { id: "roulette", title: "Roulette Européenne", tag: "Table partagée", desc: "Roue 3D, une seule bille, tous les types de mises.", icon: "◉", hue: "#a31a2a" },
   { id: "werewolf", title: "Loup-Garou", tag: "5 à 16 joueurs · bots", desc: "Village 3D jour/nuit, rôles secrets, chat de salle et de meute.", icon: "🐺", hue: "#2a3a8a", free: true },
+  { id: "uno", title: "UNO 3D", tag: "2 à 10 joueurs · bots", desc: "Table 3D, règles officielles complètes : +2, +4 avec défi, UNO! et manches.", icon: "🃏", hue: "#b3202a", free: true },
   { id: "monopoly", title: "Monopoly 3D", tag: "2 à 8 joueurs · bots", desc: "Plateau Paris en 3D, enchères, échanges, maisons, hôtels.", icon: "🎩", hue: "#1f6b3a", free: true, external: "../monopoly/index.html" },
 ];
 
