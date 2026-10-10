@@ -41,6 +41,20 @@ function makePlayer({ id, name, isBot = false }, i) {
 }
 
 // ---------- Lobby ----------
+// Fin de partie → retour au salon avec les mêmes joueurs (les absents sont retirés)
+export function backToLobby(s0) {
+  const s = structuredClone(s0)
+  const keep = s.players.filter((p) => p.isBot || p.connected || p.id === s.hostId)
+  return {
+    phase: 'lobby',
+    hostId: s.hostId,
+    settings: s.settings,
+    players: keep.map((p, i) => ({ ...makePlayer(p, i), color: p.color, pawn: p.pawn })),
+    lastResult: s.ranking ? { winner: s.players.find((p) => p.id === s.winner)?.name, ranking: s.ranking.map((r) => ({ name: s.players.find((p) => p.id === r.id)?.name, worth: r.worth })) } : null,
+    rev: s.rev + 1,
+    log: [],
+  }
+}
 export function lobbyAdd(s, p) {
   s = structuredClone(s)
   if (s.phase !== 'lobby') throw new Error('Partie déjà commencée')

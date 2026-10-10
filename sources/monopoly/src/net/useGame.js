@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { hostRoom, joinRoom, newCode, getClientId } from './net.js'
-import { createLobby, lobbyAdd, lobbyRemove, startGame, applyAction, auctionTimeout } from '../game/engine.js'
+import { createLobby, lobbyAdd, lobbyRemove, startGame, backToLobby, applyAction, auctionTimeout } from '../game/engine.js'
 import { botDecide, markTried } from '../game/bot.js'
 import { aiPickTrade, aiReply, aiChat } from './ai.js'
 import { mentionedIds } from '../ui/mentions.js'
 import { sfx } from '../ui/sfx.js'
+import { announceRoom, withdrawRoom } from './rooms.js'
 import { BOT_NAMES } from '../game/data.js'
 import { saveMonopolyGame } from './stats.js'
 import { DICE_MS, moveDelay } from '../ui/present.js'
@@ -33,6 +34,8 @@ export function useGame() {
   const [code, setCode] = useState('')
   const [status, setStatus] = useState('')
   const [toast, setToast] = useState(null)
+  const [isPublic, setIsPublicState] = useState(() => { try { return localStorage.getItem('casino-public') !== '0' } catch { return true } })
+  const setPublic = (v) => { setIsPublicState(v); try { localStorage.setItem('casino-public', v ? '1' : '0') } catch {} }
   const [chats, setChats] = useState([])
   const pushChat = (from, msg) => setChats((c) => [...c.slice(-50), { t: Date.now(), from, msg }])
   // message reçu ou envoyé : historique + notification (mise en avant si on me mentionne)
@@ -70,7 +73,8 @@ export function useGame() {
     }
   }, [commit])
 
-  const create = useCallback((name, resume, attempt = 0) => {
+  const create = useCallback((name, resume, attempt = 0, pub) => {
+    if (pub !== undefined) setPublic(pub)
     const c = resume?.code || newCode()
     setStatus(resume ? 'Réouverture de la salle ' + c + '…' : 'Création de la salle…')
     const s = resume?.state || createLobby({ id: clientId, name })
@@ -79,7 +83,7 @@ export function useGame() {
       s.players.forEach((p) => { if (!p.isBot && p.id !== clientId) p.connected = false })
     }
     gameRef.current = s
-    session.current = { role: 'host', code: c, name }
+    session.current = { role: 'host', code: c, name, name0: name }
     net.current = hostRoom(c, {
       onOpen: () => { setStatus(''); setRole('host'); setCode(c); commit(gameRef.current) },
       onError: (e) => {
@@ -178,7 +182,7 @@ export function useGame() {
           conn.send({ type: 'hello', id: myIdRef.current, name })
         },
         onData: (d) => {
-          if (d.type === 'state') { gameRef.current = d.state; setGame(d.state) }
+          if (d.type === 'state') { gameRef.current = d.state; setGame(d.state); if (d.state.phase !== 'over' && session.current.role === 'client') saveSession(session.current) }
           else if (d.type === 'welcome') setMe(d.playerId)
           else if (d.type === 'error') notify(d.msg)
           else if (d.type === 'chat') seeChat(d.from, d.msg)
@@ -219,6 +223,7 @@ export function useGame() {
     remove: (id) => commit(lobbyRemove(gameRef.current, id)),
     setRounds: (n) => { const g = structuredClone(gameRef.current); g.settings.maxRounds = n; g.rev++; commit(g) },
     start: () => { try { commit(startGame(gameRef.current)) } catch (e) { notify(e.message) } },
+    rematch: () => commit(backToLobby(gameRef.current)),
   }
 
   // Temps d'animation (dés + pion) à laisser passer avant qu'un bot rejoue
@@ -324,5 +329,19 @@ export function useGame() {
     else join(x.code, x.name)
   }, [create, createOffline, join])
 
-  return { myId, game, role, code, status, toast, chats, create, createOffline, join, act, chat, lobby, notify, resume }
+  // Annonce de la salle publique dans le hub du Casino (présence Supabase)
+  useEffect(() => {
+    if (role !== 'host' || code === 'SOLO' || !code || !game) return
+    if (!isPublic) { withdrawRoom(); return }
+    const humans = game.players.filter((p) => !p.isBot)
+    announceRoom({
+      public: true, game: 'monopoly', code,
+      host: game.players.find((p) => p.id === game.hostId)?.name || 'Hôte',
+      players: humans.length, bots: game.players.length - humans.length,
+      status: game.phase === 'lobby' ? 'lobby' : 'playing',
+    })
+  }, [role, code, isPublic, game?.phase, game?.players.length, game?.players.filter((p) => p.isBot).length])
+  useEffect(() => () => { withdrawRoom() }, [])
+
+  return { myId, game, role, code, status, toast, chats, create, createOffline, join, act, chat, lobby, notify, resume, isPublic, setPublic }
 }

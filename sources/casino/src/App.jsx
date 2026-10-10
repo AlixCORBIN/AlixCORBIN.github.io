@@ -8,20 +8,18 @@ import { Lobby } from "./ui/Lobby.jsx";
 
 export function App() {
   const [ctrl, setCtrl] = React.useState(null);
-  const start = (game, mode, name, code, bankroll) => {
+  const start = (game, mode, name, code, bankroll, opts = {}) => {
     const Host =
       game === "roulette" ? RouletteHost : game === "werewolf" ? WerewolfHost : BlackjackHost;
     setCtrl(
-      mode === "solo"
-        ? new Host(name, {
+      mode === "join"
+        ? new ClientController(name, code, bankroll)
+        : new Host(name, {
+            online: true,
             bankroll,
-          })
-        : mode === "host"
-          ? new Host(name, {
-              online: true,
-              bankroll,
-            })
-          : new ClientController(name, code, bankroll),
+            game,
+            isPublic: !!opts.isPublic,
+          }),
     );
   };
   const quit = () => {

@@ -46,6 +46,7 @@ export class WerewolfHost extends HostController {
 
   // Chaque joueur reçoit sa propre vue : les rôles secrets ne quittent jamais l'hôte.
   publish() {
+    this.announce();
     this.schedule();
     this.state = viewFor(this.g, this.me);
     this.decorate(this.state);

@@ -1,4 +1,5 @@
 import { RoomChannel, makeRoomCode } from "./channel.js";
+import { announceRoom, withdrawRoom } from "./rooms.js";
 
 export const AFK_MS = 60000;
 
@@ -29,10 +30,12 @@ class Store {
 }
 
 export class HostController extends Store {
-  constructor(name, { online = false, bankroll = 1000 } = {}) {
+  constructor(name, { online = false, bankroll = 1000, isPublic = false, game = "" } = {}) {
     super();
     this.role = "host";
     this.online = online;
+    this.isPublic = isPublic;
+    this.gameId = game;
     this.name = name;
     this.bankroll = bankroll;
     this.g = this.makeGame();
@@ -83,10 +86,15 @@ export class HostController extends Store {
         }, 1200);
       })
       .catch(() => {
-        this.status = "error";
-        this.error =
-          "Impossible de creer la salle (serveur de jeu injoignable)";
-        this.emit();
+        // serveur injoignable : on bascule en partie locale (solo) plutôt que d'échouer
+        link.close();
+        this.online = false;
+        this.link = null;
+        this.me = "solo";
+        this.addPlayer(this.me, this.name, this.bankroll);
+        this.status = "ready";
+        this.offlineFallback = true;
+        this.publish();
       });
   }
   heartbeat() {
@@ -191,7 +199,31 @@ export class HostController extends Store {
       });
     }
   }
+  // vrai multijoueur = au moins un autre humain connecté (sinon c'est du solo dans une salle)
+  isMulti() {
+    return this.online && this.seen.size > 0;
+  }
+  setPublic(v) {
+    this.isPublic = !!v;
+    this.announce();
+    this.emit();
+  }
+  announce() {
+    if (!this.online || this.status !== "ready" || !this.code) return;
+    if (!this.isPublic) return withdrawRoom();
+    const players = (this.g?.players || []).filter((p) => !p.bot);
+    announceRoom({
+      public: true,
+      game: this.gameId,
+      code: this.code,
+      host: this.name,
+      players: players.length,
+      bots: (this.g?.players || []).length - players.length,
+      status: this.g?.phase === "lobby" ? "lobby" : "playing",
+    });
+  }
   publish() {
+    this.announce();
     this.ensureKeys();
     this.schedule();
     this.state = this.viewOf();
@@ -217,6 +249,7 @@ export class HostController extends Store {
     this.timers = {};
   }
   destroy() {
+    withdrawRoom();
     this.clearTimers();
     clearInterval(this.hb);
     this.link?.send("*", {

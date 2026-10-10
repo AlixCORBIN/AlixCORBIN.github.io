@@ -8,6 +8,7 @@ import { WerewolfScreen } from "./games/werewolf/ui/WerewolfScreen.jsx";
 import { RouletteScreen } from "./games/roulette/ui/RouletteScreen.jsx";
 import { sound } from "./lib/sound.js";
 import { loadWallet, saveWallet, settledBankroll } from "./lib/wallet.js";
+import { PublicToggle } from "./ui/PublicToggle.jsx";
 
 export function GameScreen({ ctrl, onQuit }) {
   React.useSyncExternalStore(ctrl.subscribe, ctrl.getSnapshot);
@@ -97,7 +98,10 @@ export function GameScreen({ ctrl, onQuit }) {
         <p>Connexion a la table...</p>
       </div>
     </div>
-  ) : state.game === "werewolf" ? (
+  ) : (
+    <>
+      <PublicToggle ctrl={ctrl} />
+      {state.game === "werewolf" ? (
     <WerewolfScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
   ) : state.game === "roulette" ? (
     <RouletteScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
@@ -105,6 +109,8 @@ export function GameScreen({ ctrl, onQuit }) {
     <>
       <BlackjackScene state={state} me={ctrl.me} />
       <BlackjackHud ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
+    </>
+  )}
     </>
   );
 }

@@ -250,3 +250,10 @@ button.ment.place:hover{background:var(--c)}
 .suggest i{width:10px;height:10px;border-radius:3px;flex:none}
 .suggest em{margin-left:auto;font-style:normal;color:var(--muted);font-size:.7rem}
 .toast.mention{border-color:#fff;background:#4a3a12;font-weight:700}
+.lastres{padding:10px 12px;border-radius:12px;background:rgba(232,196,104,.12);border:1px solid var(--gold);display:flex;flex-direction:column;gap:3px}.lastres small{color:var(--muted)}
+.sqcard .sq-trade{background:var(--panel);border-radius:12px;margin-top:6px;padding:8px}.sqcard .sq-trade .btn{width:100%;font-size:.85rem}
+
+.pubbar{display:flex;align-items:center;gap:12px;text-align:left;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.25)}
+.pubbar>div{display:flex;flex-direction:column}.pubbar small{font-size:.75rem;color:var(--muted)}
+.pubbar .switch{flex:none}
+.pubbar.compact{padding:4px 12px 4px 6px;border-radius:20px;background:var(--panel)}

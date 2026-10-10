@@ -44,7 +44,7 @@ export class RouletteHost extends HostController {
           total: ROULETTE_RULES.autoMs,
         }
       : null;
-    view.auto = !!this.online;
+    view.auto = this.isMulti();
   }
   ensureKeys() {
     const g = this.g;
@@ -106,7 +106,7 @@ export class RouletteHost extends HostController {
       case "double":
         return doubleBets(g, id);
       case "ready":
-        return this.online
+        return this.isMulti()
           ? {
               ok: false,
             }
@@ -140,7 +140,7 @@ export class RouletteHost extends HostController {
         this.arm("next", 9000, () => nextRound(g));
       }
     }
-    if (g.phase === "betting" && this.online && !this.timers.bet) {
+    if (g.phase === "betting" && this.isMulti() && !this.timers.bet) {
       this.deadline = Date.now() + ROULETTE_RULES.autoMs;
       this.arm("bet", ROULETTE_RULES.autoMs, () => {
         delete this.timers.bet;

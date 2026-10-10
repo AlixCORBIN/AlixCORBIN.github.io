@@ -28,17 +28,31 @@ function Toast({ toast }) {
 }
 
 // ---------- Accueil ----------
+function PublicSwitch({ on, set, compact }) {
+  return (
+    <div className={`pubbar ${compact ? 'compact' : ''}`}>
+      <button className={`switch ${on ? 'on' : ''}`} onClick={() => set(!on)} aria-pressed={on}><i /></button>
+      <div>
+        <b>{on ? 'Salle publique' : 'Salle privée'}</b>
+        {!compact && <small>{on ? 'Visible dans « Salles en cours » du Casino.' : 'Seuls ceux qui ont le code peuvent rejoindre.'}</small>}
+      </div>
+    </div>
+  )
+}
+
 function Home({ g }) {
   const [name, setName] = useState(() => { try { return localStorage.getItem('mono-name') || '' } catch { return '' } })
   const [code, setCode] = useState(() => new URLSearchParams(location.search).get('room') || '')
   const ok = name.trim().length >= 2
   useEffect(() => {
     const q = new URLSearchParams(location.search)
-    const m = q.get('mode'), n = (q.get('name') || '').trim().slice(0, 16)
-    if (!m || n.length < 2) return
+    const m = q.get('mode'), n = (q.get('name') || '').trim().slice(0, 16), room = q.get('room'), pub = q.get('public')
+    if (n.length < 2 || (!m && !(room && q.get('join')))) return
     history.replaceState(null, '', location.pathname)
     try { localStorage.setItem('mono-name', n) } catch {}
-    m === 'solo' ? g.createOffline(n) : g.create(n)
+    if (room && q.get('join')) g.join(room, n)
+    else if (m === 'solo') g.createOffline(n)
+    else g.create(n, undefined, 0, pub == null ? undefined : pub === '1')
   }, [])
   const save = () => { try { localStorage.setItem('mono-name', name.trim()) } catch {} }
   const [saved, setSaved] = useState(() => loadSession())
@@ -59,15 +73,16 @@ function Home({ g }) {
         )}
         <label>Ton pseudo</label>
         <input value={name} maxLength={16} onChange={(e) => setName(e.target.value)} placeholder="Pseudo" />
-        <button className="btn primary big" disabled={!ok} onClick={() => { save(); g.create(name.trim()) }}>Créer une salle</button>
+        <PublicSwitch on={g.isPublic} set={g.setPublic} />
+        <button className="btn primary big" disabled={!ok} onClick={() => { save(); g.create(name.trim()) }}>{g.isPublic ? '🌐 Créer une salle publique' : '🔒 Créer une salle privée'}</button>
         <div className="sep"><span>ou rejoindre</span></div>
         <div className="row">
           <input className="code-in" value={code} maxLength={5} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="CODE" />
           <button className="btn" disabled={!ok || code.length !== 5} onClick={() => { save(); g.join(code, name.trim()) }}>Rejoindre</button>
         </div>
         {g.status && <p className="status">{g.status}</p>}
-        <button className="btn ghost" disabled={!ok} onClick={() => { save(); g.createOffline(name.trim()) }}>Solo contre des bots (hors ligne)</button>
-        <p className="hint">En ligne : crée une salle, partage le code, complète avec des bots.</p>
+        {g.status && /Erreur|introuvable/.test(g.status) && <button className="btn ghost" disabled={!ok} onClick={() => { save(); g.createOffline(name.trim()) }}>Réseau indisponible : jouer hors ligne</button>}
+        <p className="hint">Seul avec des bots, c’est du solo ; dès qu’un ami rejoint, c’est du multi.</p>
       </div>
       <Toast toast={g.toast} />
     </div>
@@ -83,11 +98,17 @@ function Lobby({ g }) {
     <div className="screen home">
       <button className="back" onClick={back}>← Casino</button>
       <div className="panel center-panel wide">
+        {s.lastResult?.winner && (
+          <div className="lastres">🏆 Dernière partie : <b>{s.lastResult.winner}</b> a gagné
+            <small>{s.lastResult.ranking.map((r, i) => `${i + 1}. ${r.name} (${fmt(r.worth)})`).join(' · ')}</small>
+          </div>
+        )}
         <p className="muted">Code de la salle</p>
         <div className="room-code" onClick={() => navigator.clipboard?.writeText(link).then(() => g.notify('Lien copié !'))} title="Copier le lien">
           {g.code}
         </div>
         <p className="muted small">Clique pour copier le lien d’invitation</p>
+        {host && g.code !== 'SOLO' && <PublicSwitch on={g.isPublic} set={g.setPublic} />}
         <ul className="lobby-list">
           {s.players.map((p) => (
             <li key={p.id}>
@@ -181,21 +202,22 @@ function GameView({ g }) {
     <div className="game">
       {g.status && <div className="netbanner"><span className="spinner" /> {g.status}</div>}
       <Scene game={scene} card={shownCard && { ...shownCard, who: s.players.find((p) => p.id === shownCard.player)?.name }} selected={sel} onPick={setSel} myId={g.myId} />
-      <TopBar s={s} code={g.code} notify={g.notify} onSound={() => setSoundOpen(!soundOpen)} onRules={() => setModal('rules')} logOpen={logOpen} toggleLog={() => setLogOpen(!logOpen)} />
+      <TopBar s={s} pub={g.role === 'host' && g.code !== 'SOLO' ? g : null} code={g.code} notify={g.notify} onSound={() => setSoundOpen(!soundOpen)} onRules={() => setModal('rules')} logOpen={logOpen} toggleLog={() => setLogOpen(!logOpen)} />
       <Players s={s} myId={g.myId} onPick={(p) => setModal({ player: p.id })} />
       <DebtBanner s={s} me={me} act={g.act} onManage={() => setModal('manage')} />
       <Dock s={s} me={me} act={g.act} main={main} anim={anim} onManage={() => setModal('manage')} onTrade={() => setModal('trade')} />
-      {sel != null && !modal && <SquareCard s={s} i={sel} me={me} act={g.act} onClose={() => setSel(null)} />}
+      {sel != null && !modal && <SquareCard s={s} i={sel} me={me} act={g.act} onClose={() => setSel(null)}
+        onTrade={(preset) => { setSel(null); setModal({ trade: preset }) }} />}
       {logOpen && <Log s={s} chats={g.chats} chat={g.chat} myId={g.myId} onPick={(i) => { setModal(null); setSel(i) }} onClose={() => setLogOpen(false)} />}
       {soundOpen && <SoundMenu onClose={() => setSoundOpen(false)} />}
       {pend != null && !modal && <BuyPrompt s={s} i={pend} me={me} act={g.act} />}
       {modal === 'manage' && me && <Manage s={s} me={me} act={g.act} onClose={close} />}
-      {modal === 'trade' && me && <TradeBuilder s={s} me={me} act={g.act} onClose={close} />}
+      {(modal === 'trade' || modal?.trade) && me && <TradeBuilder s={s} me={me} act={g.act} preset={modal?.trade} onClose={close} />}
       {modal === 'rules' && <Rules onClose={close} />}
-      {modal?.player && <PlayerSheet s={s} id={modal.player} me={me} onClose={close} onTrade={() => setModal('trade')} onPick={(i) => { setModal(null); setSel(i) }} />}
+      {modal?.player && <PlayerSheet s={s} id={modal.player} me={me} onClose={close} onTrade={() => setModal({ trade: { to: modal.player } })} onPick={(i) => { setModal(null); setSel(i) }} />}
       <TradeIncoming s={s} me={me} act={g.act} />
       {s.auction && <Auction s={s} me={me} act={g.act} />}
-      {s.phase === 'over' && <GameOver s={s} />}
+      {s.phase === 'over' && <GameOver s={s} g={g} />}
       <Toast toast={g.toast} />
     </div>
   )
@@ -236,7 +258,7 @@ function SoundMenu({ onClose }) {
   )
 }
 
-function TopBar({ s, code, notify, onRules, onSound, logOpen, toggleLog }) {
+function TopBar({ s, pub, code, notify, onRules, onSound, logOpen, toggleLog }) {
   const st = useSfxSettings()
   const copy = () => {
     const link = `${location.origin}${location.pathname}?room=${code}`
@@ -248,6 +270,7 @@ function TopBar({ s, code, notify, onRules, onSound, logOpen, toggleLog }) {
       <button className="chip" onClick={copy} title="Copier le lien">Salle <b>{code}</b></button>
       <span className="chip">Tour <b>{Math.min(s.round, s.settings.maxRounds || s.round)}</b>{s.settings.maxRounds ? <span className="muted"> / {s.settings.maxRounds}</span> : null}</span>
       <span className="chip hide-m" title="Bâtiments disponibles à la banque">🏠 {s.houses} · 🏨 {s.hotels}</span>
+      {pub && <span className="hide-m"><PublicSwitch compact on={pub.isPublic} set={pub.setPublic} /></span>}
       <span className="grow" />
       <button className="ibtn" onClick={() => setSfx({ muted: !st.muted })} title="Couper / remettre le son (M)">{st.muted ? '🔇' : '🔊'}</button>
       <button className="ibtn" onClick={onSound} title="Réglages des bruitages">⚙</button>
@@ -403,7 +426,7 @@ function Deed({ s, i, compact }) {
   )
 }
 
-function SquareCard({ s, i, me, act, onClose }) {
+function SquareCard({ s, i, me, act, onClose, onTrade }) {
   const sq = SQUARES[i]
   const pr = s.props[i]
   const mine = me && pr?.owner === me.id
@@ -417,6 +440,17 @@ function SquareCard({ s, i, me, act, onClose }) {
       )}
       {here.length > 0 && <div className="here">{here.map((p) => <span key={p.id}><i style={{ background: p.color }} />{p.name}</span>)}</div>}
       {mine && <div className="pad"><PropButtons s={s} i={i} act={act} me={me} /></div>}
+      {pr && me && !me.bankrupt && s.phase === 'playing' && (() => {
+        const owner = s.players.find((p) => p.id === pr.owner)
+        const built = sq.group && groupMembers(sq.group).some((k) => s.props[k]?.houses)
+        const label = mine ? '🤝 Proposer cette case en échange' : `🤝 Demander cette case à ${owner?.name}`
+        return (
+          <div className="pad sq-trade">
+            <button className="btn" disabled={!!s.trade || built || owner?.bankrupt} title={built ? 'Groupe construit : vendre les maisons avant d’échanger' : ''}
+              onClick={() => onTrade(mine ? { give: [i] } : { to: pr.owner, get: [i] })}>{label}</button>
+          </div>
+        )
+      })()}
     </div>
   )
 }
@@ -767,13 +801,14 @@ function TradeSide({ s, who, side, set, mine }) {
   )
 }
 
-function TradeBuilder({ s, me, act, onClose, counter }) {
+function TradeBuilder({ s, me, act, onClose, counter, preset }) {
   const others = s.players.filter((p) => p.id !== me.id && !p.bankrupt && (!counter || p.id === counter.from))
   const empty = { money: 0, props: [], jailCards: 0 }
   // contre-proposition : on part de l'offre reçue (ce qu'on me demandait devient ce que je donne)
-  const [to, setTo] = useState(counter ? counter.from : others[0]?.id)
-  const [give, setGive] = useState(counter ? { ...counter.get, props: [...counter.get.props] } : empty)
-  const [get, setGet] = useState(counter ? { ...counter.give, props: [...counter.give.props] } : empty)
+  // preset : partenaire et/ou cases pré-sélectionnés (depuis la fiche d'un joueur ou d'une case)
+  const [to, setTo] = useState(counter ? counter.from : (preset?.to && others.some((p) => p.id === preset.to) ? preset.to : others[0]?.id))
+  const [give, setGive] = useState(counter ? { ...counter.get, props: [...counter.get.props] } : { ...empty, props: preset?.give || [] })
+  const [get, setGet] = useState(counter ? { ...counter.give, props: [...counter.give.props] } : { ...empty, props: preset?.get || [] })
   const other = s.players.find((p) => p.id === to)
   const first = useRef(true)
   useEffect(() => { if (first.current) { first.current = false; return } setGet(empty) }, [to])
@@ -871,7 +906,8 @@ function CardPopup({ s }) {
 }
 
 
-function GameOver({ s }) {
+function GameOver({ s, g }) {
+  const host = g.role === 'host'
   return (
     <div className="modal-bg">
       <div className="modal center">
@@ -883,8 +919,10 @@ function GameOver({ s }) {
           })}
         </ol>
         <div className="row">
-          <button className="btn primary" onClick={() => location.reload()}>Nouvelle partie</button>
-          <button className="btn" onClick={back}>Casino</button>
+          {host
+            ? <button className="btn primary" onClick={g.lobby.rematch}>🔁 Rejouer dans la salle</button>
+            : <span className="muted">En attente que l’hôte relance une partie…</span>}
+          <button className="btn" onClick={back}>Quitter</button>
         </div>
       </div>
     </div>
