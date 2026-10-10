@@ -15,6 +15,7 @@ import {
   play,
   removeBot,
   removePlayer,
+  resolveEffect,
   sayUno,
   setSettings,
   startGame,
@@ -25,6 +26,10 @@ import { fail } from "../../lib/result.js";
 import { HostController } from "../../net/controller.js";
 
 const ROUND_END_MS = 14000;
+
+// Pause entre la pose d'une carte et son effet : le temps de voir la carte arriver sur la défausse.
+const effectDelay = (effect) =>
+  effect.last ? 1800 : ["skip", "rev", "d2", "wild", "wd4"].includes(effect.v) ? 1900 : 900;
 
 export class UnoHost extends HostController {
   makeGame() {
@@ -151,6 +156,7 @@ export class UnoHost extends HostController {
       g.unoRisk?.id,
       g.discard.length,
       g.deck.length,
+      g.effect?.card.id,
     ].join("|");
     if (sig === this.sig) return;
     if (g.phase === "end" && !this.sig?.startsWith("end")) saveUnoGame(g);
@@ -163,10 +169,24 @@ export class UnoHost extends HostController {
       this.arm("deadline", ms, fn);
     };
 
-    if (g.phase === "playing") {
+    if (g.phase === "playing" && g.effect) {
+      const base = effectDelay({ v: g.effect.card.v, last: g.players.find((p) => p.id === g.effect.by)?.hand.length === 0 });
+      const ms = botDelay(base, base + 1); // suit l'accélération de test en développement
+      this.arm("effect", ms, () => resolveEffect(g));
+      // Les bots peuvent quand même surprendre un UNO oublié pendant la pause.
+      if (g.unoRisk) {
+        g.players
+          .filter((p) => p.bot && p.id !== g.unoRisk.id)
+          .forEach((b) =>
+            this.arm("catch-" + b.id, botDelay(700, ms), () => {
+              if (g.unoRisk && botCatches(g, b)) catchUno(g, b.id, g.unoRisk.id);
+            }),
+          );
+      }
+    } else if (g.phase === "playing") {
       const actor = g.challenge ? g.players.find((p) => p.id === g.challenge.to) : g.players[g.turn];
       if (actor?.bot) {
-        this.arm("bot", botDelay(1100, 2300), () => this.botAct(actor));
+        this.arm("bot", botDelay(1800, 3200), () => this.botAct(actor));
       } else if (g.settings.turnMs > 0) {
         setDeadline(g.settings.turnMs, () => timeoutTurn(g));
       }

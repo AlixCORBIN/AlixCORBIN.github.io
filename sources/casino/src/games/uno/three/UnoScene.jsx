@@ -218,7 +218,7 @@ export function UnoScene({ state, meId, onPlay, onDraw, onCatch }) {
       key: "deck-" + k,
       card: null,
       target: { x: DECK.x, y: 0.02 + k * 0.045, z: DECK.z, rx: 0, ry: 0.06 * (k % 2), rz: Math.PI },
-      onClick: top && playing && state.turn === meId && state.drawn == null && !state.challenge ? (e) => (e.stopPropagation(), onDraw()) : undefined,
+      onClick: top && playing && state.turn === meId && state.drawn == null && !state.challenge && !state.effect ? (e) => (e.stopPropagation(), onDraw()) : undefined,
       onOver: top && state.turn === meId ? () => (document.body.style.cursor = "pointer") : undefined,
       onOut: () => (document.body.style.cursor = ""),
       scale: 1.2,
@@ -243,6 +243,7 @@ export function UnoScene({ state, meId, onPlay, onDraw, onCatch }) {
       },
       from: seat ? { x: seat.x * 0.7, y: 0.9, z: seat.z * 0.7, rx: 0, ry: 0, rz: Math.PI } : undefined,
       scale: 1.2,
+      speed: 4.5,
     });
   });
 
@@ -280,7 +281,7 @@ export function UnoScene({ state, meId, onPlay, onDraw, onCatch }) {
   const mine = sortHand(me?.hand || state.hand || []);
   const m = mine.length;
   const step = Math.min(1.0, MathUtils.clamp(aspect * 15, 6, 10.6) / Math.max(1, m - 1));
-  const canAct = playing && state.turn === meId && !state.challenge;
+  const canAct = playing && state.turn === meId && !state.challenge && !state.effect;
   mine.forEach((c, i) => {
     const o = (i - (m - 1) / 2) * step;
     const playable = state.playable.includes(c.id);
@@ -324,7 +325,7 @@ export function UnoScene({ state, meId, onPlay, onDraw, onCatch }) {
       <Table />
       <Ring color={color} dir={state.dir} />
       {items.map((it) => (
-        <Card3D key={it.key} card={it.card} target={it.target} from={it.from} dim={it.dim} scale={it.scale} onClick={it.onClick} onOver={it.onOver} onOut={it.onOut} />
+        <Card3D key={it.key} card={it.card} target={it.target} from={it.from} dim={it.dim} scale={it.scale} speed={it.speed} onClick={it.onClick} onOver={it.onOver} onOut={it.onOut} />
       ))}
       {state.players.map((p, i) => {
         if (p.id === meId) return null;

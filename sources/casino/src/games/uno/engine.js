@@ -48,6 +48,7 @@ export function createUnoGame() {
     challenge: null, // { from, to, prevColor, bluff } après un +4 (défi possible)
     unoRisk: null, // { id } : joueur à 1 carte qui n'a pas dit UNO
     last: null, // { id, card } dernière carte jouée (animation)
+    effect: null, // carte posée dont l'effet n'est pas encore appliqué : { by, card, prevColor, bluff }
     roundWinner: null,
     roundPts: 0,
     winner: null,
@@ -177,6 +178,7 @@ export function dealRound(g) {
   g.challenge = null;
   g.unoRisk = null;
   g.last = null;
+  g.effect = null;
   g.roundWinner = null;
   g.roundPts = 0;
   g.dir = 1;
@@ -233,7 +235,7 @@ function clearRisk(g, actorId) {
 /* ---------- actions ---------- */
 
 export function legalCards(g, p) {
-  if (g.phase !== "playing" || turnPlayer(g)?.id !== p.id || g.challenge) return [];
+  if (g.phase !== "playing" || turnPlayer(g)?.id !== p.id || g.challenge || g.effect) return [];
   const top = topCard(g);
   if (g.drawn != null) {
     const c = p.hand.find((x) => x.id === g.drawn);
@@ -244,6 +246,7 @@ export function legalCards(g, p) {
 
 export function play(g, id, cardId, color, uno = false) {
   if (g.phase !== "playing") return fail("pas en jeu");
+  if (g.effect) return fail("patiente, la carte est en train d'être jouée");
   const p = find(g, id);
   if (!p) return fail("joueur inconnu");
   if (turnPlayer(g).id !== id) return fail("ce n'est pas ton tour");
@@ -282,12 +285,20 @@ export function play(g, id, cardId, color, uno = false) {
     p.uno = false;
   }
 
-  if (p.hand.length === 0) {
-    finishWithPenalty(g, p, card);
-    return ok();
-  }
+  // La carte est posée ; son effet (passe, pioche, fin de manche...) est appliqué un instant après par resolveEffect.
+  g.effect = { by: id, card, prevColor, bluff };
+  return ok();
+}
 
-  applyEffect(g, p, card, prevColor, bluff);
+/** Applique l'effet de la dernière carte posée (appelé par l'hôte après une courte pause). */
+export function resolveEffect(g) {
+  const e = g.effect;
+  if (!e) return fail("aucun effet en attente");
+  g.effect = null;
+  const p = find(g, e.by);
+  if (!p) return ok();
+  if (p.hand.length === 0) finishWithPenalty(g, p, e.card);
+  else applyEffect(g, p, e.card, e.prevColor, e.bluff);
   return ok();
 }
 
@@ -356,6 +367,7 @@ function finishWithPenalty(g, winner, card) {
 
 export function draw(g, id) {
   if (g.phase !== "playing") return fail("pas en jeu");
+  if (g.effect) return fail("patiente un instant");
   const p = find(g, id);
   if (!p) return fail("joueur inconnu");
   if (turnPlayer(g).id !== id) return fail("ce n'est pas ton tour");
@@ -392,6 +404,7 @@ export function draw(g, id) {
 
 export function pass(g, id) {
   if (g.phase !== "playing") return fail("pas en jeu");
+  if (g.effect) return fail("patiente un instant");
   if (turnPlayer(g).id !== id) return fail("ce n'est pas ton tour");
   if (g.drawn == null) return fail("pioche d'abord");
   const p = find(g, id);
@@ -403,6 +416,7 @@ export function pass(g, id) {
 /** Réponse au +4 : défier (le joueur a-t-il bluffé ?) ou accepter de piocher 4 cartes. */
 export function challenge(g, id) {
   const c = g.challenge;
+  if (g.effect) return fail("patiente un instant");
   if (!c || c.to !== id) return fail("rien à défier");
   const target = find(g, c.to);
   const from = find(g, c.from);
@@ -423,6 +437,7 @@ export function challenge(g, id) {
 
 export function accept(g, id) {
   const c = g.challenge;
+  if (g.effect) return fail("patiente un instant");
   if (!c || c.to !== id) return fail("rien à accepter");
   const target = find(g, c.to);
   g.challenge = null;
@@ -469,7 +484,7 @@ export function catchUno(g, id, targetId) {
 
 /** Temps écoulé : action automatique pour que la partie ne reste jamais bloquée. */
 export function timeoutTurn(g) {
-  if (g.phase !== "playing") return fail("pas en jeu");
+  if (g.phase !== "playing" || g.effect) return fail("pas en jeu");
   const p = turnPlayer(g);
   if (!p) return fail("pas de joueur");
   if (!p.bot) {
@@ -538,6 +553,8 @@ export const cardText = (c) => {
   return `${v} ${COLOR_NAME[c.c].toLowerCase()}`;
 };
 
+const viewerLast = (g) => g.players.find((p) => p.id === g.effect.by)?.hand.length === 0;
+
 /** Vue d'un joueur : sa main en clair, celle des autres réduite à un nombre de cartes. */
 export function viewFor(g, viewerId) {
   const reveal = g.phase === "roundEnd" || g.phase === "end";
@@ -556,6 +573,7 @@ export function viewFor(g, viewerId) {
     pendingType: g.pendingType,
     drawn: cur && cur.id === viewerId ? g.drawn : null,
     challenge: g.challenge ? { from: g.challenge.from, to: g.challenge.to } : null,
+    effect: g.effect ? { by: g.effect.by, v: g.effect.card.v, last: viewerLast(g) } : null,
     unoRisk: g.unoRisk ? { id: g.unoRisk.id } : null,
     top: topCard(g),
     discard: g.discard.slice(-6),

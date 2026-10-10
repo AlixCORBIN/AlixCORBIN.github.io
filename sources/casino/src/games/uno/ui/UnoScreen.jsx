@@ -209,6 +209,31 @@ function Log({ log }) {
   );
 }
 
+/** Texte du bandeau affiché entre la pose d'une carte et son effet. */
+function effectText(state) {
+  const e = state.effect;
+  if (!e) return null;
+  const n = state.players.length;
+  const idx = state.players.findIndex((p) => p.id === e.by);
+  const by = state.players[idx];
+  const next = state.players[(((idx + state.dir) % n) + n) % n];
+  if (e.last) return `${by.name} pose sa dernière carte !`;
+  switch (e.v) {
+    case "skip":
+      return `⊘ ${next.name} passe son tour`;
+    case "rev":
+      return "⇄ Le sens du jeu s'inverse";
+    case "d2":
+      return state.settings.stack ? `+2 cumulable, ${next.name} peut parer` : `+2 : ${next.name} pioche 2 cartes`;
+    case "wd4":
+      return state.settings.stack ? `+4 cumulable, ${next.name} peut parer` : `+4 : ${next.name} pioche ou défie`;
+    case "wild":
+      return `Joker : couleur ${COLOR_NAME[state.color]}`;
+    default:
+      return null;
+  }
+}
+
 function ActionBar({ ctrl, state, me }) {
   const myTurn = state.turn === me.id;
   const chal = state.challenge;
@@ -216,7 +241,10 @@ function ActionBar({ ctrl, state, me }) {
   const stack = state.pending > 0;
   const act = (a) => ctrl.act(a);
   let body = null;
-  if (chal && chal.to === me.id) {
+  if (state.effect) {
+    const by = state.players.find((p) => p.id === state.effect.by);
+    body = <p>{by?.id === me.id ? "Tu poses ta carte…" : `${by?.name} pose une carte…`}</p>;
+  } else if (chal && chal.to === me.id) {
     body = (
       <>
         <p>
@@ -267,7 +295,8 @@ function ActionBar({ ctrl, state, me }) {
     const cur = state.players.find((p) => p.id === state.turn);
     body = <p>Tour de {cur?.name}…</p>;
   }
-  return <div className={"dock un-dock" + (myTurn || chal?.to === me.id ? " mine" : " slim")}>{body}</div>;
+  const mine = !state.effect && (myTurn || chal?.to === me.id);
+  return <div className={"dock un-dock" + (mine ? " mine" : " slim")}>{body}</div>;
 }
 
 export function UnoScreen({ ctrl, state, me, onQuit }) {
@@ -324,6 +353,11 @@ export function UnoScreen({ ctrl, state, me, onQuit }) {
             <i /> {COLOR_NAME[state.color]}
             {state.pending > 0 && <b> · +{state.pending}</b>}
           </div>
+          {effectText(state) && (
+            <div key={state.effect.by + state.discard.length} className="un-effect">
+              {effectText(state)}
+            </div>
+          )}
           <Log log={state.log} />
           <div className="un-bottom">
             {err && <div className="toast">{err}</div>}

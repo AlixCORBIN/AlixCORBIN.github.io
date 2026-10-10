@@ -14,7 +14,7 @@ const geometry = new BoxGeometry(CARD_W, CARD_T, CARD_H);
  * donc passer d'une zone à l'autre (main -> défausse) s'anime sans rien recréer.
  * `from` (optionnel) donne la position de départ à l'apparition (talon, siège d'un adversaire).
  */
-export function Card3D({ card, target, from, dim, onClick, onOver, onOut, scale = 1, speed = 9 }) {
+export function Card3D({ card, target, from, dim, onClick, onOver, onOut, scale = 1, speed: spd }) {
   const ref = React.useRef();
   const materials = React.useMemo(() => cardMaterials(card), [card ? card.c + card.v : "back"]);
   const init = React.useRef(false);
@@ -30,7 +30,7 @@ export function Card3D({ card, target, from, dim, onClick, onOver, onOut, scale 
       obj.rotation.set(s.rx ?? 0, s.ry ?? 0, s.rz ?? 0);
       return;
     }
-    const k = 1 - Math.exp(-speed * dt);
+    const k = 1 - Math.exp(-(spd || 9) * dt);
     const dist = Math.hypot(target.x - obj.position.x, target.z - obj.position.z);
     const lift = target.y + Math.min(dist, 4) * 0.28;
     obj.position.x += (target.x - obj.position.x) * k;
