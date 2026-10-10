@@ -4,6 +4,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 // La clé reste secrète (secret Supabase GEMINI_API_KEY). Modèle réglable via GEMINI_MODEL.
 const ALLOWED = ["https://alixcorbin.github.io", "http://localhost:5173", "http://localhost:4173"];
 const last = new Map<string, number>();
+let workingModel = "";
 
 function cors(origin: string | null) {
   const o = origin && ALLOWED.includes(origin) ? origin : ALLOWED[0];
@@ -36,7 +37,7 @@ Deno.serve(async (req: Request) => {
 
   let body: any;
   try { body = await req.json(); } catch { return new Response(JSON.stringify({ error: "json" }), { status: 400, headers: h }); }
-  const { mode, bot, context, candidates, trade, verdict } = body || {};
+  const { mode, bot, context, candidates, trade, verdict, from, message } = body || {};
   const clip = (x: unknown, n = 1500) => String(x ?? "").slice(0, n);
 
   let task = "";
@@ -52,24 +53,37 @@ Tu es ${clip(bot?.name, 40)} (${clip(bot?.persona, 20)}). On te propose : ${clip
 Ta décision (déjà prise, ne la change pas) : ${verdict === "accept" ? "ACCEPTER" : "REFUSER"}.
 Écris ta réponse au joueur (si tu refuses, dis ce qui te ferait accepter).
 Réponds : {"message": "<ta réponse>"}`;
+  } else if (mode === "chat") {
+    task = `Situation : ${clip(context)}
+Tu es ${clip(bot?.name, 40)} (${clip(bot?.persona, 20)}). ${clip(from, 40)} t'écrit dans le chat de la partie : « ${clip(message, 300)} ».
+Réponds-lui directement, en restant dans ton personnage, en tenant compte de la partie (argent, propriétés). Tu peux taquiner, négocier ou bluffer, mais ne promets aucun échange précis.
+Commence ton message par @${clip(from, 40)}. Pour citer une case, écris #Nom exact de la case.
+Réponds : {"message": "<ta réponse>"}`;
   } else return new Response(JSON.stringify({ error: "mode" }), { status: 400, headers: h });
 
-  const model = Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash-lite";
-  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: SYS }] },
-      contents: [{ role: "user", parts: [{ text: task }] }],
-      generationConfig: { responseMimeType: "application/json", maxOutputTokens: 200, temperature: 0.9 },
-    }),
-  });
-  if (!r.ok) return new Response(JSON.stringify({ error: "gemini " + r.status }), { status: 502, headers: h });
+  // modèles essayés dans l'ordre (les noms changent avec le temps) ; le premier qui marche est retenu
+  const models = [Deno.env.get("GEMINI_MODEL"), workingModel, "gemini-flash-lite-latest", "gemini-2.5-flash-lite", "gemini-2.0-flash-lite", "gemini-flash-latest", "gemini-2.5-flash", "gemini-2.0-flash"].filter(Boolean) as string[];
+  let r: Response | null = null;
+  for (const model of [...new Set(models)]) {
+    r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: SYS }] },
+        contents: [{ role: "user", parts: [{ text: task }] }],
+        generationConfig: { responseMimeType: "application/json", maxOutputTokens: 200, temperature: 0.9 },
+      }),
+    });
+    if (r.status === 404) continue;
+    if (r.ok) workingModel = model;
+    break;
+  }
+  if (!r || !r.ok) return new Response(JSON.stringify({ error: "gemini " + (r?.status ?? "?") }), { status: 502, headers: h });
   const j = await r.json();
   const text = j?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
   let out: any = {};
   try { out = JSON.parse(text); } catch { out = { message: text }; }
-  const res: any = { message: clip(out.message, 240) };
+  const res: any = { message: clip(out.message, 240), model: workingModel };
   if (mode === "pick") res.index = Number.isInteger(out.index) ? out.index : 0;
   return new Response(JSON.stringify(res), { headers: h });
 });

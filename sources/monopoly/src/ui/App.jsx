@@ -4,6 +4,7 @@ import Scene from '../three/Scene.jsx'
 import { SQUARES, GROUPS, groupMembers, JAIL_FINE } from '../game/data.js'
 import { fmt, netWorth, ownsGroup, rentFor } from '../game/engine.js'
 import { usePresented } from './present.js'
+import { parseChat, suggest, mentionedIds } from './mentions.js'
 import { sfx, getSfx, setSfx, onSfx, CATEGORIES } from './sfx.js'
 
 const back = () => (window.location.href = '../jeux/index.html')
@@ -23,7 +24,7 @@ function Toast({ toast }) {
     const t = setTimeout(() => setShow(false), 3200)
     return () => clearTimeout(t)
   }, [toast?.k])
-  return show ? <div className="toast">{toast.msg}</div> : null
+  return show ? <div className={`toast ${toast.kind || ''}`}>{toast.kind === 'mention' ? '📣 ' : ''}{toast.msg}</div> : null
 }
 
 // ---------- Accueil ----------
@@ -185,7 +186,7 @@ function GameView({ g }) {
       <DebtBanner s={s} me={me} act={g.act} onManage={() => setModal('manage')} />
       <Dock s={s} me={me} act={g.act} main={main} anim={anim} onManage={() => setModal('manage')} onTrade={() => setModal('trade')} />
       {sel != null && !modal && <SquareCard s={s} i={sel} me={me} act={g.act} onClose={() => setSel(null)} />}
-      {logOpen && <Log s={s} chats={g.chats} chat={g.chat} onClose={() => setLogOpen(false)} />}
+      {logOpen && <Log s={s} chats={g.chats} chat={g.chat} myId={g.myId} onPick={(i) => { setModal(null); setSel(i) }} onClose={() => setLogOpen(false)} />}
       {soundOpen && <SoundMenu onClose={() => setSoundOpen(false)} />}
       {pend != null && !modal && <BuyPrompt s={s} i={pend} me={me} act={g.act} />}
       {modal === 'manage' && me && <Manage s={s} me={me} act={g.act} onClose={close} />}
@@ -536,20 +537,72 @@ function Rules({ onClose }) {
   )
 }
 
-function Log({ s, chats = [], chat, onClose }) {
-  const ref = useRef()
+function ChatText({ text, s, myId, onPick }) {
+  return parseChat(text, s.players).map((t, i) => {
+    if (t.type === 'user') {
+      const p = s.players.find((x) => x.id === t.id)
+      return <span key={i} className={`ment ${t.id === myId ? 'me' : ''}`} style={{ '--c': p?.color }}>{t.value}</span>
+    }
+    if (t.type === 'place') {
+      const sq = SQUARES[t.i]
+      return <button key={i} className="ment place" style={{ '--c': sqColor(sq) }} onClick={() => onPick?.(t.i)} title="Voir la case">{t.value}</button>
+    }
+    return <span key={i}>{t.value}</span>
+  })
+}
+
+function ChatInput({ s, onSend }) {
   const [msg, setMsg] = useState('')
+  const [sug, setSug] = useState(null)
+  const [k, setK] = useState(0)
+  const ref = useRef()
+  const refresh = (text, caret) => { setSug(suggest(text, caret, s.players.filter((p) => !p.bankrupt))); setK(0) }
+  const pick = (it) => {
+    const next = msg.slice(0, sug.start) + it.insert + ' ' + msg.slice(sug.end)
+    const caret = sug.start + it.insert.length + 1
+    setMsg(next); setSug(null)
+    requestAnimationFrame(() => { ref.current.focus(); ref.current.setSelectionRange(caret, caret) })
+  }
+  const onKey = (e) => {
+    if (!sug) return
+    if (e.key === 'ArrowDown') { e.preventDefault(); setK((k + 1) % sug.items.length) }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setK((k - 1 + sug.items.length) % sug.items.length) }
+    else if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); pick(sug.items[k]) }
+    else if (e.key === 'Escape') { e.stopPropagation(); setSug(null) }
+  }
+  return (
+    <form className="chatform" onSubmit={(e) => { e.preventDefault(); if (msg.trim()) onSend(msg.trim()); setMsg(''); setSug(null) }}>
+      {sug && (
+        <div className="suggest">
+          <small>{sug.trig === '@' ? 'Mentionner un joueur' : 'Citer une case'}</small>
+          {sug.items.map((it, i) => (
+            <button type="button" key={it.insert} className={i === k ? 'on' : ''} onMouseDown={(e) => { e.preventDefault(); pick(it) }}>
+              <i style={{ background: it.color || (it.group ? GROUPS[it.group].color : '#5d6b63') }} />
+              {it.label}{it.sub && <em>{it.sub}</em>}
+            </button>
+          ))}
+        </div>
+      )}
+      <input ref={ref} value={msg} maxLength={200} placeholder="Message… (@joueur, #case)"
+        onChange={(e) => { setMsg(e.target.value); refresh(e.target.value, e.target.selectionStart) }}
+        onKeyDown={onKey} onClick={(e) => refresh(msg, e.target.selectionStart)} onBlur={() => setTimeout(() => setSug(null), 150)} />
+    </form>
+  )
+}
+
+function Log({ s, chats = [], chat, onClose, myId, onPick }) {
+  const ref = useRef()
   useEffect(() => { ref.current && (ref.current.scrollTop = 1e9) }, [s.log.length, chats.length])
   const items = [...s.log.slice(-60).map((l) => ({ ...l, kind: 'log' })), ...chats.map((c) => ({ ...c, kind: 'chat' }))].sort((a, b) => a.t - b.t)
   return (
     <div className="log">
       <div className="log-head"><b>Journal</b><button className="x" onClick={onClose}>✕</button></div>
       <div className="log-body" ref={ref}>
-        {items.map((l, i) => l.kind === 'chat' ? <div key={i} className="chatline"><b>{l.from}</b> {l.msg}</div> : <div key={i} className={l.msg.startsWith('—') ? 'sep' : ''}>{l.msg.replace(/^— | —$/g, '')}</div>)}
+        {items.map((l, i) => l.kind === 'chat'
+          ? <div key={i} className={`chatline ${mentionedIds(l.msg, s.players).includes(myId) ? 'tome' : ''}`}><b>{l.from}</b> <ChatText text={l.msg} s={s} myId={myId} onPick={onPick} /></div>
+          : <div key={i} className={l.msg.startsWith('—') ? 'sep' : ''}>{l.msg.replace(/^— | —$/g, '')}</div>)}
       </div>
-      <form onSubmit={(e) => { e.preventDefault(); chat(msg); setMsg('') }}>
-        <input value={msg} onChange={(e) => setMsg(e.target.value)} placeholder="Écrire un message…" maxLength={200} />
-      </form>
+      <ChatInput s={s} onSend={chat} />
     </div>
   )
 }

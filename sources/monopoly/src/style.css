@@ -235,3 +235,18 @@ button.chip{cursor:pointer}button.chip:hover{border-color:var(--gold)}
 .netbanner{position:absolute;top:56px;left:50%;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:10px;background:#3d3214;border:1px solid var(--gold);border-radius:14px;padding:9px 14px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 .netbanner .spinner{width:16px;height:16px;border-width:2px}
 .chatline{background:rgba(232,196,104,.1);border-left:3px solid var(--gold);padding:3px 7px;border-radius:6px;color:#f2ead2}.chatline b{color:var(--gold);margin-right:4px}
+
+/* chat : mentions et suggestions */
+.ment{display:inline;padding:0 4px;border-radius:5px;font-weight:800;color:#fff;background:color-mix(in srgb,var(--c) 55%,transparent);border:none;font-size:inherit;line-height:1.5}
+.ment.me{outline:2px solid var(--gold)}
+button.ment.place{cursor:pointer;background:color-mix(in srgb,var(--c) 45%,#1a1a1a)}
+button.ment.place:hover{background:var(--c)}
+.chatline.tome{background:rgba(232,196,104,.25);border-left-color:#fff}
+.chatform{position:relative}
+.suggest{position:absolute;bottom:100%;left:6px;right:6px;margin-bottom:6px;background:#10251b;border:1px solid var(--line);border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:2px;box-shadow:0 -10px 30px rgba(0,0,0,.4);z-index:3}
+.suggest small{color:var(--muted);padding:2px 6px;font-size:.7rem}
+.suggest button{display:flex;align-items:center;gap:8px;text-align:left;background:none;border:none;border-radius:8px;padding:6px 8px;cursor:pointer;font-size:.82rem}
+.suggest button.on,.suggest button:hover{background:rgba(255,255,255,.1)}
+.suggest i{width:10px;height:10px;border-radius:3px;flex:none}
+.suggest em{margin-left:auto;font-style:normal;color:var(--muted);font-size:.7rem}
+.toast.mention{border-color:#fff;background:#4a3a12;font-weight:700}

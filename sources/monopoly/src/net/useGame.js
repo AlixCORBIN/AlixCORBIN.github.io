@@ -2,7 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { hostRoom, joinRoom, newCode, getClientId } from './net.js'
 import { createLobby, lobbyAdd, lobbyRemove, startGame, applyAction, auctionTimeout } from '../game/engine.js'
 import { botDecide, markTried } from '../game/bot.js'
-import { aiPickTrade, aiReply } from './ai.js'
+import { aiPickTrade, aiReply, aiChat } from './ai.js'
+import { mentionedIds } from '../ui/mentions.js'
+import { sfx } from '../ui/sfx.js'
 import { BOT_NAMES } from '../game/data.js'
 import { saveMonopolyGame } from './stats.js'
 import { DICE_MS, moveDelay } from '../ui/present.js'
@@ -33,12 +35,21 @@ export function useGame() {
   const [toast, setToast] = useState(null)
   const [chats, setChats] = useState([])
   const pushChat = (from, msg) => setChats((c) => [...c.slice(-50), { t: Date.now(), from, msg }])
+  // message reçu ou envoyé : historique + notification (mise en avant si on me mentionne)
+  const seeChat = (from, msg) => {
+    pushChat(from, msg)
+    const g = gameRef.current
+    const toMe = g && mentionedIds(msg, g.players).includes(myIdRef.current)
+    notify(`${from} : ${msg}`, toMe ? 'mention' : undefined)
+    if (toMe) sfx('turn')
+  }
+  const botReplyRef = useRef(null)
   const net = useRef(null)
   const gameRef = useRef(null)
   const connPlayer = useRef(new Map())
 
-  const notify = useCallback((msg) => {
-    setToast({ msg, k: Date.now() })
+  const notify = useCallback((msg, kind) => {
+    setToast({ msg, kind, k: Date.now() })
   }, [])
 
   // Hôte : applique une mise à jour et diffuse
@@ -108,8 +119,8 @@ export function useGame() {
         } else if (d.type === 'chat') {
           const pid = connPlayer.current.get(conn)
           const p = gameRef.current.players.find((x) => x.id === pid)
-          if (p) net.current.broadcast({ type: 'chat', from: p.name, msg: String(d.msg).slice(0, 200) })
-          if (p) { notify(`${p.name} : ${String(d.msg).slice(0, 200)}`); pushChat(p.name, String(d.msg).slice(0, 200)) }
+          const m = String(d.msg).slice(0, 200)
+          if (p) { net.current.broadcast({ type: 'chat', from: p.name, msg: m }); seeChat(p.name, m); botReplyRef.current?.(p, m) }
         }
       },
       onClose: (conn) => {
@@ -170,7 +181,7 @@ export function useGame() {
           if (d.type === 'state') { gameRef.current = d.state; setGame(d.state) }
           else if (d.type === 'welcome') setMe(d.playerId)
           else if (d.type === 'error') notify(d.msg)
-          else if (d.type === 'chat') { notify(`${d.from} : ${d.msg}`); pushChat(d.from, d.msg) }
+          else if (d.type === 'chat') seeChat(d.from, d.msg)
         },
         onClose: () => fail('Connexion perdue avec l’hôte.'),
         onError: (e) => fail(e.type === 'peer-unavailable' ? 'Salle introuvable.' : 'Erreur réseau : ' + (e.type || e.message)),
@@ -193,7 +204,7 @@ export function useGame() {
   const chat = useCallback((msg) => {
     if (!msg.trim()) return
     const me = gameRef.current?.players.find((p) => p.id === myIdRef.current)
-    if (role === 'host') { net.current.broadcast({ type: 'chat', from: me?.name, msg }); notify(`${me?.name} : ${msg}`); pushChat(me?.name, msg) }
+    if (role === 'host') { net.current.broadcast({ type: 'chat', from: me?.name, msg }); seeChat(me?.name, msg); if (me) botReplyRef.current?.(me, msg) }
     else net.current?.send({ type: 'chat', msg })
   }, [role, notify])
 
@@ -222,9 +233,21 @@ export function useGame() {
   const busyBot = useRef(false)
   const botSay = useCallback((from, msg) => {
     net.current?.broadcast?.({ type: 'chat', from, msg })
-    notify(`${from} : ${msg}`)
-    pushChat(from, msg)
+    seeChat(from, msg)
   }, [notify])
+
+  // Hôte : un bot mentionné par un humain répond (IA, avec un délai de « frappe »)
+  const lastBotReply = useRef({})
+  botReplyRef.current = (sender, msg) => {
+    const g = gameRef.current
+    if (!g || g.phase === 'lobby' || sender.isBot) return
+    const bots = mentionedIds(msg, g.players).map((id) => g.players.find((p) => p.id === id)).filter((p) => p?.isBot && !p.bankrupt).slice(0, 2)
+    bots.forEach((b, i) => {
+      if (Date.now() - (lastBotReply.current[b.id] || 0) < 4000) return
+      lastBotReply.current[b.id] = Date.now()
+      setTimeout(() => aiChat(gameRef.current, b.id, sender.name, msg).then((r) => r && botSay(b.name, r)), 900 + i * 1800)
+    })
+  }
 
   // Boucle des bots (hôte uniquement) : bots + joueurs déconnectés
   useEffect(() => {
