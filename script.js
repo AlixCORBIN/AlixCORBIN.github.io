@@ -110,7 +110,7 @@ const CHANNELS = [
     },
     {
         title: "Casino", titleEn: "Casino",
-        bg: "assets/bj.webp",
+        bg: "assets/casino_bg.webp",
         link: "jeux/index.html",
         type: "blackjack"
     },
