@@ -2288,86 +2288,104 @@ body.dark-mode .wii-photo:not(.wii-photo--moi) .ch-bg { background: #1e2130; }
    ========================================= */
 #page-dots { display: none; }
 
-@media (max-width: 600px) {
+/* Classe body.phone posée par script.js : largeur ≤ 600px OU téléphone tactile en portrait
+   (couvre aussi le mode "Version pour ordinateur" des navigateurs mobiles) */
     /* Grille : occupe tout l'espace entre le haut et le footer */
-    .grid-wrapper {
-        height: calc(100dvh - 190px);
-        margin: 34px 0 120px;
-    }
-    .grid-page {
-        width: 92vw;
-        height: calc(100dvh - 190px);
-        gap: 10px;
-    }
-    .grid-track { gap: 8vw; }
-    .channel, body.wii3d-on .channel { border-radius: 16px; }
-    .wii-photo-band { font-size: 0.82rem; padding: 4px 8px 5px; }
-    .wii-scene { bottom: 23px; height: calc(100% - 23px); }
-    .wii-temp { font-size: 1.5rem; }
-
-    /* Navigation : swipe + points, plus de flèches qui mordent sur les tuiles */
-    .page-arrow { display: none !important; }
-    #page-dots {
-        position: fixed;
-        left: 0; right: 0;
-        bottom: 104px;
-        z-index: 60;
-        display: flex;
-        justify-content: center;
-        gap: 8px;
-        pointer-events: none;
-        transition: opacity .3s;
-    }
-    .page-dot {
-        width: 9px; height: 9px;
-        padding: 0;
-        border-radius: 50%;
-        border: 0;
-        background: #b9c0c9;
-        pointer-events: auto;
-        transition: width .25s, background .25s;
-    }
-    .page-dot.on { width: 22px; border-radius: 5px; background: #4ac0e0; }
-    body.dark-mode .page-dot { background: #3a4058; }
-    body.dark-mode .page-dot.on { background: #4ac0e0; }
-
-    /* Langue : plus compact */
-    #lang-switcher { top: 10px; right: 10px; padding: 3px 5px; }
-    #lang-switcher .flag-img { width: 22px; height: 22px; }
-
-    /* Le bandeau "Dark mode" gêne sur petit écran */
-    .dm-hint { display: none !important; }
-
-    /* Overlay : swipe à la place des flèches latérales */
-    .side-arrow { display: none !important; }
-    .overlay-content { padding-left: 0; padding-right: 0; }
-    .overlay-text-block, .ov-desc { max-width: 100%; padding-left: 18px; padding-right: 18px; box-sizing: border-box; }
-    .overlay-footer { padding-bottom: env(safe-area-inset-bottom); }
-
-    /* Overlay "Moi" : en-tête compact sur 3 colonnes */
-    .moi-layout { width: 100%; box-sizing: border-box; padding: 70px 16px 16px; justify-content: flex-start; }
-    .moi-left {
-        display: grid;
-        grid-template-columns: 68px 1fr auto;
-        grid-template-rows: auto auto auto;
-        column-gap: 14px;
-        row-gap: 2px;
-        align-items: center;
-        text-align: left;
-    }
-    .moi-avatar-ring { grid-row: 1 / 4; width: 68px; height: 68px; margin: 0; }
-    .moi-name, .moi-role, .moi-location { grid-column: 2; margin: 0; text-align: left; }
-    .moi-socials { grid-column: 3; grid-row: 1 / 4; flex-direction: column; gap: 8px; margin: 0; }
-    .moi-right { width: 100%; }
-    .moi-card { box-sizing: border-box; width: 100%; }
-
-    /* Intro : pas d'icône souris sur tactile */
-    body.is-touch .mouse-icon { display: none; }
-    .intro-text { padding: 0 20px; }
+body.phone {
+    /* --fh = hauteur réelle du footer (mesurée par mobile.js), --top = marge haute */
+    --top: max(56px, 6vw);
+    --grid-h: calc(100dvh - var(--fh, 120px) - var(--top) - max(28px, 5vw));
 }
+body.phone .grid-wrapper {
+    height: var(--grid-h);
+    margin: 0;
+    position: fixed;
+    top: var(--top);
+    left: 0;
+}
+body.phone .grid-page {
+    width: 92vw;
+    height: var(--grid-h);
+    gap: 10px;
+}
+body.phone .grid-track { gap: 8vw; }
+body.phone .channel, body.phone.wii3d-on .channel { border-radius: 16px; }
+body.phone .wii-photo-band { font-size: 0.82rem; padding: 4px 8px 5px; }
+body.phone .wii-scene { bottom: 23px; height: calc(100% - 23px); }
+body.phone .wii-temp { font-size: 1.5rem; }
 
-@media (max-width: 600px) and (max-height: 700px) {
-    .grid-wrapper, .grid-page { height: calc(100dvh - 170px); }
-    .grid-wrapper { margin: 24px 0 110px; }
-    #page-dots { bottom: 98px; }
+/* Navigation : swipe + points, plus de flèches qui mordent sur les tuiles */
+body.phone .page-arrow { display: none !important; }
+body.phone #page-dots {
+    position: fixed;
+    left: 0; right: 0;
+    bottom: calc(var(--fh, 120px) + max(8px, 1.5vw));
+    z-index: 60;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    pointer-events: none;
+    transition: opacity .3s;
+}
+body.phone .page-dot {
+    width: 9px; height: 9px;
+    padding: 0;
+    border-radius: 50%;
+    border: 0;
+    background: #b9c0c9;
+    pointer-events: auto;
+    transition: width .25s, background .25s;
+}
+body.phone .page-dot.on { width: 22px; border-radius: 5px; background: #4ac0e0; }
+body.phone.dark-mode .page-dot { background: #3a4058; }
+body.phone.dark-mode .page-dot.on { background: #4ac0e0; }
+
+/* Langue : plus compact */
+body.phone #lang-switcher { top: 10px; right: 10px; padding: 3px 5px; }
+body.phone #lang-switcher .flag-img { width: 22px; height: 22px; }
+
+/* Le bandeau "Dark mode" gêne sur petit écran */
+body.phone .dm-hint { display: none !important; }
+
+/* Overlay : swipe à la place des flèches latérales */
+body.phone .side-arrow { display: none !important; }
+body.phone .overlay-content { padding-left: 0; padding-right: 0; }
+body.phone .overlay-text-block, body.phone .ov-desc { max-width: 100%; padding-left: 18px; padding-right: 18px; box-sizing: border-box; }
+body.phone .overlay-footer { padding-bottom: env(safe-area-inset-bottom); }
+
+/* Overlay "Moi" : en-tête compact sur 3 colonnes */
+body.phone .moi-layout { width: 100%; box-sizing: border-box; padding: 70px 16px 16px; justify-content: flex-start; }
+body.phone .moi-left {
+    display: grid;
+    grid-template-columns: 68px 1fr auto;
+    grid-template-rows: auto auto auto;
+    column-gap: 14px;
+    row-gap: 2px;
+    align-items: center;
+    text-align: left;
+}
+body.phone .moi-avatar-ring { grid-row: 1 / 4; width: 68px; height: 68px; margin: 0; }
+body.phone .moi-name, body.phone .moi-role, body.phone .moi-location { grid-column: 2; margin: 0; text-align: left; }
+body.phone .moi-socials { grid-column: 3; grid-row: 1 / 4; flex-direction: column; gap: 8px; margin: 0; }
+body.phone .moi-right { width: 100%; }
+body.phone .moi-card { box-sizing: border-box; width: 100%; }
+
+/* Intro : pas d'icône souris sur tactile */
+body.phone.is-touch .mouse-icon { display: none; }
+body.phone .intro-text { padding: 0 20px; }
+
+/* Grille 2×4 explicite (le mode "ordinateur" d'un téléphone dépasse 768px) */
+body.phone .grid-page { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(4, 1fr); }
+/* Pas de cadres 3D sur téléphone : bordure CSS simple, alignée à coup sûr */
+body.phone .channel { border: 3px solid #c3c8cf; background-clip: border-box; }
+body.phone.dark-mode .channel { border-color: #2e3350; }
+body.phone .channel.empty { border-color: #c3c8cf; }
+/* Textes lisibles même si le navigateur affiche la version ordinateur */
+body.phone .wii-photo-band { font-size: max(0.82rem, 3.3vw); }
+body.phone .wii-scene { height: calc(100% - max(23px, 7vw)); }
+body.phone .page-dot { width: max(9px, 2.3vw); height: max(9px, 2.3vw); }
+body.phone .page-dot.on { width: max(22px, 5.6vw); }
+
+@media (max-height: 700px) {
+    body.phone { --top: 46px; }
 }

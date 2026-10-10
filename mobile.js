@@ -13,6 +13,17 @@
         document.body.classList.add('is-touch');
     }
 
+    // Hauteur réelle du footer (titre compris) pour caler la grille au-dessus
+    function measureFooter() {
+        const f = document.getElementById('main-footer');
+        const t = document.querySelector('.portfolio-title');
+        let top = f ? f.getBoundingClientRect().top : innerHeight - 120;
+        if (t && t.offsetParent) top = Math.min(top, t.getBoundingClientRect().top);
+        document.body.style.setProperty('--fh', Math.round(innerHeight - top) + 'px');
+    }
+    measureFooter();
+    window.addEventListener('resize', measureFooter);
+
     // Points de pagination sous la grille
     const dots = document.createElement('div');
     dots.id = 'page-dots';

@@ -17,7 +17,10 @@ const MAX_TILT = 0.10;   // rad (~6°)
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let renderer;
-try {
+// Sur téléphone (classe posée par script.js) : pas de calque 3D, la bordure CSS suffit
+// et évite tout décalage avec la barre d'adresse mobile.
+const skip3d = document.body.classList.contains('phone') || window.matchMedia('(pointer: coarse)').matches;
+if (!skip3d) try {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
 } catch (e) {
     console.warn('[wii3d] WebGL indisponible, fallback CSS', e);
@@ -184,7 +187,7 @@ function init() {
     /* ---------- Resize ---------- */
     function resize() {
         const w = window.innerWidth, h = window.innerHeight;
-        renderer.setSize(w, h, false);
+        renderer.setSize(w, h); // met aussi à jour la taille CSS du canvas = viewport réel
         camera.aspect = w / h;
         camDist = (h / 2) / Math.tan(THREE.MathUtils.degToRad(FOV / 2));
         camera.position.set(0, 0, camDist);

@@ -285,11 +285,19 @@ const CHANNELS = [
     }
 ];
 
+// Mise en page téléphone : petit écran OU téléphone tactile en portrait
+// (le mode "Version pour ordinateur" de Chrome mobile annonce ~980px de large)
+function isPhoneLayout() {
+    return window.innerWidth <= 600 ||
+        window.matchMedia('(pointer: coarse) and (orientation: portrait) and (max-width: 1100px)').matches;
+}
+document.body.classList.toggle('phone', isPhoneLayout());
+
 // Calcule les pages selon le viewport
 // Mobile (≤768px) : 8 chaînes par page (grille 2×4)
 // Desktop         : 12 chaînes par page (grille 4×3)
 function computeActivePAGES() {
-    const perPage = window.innerWidth <= 768 ? 8 : 12;
+    const perPage = (window.innerWidth <= 768 || isPhoneLayout()) ? 8 : 12;
     const result  = [];
     for (let i = 0; i < CHANNELS.length; i += perPage) {
         result.push(CHANNELS.slice(i, i + perPage));
@@ -303,7 +311,7 @@ let currentPage = 0;
 
 // Nombre de slots par page selon le viewport
 function getSlotsPerPage() {
-    return window.innerWidth <= 768 ? 8 : 12;
+    return (window.innerWidth <= 768 || isPhoneLayout()) ? 8 : 12;
 }
 
 /* =========================================
@@ -632,9 +640,10 @@ function navigatePage(dir) {
     updateActivePageStyle();
 }
 
-let lastIsMobile = window.innerWidth <= 768;
+let lastIsMobile = (window.innerWidth <= 768 || isPhoneLayout());
 window.addEventListener('resize', () => {
-    const isMobile = window.innerWidth <= 768;
+    document.body.classList.toggle('phone', isPhoneLayout());
+    const isMobile = (window.innerWidth <= 768 || isPhoneLayout());
     if (isMobile !== lastIsMobile) {
         lastIsMobile   = isMobile;
         activePAGES    = computeActivePAGES();
