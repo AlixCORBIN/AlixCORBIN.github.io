@@ -29,7 +29,7 @@ export function createBlackjackGame() {
     shoe: makeShoe(RULES.decks),
     dealer: {
       cards: [],
-      hidden: true,
+      hidden: false,
       bj: false,
     },
     players: [],
@@ -280,7 +280,7 @@ function dealRound(g) {
   g.round++;
   g.dealer = {
     cards: [],
-    hidden: true,
+    hidden: false,
     bj: false,
   };
   const inPlay = [];
@@ -322,7 +322,7 @@ function dealRound(g) {
   for (const p of inPlay) {
     p.hands[0].cards.push(drawCard(g));
   }
-  g.dealer.cards.push(drawCard(g));
+  // Blackjack europeen : le croupier n'a qu'une carte, la 2e est tiree apres les joueurs
   const upCard = g.dealer.cards[0];
   for (const p of inPlay) {
     const [c1, c2] = p.hands[0].cards;
@@ -391,21 +391,7 @@ function checkInsuranceDone(g) {
 }
 
 function startPlay(g) {
-  const upCard = g.dealer.cards[0];
-  g.dealer.cards[1];
-  if (
-    (upCard.r === "A" || cardValue(upCard.r) === 10) &&
-    handValue(g.dealer.cards).total === 21
-  ) {
-    g.dealer.bj = true;
-    g.dealer.hidden = false;
-    for (const p of g.players) {
-      if (p.insurance > 0) {
-        p.bankroll += p.insurance * 3;
-      }
-    }
-    return settle(g);
-  }
+  // pas de verification du blackjack du croupier (pas de carte cachee)
   g.phase = "playing";
   for (const p of g.players)
     for (const hand of p.hands) {
@@ -547,28 +533,41 @@ const anyLiveHand = (g) =>
     p.hands.some((h) => handValue(h.cards).total <= 21 && !isNatural(h)),
   );
 
+const hasLiveHand = (g) =>
+  g.players.some((p) =>
+    p.hands.some((h) => handValue(h.cards).total <= 21 && !isNatural(h)),
+  );
+const hasUnbustedHand = (g) =>
+  g.players.some((p) => p.hands.some((h) => handValue(h.cards).total <= 21));
+const hasInsurance = (g) => g.players.some((p) => p.insurance > 0);
+
 export function dealerStep(g) {
   if (g.phase !== "dealer")
     return {
       more: false,
     };
-  if (g.dealer.hidden) {
-    g.dealer.hidden = false;
-    return {
-      more: true,
-    };
+  g.dealer.hidden = false;
+  if (g.dealer.cards.length === 1) {
+    // 2e carte du croupier, seulement si une main (ou une assurance) est encore en jeu
+    if (!hasUnbustedHand(g) && !hasInsurance(g)) {
+      settle(g);
+      return { more: false };
+    }
+    g.dealer.cards.push(drawCard(g));
+    if (handValue(g.dealer.cards).total === 21) {
+      g.dealer.bj = true;
+      settle(g);
+      return { more: false };
+    }
+    return { more: true };
   }
   const total = handValue(g.dealer.cards).total;
-  if (anyLiveHand(g) && total < 17) {
+  if (hasLiveHand(g) && total < 17) {
     g.dealer.cards.push(drawCard(g));
-    return {
-      more: true,
-    };
+    return { more: true };
   }
   settle(g);
-  return {
-    more: false,
-  };
+  return { more: false };
 }
 
 function handResult(hand, dealerTotal, dealerBJ) {
@@ -596,7 +595,10 @@ function settle(g) {
   for (const p of g.players) {
     if (!p.hands.length) continue;
     let payout = 0;
-    for (const hand of p.hands) {
+    if (dealerBJ && p.insurance > 0) {
+      p.bankroll += p.insurance * 3;
+    }
+    for (const [hi, hand] of p.hands.entries()) {
       const result = handResult(hand, dealerTotal, dealerBJ);
       hand.result = result;
       hand.payout =
@@ -607,6 +609,10 @@ function settle(g) {
             : result === "push"
               ? hand.bet
               : 0;
+      if (dealerBJ && result === "lose") {
+        // blackjack du croupier : seule la mise initiale est perdue, doubles et splits sont rendus
+        hand.payout = hi === 0 ? hand.bet - p.bet : hand.bet;
+      }
       payout += hand.payout;
       p.stats.played++;
       if (result === "win" || result === "blackjack") {
@@ -658,7 +664,7 @@ export function nextRound(g) {
   }
   g.dealer = {
     cards: [],
-    hidden: true,
+    hidden: false,
     bj: false,
   };
   g.phase = "betting";

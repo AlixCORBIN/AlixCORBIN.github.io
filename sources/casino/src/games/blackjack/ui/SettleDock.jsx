@@ -1,9 +1,6 @@
 import React from "react";
-import { submitScore } from "../api.js";
-import { loadWallet } from "../../../lib/wallet.js";
 
 export function SettleDock({ ctrl, me }) {
-  const [saved, setSaved] = React.useState(false);
   const net = Math.round(me.net);
   if (!me.hands.length)
     return (
@@ -11,19 +8,6 @@ export function SettleDock({ ctrl, me }) {
         <p className="hint">Manche terminee</p>
       </div>
     );
-  const save = async () => {
-    try {
-      await submitScore({
-        pseudo: me.name,
-        bankroll: me.bankroll - loadWallet().debt,
-        hands: me.stats.played,
-        won: me.stats.won,
-      });
-      setSaved(true);
-    } catch {
-      setSaved("err");
-    }
-  };
   return (
     <div className="dock">
       <div className={"net " + (net > 0 ? "pos" : net < 0 ? "neg" : "")}>
@@ -39,13 +23,6 @@ export function SettleDock({ ctrl, me }) {
           }
         >
           Main suivante
-        </button>
-        <button className="btn ghost" disabled={saved === true} onClick={save}>
-          {saved === true
-            ? "Jetons enregistrés"
-            : saved === "err"
-              ? "Echec, reessayer"
-              : "Enregistrer mes jetons"}
         </button>
       </div>
     </div>

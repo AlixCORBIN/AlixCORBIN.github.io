@@ -29,7 +29,7 @@ export function Dealer({ g }) {
             FELT_Y + 0.01 + i * 0.012,
             -2.4,
           ]}
-          delay={i < 2 ? (i * (players + 1) + players) * 0.3 : 0}
+          delay={i === 0 ? players * 0.3 : 0}
         />
       ))}
       {label && (

@@ -1,5 +1,5 @@
 import React from "react";
-import { saveBlackjackSession } from "./games/blackjack/api.js";
+import { saveBlackjackSession, submitScore } from "./games/blackjack/api.js";
 import { sessionStats } from "./games/blackjack/engine.js";
 import { BlackjackScene } from "./games/blackjack/three/BlackjackScene.jsx";
 import { BlackjackHud } from "./games/blackjack/ui/BlackjackHud.jsx";
@@ -52,6 +52,26 @@ export function GameScreen({ ctrl, onQuit }) {
       savedRound.current = state.round;
       saveRouletteSession(me);
     }
+  }, [state?.phase, state?.round]);
+  // Classement general des jetons : enregistre automatiquement a la fin de chaque manche
+  const boardRound = React.useRef(0);
+  React.useEffect(() => {
+    const played =
+      state?.phase === "settle" &&
+      me &&
+      (state.game === "blackjack" ||
+        (state.game === "roulette" && me.bets.length > 0));
+    const pseudo = me?.name?.trim();
+    if (!played || !pseudo || pseudo === "Joueur") return;
+    if (boardRound.current === state.round) return;
+    boardRound.current = state.round;
+    const bankroll = settledBankroll(state, me) ?? me.bankroll;
+    submitScore({
+      pseudo,
+      bankroll: bankroll - (debtAtStart.current + credit),
+      hands: 0,
+      won: 0,
+    }).catch(() => {});
   }, [state?.phase, state?.round]);
   const prev = React.useRef({});
   React.useEffect(() => {
