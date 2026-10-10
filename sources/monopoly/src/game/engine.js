@@ -585,6 +585,19 @@ export function applyAction(s0, actorId, a) {
       log(s, `${me.name} propose un échange à ${s.players[ti].name}.`)
       break
     }
+    case 'COUNTER_TRADE': {
+      // le destinataire renvoie une version modifiée : les rôles s'inversent
+      const t0 = s.trade
+      if (!t0 || t0.to !== me.id) throw new Error('Aucun échange à contre-proposer')
+      if ((t0.counters || 0) >= 6) throw new Error('Trop de contre-propositions, acceptez ou refusez')
+      const t = { from: me.id, to: t0.from, give: norm(a.give), get: norm(a.get), id: s.rev, counters: (t0.counters || 0) + 1 }
+      if (!t.give.money && !t.give.props.length && !t.give.jailCards && !t.get.money && !t.get.props.length && !t.get.jailCards) throw new Error('Échange vide')
+      validateSide(s, me.id, t.give)
+      validateSide(s, t.to, t.get)
+      s.trade = t
+      log(s, `${me.name} fait une contre-proposition à ${s.players[idxOf(s, t.to)].name}.`)
+      break
+    }
     case 'ACCEPT_TRADE': {
       const t = s.trade
       if (!t || t.to !== me.id) throw new Error('Aucun échange')

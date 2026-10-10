@@ -767,20 +767,23 @@ function TradeSide({ s, who, side, set, mine }) {
   )
 }
 
-function TradeBuilder({ s, me, act, onClose }) {
-  const others = s.players.filter((p) => p.id !== me.id && !p.bankrupt)
+function TradeBuilder({ s, me, act, onClose, counter }) {
+  const others = s.players.filter((p) => p.id !== me.id && !p.bankrupt && (!counter || p.id === counter.from))
   const empty = { money: 0, props: [], jailCards: 0 }
-  const [to, setTo] = useState(others[0]?.id)
-  const [give, setGive] = useState(empty)
-  const [get, setGet] = useState(empty)
+  // contre-proposition : on part de l'offre reçue (ce qu'on me demandait devient ce que je donne)
+  const [to, setTo] = useState(counter ? counter.from : others[0]?.id)
+  const [give, setGive] = useState(counter ? { ...counter.get, props: [...counter.get.props] } : empty)
+  const [get, setGet] = useState(counter ? { ...counter.give, props: [...counter.give.props] } : empty)
   const other = s.players.find((p) => p.id === to)
-  useEffect(() => setGet(empty), [to])
+  const first = useRef(true)
+  useEffect(() => { if (first.current) { first.current = false; return } setGet(empty) }, [to])
   const isEmpty = !give.money && !give.props.length && !give.jailCards && !get.money && !get.props.length && !get.jailCards
   return (
     <div className="modal-bg" onClick={onClose}>
       <div className="modal sheet trade" onClick={(e) => e.stopPropagation()}>
         <div className="sheet-head">
-          <h2>Échange</h2>
+          <h2>{counter ? 'Contre-proposition' : 'Échange'}</h2>
+          {counter && <span className="muted small">Modifie l’offre puis renvoie-la</span>}
           <button className="x" onClick={onClose}>✕</button>
         </div>
         <div className="partners">
@@ -799,7 +802,7 @@ function TradeBuilder({ s, me, act, onClose }) {
         )}
         <div className="tfoot">
           <span className="muted small">Valeur plateau : {fmt(sideValue(give))} ⇄ {fmt(sideValue(get))}</span>
-          <button className="btn primary" disabled={isEmpty} onClick={() => { act({ type: 'PROPOSE_TRADE', to, give, get }); onClose() }}>Proposer</button>
+          <button className="btn primary" disabled={isEmpty} onClick={() => { act(counter ? { type: 'COUNTER_TRADE', give, get } : { type: 'PROPOSE_TRADE', to, give, get }); onClose() }}>{counter ? 'Envoyer la contre-proposition' : 'Proposer'}</button>
         </div>
       </div>
     </div>
@@ -818,7 +821,10 @@ function TradeSummary({ s, side }) {
 
 function TradeIncoming({ s, me, act }) {
   const t = s.trade
+  const [editing, setEditing] = useState(null)
+  useEffect(() => { if (!t || editing?.id !== t.id) setEditing(null) }, [t?.id])
   if (!t || !me) return null
+  if (editing && t.to === me.id) return <TradeBuilder s={s} me={me} act={act} counter={t} onClose={() => setEditing(null)} />
   const from = s.players.find((p) => p.id === t.from)
   const to = s.players.find((p) => p.id === t.to)
   if (t.from === me.id)
@@ -827,7 +833,7 @@ function TradeIncoming({ s, me, act }) {
   return (
     <div className="modal-bg">
       <div className="modal sheet">
-        <div className="sheet-head"><h2><span className="dot" style={{ background: from.color }} /> {from.name} propose un échange</h2></div>
+        <div className="sheet-head"><h2><span className="dot" style={{ background: from.color }} /> {from.name} {t.counters ? 'te fait une contre-proposition' : 'propose un échange'}</h2>{t.counters ? <span className="tag">{t.counters}ᵉ tour de négociation</span> : null}</div>
         <div className="tcols">
           <div className="tside"><div className="tside-head"><b>Tu reçois</b></div><TradeSummary s={s} side={t.give} /></div>
           <div className="tarrow">⇄</div>
@@ -835,6 +841,7 @@ function TradeIncoming({ s, me, act }) {
         </div>
         <div className="tfoot">
           <button className="btn" onClick={() => act({ type: 'REJECT_TRADE' })}>Refuser</button>
+          <button className="btn" disabled={(t.counters || 0) >= 6} onClick={() => setEditing(t)} title="Reprendre cette offre et la modifier">✏️ Contre-proposer</button>
           <button className="btn primary" onClick={() => act({ type: 'ACCEPT_TRADE' })}>Accepter</button>
         </div>
       </div>

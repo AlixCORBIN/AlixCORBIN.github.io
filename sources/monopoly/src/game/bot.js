@@ -235,8 +235,19 @@ export function botDecide(s, id) {
       || from.jailCards.length < t.give.jailCards || me.jailCards.length < t.get.jailCards) return { type: 'REJECT_TRADE', reason: 'invalid' }
     if (me.money - t.get.money + t.give.money < 0) return { type: 'REJECT_TRADE', reason: 'money' }
     const d = tradeDelta(s, { ...t })
-    const ok = d.to > 25 * P.greed && d.to >= d.from * 0.55 * P.greed
-    return { type: ok ? 'ACCEPT_TRADE' : 'REJECT_TRADE', delta: d }
+    const okFor = (dd) => dd.to > 25 * P.greed && dd.to >= dd.from * 0.55 * P.greed
+    if (okFor(d)) return { type: 'ACCEPT_TRADE', delta: d }
+    // contre-proposition : même échange, mais je verse moins / je demande un complément d'argent
+    if ((t.counters || 0) < 4) {
+      for (let extra = 20; extra <= 2000; extra += extra < 100 ? 20 : 50) {
+        const reduce = Math.min(t.get.money, extra)
+        const c = { ...t, get: { ...t.get, money: t.get.money - reduce }, give: { ...t.give, money: t.give.money + (extra - reduce) } }
+        if (c.give.money > from.money) break
+        const dc = tradeDelta(s, c)
+        if (okFor(dc)) return { type: 'COUNTER_TRADE', give: c.get, get: c.give, delta: dc }
+      }
+    }
+    return { type: 'REJECT_TRADE', delta: d }
   }
 
   const debt = s.debts.find((x) => x.player === id)
