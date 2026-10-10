@@ -4,13 +4,37 @@
 import { supabase } from "../lib/supabase.js";
 
 const TOPIC = "casino-rooms";
+// Un seul canal pour tout l'onglet : supabase.channel(TOPIC) renvoie le canal existant
+// s'il y en a déjà un. Avant, le hub et l'hôte créaient chacun le leur : en revenant
+// au hub, on récupérait le canal déjà abonné de l'hôte et .on("presence") plantait
+// (écran noir au retour d'un jeu en salle publique).
 let ch = null;
 let ready = null;
+let subscribed = false;
+let rooms = [];
+const watchers = new Set();
+
+function readRooms() {
+  const list = Object.values(ch.presenceState()).flat().filter((r) => r && r.public && r.code);
+  const uniq = new Map(list.map((r) => [r.game + r.code, r]));
+  return [...uniq.values()].sort((a, b) => (b.at || 0) - (a.at || 0));
+}
 
 function channel() {
   if (!ch) {
-    ch = supabase.channel(TOPIC, { config: { presence: { key: "h-" + Math.random().toString(36).slice(2) } } });
-    ready = new Promise((resolve) => ch.subscribe((s) => s === "SUBSCRIBED" && resolve()));
+    ch = supabase.channel(TOPIC, { config: { presence: { key: "c-" + Math.random().toString(36).slice(2) } } });
+    ch.on("presence", { event: "sync" }, () => {
+      rooms = readRooms();
+      watchers.forEach((cb) => cb(rooms));
+    });
+    ready = new Promise((resolve) =>
+      ch.subscribe((s) => {
+        if (s === "SUBSCRIBED") {
+          subscribed = true;
+          resolve();
+        }
+      }),
+    );
   }
   return ch;
 }
@@ -31,19 +55,17 @@ export async function withdrawRoom() {
   last = "";
   if (!ch) return;
   try { await ch.untrack(); } catch {}
-  try { supabase.removeChannel(ch); } catch {}
-  ch = null;
 }
 
 export function watchRooms(cb) {
-  const w = supabase.channel(TOPIC, { config: { presence: { key: "w-" + Math.random().toString(36).slice(2) } } });
-  const emit = () => {
-    const list = Object.values(w.presenceState()).flat().filter((r) => r && r.public && r.code);
-    const uniq = new Map(list.map((r) => [r.game + r.code, r]));
-    cb([...uniq.values()].sort((a, b) => (b.at || 0) - (a.at || 0)));
-  };
-  w.on("presence", { event: "sync" }, emit).subscribe();
-  return () => { try { supabase.removeChannel(w); } catch {} };
+  try {
+    channel();
+  } catch {
+    return () => {};
+  }
+  watchers.add(cb);
+  if (subscribed) cb(rooms);
+  return () => watchers.delete(cb);
 }
 
 export const GAME_INFO = {
