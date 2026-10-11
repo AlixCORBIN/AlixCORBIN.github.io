@@ -63,7 +63,7 @@ function RoomsPanel({ onJoin, broke }) {
                   {r.bots ? ` + ${r.bots} bot${r.bots > 1 ? "s" : ""}` : ""}
                 </small>
               </div>
-              <span className={`room-status ${r.status}`}>{r.status === "lobby" ? "En attente" : "En jeu"}</span>
+              <span className={`room-status ${r.status === "lobby" ? "waiting" : r.status}`}>{r.status === "lobby" ? "En attente" : "En jeu"}</span>
               <button className="btn" disabled={full || blocked} onClick={() => onJoin(r)}>{full ? "Plein" : "Rejoindre"}</button>
             </div>
           );
