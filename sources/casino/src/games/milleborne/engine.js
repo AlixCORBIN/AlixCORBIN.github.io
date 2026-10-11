@@ -148,6 +148,13 @@ export function targetsFor(g, p, k) {
 export const currentPlayer = (g) => g.players[g.turn];
 
 function refillDraw(g, p) {
+  // Talon vide : la défausse est remélangée pour former un nouveau talon.
+  if (!g.deck.length && g.discard.length) {
+    g.deck = shuffle(g.discard);
+    g.discard = [];
+    g.reshuffles = (g.reshuffles || 0) + 1;
+    note(g, "Talon épuisé : la défausse est remélangée.", "info");
+  }
   const c = g.deck.pop();
   if (c) p.hand.push(c);
   return c;
@@ -171,6 +178,7 @@ function dealHand(g) {
   g.phase = "playing";
   g.deck = shuffle(makeDeck());
   g.discard = [];
+  g.reshuffles = 0;
   g.effect = null;
   g.endReason = null;
   const teams = teamMode(g);
@@ -389,6 +397,7 @@ export function viewFor(g, viewer) {
     goal: g.goal || g.settings.goal || 700,
     turn: g.phase === "playing" ? currentPlayer(g)?.id : null,
     deckCount: g.deck.length,
+    reshuffles: g.reshuffles || 0,
     discardTop: g.discard[g.discard.length - 1] || null,
     effect: e
       ? { id: e.id, by: e.by, card: e.card, kind: e.kind, target: e.target, coup: e.coup, coupCard: e.coupCard || null, coupBy: e.coupBy || null, finish: !!e.finish }

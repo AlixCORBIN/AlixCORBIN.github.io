@@ -361,6 +361,7 @@ export function MbScreen({ ctrl, state, me, onQuit }) {
       if (t && (t.battle === last.hazard.k || (last.hazard.k === "limit" && t.limit))) playHazardSound(last.hazard.k);
     }
     if (last.hand !== undefined && state.hand.length > last.hand) sound.card();
+    if (last.reshuffles !== undefined && state.reshuffles > last.reshuffles) [0, 90, 180, 270, 360].forEach((d) => setTimeout(sound.card, d));
     if (state.phase === "playing" && state.turn === me.id && last.turn !== me.id) sound.turn();
     if ((state.phase === "end" || state.phase === "roundEnd") && last.phase === "playing") {
       setTimeout(state.roundWinner === me.id || state.winner === me.id ? sound.win : sound.lose, 600);
@@ -370,6 +371,7 @@ export function MbScreen({ ctrl, state, me, onQuit }) {
       coup: e?.coup,
       hazard: e?.kind === "hazard" && !e.coup ? { target: e.target, k: e.card.k } : null,
       hand: state.hand.length,
+      reshuffles: state.reshuffles,
       turn: state.turn,
       phase: state.phase,
     };
