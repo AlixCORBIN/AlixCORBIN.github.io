@@ -5,6 +5,7 @@ import { RouletteHost } from "./games/roulette/host.js";
 import { UnoHost } from "./games/uno/host.js";
 import { MilleBorneHost } from "./games/milleborne/host.js";
 import { NavalHost } from "./games/naval/host.js";
+import { Connect4Host } from "./games/connect4/host.js";
 import { HorsesHost } from "./games/horses/host.js";
 import { WerewolfHost } from "./games/werewolf/host.js";
 import { GameScreen } from "./GameScreen.jsx";
@@ -32,6 +33,8 @@ export function App() {
               ? MilleBorneHost
               : game === "naval"
               ? NavalHost
+              : game === "connect4"
+              ? Connect4Host
               : game === "horses"
                 ? HorsesHost
                 : BlackjackHost;

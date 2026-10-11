@@ -7,6 +7,7 @@ import { saveRouletteSession } from "./games/roulette/api.js";
 import { HorsesScreen } from "./games/horses/ui/HorsesScreen.jsx";
 import { BuckshotScreen } from "./games/buckshot/ui/BuckshotScreen.jsx";
 import { NavalScreen } from "./games/naval/ui/NavalScreen.jsx";
+import { Connect4Screen } from "./games/connect4/ui/Connect4Screen.jsx";
 import { UnoScreen } from "./games/uno/ui/UnoScreen.jsx";
 import { MbScreen } from "./games/milleborne/ui/MbScreen.jsx";
 import { WerewolfScreen } from "./games/werewolf/ui/WerewolfScreen.jsx";
@@ -132,6 +133,8 @@ export function GameScreen({ ctrl, onQuit }) {
     <MbScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
   ) : state.game === "naval" ? (
     <NavalScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
+  ) : state.game === "connect4" ? (
+    <Connect4Screen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
   ) : state.game === "horses" ? (
     <HorsesScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
   ) : state.game === "uno" ? (

@@ -98,6 +98,7 @@
             <button class="game-tab" data-game="mb" data-i18n="tab.mb">🚗 Mille Bornes</button>
             <button class="game-tab" data-game="hc" data-i18n="tab.hc">🐴 Petits Chevaux</button>
             <button class="game-tab" data-game="nv" data-i18n="tab.nv">⚓ Bataille navale</button>
+            <button class="game-tab" data-game="c4" data-i18n="tab.c4">🔴 Puissance 4</button>
             <button class="game-tab" data-game="tr" data-i18n="tab.tr">🏁 Turbo Rush</button>
         </div>
 
@@ -573,6 +574,58 @@
         </section>
         </div>
 
+        <div class="game-panel" data-panel="c4">
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="c4.title">🔴 Puissance 4 — Parties</h2>
+            <div class="bj-cards">
+                <div class="bj-card">
+                    <div class="bj-card-icon">🎲</div>
+                    <div class="bj-card-label" data-i18n="c4.games"></div>
+                    <div class="bj-card-value" id="c4-games">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">👥</div>
+                    <div class="bj-card-label" data-i18n="c4.players"></div>
+                    <div class="bj-card-value" id="c4-players">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🔁</div>
+                    <div class="bj-card-label" data-i18n="c4.rounds"></div>
+                    <div class="bj-card-value" id="c4-rounds">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">⏱️</div>
+                    <div class="bj-card-label" data-i18n="c4.avg"></div>
+                    <div class="bj-card-value" id="c4-avg">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🔴</div>
+                    <div class="bj-card-label" data-i18n="c4.moves"></div>
+                    <div class="bj-card-value" id="c4-moves">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🤝</div>
+                    <div class="bj-card-label" data-i18n="c4.draws"></div>
+                    <div class="bj-card-value" id="c4-draws">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🤖</div>
+                    <div class="bj-card-label" data-i18n="c4.vsbot"></div>
+                    <div class="bj-card-value" id="c4-vsbot">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🦾</div>
+                    <div class="bj-card-label" data-i18n="c4.botwins"></div>
+                    <div class="bj-card-value" id="c4-botwins">0</div>
+                </div>
+            </div>
+        </section>
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="c4.lb">🏆 Leaderboard Puissance 4</h2>
+            <div class="leaderboard-list"><p class="lb-empty" data-i18n="lb.empty"></p></div>
+        </section>
+        </div>
+
         <div class="game-panel" data-panel="tr">
         <section class="stat-section">
             <h2 class="section-title" data-i18n="tr.title">🏁 Turbo Rush — Records</h2>
@@ -632,6 +685,7 @@
                 'tab.mb': '🚗 Mille Bornes', 'mb.title': '🚗 Mille Bornes — Parties', 'mb.games': 'Parties jouées', 'mb.players': 'Joueurs', 'mb.rounds': 'Manches jouées', 'mb.avg': 'Durée moyenne', 'mb.km': 'Kilomètres parcourus', 'mb.hazards': 'Attaques posées', 'mb.coups': 'Coups fourrés', 'mb.teams': 'Parties en équipes', 'mb.lb': '🏆 Leaderboard Mille Bornes',
                 'tab.hc': '🐴 Petits Chevaux', 'hc.title': '🐴 Petits Chevaux — Parties', 'hc.games': 'Parties jouées', 'hc.players': 'Joueurs', 'hc.rolls': 'Lancers de dé', 'hc.avg': 'Durée moyenne', 'hc.sixes': 'Six obtenus', 'hc.moves': 'Déplacements', 'hc.captures': 'Chevaux renvoyés', 'hc.botwins': 'Victoires des bots', 'hc.lb': '🏆 Leaderboard Petits Chevaux',
                 'tab.nv': '⚓ Bataille navale', 'nv.title': '⚓ Bataille navale — Parties', 'nv.games': 'Parties jouées', 'nv.players': 'Joueurs', 'nv.shots': 'Missiles tirés', 'nv.avg': 'Durée moyenne', 'nv.hits': 'Tirs au but', 'nv.accuracy': 'Précision', 'nv.vsbot': 'Parties contre un bot', 'nv.botwins': 'Victoires des bots', 'nv.lb': '🏆 Leaderboard Bataille navale',
+                'tab.c4': '🔴 Puissance 4', 'c4.title': '🔴 Puissance 4 — Parties', 'c4.games': 'Parties jouées', 'c4.players': 'Joueurs', 'c4.rounds': 'Manches jouées', 'c4.avg': 'Durée moyenne', 'c4.moves': 'Jetons joués', 'c4.draws': 'Manches nulles', 'c4.vsbot': 'Parties contre un bot', 'c4.botwins': 'Victoires des bots', 'c4.lb': '🏆 Leaderboard Puissance 4',
                 'tab.tr': '🏁 Turbo Rush', 'tr.title': '🏁 Turbo Rush — Records', 'tr.records': 'Temps enregistrés', 'tr.players': 'Pilotes', 'tr.attempts': 'Tentatives', 'tr.played': 'Pistes jouées', 'tr.maps': 'Pistes publiées (éditeur)', 'tr.best': 'Meilleur temps', 'tr.lb': '🏆 Records du monde',
                 'tab.un': '🃏 UNO', 'un.title': '🃏 UNO — Parties', 'un.games': 'Parties jouées', 'un.players': 'Joueurs', 'un.rounds': 'Manches jouées', 'un.avg': 'Durée moyenne', 'un.turns': 'Tours joués', 'un.specials': 'Cartes spéciales', 'un.challenges': 'Défis du +4', 'un.catches': 'UNO oubliés punis', 'un.lb': '🏆 Leaderboard UNO',
                 'tab.ww': '🐺 Loup-garou', 'ww.title': '🐺 Loup-garou — Parties', 'ww.games': 'Parties jouées', 'ww.players': 'Joueurs', 'ww.nights': 'Nuits jouées', 'ww.avg': 'Durée moyenne', 'ww.village': 'Victoires village', 'ww.wolves': 'Victoires loups', 'ww.votes': 'Éliminés au vote', 'ww.kills': 'Dévorés la nuit', 'ww.lb': '🏆 Leaderboard Loup-garou',
@@ -672,6 +726,7 @@
                 'tab.mb': '🚗 Mille Bornes', 'mb.title': '🚗 Mille Bornes — Games', 'mb.games': 'Games played', 'mb.players': 'Players', 'mb.rounds': 'Rounds played', 'mb.avg': 'Average length', 'mb.km': 'Kilometres driven', 'mb.hazards': 'Hazards played', 'mb.coups': 'Coups fourrés', 'mb.teams': 'Team games', 'mb.lb': '🏆 Mille Bornes Leaderboard',
                 'tab.hc': '🐴 Ludo', 'hc.title': '🐴 Ludo — Games', 'hc.games': 'Games played', 'hc.players': 'Players', 'hc.rolls': 'Dice rolls', 'hc.avg': 'Average length', 'hc.sixes': 'Sixes rolled', 'hc.moves': 'Moves', 'hc.captures': 'Horses sent home', 'hc.botwins': 'Bot wins', 'hc.lb': '🏆 Ludo Leaderboard',
                 'tab.nv': '⚓ Battleship', 'nv.title': '⚓ Battleship — Games', 'nv.games': 'Games played', 'nv.players': 'Players', 'nv.shots': 'Missiles fired', 'nv.avg': 'Average length', 'nv.hits': 'Hits', 'nv.accuracy': 'Accuracy', 'nv.vsbot': 'Games vs bot', 'nv.botwins': 'Bot wins', 'nv.lb': '🏆 Battleship Leaderboard',
+                'tab.c4': '🔴 Connect 4', 'c4.title': '🔴 Connect 4 — Games', 'c4.games': 'Games played', 'c4.players': 'Players', 'c4.rounds': 'Rounds played', 'c4.avg': 'Average length', 'c4.moves': 'Discs dropped', 'c4.draws': 'Drawn rounds', 'c4.vsbot': 'Games vs bot', 'c4.botwins': 'Bot wins', 'c4.lb': '🏆 Connect 4 Leaderboard',
                 'tab.tr': '🏁 Turbo Rush', 'tr.title': '🏁 Turbo Rush — Records', 'tr.records': 'Times set', 'tr.players': 'Drivers', 'tr.attempts': 'Attempts', 'tr.played': 'Tracks played', 'tr.maps': 'Published tracks', 'tr.best': 'Best time', 'tr.lb': '🏆 World records',
                 'tab.un': '🃏 UNO', 'un.title': '🃏 UNO — Games', 'un.games': 'Games played', 'un.players': 'Players', 'un.rounds': 'Rounds played', 'un.avg': 'Average length', 'un.turns': 'Turns played', 'un.specials': 'Action cards', 'un.challenges': '+4 challenges', 'un.catches': 'Missed UNO calls caught', 'un.lb': '🏆 UNO Leaderboard',
                 'tab.ww': '🐺 Werewolf', 'ww.title': '🐺 Werewolf — Games', 'ww.games': 'Games played', 'ww.players': 'Players', 'ww.nights': 'Nights played', 'ww.avg': 'Average length', 'ww.village': 'Village wins', 'ww.wolves': 'Werewolf wins', 'ww.votes': 'Voted out', 'ww.kills': 'Killed at night', 'ww.lb': '🏆 Werewolf Leaderboard',

@@ -16,6 +16,7 @@ const GAMES = [
   { id: "milleborne", cat: "board", title: "Mille Bornes 3D", players: "2 à 6", bots: true, desc: "Attaques, parades, bottes et coups fourrés, en équipes à 4 et 6.", icon: "🚗", hue: "#c76a12", free: true },
   { id: "horses", cat: "board", title: "Petits Chevaux", players: "2 à 4", bots: true, desc: "Sors tes 4 chevaux et rentre-les à l’écurie avant les autres.", icon: "🐴", hue: "#8a5a1f", free: true },
   { id: "naval", cat: "board", title: "Bataille navale 3D", players: "1 contre 1", bots: true, desc: "Place ta flotte, tirs animés : missiles, explosions, naufrages.", icon: "⚓", hue: "#1f5f8a", free: true },
+  { id: "connect4", cat: "board", title: "Puissance 4", players: "1 contre 1", bots: true, desc: "Grille 3D, jetons qui tombent pour de vrai, manches et bot jusqu’au niveau expert.", icon: "🔴", hue: "#1d4fc4", free: true },
   { id: "buckshot", cat: "arcade", title: "Buckshot", players: "1 à 4", bots: true, desc: "Roulette au fusil à pompe : réelles ou à blanc, objets, 3 manches.", icon: "☠", hue: "#8a1030", free: true },
   { id: "racing", cat: "arcade", title: "Turbo Rush", players: "Solo", desc: "Course 3D à vraie physique : loopings, wallrides, sauts, 25 pistes, éditeur et records en ligne.", icon: "🏁", hue: "#1f4fa8", free: true, solo: true },
 ];

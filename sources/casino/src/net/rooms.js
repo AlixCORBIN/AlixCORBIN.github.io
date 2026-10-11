@@ -75,6 +75,7 @@ export const GAME_INFO = {
   uno: { title: "UNO 3D", icon: "🃏", max: 10 },
   milleborne: { title: "Mille Bornes", icon: "🚗", max: 6 },
   naval: { title: "Bataille navale", icon: "⚓", max: 2 },
+  connect4: { title: "Puissance 4", icon: "🔴", max: 2 },
   horses: { title: "Petits Chevaux", icon: "🐴", max: 4 },
   buckshot: { title: "Buckshot", icon: "☠", max: 4 },
   monopoly: { title: "Monopoly 3D", icon: "🎩", max: 8 },
