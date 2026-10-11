@@ -279,7 +279,7 @@ async function loadBuckshot() {
     ]);
 }
 
-/* ── Mille Bornes, Petits Chevaux, Bataille navale, Puissance 4, Turbo Rush : résumé + classement dans leurs propres RPC ── */
+/* ── Mille Bornes, Petits Chevaux, Bataille navale, Puissance 4, TrackMerdia : résumé + classement dans leurs propres RPC ── */
 const SUMMARY_GAMES = {"mb": {"summary": "get_milleborne_summary", "lb": "get_milleborne_leaderboard", "cards": [["games", "games", ""], ["players", "players", ""], ["rounds", "rounds", ""], ["avg", "avg_minutes", " min"], ["km", "km", " km"], ["hazards", "hazards", ""], ["coups", "coups", ""], ["teams", "team_games", ""]]}, "hc": {"summary": "get_horses_summary", "lb": "get_horses_leaderboard", "cards": [["games", "games", ""], ["players", "players", ""], ["rolls", "rolls", ""], ["avg", "avg_minutes", " min"], ["sixes", "sixes", ""], ["moves", "moves", ""], ["captures", "captures", ""], ["botwins", "bot_wins", ""]]}, "nv": {"summary": "get_naval_summary", "lb": "get_naval_leaderboard", "cards": [["games", "games", ""], ["players", "players", ""], ["shots", "shots", ""], ["avg", "avg_minutes", " min"], ["hits", "hits", ""], ["accuracy", "accuracy", " %"], ["vsbot", "vs_bot", ""], ["botwins", "bot_wins", ""]]}, "c4": {"summary": "get_connect4_summary", "lb": "get_connect4_leaderboard", "cards": [["games", "games", ""], ["players", "players", ""], ["rounds", "rounds", ""], ["avg", "avg_minutes", " min"], ["moves", "moves", ""], ["draws", "draws", ""], ["vsbot", "vs_bot", ""], ["botwins", "bot_wins", ""]]}, "tr": {"summary": "get_racing_summary", "lb": "get_racing_leaderboard", "cards": [["records", "records", ""], ["players", "players", ""], ["attempts", "attempts", ""], ["played", "played_maps", ""], ["maps", "maps", ""], ["best", "best_ms", "time"]]}};
 
 function fmtRaceTime(ms) {
@@ -297,6 +297,18 @@ async function loadSummaryGame(panel) {
         g.cards.forEach(([id, key, suffix]) => setVal(`${panel}-${id}`, suffix === 'time' ? fmtRaceTime(s[key]) : n(s[key]) + suffix));
     } catch (e) { console.warn(panel + ' stats', e); }
     const rows = await fetchGameLeaderboard(g.lb);
+    // TrackMerdia : classement au nombre de 1res places, puis 2es, puis 3es (trié côté base)
+    if (panel === 'tr') {
+        renderGameLeaderboard(panel, rows, [
+            { label: d('lb.pseudo') || 'Pseudo', cls: 'lb-pseudo', render: r => esc(r.pseudo) },
+            { label: '🥇 1er', cls: 'lb-bankroll', style: () => 'color:var(--green)', render: r => n(r.wins) },
+            { label: '🥈 2e', cls: 'lb-hands', render: r => n(r.p2) },
+            { label: '🥉 3e', cls: 'lb-hands', render: r => n(r.p3) },
+            { label: 'Pistes', cls: 'lb-hands', render: r => n(r.games) },
+            { label: d('lb.date') || 'Date', cls: 'lb-date', render: r => esc(r.date) },
+        ]);
+        return;
+    }
     renderGameLeaderboard(panel, rows, [
         { label: d('lb.pseudo') || 'Pseudo', cls: 'lb-pseudo', render: r => esc(r.pseudo) },
         { label: panel === 'tr' ? 'Records' : 'Victoires', cls: 'lb-bankroll', style: () => 'color:var(--green)', render: r => n(r.wins) },

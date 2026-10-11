@@ -101,3 +101,10 @@ export async function lostRecords(pseudo, since) {
   if (error) return [];
   return data || [];
 }
+
+// Classement des pilotes : 1res places, puis 2es, puis 3es
+export async function podium(limit = 50) {
+  const { data, error } = await supabase.rpc("racing_podium", { p_limit: limit });
+  if (error) throw error;
+  return data || [];
+}

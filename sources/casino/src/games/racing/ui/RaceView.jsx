@@ -1,6 +1,6 @@
 import React from "react";
 import { fetchGhost, leaderboard, localPB, submitTime } from "../api.js";
-import { engine, sfx, stopEngine } from "../audio.js";
+import { engine, getEngineVolume, setEngineVolume, sfx, stopEngine } from "../audio.js";
 import { bindKeys, touch } from "../input.js";
 import { padLabels, rumble, useGamepad, useGamepadNav } from "../gamepad.js";
 import { medalFor, medalTimes } from "../maps.js";
@@ -16,6 +16,22 @@ export const loadCarColor = () => { try { return localStorage.getItem(CAR_KEY) |
 export const saveCarColor = (c) => { try { localStorage.setItem(CAR_KEY, c); } catch {} };
 
 const delta = (ms) => `${ms < 0 ? "-" : "+"}${formatTime(Math.abs(ms)).replace(/^0:0?/, "")}`;
+
+// Réglage du volume du moteur (clic sur l'icône : couper / remettre)
+function EngineVolume() {
+  const [v, setV] = React.useState(getEngineVolume);
+  const last = React.useRef(v || 0.7);
+  const set = (x) => { setV(x); setEngineVolume(x); if (x) last.current = x; };
+  return (
+    <label className="rc-vol" title="Volume du moteur">
+      <button type="button" className="rc-vol-btn" onClick={() => set(v ? 0 : last.current)} style={{ background: "none", border: 0, padding: 0, fontSize: 16 }}>
+        {v === 0 ? "🔇" : v < 0.4 ? "🔈" : "🔊"}
+      </button>
+      Moteur
+      <input type="range" min="0" max="100" value={Math.round(v * 100)} onChange={(e) => set(e.target.value / 100)} onKeyDown={(e) => e.stopPropagation()} onPointerUp={(e) => e.currentTarget.blur()} />
+    </label>
+  );
+}
 
 function TouchPad() {
   const bind = (k) => ({
@@ -164,6 +180,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
           <button className="icon" onClick={onExit} title="Menu (Échap)">✕</button>
           <div className="rc-title"><b>{map.name}</b><small>{mode === "test" ? "Test de la map" : map.official ? world.name : `par ${map.author}`}</small></div>
           <div className="grow" />
+          <EngineVolume />
           {mode === "play" && (
             <>
               <button className={`pill ${showGhosts ? "on" : ""}`} onClick={() => setShowGhosts((v) => !v)}>👻 {showGhosts ? allGhosts.length : "off"}</button>

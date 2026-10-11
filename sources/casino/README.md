@@ -1,6 +1,6 @@
 # Casino 3D (sources)
 
-Blackjack, roulette européenne, Loup-Garou, UNO et Turbo Rush (course), React + three.js, multijoueur via Supabase Realtime.
+Blackjack, roulette européenne, Loup-Garou, UNO et TrackMerdia (course), React + three.js, multijoueur via Supabase Realtime.
 Le build sort directement dans `/jeux` du portfolio.
 
 ```bash
@@ -46,7 +46,7 @@ Le code 3D est partagé : `vite.config.js` expose `../../mii/lib` sous l'alias `
 L'hôte diffuse les Mii de la salle (message `miis`), les bots reçoivent un Mii stable tiré de leur id.
 Comptes facultatifs (e-mail / mot de passe ou Google) via Supabase Auth : tables `user_miis` et `user_mii_settings` (`supabase/mii-accounts.sql`).
 
-## Turbo Rush
+## TrackMerdia
 
 Course 3D contre la montre façon Trackmania, en solo : 5 mondes × 5 pistes (Stadium, Canyon, Glacier, Forêt, Néon).
 Physique Rapier (`@dimforge/rapier3d-compat`, chargé à la demande) : châssis rigide, 4 roues à suspensions (contrôleur de

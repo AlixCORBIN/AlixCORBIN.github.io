@@ -3,6 +3,17 @@ import { sound } from "../../lib/sound.js";
 
 let ctx = null, osc = null, osc2 = null, gain = null;
 
+// Volume du moteur (0 à 1), réglable en course et mémorisé
+const VOL_KEY = "racing-engine-vol";
+let engineVol = 0.7;
+try { const v = parseFloat(localStorage.getItem(VOL_KEY)); if (Number.isFinite(v)) engineVol = Math.max(0, Math.min(1, v)); } catch {}
+export const getEngineVolume = () => engineVol;
+export function setEngineVolume(v) {
+  engineVol = Math.max(0, Math.min(1, v));
+  try { localStorage.setItem(VOL_KEY, String(engineVol)); } catch {}
+  if (!engineVol) stopEngine();
+}
+
 function audio() {
   if (sound.isMuted()) return null;
   try {
@@ -26,7 +37,7 @@ export function beep(freq = 660, dur = 0.12, vol = 0.07, type = "square") {
 }
 
 export function engine(speed, boost) {
-  const c = audio();
+  const c = engineVol > 0 ? audio() : null;
   if (!c) { stopEngine(); return; }
   if (!osc) {
     osc = c.createOscillator();
@@ -53,7 +64,7 @@ export function engine(speed, boost) {
   const f = 55 + r * 70 + g * 6 + (boost ? 20 : 0);
   osc.frequency.setTargetAtTime(f, c.currentTime, 0.04);
   osc2.frequency.setTargetAtTime(f * 0.5, c.currentTime, 0.04);
-  gain.gain.setTargetAtTime(0.025 + Math.min(speed, 100) * 0.0004, c.currentTime, 0.05);
+  gain.gain.setTargetAtTime((0.025 + Math.min(speed, 100) * 0.0004) * engineVol * 1.4, c.currentTime, 0.05);
 }
 
 export function stopEngine() {

@@ -3,6 +3,7 @@ import { getMap, listMaps, loadPBs, worldRecords } from "../api.js";
 import { MEDALS, OFFICIAL, medalFor } from "../maps.js";
 import { WORLDS, formatTime } from "../physics.js";
 import { Board } from "./Board.jsx";
+import { Pilots } from "./Pilots.jsx";
 import { AlertToasts, Records, useRecordAlerts } from "./Records.jsx";
 import { padLabels, useGamepad, useGamepadNav } from "../gamepad.js";
 import { Editor, newDoc } from "./Editor.jsx";
@@ -187,7 +188,7 @@ export function RacingApp({ pseudo, onQuit }) {
     <div className="rc-menu">
       <header className="rc-menu-head">
         <button className="icon" onClick={onQuit} title="Retour au Casino">←</button>
-        <h1>Turbo <em>Rush</em></h1>
+        <h1>Track<em>Merdia</em></h1>
         <div className="grow" />
         <div className="rc-medals" title="Médailles de la campagne">
           {MEDALS.map((m) => <i key={m.id} className="rc-dot" style={{ background: m.color }} />)}
@@ -198,6 +199,7 @@ export function RacingApp({ pseudo, onQuit }) {
         <nav className="rc-tabs">
           <button className={tab === "campaign" ? "on" : ""} onClick={() => pickTab("campaign")}>Campagne</button>
           <button className={tab === "community" ? "on" : ""} onClick={() => pickTab("community")}>Communauté</button>
+          <button className={tab === "pilots" ? "on" : ""} onClick={() => pickTab("pilots")}>Pilotes</button>
           <button className={tab === "records" ? "on" : ""} onClick={() => pickTab("records")}>
             Records{rec.alerts.length > 0 && <span className="rc-badge">{rec.alerts.length}</span>}
           </button>
@@ -210,7 +212,9 @@ export function RacingApp({ pseudo, onQuit }) {
           </div>
         </nav>
         <p className="rc-pilot">Pilote : <b>{pseudo}</b>{pseudo === "Joueur" && " · choisis un pseudo dans le Casino pour entrer au classement"}</p>
-        {tab === "records" ? (
+        {tab === "pilots" ? (
+          <Pilots pseudo={pseudo} />
+        ) : tab === "records" ? (
           <Records pseudo={pseudo} alerts={rec.alerts} history={rec.history} onPlay={play} onBoard={setBoard} />
         ) : tab === "community" ? (
           <Community pbs={pbs} onPlay={play} onBoard={setBoard} />

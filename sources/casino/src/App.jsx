@@ -12,7 +12,7 @@ import { GameScreen } from "./GameScreen.jsx";
 import { ClientController } from "./net/controller.js";
 import { Lobby } from "./ui/Lobby.jsx";
 
-// Turbo Rush (et son moteur physique WebAssembly) n'est chargé que quand on lance le jeu
+// TrackMerdia (et son moteur physique WebAssembly) n'est chargé que quand on lance le jeu
 const RacingApp = React.lazy(() => import("./games/racing/ui/RacingApp.jsx").then((m) => ({ default: m.RacingApp })));
 
 export function App() {

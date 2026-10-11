@@ -1,4 +1,4 @@
-/* Turbo Rush : menu, HUD de course, éditeur */
+/* TrackMerdia : menu, HUD de course, éditeur */
 .rc-menu{position:fixed;inset:0;display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% -10%,#1b3a6b,#0a1222 60%,#05080f);overflow:hidden}
 .rc-menu-head{display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 18px 10px}
 .rc-menu-head h1{margin:0;font:italic 900 30px/1 system-ui,sans-serif;letter-spacing:-.5px;text-transform:uppercase}
@@ -142,3 +142,12 @@
 .rc-alert b{color:#ff8080;text-transform:uppercase;font-size:12px;letter-spacing:1px}
 .rc-alert small{opacity:.75;font-variant-numeric:tabular-nums}
 @media (max-width:760px){.rc-rec{flex-wrap:wrap}.rc-rec-time{align-items:flex-start}}
+.rc-podium{font-size:15px}
+.rc-podium td,.rc-podium th{text-align:center!important}
+.rc-podium td:nth-child(2),.rc-podium th:nth-child(2){text-align:left!important}
+.rc-podium td.p1{color:#ffd23f;font-weight:900}
+.rc-podium tr.top td{font-weight:700}
+.rc-podium tr.me td{background:#ffd23f22}
+.rc-vol{display:flex;align-items:center;gap:8px;pointer-events:auto;background:#0007;border:1px solid #ffffff22;border-radius:999px;padding:4px 12px;font-size:13px}
+.rc-vol input{width:110px;margin:0;padding:0;accent-color:#ffd23f;background:none;border:0}
+.rc-podium th{font-size:12px!important;opacity:.8!important}.rc-podium th[title]{font-size:18px!important;opacity:1!important}

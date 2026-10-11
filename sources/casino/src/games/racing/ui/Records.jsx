@@ -53,7 +53,7 @@ export function useRecordAlerts(pseudo) {
           fresh.forEach((e) => setTimeout(() => setToasts((t) => t.filter((x) => x.id !== e.id)), 8000));
           if (document.hidden && "Notification" in window && Notification.permission === "granted") {
             for (const e of fresh) {
-              try { new Notification("Record perdu sur Turbo Rush", { body: `${e.new_pseudo} t'a pris le record sur ${e.info.name} (${formatTime(e.new_time)})`, tag: `rc-${e.id}` }); } catch {}
+              try { new Notification("Record perdu sur TrackMerdia", { body: `${e.new_pseudo} t'a pris le record sur ${e.info.name} (${formatTime(e.new_time)})`, tag: `rc-${e.id}` }); } catch {}
             }
           }
         }

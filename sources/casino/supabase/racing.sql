@@ -162,3 +162,26 @@ language sql stable security definer set search_path to 'public' as $$
 $$;
 
 grant execute on function public.racing_notifications(text, timestamptz), public.racing_player_records(text) to anon, authenticated;
+
+-- ---------- Classement des pilotes : nombre de 1res, 2es, 3es places (hors anciennes pistes off-*) ----------
+create or replace function public.racing_podium(p_limit integer default 50)
+returns table(pseudo text, p1 bigint, p2 bigint, p3 bigint, top10 bigint, maps bigint, last_at timestamptz)
+language sql stable security definer set search_path to 'public' as $$
+  with r as (
+    select pseudo, map_id, updated_at, rank() over (partition by map_id order by time_ms) rk
+    from racing_records where map_id not like 'off-%' and map_id not like 'zz-%')
+  select min(pseudo), count(*) filter (where rk = 1), count(*) filter (where rk = 2), count(*) filter (where rk = 3),
+         count(*) filter (where rk <= 10), count(*), max(updated_at)
+  from r group by lower(pseudo)
+  order by 2 desc, 3 desc, 4 desc, 5 desc, 6 desc, 7
+  limit least(greatest(p_limit, 1), 200);
+$$;
+grant execute on function public.racing_podium(integer) to anon, authenticated;
+
+-- Onglet Statistiques du portfolio : top 10 du classement des pilotes
+create or replace function public.get_racing_leaderboard()
+returns json language sql stable security definer set search_path to 'public' as $$
+  select coalesce(json_agg(json_build_object('pseudo', pseudo, 'wins', p1, 'p2', p2, 'p3', p3, 'top10', top10, 'games', maps,
+    'date', to_char(last_at, 'DD/MM/YYYY'))), '[]'::json)
+  from public.racing_podium(10);
+$$;
