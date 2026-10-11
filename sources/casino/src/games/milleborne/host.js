@@ -1,3 +1,4 @@
+import { saveMilleBornesGame } from "./api.js";
 import { botCoups, botDelay, botTurn } from "./bots.js";
 import {
   addBot, addPlayer, backToLobby, canCoup, coupFourre, createMbGame, currentPlayer, discard, fillWithBots,
@@ -109,6 +110,7 @@ export class MilleBorneHost extends HostController {
     const e = g.effect;
     const sig = [g.phase, g.round, g.turn, g.deck.length, e?.id, e?.coup].join("|");
     if (sig === this.sig) return;
+    if (g.phase === "end" && !String(this.sig || "").startsWith("end") && g.players.some((p) => !p.bot)) saveMilleBornesGame(g);
     this.sig = sig;
     this.clearTimers();
     this.deadline = null;

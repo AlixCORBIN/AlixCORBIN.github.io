@@ -279,6 +279,32 @@ async function loadBuckshot() {
     ]);
 }
 
+/* ── Mille Bornes, Petits Chevaux, Bataille navale, Turbo Rush : résumé + classement dans leurs propres RPC ── */
+const SUMMARY_GAMES = {"mb": {"summary": "get_milleborne_summary", "lb": "get_milleborne_leaderboard", "cards": [["games", "games", ""], ["players", "players", ""], ["rounds", "rounds", ""], ["avg", "avg_minutes", " min"], ["km", "km", " km"], ["hazards", "hazards", ""], ["coups", "coups", ""], ["teams", "team_games", ""]]}, "hc": {"summary": "get_horses_summary", "lb": "get_horses_leaderboard", "cards": [["games", "games", ""], ["players", "players", ""], ["rolls", "rolls", ""], ["avg", "avg_minutes", " min"], ["sixes", "sixes", ""], ["moves", "moves", ""], ["captures", "captures", ""], ["botwins", "bot_wins", ""]]}, "nv": {"summary": "get_naval_summary", "lb": "get_naval_leaderboard", "cards": [["games", "games", ""], ["players", "players", ""], ["shots", "shots", ""], ["avg", "avg_minutes", " min"], ["hits", "hits", ""], ["accuracy", "accuracy", " %"], ["vsbot", "vs_bot", ""], ["botwins", "bot_wins", ""]]}, "tr": {"summary": "get_racing_summary", "lb": "get_racing_leaderboard", "cards": [["records", "records", ""], ["players", "players", ""], ["attempts", "attempts", ""], ["played", "played_maps", ""], ["maps", "maps", ""], ["best", "best_ms", "time"]]}};
+
+function fmtRaceTime(ms) {
+    if (!ms) return '—';
+    const m = Math.floor(ms / 60000), sec = ((ms % 60000) / 1000).toFixed(3).padStart(6, '0');
+    return m ? `${m}:${sec}` : `${(ms / 1000).toFixed(3)} s`;
+}
+
+async function loadSummaryGame(panel) {
+    const g = SUMMARY_GAMES[panel];
+    const n = v => Number(v || 0).toLocaleString('fr-FR');
+    try {
+        const r = await sbFetch('rpc/' + g.summary, { body: '{}' });
+        const s = await r.json();
+        g.cards.forEach(([id, key, suffix]) => setVal(`${panel}-${id}`, suffix === 'time' ? fmtRaceTime(s[key]) : n(s[key]) + suffix));
+    } catch (e) { console.warn(panel + ' stats', e); }
+    const rows = await fetchGameLeaderboard(g.lb);
+    renderGameLeaderboard(panel, rows, [
+        { label: d('lb.pseudo') || 'Pseudo', cls: 'lb-pseudo', render: r => esc(r.pseudo) },
+        { label: panel === 'tr' ? 'Records' : 'Victoires', cls: 'lb-bankroll', style: () => 'color:var(--green)', render: r => n(r.wins) },
+        { label: panel === 'tr' ? 'Pistes' : 'Parties', cls: 'lb-hands', render: r => n(r.games) },
+        { label: d('lb.date') || 'Date', cls: 'lb-date', render: r => esc(r.date) },
+    ]);
+}
+
 /* ── Leaderboards Roulette / Monopoly (même table que le blackjack) ── */
 function renderGameLeaderboard(panel, rows, cols) {
     const el = document.querySelector(`.game-panel[data-panel="${panel}"] .leaderboard-list`);
@@ -410,3 +436,4 @@ function initGameTabs() {
 initGameTabs();
 init();
 loadBuckshot();
+Object.keys(SUMMARY_GAMES).forEach(loadSummaryGame);

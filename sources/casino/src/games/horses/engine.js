@@ -146,6 +146,7 @@ export function startGame(g) {
   g.ranking = [];
   g.log = [];
   g.startedAt = Date.now();
+  g.gameId = crypto.randomUUID();
   g.stats = { rolls: 0, sixes: 0, captures: 0, moves: 0 };
   note(g, `${g.players[g.turn].name} commence.`, "info");
   return ok();

@@ -1,3 +1,4 @@
+import { saveNavalGame } from "./api.js";
 import { botDelay, botTarget } from "./bots.js";
 import {
   addBot,
@@ -104,6 +105,7 @@ export class NavalHost extends HostController {
     const g = this.g;
     const sig = [g.phase, g.step, g.turn, g.shot?.seq, g.players.map((p) => +p.ready).join("")].join("|");
     if (sig === this.sig) return;
+    if (g.phase === "end" && !String(this.sig || "").startsWith("end") && g.players.some((p) => !p.bot)) saveNavalGame(g);
     this.sig = sig;
     this.clearTimers();
     this.deadline = null;

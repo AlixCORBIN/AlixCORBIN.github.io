@@ -1,3 +1,4 @@
+import { saveHorsesGame } from "./api.js";
 import {
   ENTRY,
   FINISH,
@@ -95,6 +96,7 @@ export class HorsesHost extends HostController {
     const g = this.g;
     const sig = [g.phase, g.turn, g.stage, g.die?.seq, g.anim?.seq].join("|");
     if (sig === this.sig) return;
+    if (g.phase === "end" && !String(this.sig || "").startsWith("end") && g.players.some((p) => !p.bot)) saveHorsesGame(g);
     this.sig = sig;
     this.clearTimers();
     this.deadline = null;

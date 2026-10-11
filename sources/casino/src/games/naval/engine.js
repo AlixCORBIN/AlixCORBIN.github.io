@@ -174,6 +174,7 @@ export function startGame(g) {
   g.step = "aim";
   g.log = [];
   g.startedAt = Date.now();
+  g.gameId = crypto.randomUUID();
   g.endedAt = null;
   g.players.forEach((p) => {
     p.ships = null;

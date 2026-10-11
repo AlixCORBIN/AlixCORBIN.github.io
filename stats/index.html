@@ -95,6 +95,10 @@
             <button class="game-tab" data-game="ww" data-i18n="tab.ww">🐺 Loup-garou</button>
             <button class="game-tab" data-game="un" data-i18n="tab.un">🃏 UNO</button>
             <button class="game-tab" data-game="bs" data-i18n="tab.bs">☠ Buckshot</button>
+            <button class="game-tab" data-game="mb" data-i18n="tab.mb">🚗 Mille Bornes</button>
+            <button class="game-tab" data-game="hc" data-i18n="tab.hc">🐴 Petits Chevaux</button>
+            <button class="game-tab" data-game="nv" data-i18n="tab.nv">⚓ Bataille navale</button>
+            <button class="game-tab" data-game="tr" data-i18n="tab.tr">🏁 Turbo Rush</button>
         </div>
 
         <div class="game-panel active" data-panel="bj">
@@ -413,6 +417,204 @@
         </section>
         </div>
 
+        <div class="game-panel" data-panel="mb">
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="mb.title">🚗 Mille Bornes — Parties</h2>
+            <div class="bj-cards">
+                <div class="bj-card">
+                    <div class="bj-card-icon">🎲</div>
+                    <div class="bj-card-label" data-i18n="mb.games"></div>
+                    <div class="bj-card-value" id="mb-games">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">👥</div>
+                    <div class="bj-card-label" data-i18n="mb.players"></div>
+                    <div class="bj-card-value" id="mb-players">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🔄</div>
+                    <div class="bj-card-label" data-i18n="mb.rounds"></div>
+                    <div class="bj-card-value" id="mb-rounds">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">⏱️</div>
+                    <div class="bj-card-label" data-i18n="mb.avg"></div>
+                    <div class="bj-card-value" id="mb-avg">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🛣️</div>
+                    <div class="bj-card-label" data-i18n="mb.km"></div>
+                    <div class="bj-card-value" id="mb-km">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🚧</div>
+                    <div class="bj-card-label" data-i18n="mb.hazards"></div>
+                    <div class="bj-card-value" id="mb-hazards">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">⚡</div>
+                    <div class="bj-card-label" data-i18n="mb.coups"></div>
+                    <div class="bj-card-value" id="mb-coups">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🤝</div>
+                    <div class="bj-card-label" data-i18n="mb.teams"></div>
+                    <div class="bj-card-value" id="mb-teams">0</div>
+                </div>
+            </div>
+        </section>
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="mb.lb">🏆 Leaderboard Mille Bornes</h2>
+            <div class="leaderboard-list"><p class="lb-empty" data-i18n="lb.empty"></p></div>
+        </section>
+        </div>
+
+        <div class="game-panel" data-panel="hc">
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="hc.title">🐴 Petits Chevaux — Parties</h2>
+            <div class="bj-cards">
+                <div class="bj-card">
+                    <div class="bj-card-icon">🎲</div>
+                    <div class="bj-card-label" data-i18n="hc.games"></div>
+                    <div class="bj-card-value" id="hc-games">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">👥</div>
+                    <div class="bj-card-label" data-i18n="hc.players"></div>
+                    <div class="bj-card-value" id="hc-players">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🎯</div>
+                    <div class="bj-card-label" data-i18n="hc.rolls"></div>
+                    <div class="bj-card-value" id="hc-rolls">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">⏱️</div>
+                    <div class="bj-card-label" data-i18n="hc.avg"></div>
+                    <div class="bj-card-value" id="hc-avg">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">6️⃣</div>
+                    <div class="bj-card-label" data-i18n="hc.sixes"></div>
+                    <div class="bj-card-value" id="hc-sixes">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🐎</div>
+                    <div class="bj-card-label" data-i18n="hc.moves"></div>
+                    <div class="bj-card-value" id="hc-moves">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">💥</div>
+                    <div class="bj-card-label" data-i18n="hc.captures"></div>
+                    <div class="bj-card-value" id="hc-captures">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🤖</div>
+                    <div class="bj-card-label" data-i18n="hc.botwins"></div>
+                    <div class="bj-card-value" id="hc-botwins">0</div>
+                </div>
+            </div>
+        </section>
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="hc.lb">🏆 Leaderboard Petits Chevaux</h2>
+            <div class="leaderboard-list"><p class="lb-empty" data-i18n="lb.empty"></p></div>
+        </section>
+        </div>
+
+        <div class="game-panel" data-panel="nv">
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="nv.title">⚓ Bataille navale — Parties</h2>
+            <div class="bj-cards">
+                <div class="bj-card">
+                    <div class="bj-card-icon">🎲</div>
+                    <div class="bj-card-label" data-i18n="nv.games"></div>
+                    <div class="bj-card-value" id="nv-games">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">👥</div>
+                    <div class="bj-card-label" data-i18n="nv.players"></div>
+                    <div class="bj-card-value" id="nv-players">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🚀</div>
+                    <div class="bj-card-label" data-i18n="nv.shots"></div>
+                    <div class="bj-card-value" id="nv-shots">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">⏱️</div>
+                    <div class="bj-card-label" data-i18n="nv.avg"></div>
+                    <div class="bj-card-value" id="nv-avg">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">💥</div>
+                    <div class="bj-card-label" data-i18n="nv.hits"></div>
+                    <div class="bj-card-value" id="nv-hits">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🎯</div>
+                    <div class="bj-card-label" data-i18n="nv.accuracy"></div>
+                    <div class="bj-card-value" id="nv-accuracy">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🤖</div>
+                    <div class="bj-card-label" data-i18n="nv.vsbot"></div>
+                    <div class="bj-card-value" id="nv-vsbot">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🏴‍☠️</div>
+                    <div class="bj-card-label" data-i18n="nv.botwins"></div>
+                    <div class="bj-card-value" id="nv-botwins">0</div>
+                </div>
+            </div>
+        </section>
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="nv.lb">🏆 Leaderboard Bataille navale</h2>
+            <div class="leaderboard-list"><p class="lb-empty" data-i18n="lb.empty"></p></div>
+        </section>
+        </div>
+
+        <div class="game-panel" data-panel="tr">
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="tr.title">🏁 Turbo Rush — Records</h2>
+            <div class="bj-cards">
+                <div class="bj-card">
+                    <div class="bj-card-icon">⏱️</div>
+                    <div class="bj-card-label" data-i18n="tr.records"></div>
+                    <div class="bj-card-value" id="tr-records">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">👥</div>
+                    <div class="bj-card-label" data-i18n="tr.players"></div>
+                    <div class="bj-card-value" id="tr-players">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🔁</div>
+                    <div class="bj-card-label" data-i18n="tr.attempts"></div>
+                    <div class="bj-card-value" id="tr-attempts">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🗺️</div>
+                    <div class="bj-card-label" data-i18n="tr.played"></div>
+                    <div class="bj-card-value" id="tr-played">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🛠️</div>
+                    <div class="bj-card-label" data-i18n="tr.maps"></div>
+                    <div class="bj-card-value" id="tr-maps">0</div>
+                </div>
+                <div class="bj-card">
+                    <div class="bj-card-icon">🚀</div>
+                    <div class="bj-card-label" data-i18n="tr.best"></div>
+                    <div class="bj-card-value" id="tr-best">0</div>
+                </div>
+            </div>
+        </section>
+        <section class="stat-section">
+            <h2 class="section-title" data-i18n="tr.lb">🏆 Records du monde</h2>
+            <div class="leaderboard-list"><p class="lb-empty" data-i18n="lb.empty"></p></div>
+        </section>
+        </div>
+
         <p class="refresh-note" data-i18n="refresh">Les données sont mises à jour en temps réel.</p>
 
     </main>
@@ -427,6 +629,10 @@
                 'ro.title': '🎡 Roulette — Sessions', 'ro.sessions': 'Sessions jouées', 'ro.spins': 'Tours joués', 'ro.wagered': 'Total misé', 'ro.avg': 'Gain moyen/session', 'ro.best': 'Plus gros gain', 'ro.red': 'Sorties rouge', 'ro.black': 'Sorties noir', 'ro.zero': 'Sorties zéro', 'ro.lb': '🏆 Leaderboard Roulette',
                 'mo.title': '🎲 Monopoly — Parties', 'mo.games': 'Parties jouées', 'mo.turns': 'Tours joués', 'mo.players': 'Joueurs en ligne', 'mo.bots': 'Parties vs bots', 'mo.props': 'Propriétés achetées', 'mo.hotels': 'Hôtels construits', 'mo.trades': 'Échanges', 'mo.bankrupt': 'Faillites', 'mo.lb': '🏆 Leaderboard Monopoly',
                 'tab.bs': '☠ Buckshot', 'bs.title': '☠ Buckshot — Parties', 'bs.games': 'Parties jouées', 'bs.players': 'Joueurs', 'bs.rounds': 'Manches jouées', 'bs.avg': 'Durée moyenne', 'bs.shots': 'Coups tirés', 'bs.hits': 'Cartouches réelles', 'bs.blanks': 'À blanc sur soi', 'bs.items': 'Objets utilisés', 'bs.lb': '🏆 Leaderboard Buckshot',
+                'tab.mb': '🚗 Mille Bornes', 'mb.title': '🚗 Mille Bornes — Parties', 'mb.games': 'Parties jouées', 'mb.players': 'Joueurs', 'mb.rounds': 'Manches jouées', 'mb.avg': 'Durée moyenne', 'mb.km': 'Kilomètres parcourus', 'mb.hazards': 'Attaques posées', 'mb.coups': 'Coups fourrés', 'mb.teams': 'Parties en équipes', 'mb.lb': '🏆 Leaderboard Mille Bornes',
+                'tab.hc': '🐴 Petits Chevaux', 'hc.title': '🐴 Petits Chevaux — Parties', 'hc.games': 'Parties jouées', 'hc.players': 'Joueurs', 'hc.rolls': 'Lancers de dé', 'hc.avg': 'Durée moyenne', 'hc.sixes': 'Six obtenus', 'hc.moves': 'Déplacements', 'hc.captures': 'Chevaux renvoyés', 'hc.botwins': 'Victoires des bots', 'hc.lb': '🏆 Leaderboard Petits Chevaux',
+                'tab.nv': '⚓ Bataille navale', 'nv.title': '⚓ Bataille navale — Parties', 'nv.games': 'Parties jouées', 'nv.players': 'Joueurs', 'nv.shots': 'Missiles tirés', 'nv.avg': 'Durée moyenne', 'nv.hits': 'Tirs au but', 'nv.accuracy': 'Précision', 'nv.vsbot': 'Parties contre un bot', 'nv.botwins': 'Victoires des bots', 'nv.lb': '🏆 Leaderboard Bataille navale',
+                'tab.tr': '🏁 Turbo Rush', 'tr.title': '🏁 Turbo Rush — Records', 'tr.records': 'Temps enregistrés', 'tr.players': 'Pilotes', 'tr.attempts': 'Tentatives', 'tr.played': 'Pistes jouées', 'tr.maps': 'Pistes publiées (éditeur)', 'tr.best': 'Meilleur temps', 'tr.lb': '🏆 Records du monde',
                 'tab.un': '🃏 UNO', 'un.title': '🃏 UNO — Parties', 'un.games': 'Parties jouées', 'un.players': 'Joueurs', 'un.rounds': 'Manches jouées', 'un.avg': 'Durée moyenne', 'un.turns': 'Tours joués', 'un.specials': 'Cartes spéciales', 'un.challenges': 'Défis du +4', 'un.catches': 'UNO oubliés punis', 'un.lb': '🏆 Leaderboard UNO',
                 'tab.ww': '🐺 Loup-garou', 'ww.title': '🐺 Loup-garou — Parties', 'ww.games': 'Parties jouées', 'ww.players': 'Joueurs', 'ww.nights': 'Nuits jouées', 'ww.avg': 'Durée moyenne', 'ww.village': 'Victoires village', 'ww.wolves': 'Victoires loups', 'ww.votes': 'Éliminés au vote', 'ww.kills': 'Dévorés la nuit', 'ww.lb': '🏆 Leaderboard Loup-garou',
                 'subtitle': 'Données en temps réel du portfolio',
@@ -463,6 +669,10 @@
                 'ro.title': '🎡 Roulette — Sessions', 'ro.sessions': 'Sessions played', 'ro.spins': 'Spins played', 'ro.wagered': 'Total wagered', 'ro.avg': 'Avg gain/session', 'ro.best': 'Biggest win', 'ro.red': 'Red hits', 'ro.black': 'Black hits', 'ro.zero': 'Zero hits', 'ro.lb': '🏆 Roulette Leaderboard',
                 'mo.title': '🎲 Monopoly — Games', 'mo.games': 'Games played', 'mo.turns': 'Turns played', 'mo.players': 'Online players', 'mo.bots': 'Games vs bots', 'mo.props': 'Properties bought', 'mo.hotels': 'Hotels built', 'mo.trades': 'Trades', 'mo.bankrupt': 'Bankruptcies', 'mo.lb': '🏆 Monopoly Leaderboard',
                 'tab.bs': '☠ Buckshot', 'bs.title': '☠ Buckshot — Games', 'bs.games': 'Games played', 'bs.players': 'Players', 'bs.rounds': 'Rounds played', 'bs.avg': 'Average length', 'bs.shots': 'Shots fired', 'bs.hits': 'Live shells', 'bs.blanks': 'Blanks on self', 'bs.items': 'Items used', 'bs.lb': '🏆 Buckshot Leaderboard',
+                'tab.mb': '🚗 Mille Bornes', 'mb.title': '🚗 Mille Bornes — Games', 'mb.games': 'Games played', 'mb.players': 'Players', 'mb.rounds': 'Rounds played', 'mb.avg': 'Average length', 'mb.km': 'Kilometres driven', 'mb.hazards': 'Hazards played', 'mb.coups': 'Coups fourrés', 'mb.teams': 'Team games', 'mb.lb': '🏆 Mille Bornes Leaderboard',
+                'tab.hc': '🐴 Ludo', 'hc.title': '🐴 Ludo — Games', 'hc.games': 'Games played', 'hc.players': 'Players', 'hc.rolls': 'Dice rolls', 'hc.avg': 'Average length', 'hc.sixes': 'Sixes rolled', 'hc.moves': 'Moves', 'hc.captures': 'Horses sent home', 'hc.botwins': 'Bot wins', 'hc.lb': '🏆 Ludo Leaderboard',
+                'tab.nv': '⚓ Battleship', 'nv.title': '⚓ Battleship — Games', 'nv.games': 'Games played', 'nv.players': 'Players', 'nv.shots': 'Missiles fired', 'nv.avg': 'Average length', 'nv.hits': 'Hits', 'nv.accuracy': 'Accuracy', 'nv.vsbot': 'Games vs bot', 'nv.botwins': 'Bot wins', 'nv.lb': '🏆 Battleship Leaderboard',
+                'tab.tr': '🏁 Turbo Rush', 'tr.title': '🏁 Turbo Rush — Records', 'tr.records': 'Times set', 'tr.players': 'Drivers', 'tr.attempts': 'Attempts', 'tr.played': 'Tracks played', 'tr.maps': 'Published tracks', 'tr.best': 'Best time', 'tr.lb': '🏆 World records',
                 'tab.un': '🃏 UNO', 'un.title': '🃏 UNO — Games', 'un.games': 'Games played', 'un.players': 'Players', 'un.rounds': 'Rounds played', 'un.avg': 'Average length', 'un.turns': 'Turns played', 'un.specials': 'Action cards', 'un.challenges': '+4 challenges', 'un.catches': 'Missed UNO calls caught', 'un.lb': '🏆 UNO Leaderboard',
                 'tab.ww': '🐺 Werewolf', 'ww.title': '🐺 Werewolf — Games', 'ww.games': 'Games played', 'ww.players': 'Players', 'ww.nights': 'Nights played', 'ww.avg': 'Average length', 'ww.village': 'Village wins', 'ww.wolves': 'Werewolf wins', 'ww.votes': 'Voted out', 'ww.kills': 'Killed at night', 'ww.lb': '🏆 Werewolf Leaderboard',
                 'subtitle': 'Real-time portfolio data',

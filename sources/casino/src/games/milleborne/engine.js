@@ -160,6 +160,7 @@ export function startGame(g) {
   g.round = 0;
   g.winner = null;
   g.startedAt = Date.now();
+  g.gameId = crypto.randomUUID();
   g.stats = { turns: 0, hazards: 0, coups: 0 };
   g.dealer = secureRandomInt(g.players.length);
   return dealHand(g);
