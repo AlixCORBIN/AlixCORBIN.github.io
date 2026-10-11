@@ -1,5 +1,6 @@
 import { RoomChannel, makeRoomCode } from "./channel.js";
 import { announceRoom, withdrawRoom } from "./rooms.js";
+import { miiForId, sanitizeMii, setRoomMiis } from "../lib/mii.js";
 
 export const AFK_MS = 60000;
 
@@ -22,6 +23,7 @@ class Store {
     this.me = null;
     this.online = false;
     this.version = 0;
+    this.miis = {};
   }
   emit() {
     this.version++;
@@ -30,8 +32,11 @@ class Store {
 }
 
 export class HostController extends Store {
-  constructor(name, { online = false, bankroll = 1000, isPublic = false, game = "" } = {}) {
+  constructor(name, { online = false, bankroll = 1000, isPublic = false, game = "", mii = null } = {}) {
     super();
+    this.myMii = mii ? sanitizeMii(mii) : null;
+    this.peerMiis = {};
+    this.miiSig = "";
     this.role = "host";
     this.online = online;
     this.isPublic = isPublic;
@@ -124,12 +129,14 @@ export class HostController extends Store {
     if (msg.t === "taken") return;
     const peer = from;
     if (msg.t === "hello") {
+      if (msg.mii && typeof msg.mii === "object") this.peerMiis[peer] = sanitizeMii(msg.mii);
       if (this.seen.has(peer)) {
         this.link.send(peer, {
           t: "welcome",
           id: peer,
         });
         this.publish();
+        this.link.send(peer, { t: "miis", m: this.miis });
         return;
       }
       const bankroll = Number.isFinite(msg.bankroll)
@@ -148,6 +155,7 @@ export class HostController extends Store {
         id: peer,
       });
       this.publish();
+      this.link.send(peer, { t: "miis", m: this.miis });
     } else {
       if (this.seen.has(peer)) {
         this.seen.set(peer, Date.now());
@@ -167,6 +175,7 @@ export class HostController extends Store {
     if (this.seen.has(id)) {
       this.seen.delete(id);
       delete this.lastAct[id];
+      delete this.peerMiis[id];
       this.removePlayer(id);
       this.publish();
     }
@@ -228,6 +237,7 @@ export class HostController extends Store {
     this.schedule();
     this.state = this.viewOf();
     this.decorate(this.state);
+    this.updateMiis();
     this.emit();
     if (this.online && this.link && this.status === "ready") {
       this.link.send("*", {
@@ -237,6 +247,20 @@ export class HostController extends Store {
     }
   }
   decorate() {}
+  // Mii de chaque joueur : le sien, celui envoyé par le client, ou un Mii stable (bots)
+  updateMiis() {
+    const map = {};
+    for (const p of this.g?.players || []) {
+      if (p.id === this.me && this.myMii) map[p.id] = this.myMii;
+      else map[p.id] = this.peerMiis[p.id] || this.miis[p.id] || miiForId(p.id, p.name);
+    }
+    const sig = Object.entries(map).map(([id, m]) => id + ":" + m.id + ":" + m.updatedAt).join("|");
+    if (sig === this.miiSig) return;
+    this.miiSig = sig;
+    this.miis = map;
+    setRoomMiis(map);
+    if (this.online && this.link && this.status === "ready") this.link.send("*", { t: "miis", m: map });
+  }
   arm(name, ms, fn) {
     clearTimeout(this.timers[name]);
     this.timers[name] = setTimeout(() => {
@@ -257,12 +281,14 @@ export class HostController extends Store {
     });
     this.link?.close();
     this.status = "closed";
+    setRoomMiis({});
   }
 }
 
 export class ClientController extends Store {
-  constructor(name, code, bankroll = 1000) {
+  constructor(name, code, bankroll = 1000, mii = null) {
     super();
+    this.mii = mii ? sanitizeMii(mii) : null;
     this.role = "client";
     this.online = true;
     this.code = code.toUpperCase().trim();
@@ -298,6 +324,7 @@ export class ClientController extends Store {
               t: "hello",
               name,
               bankroll,
+              mii: this.mii,
             });
           }
         };
@@ -334,6 +361,12 @@ export class ClientController extends Store {
         this.state = msg.s;
         this.status = "ready";
         this.emit();
+      } else if (msg.t === "miis" && msg.m && typeof msg.m === "object") {
+        const map = {};
+        for (const [id, m] of Object.entries(msg.m).slice(0, 32)) map[id] = sanitizeMii(m);
+        this.miis = map;
+        setRoomMiis(map);
+        this.emit();
       } else if (msg.t === "full") {
         this.fail("Table pleine");
       } else if (msg.t === "kicked") {
@@ -366,6 +399,7 @@ export class ClientController extends Store {
     clearInterval(this.helloTimer);
     clearInterval(this.pingTimer);
     this.status = "closed";
+    setRoomMiis({});
     if (this.me) {
       this.link?.send("host", {
         t: "bye",

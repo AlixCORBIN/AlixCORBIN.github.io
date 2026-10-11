@@ -2,9 +2,15 @@ import { Html } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import React from "react";
 import { ROLES } from "../roles.js";
+import { useRoomMii } from "../../../lib/mii.js";
+import { MiiAvatar } from "../../../ui/MiiAvatar.jsx";
 
-const CLOTH = ["#b84a3a", "#3a6db8", "#4f9a52", "#c99a2e", "#7b4fb0", "#2f8f8f", "#b5567f", "#8a6a3c"];
-const SKIN = ["#f1c7a3", "#d9a47c", "#a8714e", "#f5d6bd", "#7b4a30"];
+// Loup vu par sa meute : oreilles de loup et yeux rouges
+const WOLF = (m) => {
+  m.hat = { type: 8, color: "#5a5550" };
+  m.eyes.color = "#ff2a1a";
+};
+
 
 function Tomb({ role }) {
   return (
@@ -48,8 +54,7 @@ export function Villager({
   const body = React.useRef();
   const ring = React.useRef();
   const [hover, setHover] = React.useState(false);
-  const cloth = CLOTH[index % CLOTH.length];
-  const skin = SKIN[(index * 3) % SKIN.length];
+  const mii = useRoomMii(p);
   const wolfish = p.role === "wolf" && glowEyes;
   useFrame(({ clock }) => {
     const t = clock.elapsedTime + index;
@@ -82,41 +87,7 @@ export function Villager({
             document.body.style.cursor = "";
           }}
         >
-          {/* tronc / habit */}
-          <mesh castShadow position={[0, 0.75, 0]}>
-            <capsuleGeometry args={[0.36, 0.7, 6, 14]} />
-            <meshStandardMaterial color={cloth} roughness={0.8} />
-          </mesh>
-          {/* tête */}
-          <mesh castShadow position={[0, 1.62, 0]}>
-            <sphereGeometry args={[0.3, 24, 24]} />
-            <meshStandardMaterial color={wolfish ? "#6f6a66" : skin} roughness={0.7} />
-          </mesh>
-          {/* yeux (côté feu) */}
-          {[-0.1, 0.1].map((x) => (
-            <mesh key={x} position={[x, 1.66, 0.27]}>
-              <sphereGeometry args={[sleeping ? 0.025 : 0.045, 10, 10]} />
-              <meshStandardMaterial
-                color={wolfish ? "#ff2a1a" : "#1a1a1a"}
-                emissive={wolfish ? "#ff2a1a" : "#000"}
-                emissiveIntensity={wolfish ? 3 : 0}
-                toneMapped={!wolfish}
-              />
-            </mesh>
-          ))}
-          {wolfish ? (
-            [-0.17, 0.17].map((x) => (
-              <mesh key={x} castShadow position={[x, 1.92, 0]} rotation={[0, 0, x > 0 ? -0.3 : 0.3]}>
-                <coneGeometry args={[0.09, 0.26, 4]} />
-                <meshStandardMaterial color="#5a5550" />
-              </mesh>
-            ))
-          ) : (
-            <mesh castShadow position={[0, 1.9, 0]}>
-              <coneGeometry args={[0.34, 0.32, 16]} />
-              <meshStandardMaterial color={cloth} roughness={0.9} />
-            </mesh>
-          )}
+          <MiiAvatar mii={mii} override={wolfish ? WOLF : undefined} eyesClosed={sleeping} lookDown={sleeping ? 0.3 : 0} scale={1.2} />
           {/* zone de clic élargie */}
           <mesh position={[0, 1, 0]} visible={false}>
             <cylinderGeometry args={[0.6, 0.6, 2.2, 8]} />

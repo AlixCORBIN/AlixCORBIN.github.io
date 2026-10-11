@@ -36,3 +36,10 @@ passe, inversion (rejoue à 2 joueurs), UNO! avec pénalité de 2 cartes si un j
 avec décompte des points (0, 200 ou 500 points). Option : cumul des +2 / +4 (désactive alors le défi).
 Un joueur absent 3 tours de suite est remplacé par un bot. Stats : `supabase/uno-stats.sql` (RPC `save_uno_game`,
 `get_uno_leaderboard`, clés `un_*` dans `get_stats_summary`).
+
+## Mii
+
+Les joueurs sont représentés par leur Mii, créé dans la chaîne Mii du portfolio (`/mii`).
+Le code 3D est partagé : `vite.config.js` expose `../../mii/lib` sous l'alias `@mii`, et `src/ui/MiiAvatar.jsx` l'affiche dans les scènes.
+L'hôte diffuse les Mii de la salle (message `miis`), les bots reçoivent un Mii stable tiré de leur id.
+Comptes facultatifs (e-mail / mot de passe ou Google) via Supabase Auth : tables `user_miis` et `user_mii_settings` (`supabase/mii-accounts.sql`).

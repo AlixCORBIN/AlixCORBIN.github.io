@@ -1,5 +1,7 @@
 import { Html, Sparkles } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useRoomMii } from "../../../lib/mii.js";
+import { MiiAvatar } from "../../../ui/MiiAvatar.jsx";
 import React from "react";
 import { ACESFilmicToneMapping, Color, MathUtils } from "three";
 import { COLORS, COLOR_HEX } from "../cards.js";
@@ -113,7 +115,8 @@ function Table() {
   );
 }
 
-function Pawn({ index, active, x, z, winner }) {
+function Pawn({ p, index, active, x, z, winner }) {
+  const mii = useRoomMii(p);
   const ring = React.useRef();
   const body = React.useRef();
   useFrame(({ clock }) => {
@@ -124,7 +127,6 @@ function Pawn({ index, active, x, z, winner }) {
     }
     if (body.current) body.current.position.y = 0.75 + (active ? Math.abs(Math.sin(t * 4)) * 0.22 : 0) + (winner ? Math.abs(Math.sin(t * 7)) * 0.4 : 0);
   });
-  const color = PAWN[index % PAWN.length];
   return (
     <group position={[x, 0, z]}>
       <mesh ref={ring} position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
@@ -132,14 +134,8 @@ function Pawn({ index, active, x, z, winner }) {
         <meshBasicMaterial color="#ffd36a" transparent opacity={0} />
       </mesh>
       <group ref={body}>
-        <mesh castShadow position={[0, 0, 0]}>
-          <coneGeometry args={[0.5, 1.1, 24]} />
-          <meshStandardMaterial color={color} roughness={0.4} />
-        </mesh>
-        <mesh castShadow position={[0, 0.78, 0]}>
-          <sphereGeometry args={[0.34, 24, 24]} />
-          <meshStandardMaterial color={color} roughness={0.35} />
-        </mesh>
+        {/* le Mii du joueur, tourné vers la pioche */}
+        <MiiAvatar mii={mii} walk={winner} position={[0, -0.75, 0]} rotation={[0, Math.atan2(-x, -z), 0]} scale={1.8} />
       </group>
     </group>
   );
@@ -332,8 +328,8 @@ export function UnoScene({ state, meId, onPlay, onDraw, onCatch }) {
         const s = seats[i];
         return (
           <group key={p.id}>
-            <Pawn index={i} x={s.x} z={s.z} active={state.turn === p.id || state.challenge?.to === p.id} winner={reveal && state.roundWinner === p.id} />
-            <Html position={[s.x, 1.9, s.z]} center zIndexRange={[20, 0]}>
+            <Pawn p={p} index={i} x={s.x} z={s.z} active={state.turn === p.id || state.challenge?.to === p.id} winner={reveal && state.roundWinner === p.id} />
+            <Html position={[s.x * 0.86, 0.5, 1 + (s.z - 1) * 0.86]} center zIndexRange={[20, 0]}>
               <Plate
                 p={p}
                 active={state.turn === p.id}

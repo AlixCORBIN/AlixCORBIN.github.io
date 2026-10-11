@@ -2,6 +2,8 @@ import React from "react";
 import { Leaderboard } from "../games/blackjack/ui/Leaderboard.jsx";
 import { START_BANKROLL, loadWallet, saveWallet } from "../lib/wallet.js";
 import { GAME_INFO, watchRooms } from "../net/rooms.js";
+import { loadPlayMii } from "../lib/mii.js";
+import { MiiPicker } from "./MiiPicker.jsx";
 import "../styles/rooms.css";
 
 const GAMES = [
@@ -58,7 +60,8 @@ export function Lobby({ onStart }) {
   const [showBoard, setShowBoard] = React.useState(false);
   const [bankroll, setBankroll] = React.useState(wallet.bankroll);
   const [isPublic, setIsPublic] = React.useState(loadPub);
-  const pseudo = name.trim() || "Joueur";
+  const [mii, setMii] = React.useState(loadPlayMii);
+  const pseudo = name.trim() || mii?.name || "Joueur";
   const togglePub = () => {
     const v = !isPublic;
     setIsPublic(v);
@@ -72,7 +75,7 @@ export function Lobby({ onStart }) {
       location.href = `${g.external}?${q}&name=${encodeURIComponent(pseudo)}`;
       return;
     }
-    onStart(game, mode, pseudo, joinCode, bankroll, { isPublic });
+    onStart(game, mode, pseudo, joinCode, bankroll, { isPublic, mii });
   };
   const [debt, setDebt] = React.useState(wallet.debt);
   const borrow = () => {
@@ -90,9 +93,10 @@ export function Lobby({ onStart }) {
         <h1>{"Casino "}<em>3D</em></h1>
         <p className="sub">Jetons virtuels, aucun argent réel. Solde partagé entre tous les jeux.</p>
         <div className="hub-top">
+          <MiiPicker value={mii} onChange={setMii} />
           <label>
             Ton pseudo
-            <input value={name} maxLength={16} placeholder="Joueur" onChange={(ev) => setName(ev.target.value)} />
+            <input value={name} maxLength={16} placeholder={mii?.name || "Joueur"} onChange={(ev) => setName(ev.target.value)} />
           </label>
           <div className="hub-wallet">
             <small>Ton solde</small>

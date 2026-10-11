@@ -5,6 +5,8 @@ import { Card } from "./Card.jsx";
 import { ChipStack } from "./ChipStack.jsx";
 import { FELT_Y, seatPosition } from "./layout.js";
 import { signed } from "../../../lib/format.js";
+import { useRoomMii } from "../../../lib/mii.js";
+import { MiiAvatar } from "../../../ui/MiiAvatar.jsx";
 
 const RESULT_LABELS = {
   blackjack: ["BLACKJACK", "#e8c468"],
@@ -34,8 +36,18 @@ export function PlayerSeat({ p, index, isMe, g }) {
   const cardZ = pos.z - 0.95;
   const celebrate = settled && p.net > 0 && isMe;
   const cardRot = pos.rot * 0.7;
+  // Les autres joueurs sont représentés par leur Mii à leur place (pas soi-même : vue à la 1re personne).
+  // Ils regardent vers toi, et se tournent vers la table quand c'est leur tour de jouer.
+  const mii = useRoomMii(p);
+  const mx = pos.x * 1.06;
+  const mz = pos.z + 0.75;
+  const yaw = myTurn ? Math.atan2(-mx, 1.3 - mz) : Math.atan2(-mx * 0.4, 9 - mz);
+  const won = settled && p.net > 0;
   return (
     <group>
+      {!isMe && (
+        <MiiAvatar mii={mii} walk={won} lookDown={myTurn ? 0.25 : -0.4} position={[mx, -0.85, mz]} rotation={[0, yaw, 0]} scale={1.05} />
+      )}
       {p.hands.length === 0 || g.phase === "betting" ? (
         <>
           {p.bet > 0 && (

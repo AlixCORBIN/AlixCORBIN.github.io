@@ -20,12 +20,13 @@ export function App() {
             : BlackjackHost;
     setCtrl(
       mode === "join"
-        ? new ClientController(name, code, bankroll)
+        ? new ClientController(name, code, bankroll, opts.mii)
         : new Host(name, {
             online: true,
             bankroll,
             game,
             isPublic: !!opts.isPublic,
+            mii: opts.mii,
           }),
     );
   };

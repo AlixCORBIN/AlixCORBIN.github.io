@@ -1,0 +1,16 @@
+.mii-pick{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:14px}
+.mii-face{width:86px;padding:4px 4px 6px;border-radius:16px;border:1px solid var(--gold);background:#00000073;display:flex;flex-direction:column;align-items:center;gap:2px}
+.mii-face:hover{background:#e8c4681f}
+.mii-face img{width:72px;height:72px;display:block}
+.mii-face small{font-size:11px;max-width:78px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mii-empty{width:72px;height:72px;display:grid;place-items:center;font:700 30px var(--serif);color:var(--gold);border:2px dashed var(--line);border-radius:50%}
+.mii-acc a{font-size:11px;color:var(--gold);opacity:.85;white-space:nowrap}
+.mii-acc a.on{color:#6be28f}
+.mii-pop{position:absolute;z-index:30;top:100%;left:50%;transform:translateX(-50%);margin-top:6px;width:min(340px,86vw);padding:12px;border-radius:16px;background:#071a12f5;border:1px solid var(--line);box-shadow:0 20px 50px #000a}
+.mii-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:260px;overflow:auto;margin-bottom:10px}
+.mii-opt{padding:3px;border-radius:12px;border:1px solid transparent;background:#ffffff0d;display:flex;flex-direction:column;align-items:center}
+.mii-opt.on{border-color:var(--gold);background:#e8c46826}
+.mii-opt img{width:100%;aspect-ratio:1}
+.mii-opt span{font-size:10px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mii-pop .btn{display:block;text-decoration:none;font-size:14px;padding:10px}
+@media (max-width:640px){.mii-pick{flex-direction:row;gap:12px}}
