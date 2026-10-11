@@ -3,6 +3,8 @@ import { getMap, listMaps, loadPBs, worldRecords } from "../api.js";
 import { MEDALS, OFFICIAL, medalFor } from "../maps.js";
 import { WORLDS, formatTime } from "../physics.js";
 import { Board } from "./Board.jsx";
+import { AlertToasts, Records, useRecordAlerts } from "./Records.jsx";
+import { padLabels, useGamepad, useGamepadNav } from "../gamepad.js";
 import { Editor, newDoc } from "./Editor.jsx";
 import { CAR_COLORS, RaceView, loadCarColor, saveCarColor } from "./RaceView.jsx";
 import "./racing.css";
@@ -103,6 +105,31 @@ export function RacingApp({ pseudo, onQuit }) {
   const [color, setColor] = React.useState(loadCarColor);
   const [loading, setLoading] = React.useState(false);
 
+  const pad = useGamepad();
+  const [padToast, setPadToast] = React.useState(null);
+  const lastPad = React.useRef(pad?.id || null);
+  React.useEffect(() => {
+    const id = pad?.id || null;
+    if (id === lastPad.current) return;
+    setPadToast(id ? { on: true, kind: pad.kind } : { on: false });
+    lastPad.current = id;
+    const t = setTimeout(() => setPadToast(null), 3000);
+    return () => clearTimeout(t);
+  }, [pad?.id]);
+  const toast = padToast && (
+    <div className={`rc-padtoast ${padToast.on ? "" : "off"}`}>
+      🎮 {padToast.on ? `Manette ${{ xbox: "Xbox", playstation: "PlayStation", switch: "Switch", generic: "" }[padToast.kind]} connectée` : "Manette déconnectée"}
+    </div>
+  );
+  // navigation au pad dans le menu (pas pendant la course ni dans l'éditeur)
+  const menuNav = !race && tab !== "editor";
+  useGamepadNav(menuNav && !board && !loading, { onBack: onQuit });
+  useGamepadNav(menuNav && !!board, { onBack: () => setBoard(null) });
+
+  const rec = useRecordAlerts(pseudo);
+  React.useEffect(() => { if (tab === "records" && !race) { const t = setTimeout(rec.markRead, 1500); return () => clearTimeout(t); } }, [tab, race, rec.history.length]);
+  const alertsUi = <AlertToasts toasts={rec.toasts} dismiss={rec.dismiss} onOpen={() => { setRace(null); pickTab("records"); }} />;
+
   const pickTab = (t) => { setTab(t); try { localStorage.setItem(TAB_KEY, t); } catch {} };
   React.useEffect(() => {
     if (race) return;
@@ -126,6 +153,9 @@ export function RacingApp({ pseudo, onQuit }) {
     const idx = OFFICIAL.findIndex((m) => m.id === map.id);
     const next = idx >= 0 && idx < OFFICIAL.length - 1 ? OFFICIAL[idx + 1] : null;
     return (
+      <>
+      {toast}
+      {alertsUi}
       <RaceView
         key={map.id + mode + (race.n || 0)}
         map={map}
@@ -135,6 +165,7 @@ export function RacingApp({ pseudo, onQuit }) {
         onNext={next ? () => setRace({ map: next, mode: "play" }) : null}
         onTestDone={(ms) => setDoc((d) => ({ ...d, authorTime: d.authorTime ? Math.min(d.authorTime, ms) : ms }))}
       />
+      </>
     );
   }
 
@@ -167,6 +198,9 @@ export function RacingApp({ pseudo, onQuit }) {
         <nav className="rc-tabs">
           <button className={tab === "campaign" ? "on" : ""} onClick={() => pickTab("campaign")}>Campagne</button>
           <button className={tab === "community" ? "on" : ""} onClick={() => pickTab("community")}>Communauté</button>
+          <button className={tab === "records" ? "on" : ""} onClick={() => pickTab("records")}>
+            Records{rec.alerts.length > 0 && <span className="rc-badge">{rec.alerts.length}</span>}
+          </button>
           <button onClick={() => pickTab("editor")}>Éditeur</button>
           <div className="grow" />
           <div className="rc-colors" title="Couleur de ta voiture">
@@ -176,13 +210,18 @@ export function RacingApp({ pseudo, onQuit }) {
           </div>
         </nav>
         <p className="rc-pilot">Pilote : <b>{pseudo}</b>{pseudo === "Joueur" && " · choisis un pseudo dans le Casino pour entrer au classement"}</p>
-        {tab === "community" ? (
+        {tab === "records" ? (
+          <Records pseudo={pseudo} alerts={rec.alerts} history={rec.history} onPlay={play} onBoard={setBoard} />
+        ) : tab === "community" ? (
           <Community pbs={pbs} onPlay={play} onBoard={setBoard} />
         ) : (
           <Campaign pbs={pbs} wrs={wrs} onPlay={play} onBoard={setBoard} />
         )}
       </div>
       {loading && <div className="modal soft"><div className="spinner" /></div>}
+      {toast}
+      {alertsUi}
+      {pad && <p className="rc-padhint">🎮 croix ou stick : se déplacer · {padLabels(pad.kind).A} : valider · {padLabels(pad.kind).B} : retour</p>}
       {board && <Board map={board} pseudo={pseudo} onClose={() => setBoard(null)} />}
     </div>
   );

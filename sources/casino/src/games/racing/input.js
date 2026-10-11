@@ -1,4 +1,6 @@
-// Entrées : clavier (flèches / ZQSD / WASD), manette, boutons tactiles.
+// Entrées : clavier (flèches / ZQSD / WASD), manette (n'importe laquelle, branchée à chaud), boutons tactiles.
+import { BTN, edgeWatcher, getPad, stick } from "./gamepad.js";
+
 const keys = new Set();
 export const touch = { up: false, down: false, left: false, right: false, drift: false };
 
@@ -25,17 +27,15 @@ export function bindKeys({ onRestart, onRespawn, onEscape }) {
   addEventListener("keydown", down);
   addEventListener("keyup", up);
   addEventListener("blur", blur);
-  // boutons manette (front montant) : Y/Triangle = recommencer, B/Rond = réapparaître, Start = menu
-  let prevPad = {};
+  // manette (fronts montants) : Y/△ recommencer, B/○ réapparaître, Start/Options menu
+  const watch = edgeWatcher();
   const poll = setInterval(() => {
-    const p = navigator.getGamepads?.()[0];
+    const p = getPad();
     if (!p) return;
-    const b = (i) => !!p.buttons[i]?.pressed;
-    const now = { y: b(3), b: b(1), start: b(9) };
-    if (now.y && !prevPad.y) onRestart?.();
-    if (now.b && !prevPad.b) onRespawn?.();
-    if (now.start && !prevPad.start) onEscape?.();
-    prevPad = now;
+    const { hit } = watch(p);
+    if (hit(BTN.Y) || hit(BTN.SELECT)) onRestart?.();
+    if (hit(BTN.B)) onRespawn?.();
+    if (hit(BTN.START)) onEscape?.();
   }, 30);
   return () => {
     removeEventListener("keydown", down);
@@ -51,13 +51,17 @@ export function readInput() {
   let brake = keys.has("down") || touch.down ? 1 : 0;
   let steer = (keys.has("right") || touch.right ? 1 : 0) - (keys.has("left") || touch.left ? 1 : 0);
   let drift = keys.has("drift") || touch.drift;
-  const p = navigator.getGamepads?.()[0];
+  const p = getPad();
   if (p) {
-    const ax = p.axes[0] || 0;
-    if (Math.abs(ax) > 0.12) steer = Math.max(-1, Math.min(1, steer + ax));
-    throttle = Math.max(throttle, p.buttons[7]?.value || 0, p.buttons[0]?.pressed ? 1 : 0);
-    brake = Math.max(brake, p.buttons[6]?.value || 0);
-    drift = drift || !!p.buttons[2]?.pressed || !!p.buttons[5]?.pressed;
+    const b = (i) => p.buttons[i] || { pressed: false, value: 0 };
+    const pad = stick(p.axes[0] || 0) + (b(BTN.RIGHT).pressed ? 1 : 0) - (b(BTN.LEFT).pressed ? 1 : 0);
+    if (pad) steer = Math.max(-1, Math.min(1, steer + pad));
+    // gâchettes analogiques (RT / LT), A et croix haut/bas en tout-ou-rien
+    const rt = b(BTN.RT).value || (b(BTN.RT).pressed ? 1 : 0);
+    const lt = b(BTN.LT).value || (b(BTN.LT).pressed ? 1 : 0);
+    throttle = Math.max(throttle, rt > 0.05 ? rt : 0, b(BTN.A).pressed || b(BTN.UP).pressed ? 1 : 0);
+    brake = Math.max(brake, lt > 0.05 ? lt : 0, b(BTN.DOWN).pressed ? 1 : 0);
+    drift = drift || b(BTN.X).pressed || b(BTN.RB).pressed || b(BTN.LB).pressed;
   }
   return { throttle, brake, steer, drift };
 }

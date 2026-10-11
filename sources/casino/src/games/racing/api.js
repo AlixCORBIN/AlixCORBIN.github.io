@@ -87,3 +87,17 @@ export function saveDraft(d) {
 export function deleteDraft(id) {
   try { localStorage.setItem(DRAFT_KEY, JSON.stringify(loadDrafts().filter((x) => x.id !== id))); } catch {}
 }
+
+// Tous mes temps (rang, record du monde de chaque map)
+export async function playerRecords(pseudo) {
+  const { data, error } = await supabase.rpc("racing_player_records", { p_pseudo: pseudo });
+  if (error) throw error;
+  return data || [];
+}
+
+// Records du monde qu'on m'a pris depuis `since` (ISO) ; null = 30 derniers jours
+export async function lostRecords(pseudo, since) {
+  const { data, error } = await supabase.rpc("racing_notifications", { p_pseudo: pseudo, p_since: since });
+  if (error) return [];
+  return data || [];
+}

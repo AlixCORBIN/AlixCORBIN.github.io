@@ -2,6 +2,7 @@ import React from "react";
 import { fetchGhost, leaderboard, localPB, submitTime } from "../api.js";
 import { engine, sfx, stopEngine } from "../audio.js";
 import { bindKeys, touch } from "../input.js";
+import { padLabels, rumble, useGamepad, useGamepadNav } from "../gamepad.js";
 import { medalFor, medalTimes } from "../maps.js";
 import { WORLDS, formatTime, initPhysics } from "../physics.js";
 import { RaceSession } from "../session.js";
@@ -67,6 +68,13 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
   const pbRef = React.useRef(pb);
   pbRef.current = pb;
   const isTouch = React.useMemo(() => matchMedia("(pointer: coarse)").matches, []);
+  const pad = useGamepad();
+  const L = padLabels(pad?.kind);
+  const resultRef = React.useRef();
+  useGamepadNav(!!result || board, { onBack: () => (board ? setBoard(false) : onExit()), root: board ? null : resultRef });
+  React.useEffect(() => {
+    if (result) setTimeout(() => resultRef.current?.querySelector("button")?.focus(), 50);
+  }, [!!result]);
 
   const flashMsg = React.useRef(0);
   const showFlash = (f) => {
@@ -81,11 +89,13 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
         if (e === "tick") { sfx.tick(); setCount((c) => Math.max(1, c - 1)); }
         if (e === "go") { sfx.go(); setCount(0); setTimeout(() => setCount((c) => (c === 0 ? -1 : c)), 800); }
         if (e === "restart") { sfx.tick(); setCount(3); setResult(null); setFlash(null); }
-        if (e === "boost") sfx.boost();
-        if (e === "respawn") sfx.respawn();
+        if (e === "boost") { sfx.boost(); rumble(0.2, 0.6, 250); }
+        if (e === "respawn") { sfx.respawn(); rumble(0.6, 0.3, 160); }
+        if (e === "go") rumble(0.3, 0.3, 120);
         if (e === "missing") { sfx.missing(); showFlash({ text: "Checkpoints manquants !", bad: true }); }
         if (e === "cp") {
           sfx.cp();
+          rumble(0, 0.5, 90);
           const i = s.run.splits.length - 1;
           const ref = pbRef.current?.splits?.[i];
           const t = s.run.splits[i];
@@ -94,6 +104,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
       },
       onFinish: (ms, ghost, splits) => {
         sfx.finish();
+        rumble(0.8, 0.8, 350);
         const prev = pbRef.current;
         const r = { ms, prev: prev?.ms ?? null, medal: medalFor(ms, map.author_time), saving: mode === "play", rank: null, pbNew: !prev || ms < prev.ms };
         setResult(r);
@@ -175,12 +186,16 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
           <div className="rc-time" ref={timeEl}>0:00.000</div>
           <div className="rc-speed"><b ref={speedEl}>0</b><small>km/h</small></div>
         </div>
-        <p className="rc-keys">↑↓←→ / ZQSD · Espace dérapage · Entrée checkpoint · R recommencer · Échap menu</p>
-        {isTouch && !result && <TouchPad />}
+        <p className="rc-keys">
+          {pad
+            ? `🎮 ${L.RT} / ${L.A} accélérer · ${L.LT} freiner · stick diriger · ${L.X} / ${L.RB} dérapage · ${L.B} checkpoint · ${L.Y} recommencer · ${L.START} menu`
+            : "↑↓←→ / ZQSD · Espace dérapage · Entrée checkpoint · R recommencer · Échap menu"}
+        </p>
+        {isTouch && !pad && !result && <TouchPad />}
       </div>
       {result && (
         <div className="rc-result">
-          <div className="rc-result-card">
+          <div className="rc-result-card" ref={resultRef}>
             <small>{mode === "test" ? "Map validée" : "Arrivée"}</small>
             <div className="rc-result-time">{formatTime(result.ms)}</div>
             {result.prev != null && <div className={`rc-delta ${result.ms < result.prev ? "good" : "bad"}`}>{delta(result.ms - result.prev)} vs record perso</div>}
@@ -191,7 +206,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
               </p>
             )}
             <div className="row">
-              <button className="btn primary" onClick={() => session.restart()}>Rejouer <kbd>R</kbd></button>
+              <button className="btn primary" onClick={() => session.restart()}>Rejouer <kbd>{pad ? L.Y : "R"}</kbd></button>
               {mode === "play" && <button className="btn" onClick={() => setBoard(true)}>Classement</button>}
               {onNext && <button className="btn" onClick={onNext}>Suivante ▶</button>}
               <button className="btn ghost" onClick={onExit}>{mode === "test" ? "Éditeur" : "Menu"}</button>

@@ -100,3 +100,65 @@ $$;
 
 grant execute on function public.racing_submit, public.racing_leaderboard, public.racing_ghost, public.racing_wrs,
   public.racing_publish_map, public.racing_list_maps, public.racing_get_map to anon, authenticated;
+
+-- ---------- Records perdus (notifications) et records d'un pilote ----------
+create table if not exists public.racing_events (
+  id bigserial primary key,
+  map_id text not null,
+  new_pseudo text not null,
+  new_time integer not null,
+  old_pseudo text not null,
+  old_time integer not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists racing_events_old on public.racing_events (lower(old_pseudo), created_at desc);
+alter table public.racing_events enable row level security;
+
+-- racing_submit (remplace la version ci-dessus) : ajoute un événement quand le record du monde change de main
+create or replace function public.racing_submit(p_map text, p_pseudo text, p_time integer, p_ghost jsonb)
+returns integer language plpgsql security definer set search_path to 'public' as $$
+declare r int; wr_p text; wr_t int;
+begin
+  p_pseudo := btrim(p_pseudo);
+  if p_map is null or length(p_map) > 40 or p_pseudo is null or length(p_pseudo) not between 1 and 16
+     or p_time not between 2000 and 3600000
+     or (p_ghost is not null and pg_column_size(p_ghost) > 300000) then return null; end if;
+  select pseudo, time_ms into wr_p, wr_t from racing_records where map_id = p_map order by time_ms, updated_at limit 1;
+  insert into racing_records as rr (map_id, pseudo, time_ms, ghost)
+  values (p_map, p_pseudo, p_time, p_ghost)
+  on conflict (map_id, pseudo) do update
+    set attempts = rr.attempts + 1,
+        time_ms = least(rr.time_ms, excluded.time_ms),
+        ghost = case when excluded.time_ms < rr.time_ms then excluded.ghost else rr.ghost end,
+        updated_at = case when excluded.time_ms < rr.time_ms then now() else rr.updated_at end;
+  if wr_p is not null and p_time < wr_t and lower(wr_p) <> lower(p_pseudo) then
+    insert into racing_events (map_id, new_pseudo, new_time, old_pseudo, old_time) values (p_map, p_pseudo, p_time, wr_p, wr_t);
+  end if;
+  select count(*) + 1 into r from racing_records
+   where map_id = p_map and time_ms < (select time_ms from racing_records where map_id = p_map and pseudo = p_pseudo);
+  return r;
+end $$;
+
+create or replace function public.racing_notifications(p_pseudo text, p_since timestamptz)
+returns table(id bigint, map_id text, new_pseudo text, new_time integer, old_time integer, created_at timestamptz)
+language sql stable security definer set search_path to 'public' as $$
+  select e.id, e.map_id, e.new_pseudo, e.new_time, e.old_time, e.created_at from racing_events e
+  where lower(e.old_pseudo) = lower(btrim(p_pseudo)) and e.created_at > coalesce(p_since, now() - interval '30 days')
+  order by e.created_at desc limit 50;
+$$;
+
+create or replace function public.racing_player_records(p_pseudo text)
+returns table(map_id text, time_ms integer, rank bigint, players bigint, wr_pseudo text, wr_time integer, updated_at timestamptz)
+language sql stable security definer set search_path to 'public' as $$
+  with ranked as (
+    select r.map_id, r.pseudo, r.time_ms, r.updated_at,
+           rank() over (partition by r.map_id order by r.time_ms) rk,
+           count(*) over (partition by r.map_id) n,
+           first_value(r.pseudo) over (partition by r.map_id order by r.time_ms, r.updated_at) wp,
+           min(r.time_ms) over (partition by r.map_id) wt
+    from racing_records r)
+  select map_id, time_ms, rk, n, wp, wt, updated_at from ranked where lower(pseudo) = lower(btrim(p_pseudo))
+  order by updated_at desc;
+$$;
+
+grant execute on function public.racing_notifications(text, timestamptz), public.racing_player_records(text) to anon, authenticated;
