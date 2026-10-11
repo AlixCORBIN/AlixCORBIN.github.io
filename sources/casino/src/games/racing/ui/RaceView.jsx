@@ -3,7 +3,7 @@ import { fetchGhost, leaderboard, localPB, submitTime } from "../api.js";
 import { engine, getEngineVolume, setEngineVolume, sfx, stopEngine } from "../audio.js";
 import { bindKeys, touch } from "../input.js";
 import { padLabels, rumble, useGamepad, useGamepadNav } from "../gamepad.js";
-import { medalFor, medalTimes } from "../maps.js";
+import { medalFor } from "../maps.js";
 import { WORLDS, formatTime, initPhysics } from "../physics.js";
 import { RaceSession } from "../session.js";
 import { Track } from "../track.js";
@@ -81,6 +81,10 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
   const [showGhosts, setShowGhosts] = React.useState(true);
   const [board, setBoard] = React.useState(false);
   const [pb, setPb] = React.useState(() => (mode === "play" ? localPB(map.id) : null));
+  const [top, setTop] = React.useState(null);
+  const loadTop = React.useCallback(() => { if (mode === "play") leaderboard(map.id, 100).then(setTop).catch(() => setTop([])); }, [map.id, mode]);
+  React.useEffect(() => { loadTop(); }, [loadTop]);
+  const myRow = top?.find((r) => r.pseudo === pseudo) || null;
   const pbRef = React.useRef(pb);
   pbRef.current = pb;
   const isTouch = React.useMemo(() => matchMedia("(pointer: coarse)").matches, []);
@@ -126,7 +130,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
         setResult(r);
         if (mode === "test") { onTestDone?.(ms); return; }
         if (r.pbNew) setPb({ ms, ghost, splits });
-        submitTime(map.id, pseudo, ms, ghost, splits).then(({ rank }) => setResult((x) => x && x.ms === ms ? { ...x, rank, saving: false } : x)).catch(() => setResult((x) => x && { ...x, saving: false }));
+        submitTime(map.id, pseudo, ms, ghost, splits).then(({ rank }) => { setResult((x) => x && x.ms === ms ? { ...x, rank, saving: false } : x); loadTop(); }).catch(() => setResult((x) => x && { ...x, saving: false }));
       },
     });
     return s;
@@ -171,7 +175,6 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
     engine(s.phase === "countdown" ? 0 : car.speed, car.boost > 0);
   });
 
-  const medals = map.author_time ? medalTimes(map.author_time) : [];
   return (
     <div className="rc-race">
       <RaceScene session={session} ghosts={showGhosts ? allGhosts : []} color={color} hudRef={hudRef} />
@@ -188,12 +191,22 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
             </>
           )}
         </div>
-        <div className="rc-side">
-          {pb && <div className="rc-row"><small>Record perso</small><b>{formatTime(pb.ms)}</b></div>}
-          {medals.map((m) => (
-            <div key={m.id} className="rc-row"><i style={{ background: m.color }} /><small>{m.label}</small><b>{formatTime(m.ms)}</b></div>
-          ))}
-        </div>
+        {mode === "play" && (
+          <div className="rc-side">
+            <div className="rc-side-title">🏆 Records de la piste</div>
+            {top === null && <small className="rc-row">Chargement…</small>}
+            {top && !top.length && <small className="rc-row">Aucun temps : le premier record est pour toi.</small>}
+            {top && top.slice(0, 8).map((r) => (
+              <div key={r.pseudo} className={`rc-row ${r.pseudo === pseudo ? "me" : ""}`}>
+                <span className="rk">{["🥇", "🥈", "🥉"][r.rank - 1] || r.rank}</span><small>{r.pseudo}</small><b>{formatTime(r.time_ms)}</b>
+              </div>
+            ))}
+            {top && myRow && myRow.rank > 8 && (
+              <div className="rc-row me"><span className="rk">{myRow.rank}</span><small>{myRow.pseudo}</small><b>{formatTime(myRow.time_ms)}</b></div>
+            )}
+            {pb && !myRow && <div className="rc-row me"><span className="rk">·</span><small>Ton record</small><b>{formatTime(pb.ms)}</b></div>}
+          </div>
+        )}
         {count > 0 && !result && <div className="rc-count" key={count}>{count}</div>}
         {count === 0 && <div className="rc-count go" key="go">GO</div>}
         {flash && <div className={`rc-flash ${flash.bad ? "bad" : ""}`}>{flash.text}{flash.sub && <em>{flash.sub}</em>}</div>}
