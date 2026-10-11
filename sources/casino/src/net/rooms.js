@@ -73,6 +73,7 @@ export const GAME_INFO = {
   roulette: { title: "Roulette", icon: "◉", max: 8 },
   werewolf: { title: "Loup-Garou", icon: "🐺", max: 16 },
   uno: { title: "UNO 3D", icon: "🃏", max: 10 },
+  milleborne: { title: "Mille Bornes", icon: "🚗", max: 6 },
   naval: { title: "Bataille navale", icon: "⚓", max: 2 },
   horses: { title: "Petits Chevaux", icon: "🐴", max: 4 },
   monopoly: { title: "Monopoly 3D", icon: "🎩", max: 8 },

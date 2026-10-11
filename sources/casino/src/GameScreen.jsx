@@ -7,6 +7,7 @@ import { saveRouletteSession } from "./games/roulette/api.js";
 import { HorsesScreen } from "./games/horses/ui/HorsesScreen.jsx";
 import { NavalScreen } from "./games/naval/ui/NavalScreen.jsx";
 import { UnoScreen } from "./games/uno/ui/UnoScreen.jsx";
+import { MbScreen } from "./games/milleborne/ui/MbScreen.jsx";
 import { WerewolfScreen } from "./games/werewolf/ui/WerewolfScreen.jsx";
 import { RouletteScreen } from "./games/roulette/ui/RouletteScreen.jsx";
 import { sound } from "./lib/sound.js";
@@ -124,7 +125,9 @@ export function GameScreen({ ctrl, onQuit }) {
   ) : (
     <>
       <PublicToggle ctrl={ctrl} />
-      {state.game === "naval" ? (
+      {state.game === "milleborne" ? (
+    <MbScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
+  ) : state.game === "naval" ? (
     <NavalScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
   ) : state.game === "horses" ? (
     <HorsesScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />

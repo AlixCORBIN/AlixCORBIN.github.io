@@ -2,6 +2,7 @@ import React from "react";
 import { BlackjackHost } from "./games/blackjack/host.js";
 import { RouletteHost } from "./games/roulette/host.js";
 import { UnoHost } from "./games/uno/host.js";
+import { MilleBorneHost } from "./games/milleborne/host.js";
 import { NavalHost } from "./games/naval/host.js";
 import { HorsesHost } from "./games/horses/host.js";
 import { WerewolfHost } from "./games/werewolf/host.js";
@@ -22,7 +23,9 @@ export function App() {
           ? WerewolfHost
           : game === "uno"
             ? UnoHost
-            : game === "naval"
+            : game === "milleborne"
+              ? MilleBorneHost
+              : game === "naval"
               ? NavalHost
               : game === "horses"
                 ? HorsesHost

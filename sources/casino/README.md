@@ -23,6 +23,7 @@ src/
     roulette/   rules (mises, roue), engine (règles pures), host, chips, three/, ui/
     werewolf/   roles, engine (règles pures + vue filtrée par joueur), bots, host, api (stats), three/, ui/ (chat)
     uno/        cards (paquet, points), engine (règles pures + vue filtrée), bots, host, api (stats), three/ (cartes animées), ui/
+    milleborne/ cards (106 cartes), engine (règles pures + vue filtrée), bots, host (rythme des animations), sfx (bruitages), three/ (circuit, voitures), ui/
     racing/     track (blocs, sol), physics (pas fixe 100 Hz), session, maps (25 officielles), api (records), three/, ui/ (menu, course, éditeur)
 public/monopoly-card.js   carte Monopoly injectée dans le lobby (script séparé)
 ```
@@ -53,3 +54,13 @@ Les pistes sont des blocs sur une grille ; les maps officielles sont écrites au
 `node tools/racing-check.mjs --write` vérifie qu'elles sont faisables (pilote automatique) et régénère les temps auteur (médailles).
 Éditeur : grille de blocs sur plusieurs niveaux, test obligatoire avant publication. Les maps publiées et les records
 (meilleur temps par pseudo et par map, avec fantôme) sont dans Supabase : `supabase/racing.sql`.
+
+## Mille Bornes
+
+Règles officielles : feu vert pour partir, attaques (accident, panne, crevaison, feu rouge, limite à 50) et parades,
+4 bottes, coup fourré (la botte posée en réponse à l'attaque fait rejouer et rapporte 300 points), deux 200 km maximum,
+arrivée pile à l'objectif. Équipes de 2 à 4 et 6 joueurs (voiture partagée), sinon chacun pour soi.
+Objectif automatique : 700 km en individuel, 1000 km en équipes. Scores : distance, bottes, coups fourrés,
+voyage terminé, allonge, sans 200, capot ; partie en une manche ou en 5000 points.
+Animations tour par tour pilotées par l'hôte (`effectDelay` dans `host.js`) : la caméra suit la voiture qui roule,
+la fenêtre du coup fourré dure le même temps que le joueur visé ait la botte ou non. Bruitages synthétisés en WebAudio (`sfx.js`).
