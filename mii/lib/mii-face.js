@@ -314,15 +314,16 @@ function drawFeature(ctx, type, skin, seed) {
     ctx.restore();
 }
 
-/* ---------------- Paramètres de placement (partagés avec la 3D) ---------------- */
+/* ---------------- Paramètres de placement (partagés avec la 3D) ----------------
+   Le y du canvas descend vers le bas : « + » sur un curseur de hauteur doit remonter la pièce. */
 export const layout = {
-    eye: (m) => ({ dx: 36 + m.eyes.spacing * 5, y: 200 + (m.eyes.y - 9) * 5, s: 30 * (.62 + .1 * m.eyes.size), rot: (m.eyes.rot - 3) * .09 }),
-    brow: (m) => ({ dx: 38 + m.brows.spacing * 5, y: 142 + (m.brows.y - 9) * 5, s: 28 * (.6 + .1 * m.brows.size), rot: (m.brows.rot - 6) * .07 }),
-    nose: (m) => ({ y: 288 + (m.nose.y - 9) * 5, s: .6 + .1 * m.nose.size }),
-    mouth: (m) => ({ y: 375 + (m.mouth.y - 9) * 5, s: 40 * (.6 + .1 * m.mouth.size) }),
-    mustache: (m) => ({ y: 336 + (m.mustache.y - 8) * 4, s: 40 * (.6 + .1 * m.mustache.size) }),
-    glasses: (m) => ({ y: 200 + (m.glasses.y - 10) * 5, s: .7 + .1 * m.glasses.size }),
-    mole: (m) => ({ x: 256 + (m.mole.x - 8) * 14, y: 110 + m.mole.y * 11, r: 3 + m.mole.size * .9 }),
+    eye: (m) => ({ dx: 36 + m.eyes.spacing * 5, y: 200 - (m.eyes.y - 9) * 5, s: 30 * (.62 + .1 * m.eyes.size), rot: (m.eyes.rot - 3) * .09 }),
+    brow: (m) => ({ dx: 38 + m.brows.spacing * 5, y: 142 - (m.brows.y - 9) * 5, s: 28 * (.6 + .1 * m.brows.size), rot: (m.brows.rot - 6) * .07 }),
+    nose: (m) => ({ y: 288 - (m.nose.y - 9) * 5, s: .6 + .1 * m.nose.size }),
+    mouth: (m) => ({ y: 375 - (m.mouth.y - 9) * 5, s: 40 * (.6 + .1 * m.mouth.size) }),
+    mustache: (m) => ({ y: 336 - (m.mustache.y - 8) * 4, s: 40 * (.6 + .1 * m.mustache.size) }),
+    glasses: (m) => ({ y: 200 - (m.glasses.y - 10) * 5, s: .7 + .1 * m.glasses.size }),
+    mole: (m) => ({ x: 256 + (m.mole.x - 8) * 14, y: 440 - m.mole.y * 11, r: 3 + m.mole.size * .9 }),
 };
 
 function seedOf(m) { let h = 0; for (const c of String(m.id)) h = (h * 31 + c.charCodeAt(0)) | 0; return h; }

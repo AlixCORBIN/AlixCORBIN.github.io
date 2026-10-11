@@ -41,7 +41,7 @@ export const RANGES = {
     'mouth.size': [0, 8, 4], 'mouth.y': [0, 18, 9],
     'mustache.size': [0, 8, 4], 'mustache.y': [0, 16, 8],
     'glasses.size': [0, 7, 4], 'glasses.y': [0, 20, 10],
-    'mole.size': [0, 8, 4], 'mole.x': [0, 16, 3], 'mole.y': [0, 30, 20],
+    'mole.size': [0, 8, 4], 'mole.x': [0, 16, 3], 'mole.y': [0, 30, 10],
     'body.height': [0, 127, 64], 'body.build': [0, 127, 64],
 };
 
@@ -70,7 +70,7 @@ export function defaultMii(gender = 'm') {
         beard: { type: 0 },
         facialHairColor: HAIR_COLORS[1],
         glasses: { type: 0, color: GLASSES_COLORS[0], size: 4, y: 10, tint: false },
-        mole: { on: false, size: 4, x: 3, y: 20 },
+        mole: { on: false, size: 4, x: 3, y: 10 },
         hat: { type: 0, color: HAT_COLORS[0] },
     };
 }
