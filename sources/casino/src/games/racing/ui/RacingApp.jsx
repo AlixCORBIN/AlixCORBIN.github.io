@@ -1,0 +1,189 @@
+import React from "react";
+import { getMap, listMaps, loadPBs, worldRecords } from "../api.js";
+import { MEDALS, OFFICIAL, medalFor } from "../maps.js";
+import { WORLDS, formatTime } from "../physics.js";
+import { Board } from "./Board.jsx";
+import { Editor, newDoc } from "./Editor.jsx";
+import { CAR_COLORS, RaceView, loadCarColor, saveCarColor } from "./RaceView.jsx";
+import "./racing.css";
+
+const TAB_KEY = "racing-tab";
+
+function MedalDot({ medal }) {
+  return medal ? <i className="rc-dot" style={{ background: medal.color }} title={`Médaille ${medal.label}`} /> : <i className="rc-dot empty" />;
+}
+
+function Campaign({ pbs, wrs, onPlay, onBoard }) {
+  const [world, setWorld] = React.useState(() => {
+    try { return +localStorage.getItem("racing-world") || 0; } catch { return 0; }
+  });
+  const pick = (i) => { setWorld(i); try { localStorage.setItem("racing-world", String(i)); } catch {} };
+  const maps = OFFICIAL.filter((m) => m.world === world);
+  return (
+    <>
+      <div className="rc-worlds">
+        {WORLDS.map((w, i) => {
+          const got = OFFICIAL.filter((m) => m.world === i && medalFor(pbs[m.id]?.ms, m.author_time)).length;
+          return (
+            <button key={w.id} className={`rc-world ${i === world ? "on" : ""}`} style={{ "--sky": w.sky, "--acc": w.accent, "--gr": w.ground }} onClick={() => pick(i)}>
+              <b>{w.name}</b>
+              <small>{got}/5 médailles</small>
+            </button>
+          );
+        })}
+      </div>
+      <div className="rc-maps">
+        {maps.map((m, i) => {
+          const pb = pbs[m.id]?.ms;
+          const medal = medalFor(pb, m.author_time);
+          const wr = wrs[m.id];
+          return (
+            <div key={m.id} className="rc-map" style={{ "--acc": WORLDS[m.world].accent }}>
+              <div className="rc-map-num">{i + 1}</div>
+              <div className="rc-map-main">
+                <b>{m.name.split(" · ")[1]}</b>
+                <small><MedalDot medal={medal} /> {pb ? formatTime(pb) : "pas encore de temps"}</small>
+                <small className="rc-wr">🏆 {wr ? `${formatTime(wr.time_ms)} · ${wr.pseudo}` : "aucun record"}{wr ? ` · ${wr.players} pilote${wr.players > 1 ? "s" : ""}` : ""}</small>
+              </div>
+              <div className="rc-map-btns">
+                <button className="btn primary" onClick={() => onPlay(m)}>Jouer</button>
+                <button className="btn ghost" onClick={() => onBoard(m)} title="Classement">🏆</button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+function Community({ onPlay, onBoard, pbs }) {
+  const [q, setQ] = React.useState("");
+  const [maps, setMaps] = React.useState(null);
+  const [err, setErr] = React.useState(null);
+  React.useEffect(() => {
+    const t = setTimeout(() => listMaps(q.trim()).then(setMaps).catch((e) => setErr(e.message)), 250);
+    return () => clearTimeout(t);
+  }, [q]);
+  return (
+    <>
+      <input className="rc-search" value={q} placeholder="Chercher une map ou un auteur" onChange={(e) => setQ(e.target.value)} />
+      {err && <p className="err">{err}</p>}
+      {maps && !maps.length && <p className="hint">Aucune map publiée{q ? " pour cette recherche" : " pour l’instant : crée la première dans l’éditeur"}.</p>}
+      <div className="rc-maps">
+        {(maps || []).map((m) => {
+          const map = { id: m.map_id, name: m.name, author: m.author, author_time: m.author_time };
+          const pb = pbs[m.map_id]?.ms;
+          return (
+            <div key={m.map_id} className="rc-map">
+              <div className="rc-map-main">
+                <b>{m.name}</b>
+                <small>par {m.author} · auteur {formatTime(m.author_time)}</small>
+                <small className="rc-wr"><MedalDot medal={medalFor(pb, m.author_time)} /> {pb ? formatTime(pb) : "pas encore de temps"} · {m.players} pilote{m.players > 1 ? "s" : ""}</small>
+              </div>
+              <div className="rc-map-btns">
+                <button className="btn primary" onClick={() => onPlay(map)}>Jouer</button>
+                <button className="btn ghost" onClick={() => onBoard(map)} title="Classement">🏆</button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+export function RacingApp({ pseudo, onQuit }) {
+  const [tab, setTab] = React.useState(() => { try { return localStorage.getItem(TAB_KEY) || "campaign"; } catch { return "campaign"; } });
+  const [race, setRace] = React.useState(null); // { map, mode }
+  const [board, setBoard] = React.useState(null);
+  const [doc, setDoc] = React.useState(newDoc);
+  const [pbs, setPbs] = React.useState(loadPBs);
+  const [wrs, setWrs] = React.useState({});
+  const [color, setColor] = React.useState(loadCarColor);
+  const [loading, setLoading] = React.useState(false);
+
+  const pickTab = (t) => { setTab(t); try { localStorage.setItem(TAB_KEY, t); } catch {} };
+  React.useEffect(() => {
+    if (race) return;
+    setPbs(loadPBs());
+    worldRecords(OFFICIAL.map((m) => m.id)).then(setWrs);
+  }, [race]);
+
+  const play = async (map) => {
+    if (map.data) return setRace({ map, mode: "play" });
+    setLoading(true);
+    try {
+      const full = await getMap(map.id);
+      if (full) setRace({ map: { id: full.map_id, name: full.name, author: full.author, author_time: full.author_time, world: full.data.world, data: full.data }, mode: "play" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (race) {
+    const { map, mode } = race;
+    const idx = OFFICIAL.findIndex((m) => m.id === map.id);
+    const next = idx >= 0 && idx < OFFICIAL.length - 1 ? OFFICIAL[idx + 1] : null;
+    return (
+      <RaceView
+        key={map.id + mode + (race.n || 0)}
+        map={map}
+        mode={mode}
+        pseudo={pseudo}
+        onExit={() => setRace(null)}
+        onNext={next ? () => setRace({ map: next, mode: "play" }) : null}
+        onTestDone={(ms) => setDoc((d) => ({ ...d, authorTime: d.authorTime ? Math.min(d.authorTime, ms) : ms }))}
+      />
+    );
+  }
+
+  const medals = OFFICIAL.reduce((n, m) => n + (medalFor(pbs[m.id]?.ms, m.author_time) ? 1 : 0), 0);
+  if (tab === "editor") {
+    return (
+      <Editor
+        doc={doc}
+        setDoc={setDoc}
+        pseudo={pseudo}
+        onExit={() => pickTab("campaign")}
+        onTest={(d) => setRace({ map: { id: "test", name: d.name || "Test", author_time: null, world: d.world, data: { v: 1, world: d.world, tiles: d.tiles } }, mode: "test" })}
+        onPlayPublished={(m) => { setDoc(newDoc()); pickTab("community"); setRace({ map: m, mode: "play" }); }}
+      />
+    );
+  }
+
+  return (
+    <div className="rc-menu">
+      <header className="rc-menu-head">
+        <button className="icon" onClick={onQuit} title="Retour au Casino">←</button>
+        <h1>Turbo <em>Rush</em></h1>
+        <div className="grow" />
+        <div className="rc-medals" title="Médailles de la campagne">
+          {MEDALS.map((m) => <i key={m.id} className="rc-dot" style={{ background: m.color }} />)}
+          <b>{medals}/{OFFICIAL.length}</b>
+        </div>
+      </header>
+      <div className="rc-menu-body">
+        <nav className="rc-tabs">
+          <button className={tab === "campaign" ? "on" : ""} onClick={() => pickTab("campaign")}>Campagne</button>
+          <button className={tab === "community" ? "on" : ""} onClick={() => pickTab("community")}>Communauté</button>
+          <button onClick={() => pickTab("editor")}>Éditeur</button>
+          <div className="grow" />
+          <div className="rc-colors" title="Couleur de ta voiture">
+            {CAR_COLORS.map((c) => (
+              <button key={c} className={c === color ? "on" : ""} style={{ background: c }} onClick={() => { setColor(c); saveCarColor(c); }} />
+            ))}
+          </div>
+        </nav>
+        <p className="rc-pilot">Pilote : <b>{pseudo}</b>{pseudo === "Joueur" && " · choisis un pseudo dans le Casino pour entrer au classement"}</p>
+        {tab === "community" ? (
+          <Community pbs={pbs} onPlay={play} onBoard={setBoard} />
+        ) : (
+          <Campaign pbs={pbs} wrs={wrs} onPlay={play} onBoard={setBoard} />
+        )}
+      </div>
+      {loading && <div className="modal soft"><div className="spinner" /></div>}
+      {board && <Board map={board} pseudo={pseudo} onClose={() => setBoard(null)} />}
+    </div>
+  );
+}
