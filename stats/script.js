@@ -260,6 +260,25 @@ function renderUno(data) {
     setVal('un-avg', n(data.un_avg_minutes) + ' min');
 }
 
+/* ── Buckshot (résumé et classement dans leurs propres RPC) ── */
+async function loadBuckshot() {
+    const n = v => Number(v || 0).toLocaleString('fr-FR');
+    try {
+        const r = await sbFetch('rpc/get_buckshot_summary', { body: '{}' });
+        const s = await r.json();
+        ['games', 'players', 'rounds', 'shots', 'hits', 'items'].forEach(k => setVal('bs-' + k, n(s[k])));
+        setVal('bs-blanks', n(s.self_blanks));
+        setVal('bs-avg', n(s.avg_minutes) + ' min');
+    } catch (e) { console.warn('buckshot stats', e); }
+    const rows = await fetchGameLeaderboard('get_buckshot_leaderboard');
+    renderGameLeaderboard('bs', rows, [
+        { label: d('lb.pseudo') || 'Pseudo', cls: 'lb-pseudo', render: r => esc(r.pseudo) },
+        { label: 'Victoires', cls: 'lb-bankroll', style: () => 'color:var(--green)', render: r => n(r.wins) },
+        { label: 'Parties', cls: 'lb-hands', render: r => n(r.games) },
+        { label: d('lb.date') || 'Date', cls: 'lb-date', render: r => esc(r.date) },
+    ]);
+}
+
 /* ── Leaderboards Roulette / Monopoly (même table que le blackjack) ── */
 function renderGameLeaderboard(panel, rows, cols) {
     const el = document.querySelector(`.game-panel[data-panel="${panel}"] .leaderboard-list`);
@@ -390,3 +409,4 @@ function initGameTabs() {
 
 initGameTabs();
 init();
+loadBuckshot();

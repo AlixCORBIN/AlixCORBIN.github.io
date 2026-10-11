@@ -5,6 +5,7 @@ import { BlackjackScene } from "./games/blackjack/three/BlackjackScene.jsx";
 import { BlackjackHud } from "./games/blackjack/ui/BlackjackHud.jsx";
 import { saveRouletteSession } from "./games/roulette/api.js";
 import { HorsesScreen } from "./games/horses/ui/HorsesScreen.jsx";
+import { BuckshotScreen } from "./games/buckshot/ui/BuckshotScreen.jsx";
 import { NavalScreen } from "./games/naval/ui/NavalScreen.jsx";
 import { UnoScreen } from "./games/uno/ui/UnoScreen.jsx";
 import { MbScreen } from "./games/milleborne/ui/MbScreen.jsx";
@@ -125,7 +126,9 @@ export function GameScreen({ ctrl, onQuit }) {
   ) : (
     <>
       <PublicToggle ctrl={ctrl} />
-      {state.game === "milleborne" ? (
+      {state.game === "buckshot" ? (
+    <BuckshotScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
+  ) : state.game === "milleborne" ? (
     <MbScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
   ) : state.game === "naval" ? (
     <NavalScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />

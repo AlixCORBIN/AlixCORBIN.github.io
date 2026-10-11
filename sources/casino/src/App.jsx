@@ -1,5 +1,6 @@
 import React from "react";
 import { BlackjackHost } from "./games/blackjack/host.js";
+import { BuckshotHost } from "./games/buckshot/host.js";
 import { RouletteHost } from "./games/roulette/host.js";
 import { UnoHost } from "./games/uno/host.js";
 import { MilleBorneHost } from "./games/milleborne/host.js";
@@ -17,7 +18,9 @@ export function App() {
   const start = (game, mode, name, code, bankroll, opts = {}) => {
     if (game === "racing") return setRacing({ pseudo: name });
     const Host =
-      game === "roulette"
+      game === "buckshot"
+        ? BuckshotHost
+        : game === "roulette"
         ? RouletteHost
         : game === "werewolf"
           ? WerewolfHost
