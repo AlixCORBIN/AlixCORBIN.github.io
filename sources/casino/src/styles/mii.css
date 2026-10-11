@@ -16,3 +16,4 @@
 @media (max-width:640px){.mii-pick{flex-direction:row;gap:12px}}
 .mii-sec{margin:2px 2px 6px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);opacity:.8;text-align:left}
 .mii-pop{max-height:min(520px,70vh);overflow:auto}
+.mii-wait{border-style:solid;border-color:var(--line);border-top-color:var(--gold);animation:spin .9s linear infinite;font-size:0}

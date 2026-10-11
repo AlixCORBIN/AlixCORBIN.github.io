@@ -8,6 +8,8 @@ import { sanitizeMii, MII_VERSION } from './mii-core.js';
 
 const KEY = 'portfolio.miis.v1';
 const SYNCED_KEY = 'portfolio.miis.synced.';
+const LAST_SYNC_KEY = 'portfolio.miis.lastsync.';
+const SYNC_EVERY = 10 * 60 * 1000;   // les Mii en local font foi entre deux synchros
 export const MAX_MIIS = 100;
 
 function readRaw() {
@@ -47,9 +49,13 @@ async function cloudCall(fn) {
     }
 }
 
-async function syncNow() {
+const lastSync = (uid) => { try { return +localStorage.getItem(LAST_SYNC_KEY + uid) || 0; } catch { return 0; } };
+
+async function syncNow(force = true) {
     if (!cloud) return;
     const { sb, uid } = cloud;
+    // Cache : si la dernière synchro est récente, on garde la copie locale sans rien recharger
+    if (!force && Date.now() - lastSync(uid) < SYNC_EVERY) { setSync('synced'); return; }
     setSync('syncing');
     try {
         const [{ data: rows, error: e1 }, { data: setting, error: e2 }] = await Promise.all([
@@ -90,6 +96,7 @@ async function syncNow() {
             if (error) throw error;
         }
         writeSynced(uid, keep);
+        try { localStorage.setItem(LAST_SYNC_KEY + uid, String(Date.now())); } catch { /* ignore */ }
         setSync('synced');
     } catch (e) {
         console.warn('[mii] synchro:', e?.message || e);
@@ -99,14 +106,19 @@ async function syncNow() {
 
 /* Branche un compte (voir account.js). Renvoie une fonction de débranchement. */
 export function attachAccount(account) {
-    const apply = (user) => {
+    // force = vraie connexion ; au simple chargement d'une page, le cache local suffit
+    const apply = (user, force) => {
         const uid = user?.id || null;
         if (uid === (cloud?.uid || null)) return;
         cloud = uid ? { sb: account.sb, uid } : null;
-        if (cloud) syncNow(); else setSync('local');
+        if (cloud) syncNow(force); else setSync('local');
     };
-    account.ready.then(() => apply(account.user));
-    return account.onChange((u) => apply(u));
+    account.ready.then(() => apply(account.user, false));
+    // Retour sur l'onglet après un moment : rattrape les changements faits ailleurs
+    if (typeof document !== 'undefined') {
+        document.addEventListener('visibilitychange', () => { if (!document.hidden && cloud) syncNow(false); });
+    }
+    return account.onChange((u, event) => apply(u, event === 'SIGNED_IN'));
 }
 
 /* ---------------- API ---------------- */

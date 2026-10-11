@@ -2,19 +2,34 @@ import React from "react";
 import * as THREE from "three";
 import { GUEST_MIIS, account, listSync, loadPlayMii, miiStore, savePlayMii } from "../lib/mii.js";
 import { miiPortrait } from "./MiiAvatar.jsx";
+import { getThumb, peekThumb, putThumb, thumbKey } from "@mii/thumb-cache.js";
 import "../styles/mii.css";
 
 const MII_URL = "../mii/index.html";
 
+// Portrait mis en cache (IndexedDB, partagé avec la chaîne Mii) : rendu 3D seulement la première fois
 function Portrait({ mii, size = 120 }) {
-  const url = React.useMemo(() => {
-    try {
-      return mii ? miiPortrait(THREE, mii, size) : null;
-    } catch {
-      return null;
-    }
-  }, [mii && JSON.stringify(mii)]);
-  return url ? <img src={url} alt="" draggable="false" /> : <span className="mii-empty">?</span>;
+  const key = mii ? thumbKey(mii, "casino", size) : null;
+  const [url, setUrl] = React.useState(() => (key ? peekThumb(key) : null));
+  React.useEffect(() => {
+    if (!key) return setUrl(null);
+    let alive = true;
+    const hit = peekThumb(key);
+    if (hit) return setUrl(hit);
+    getThumb(key).then((stored) => {
+      if (!alive) return;
+      if (stored) return setUrl(stored);
+      try {
+        const fresh = miiPortrait(THREE, mii, size);
+        putThumb(key, fresh);
+        setUrl(fresh);
+      } catch {
+        setUrl(null);
+      }
+    });
+    return () => { alive = false; };
+  }, [key]);
+  return url ? <img src={url} alt="" draggable="false" /> : <span className="mii-empty mii-wait" />;
 }
 
 // Carte « Ton Mii » du hub : choisir avec quel Mii jouer + état du compte (facultatif)

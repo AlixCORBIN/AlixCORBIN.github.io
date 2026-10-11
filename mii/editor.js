@@ -8,6 +8,7 @@ import {
 import { drawPartIcon } from './lib/mii-face.js';
 import { createMiiKit } from './lib/mii-three.js';
 import { miiStore, attachAccount } from './lib/mii-store.js';
+import { getThumb, putThumb, thumbKey } from './lib/thumb-cache.js';
 import { createAccount } from './lib/account.js';
 
 const kit = createMiiKit(THREE);
@@ -177,10 +178,17 @@ const thumbs = (() => {
         requestAnimationFrame(step);
     }
     return {
-        get(m, mode = 'head', keep = false) {
+        async get(m, mode = 'head', keep = false) {
             const key = keyOf(m, mode);
-            if (cache.has(key)) return Promise.resolve(cache.get(key));
-            return new Promise((resolve, reject) => { queue.push({ m: cloneMii(m), mode, key, resolve, reject, gen, keep }); pump(); });
+            if (cache.has(key)) return cache.get(key);
+            // Cache persistant (IndexedDB) : pas de rendu 3D si la vignette existe déjà
+            const pkey = thumbKey(m, mode, SIZE);
+            const stored = await getThumb(pkey);
+            if (stored) { cache.set(key, stored); return stored; }
+            const myGen = gen;
+            const url = await new Promise((resolve, reject) => { queue.push({ m: cloneMii(m), mode, key, resolve, reject, gen: myGen, keep }); pump(); });
+            putThumb(pkey, url);
+            return url;
         },
         cancelPending() { gen++; },
     };
