@@ -5,6 +5,8 @@ import * as THREE from 'three'
 import { SQUARES } from '../game/data.js'
 import { sfx } from '../ui/sfx.js'
 import Cards3D from './Cards3D.jsx'
+import { useTheme } from '../ui/themes.js'
+import { Stars, Sparkles } from '@react-three/drei'
 import { drawBoard, squareCenter, inward, isCorner, CORNER, HALF } from './layout.js'
 
 const Y = 0.12 // hauteur de la surface du plateau
@@ -231,17 +233,21 @@ export default function Scene({ game, selected, onPick, myId, card }) {
     return o
   }, [players.map((p) => p.id + p.pos).join()])
   const current = game.players[game.turn]?.id
+  const th = useTheme()
   return (
     <Canvas shadows={{ type: THREE.PCFShadowMap }} dpr={[1, 2]} camera={{ position: [0, 13, 11], fov: 45 }}>
-      <color attach="background" args={['#0b1d14']} />
-      <fog attach="fog" args={['#0b1d14', 50, 90]} />
-      <ambientLight intensity={0.45} />
-      <directionalLight position={[6, 14, 8]} intensity={1.6} castShadow shadow-mapSize={[2048, 2048]}
+      <color attach="background" args={[th.bg]} />
+      <fog attach="fog" args={[th.fog, 50, 90]} />
+      <ambientLight intensity={th.amb} />
+      {th.stars && <Stars radius={60} depth={30} count={3000} factor={4} fade speed={0.6} />}
+      {th.snow && <Sparkles count={260} scale={[30, 14, 30]} position={[0, 6, 0]} size={4} speed={0.35} color="#ffffff" />}
+      {th.particles && <Sparkles count={80} scale={[20, 6, 20]} position={[0, 3, 0]} size={3} speed={0.2} color={th.particles} />}
+      <directionalLight color={th.sun} position={[6, 14, 8]} intensity={th.sunI} castShadow shadow-mapSize={[2048, 2048]}
         shadow-camera-left={-9} shadow-camera-right={9} shadow-camera-top={9} shadow-camera-bottom={-9} />
-      <hemisphereLight args={["#fff8e8", "#2b1a10", 0.6]} />
+      <hemisphereLight key={th.id} args={[th.sky, th.ground, 0.6]} />
       <mesh rotation-x={-Math.PI / 2} position={[0, -0.11, 0]} receiveShadow>
         <circleGeometry args={[30, 64]} />
-        <meshStandardMaterial color="#3a2618" roughness={0.9} />
+        <meshStandardMaterial color={th.floor} roughness={th.rough} emissive={th.floorGlow || '#000'} emissiveIntensity={th.floorGlow ? 0.15 : 0} />
       </mesh>
       <FitCamera />
       <Board onPick={onPick} selected={selected} />

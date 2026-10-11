@@ -6,6 +6,7 @@ import { fmt, netWorth, ownsGroup, rentFor } from '../game/engine.js'
 import { usePresented } from './present.js'
 import { parseChat, suggest, mentionedIds } from './mentions.js'
 import { sfx, getSfx, setSfx, onSfx, CATEGORIES } from './sfx.js'
+import { THEMES, setTheme, useTheme } from './themes.js'
 
 const back = () => (window.location.href = '../jeux/index.html')
 
@@ -232,11 +233,20 @@ function useSfxSettings() {
 
 function SoundMenu({ onClose }) {
   const st = useSfxSettings()
+  const th = useTheme()
   return (
     <>
       <div className="pop-bg" onClick={onClose} />
       <div className="soundmenu">
-        <div className="sm-head">
+        <div className="sm-head"><b>Thème</b></div>
+        <div className="themes">
+          {Object.entries(THEMES).map(([id, t]) => (
+            <button key={id} className={`theme ${th.id === id ? 'on' : ''}`} onClick={() => setTheme(id)} style={{ '--bg': t.bg, '--fl': t.floor }}>
+              <span className="sw"><i /></span>{t.icon} {t.label}
+            </button>
+          ))}
+        </div>
+        <div className="sm-head" style={{ borderTop: '1px solid var(--line)', paddingTop: 10 }}>
           <b>Bruitages</b>
           <button className={`switch ${st.muted ? '' : 'on'}`} onClick={() => setSfx({ muted: !st.muted })} title="Activer / couper le son"><i /></button>
         </div>
@@ -274,7 +284,7 @@ function TopBar({ s, pub, code, notify, onRules, onSound, logOpen, toggleLog }) 
       {pub && <span className="hide-m"><PublicSwitch compact on={pub.isPublic} set={pub.setPublic} /></span>}
       <span className="grow" />
       <button className="ibtn" onClick={() => setSfx({ muted: !st.muted })} title="Couper / remettre le son (M)">{st.muted ? '🔇' : '🔊'}</button>
-      <button className="ibtn" onClick={onSound} title="Réglages des bruitages">⚙</button>
+      <button className="ibtn" onClick={onSound} title="Thème et bruitages">⚙</button>
       <button className={`ibtn ${logOpen ? 'on' : ''}`} onClick={toggleLog} title="Journal (J)">💬</button>
       <button className="ibtn" onClick={onRules} title="Règles et raccourcis">?</button>
     </div>

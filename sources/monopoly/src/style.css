@@ -264,3 +264,9 @@ button.ment.place:hover{background:var(--c)}
 .tresult h3{margin:0}
 .tresult .tcols{width:100%;text-align:left;padding:6px 0}
 .tresult .btn{min-width:120px}
+
+.themes{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.theme{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);cursor:pointer;font-size:.82rem;text-align:left}
+.theme.on{border-color:var(--gold);background:rgba(232,196,104,.15)}
+.theme .sw{width:26px;height:18px;border-radius:5px;background:var(--bg);position:relative;overflow:hidden;flex:none;border:1px solid rgba(255,255,255,.2)}
+.theme .sw i{position:absolute;left:0;right:0;bottom:0;height:45%;background:var(--fl)}
