@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import {
     defaultMii, randomMii, sanitizeMii, cloneMii, encodeMii, decodeMii, newId,
     COUNTS, RANGES, FAV_COLORS, SKIN_COLORS, HAIR_COLORS, EYE_COLORS, LIP_COLORS,
-    GLASSES_COLORS, PANTS_COLORS, HAT_COLORS,
+    GLASSES_COLORS, PANTS_COLORS, HAT_COLORS, GUEST_MIIS,
 } from './lib/mii-core.js';
 import { drawPartIcon } from './lib/mii-face.js';
 import { createMiiKit } from './lib/mii-three.js';
@@ -43,7 +43,7 @@ const T = {
         mustache: 'Moustache', beard: 'Barbe', facialHair: 'Couleur des poils', glassesType: 'Monture', tint: 'Verres teintés',
         moleOn: 'Grain de beauté', hatType: 'Chapeau', hatHint: 'Visible aussi dans les jeux.',
         newTitle: 'Nouveau Mii', newSub: 'Comment veux-tu commencer ?', fromScratch: 'De zéro', lookalike: 'Au hasard',
-        pick: 'Choisis un visage', reroll: 'Autres visages', close: 'Fermer',
+        pick: 'Choisis un visage', reroll: 'Autres visages', close: 'Fermer', fromGuest: 'Ou pars d’un Mii invité :',
         quitTitle: 'Quitter sans enregistrer ?', quitSub: 'Les modifications seront perdues.', quit: 'Quitter', keep: 'Continuer',
         delTitle: (n) => `Effacer ${n} ?`, delSub: 'Ce Mii sera supprimé de cet appareil.',
         shareTitle: 'Partager ce Mii', shareSub: 'Copie ce code et colle-le dans « Importer » sur un autre appareil.', copy: 'Copier le code', copied: 'Code copié',
@@ -72,7 +72,7 @@ const T = {
         mustache: 'Mustache', beard: 'Beard', facialHair: 'Facial hair color', glassesType: 'Frames', tint: 'Tinted lenses',
         moleOn: 'Mole', hatType: 'Hat', hatHint: 'Also shown in the games.',
         newTitle: 'New Mii', newSub: 'How do you want to start?', fromScratch: 'From scratch', lookalike: 'Random',
-        pick: 'Pick a face', reroll: 'More faces', close: 'Close',
+        pick: 'Pick a face', reroll: 'More faces', close: 'Close', fromGuest: 'Or start from a guest Mii:',
         quitTitle: 'Quit without saving?', quitSub: 'Your changes will be lost.', quit: 'Quit', keep: 'Keep editing',
         delTitle: (n) => `Erase ${n}?`, delSub: 'This Mii will be removed from this device.',
         shareTitle: 'Share this Mii', shareSub: 'Copy this code and paste it in “Import” on another device.', copy: 'Copy code', copied: 'Code copied',
@@ -715,6 +715,15 @@ function newMiiModal() {
             choice(t('male'), male, () => { close(); app.open(defaultMii('m'), true); }),
             choice(t('female'), female, () => { close(); app.open(defaultMii('f'), true); }),
             choice(t('lookalike'), rnd, () => lookalikeModal())),
+        el('p', { style: 'margin:16px 0 8px' }, t('fromGuest')),
+        el('div', { class: 'grid' }, ...GUEST_MIIS.map((g) => {
+            const b = el('button', { class: 'opt is-loading', title: g.name, onclick: () => {
+                const m = cloneMii(g); m.id = newId(); m.creator = ''; m.createdAt = m.updatedAt = Date.now();
+                close(); sfx('click'); app.open(m, true);
+            } });
+            thumbs.get(g, 'head', true).then((u) => { b.classList.remove('is-loading'); b.append(el('img', { src: u, alt: g.name })); });
+            return b;
+        })),
     ], [[t('close'), 'pill', close]]);
 }
 

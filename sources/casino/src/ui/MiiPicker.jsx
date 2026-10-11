@@ -1,6 +1,6 @@
 import React from "react";
 import * as THREE from "three";
-import { account, listSync, loadPlayMii, miiStore, savePlayMii } from "../lib/mii.js";
+import { GUEST_MIIS, account, listSync, loadPlayMii, miiStore, savePlayMii } from "../lib/mii.js";
 import { miiPortrait } from "./MiiAvatar.jsx";
 import "../styles/mii.css";
 
@@ -26,8 +26,9 @@ export function MiiPicker({ value, onChange }) {
     const refresh = () => {
       const l = listSync();
       setList(l);
-      if (!value || !l.some((m) => m.id === value.id)) onChange(loadPlayMii());
-      else onChange(l.find((m) => m.id === value.id));
+      const all = [...l, ...GUEST_MIIS];
+      if (!value || !all.some((m) => m.id === value.id)) onChange(loadPlayMii());
+      else onChange(all.find((m) => m.id === value.id));
     };
     const off1 = miiStore.subscribe(refresh);
     const off2 = account?.onChange((u) => setUser(u)) || (() => {});
@@ -42,7 +43,7 @@ export function MiiPicker({ value, onChange }) {
   const who = user ? (account.displayName() || "").split("@")[0] : "";
   return (
     <div className="mii-pick">
-      <button className="mii-face" onClick={() => (list.length ? setOpen(!open) : (location.href = MII_URL))} title="Choisir ton Mii">
+      <button className="mii-face" onClick={() => setOpen(!open)} title="Choisir ton Mii">
         <Portrait mii={value} />
         <small>{value ? value.name : "Créer un Mii"}</small>
       </button>
@@ -55,15 +56,27 @@ export function MiiPicker({ value, onChange }) {
       </div>
       {open && (
         <div className="mii-pop" role="dialog">
+          {list.length > 0 && <h4 className="mii-sec">Tes Mii</h4>}
+          {list.length > 0 && (
+            <div className="mii-grid">
+              {list.map((m) => (
+                <button key={m.id} className={"mii-opt" + (m.id === value?.id ? " on" : "")} onClick={() => pick(m)}>
+                  <Portrait mii={m} size={96} />
+                  <span>{m.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          <h4 className="mii-sec">Mii invités</h4>
           <div className="mii-grid">
-            {list.map((m) => (
+            {GUEST_MIIS.map((m) => (
               <button key={m.id} className={"mii-opt" + (m.id === value?.id ? " on" : "")} onClick={() => pick(m)}>
                 <Portrait mii={m} size={96} />
                 <span>{m.name}</span>
               </button>
             ))}
           </div>
-          <a className="btn" href={MII_URL}>Créer / modifier dans la chaîne Mii</a>
+          <a className="btn" href={MII_URL}>Créer ton propre Mii dans la chaîne Mii</a>
         </div>
       )}
     </div>

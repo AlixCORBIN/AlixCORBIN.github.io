@@ -4,12 +4,12 @@ import React from "react";
 import * as THREE from "three";
 import { createClient } from "@supabase/supabase-js";
 import { createMiiKit } from "@mii/mii-three.js";
-import { miiForId, sanitizeMii } from "@mii/mii-core.js";
+import { GUEST_MIIS, isGuestMii, miiForId, sanitizeMii } from "@mii/mii-core.js";
 import { attachAccount, getMainSync, listSync, miiStore } from "@mii/mii-store.js";
 import { createAccount } from "@mii/account.js";
 
 export const miiKit = createMiiKit(THREE);
-export { getMainSync, listSync, miiStore, miiForId, sanitizeMii };
+export { getMainSync, listSync, miiStore, miiForId, sanitizeMii, GUEST_MIIS, isGuestMii };
 
 export let account = null;
 try {
@@ -19,13 +19,19 @@ try {
   account = null;
 }
 
-/* ---------- Mii choisi pour jouer (par défaut : « Mon Mii » de la chaîne Mii) ---------- */
+/* ---------- Mii choisi pour jouer ----------
+   Ordre : le dernier choisi, sinon « Mon Mii » de la chaîne Mii, sinon un Mii invité
+   (tiré au hasard une fois puis gardé), pour pouvoir jouer sans compte ni création. */
 const PICK_KEY = "casino-mii";
 export function loadPlayMii() {
-  const list = listSync();
+  const all = [...listSync(), ...GUEST_MIIS];
   let id = null;
   try { id = localStorage.getItem(PICK_KEY); } catch {}
-  return list.find((m) => m.id === id) || getMainSync();
+  const picked = all.find((m) => m.id === id) || getMainSync();
+  if (picked) return picked;
+  const g = GUEST_MIIS[Math.floor(Math.random() * GUEST_MIIS.length)];
+  savePlayMii(g.id);
+  return g;
 }
 export function savePlayMii(id) {
   try { localStorage.setItem(PICK_KEY, id || ""); } catch {}

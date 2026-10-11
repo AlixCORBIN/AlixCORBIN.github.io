@@ -205,3 +205,30 @@ export function decodeMii(code) {
 }
 
 export const cloneMii = (m) => JSON.parse(JSON.stringify(m));
+
+/* ---------- Mii invités : prêts à jouer, sans compte ni création ---------- */
+function guest(n, name, gender, patch) {
+    const m = defaultMii(gender);
+    for (const [k, v] of Object.entries(patch)) m[k] = v && typeof v === 'object' && !Array.isArray(v) ? { ...m[k], ...v } : v;
+    m.id = 'guest-' + n;
+    m.name = name;
+    m.creator = 'Invité';
+    m.createdAt = m.updatedAt = 0;
+    return m;
+}
+const H = HAIR_COLORS, S = SKIN_COLORS, E = EYE_COLORS, L = LIP_COLORS;
+export const GUEST_MIIS = [
+    guest(1, 'Alex', 'm', { favColor: 5, face: { shape: 0, skin: S[1] }, hair: { style: 0, color: H[1] }, brows: { type: 0, color: H[1] }, eyes: { type: 0 }, mouth: { type: 0 } }),
+    guest(2, 'Léa', 'f', { favColor: 7, face: { shape: 1, skin: S[0], feature: 1 }, hair: { style: 5, color: H[6] }, brows: { type: 1, color: H[5] }, eyes: { type: 12, color: E[4] }, mouth: { type: 6, color: L[2] } }),
+    guest(3, 'Hugo', 'm', { favColor: 3, face: { shape: 2, skin: S[2] }, hair: { style: 3, color: H[0] }, brows: { type: 2, color: H[0] }, eyes: { type: 11 }, mouth: { type: 1 } }),
+    guest(4, 'Chloé', 'f', { favColor: 8, face: { shape: 4, skin: S[1], feature: 2 }, hair: { style: 14, color: H[3] }, brows: { type: 8, color: H[3] }, eyes: { type: 5, color: E[5] }, mouth: { type: 10, color: L[1] } }),
+    guest(5, 'Nathan', 'm', { favColor: 0, face: { shape: 3, skin: S[4] }, hair: { style: 19, color: H[0] }, brows: { type: 3, color: H[0] }, eyes: { type: 2 }, mouth: { type: 4 }, beard: { type: 1 } }),
+    guest(6, 'Inès', 'f', { favColor: 9, face: { shape: 0, skin: S[5], feature: 1 }, hair: { style: 9, color: H[0] }, brows: { type: 0, color: H[0] }, eyes: { type: 15, color: E[2] }, mouth: { type: 6, color: L[4] } }),
+    guest(7, 'Karim', 'm', { favColor: 1, face: { shape: 5, skin: S[3] }, hair: { style: 1, color: H[0] }, brows: { type: 6, color: H[0] }, eyes: { type: 9, color: E[2] }, mouth: { type: 11 }, mustache: { type: 1 }, beard: { type: 4 }, facialHairColor: H[0] }),
+    guest(8, 'Manon', 'f', { favColor: 2, face: { shape: 1, skin: S[0], feature: 10 }, hair: { style: 7, color: H[7] }, brows: { type: 1, color: H[6] }, eyes: { type: 1, color: E[4] }, mouth: { type: 7, color: L[2] } }),
+    guest(9, 'Théo', 'm', { favColor: 6, face: { shape: 7, skin: S[1] }, hair: { style: 15, color: H[5] }, brows: { type: 9, color: H[5] }, eyes: { type: 4 }, mouth: { type: 9 }, glasses: { type: 1, color: GLASSES_COLORS[0] } }),
+    guest(10, 'Jade', 'f', { favColor: 4, face: { shape: 4, skin: S[2] }, hair: { style: 8, color: H[1] }, brows: { type: 12, color: H[1] }, eyes: { type: 14, color: E[3] }, mouth: { type: 6, color: L[0] }, glasses: { type: 2, color: GLASSES_COLORS[4] } }),
+    guest(11, 'Paul', 'm', { favColor: 10, face: { shape: 0, skin: S[1], feature: 11 }, hair: { style: 12, color: H[4] }, brows: { type: 10, color: H[4] }, eyes: { type: 6, color: E[1] }, mouth: { type: 3 }, mustache: { type: 4 }, facialHairColor: H[4], glasses: { type: 5, color: GLASSES_COLORS[5] } }),
+    guest(12, 'Sofia', 'f', { favColor: 11, face: { shape: 6, skin: S[6], feature: 8 }, hair: { style: 22, color: H[0] }, brows: { type: 8, color: H[0] }, eyes: { type: 17, color: E[2] }, mouth: { type: 6, color: L[4] }, hat: { type: 5, color: HAT_COLORS[0] } }),
+];
+export const isGuestMii = (m) => typeof m?.id === 'string' && m.id.startsWith('guest-');
