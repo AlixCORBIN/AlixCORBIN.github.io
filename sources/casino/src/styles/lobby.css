@@ -1,0 +1,86 @@
+/* Hub du Casino : en-tête, catalogue filtrable, colonne salles */
+.casino{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;background:radial-gradient(ellipse at 50% 0%,#0e4a33,#062117 55%,#020805)}
+.c-top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;padding:10px max(16px,calc((100vw - 1240px)/2));padding-top:calc(10px + env(safe-area-inset-top));background:#04100bd9;border-bottom:1px solid var(--line);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.c-back{padding:8px 14px;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;font-weight:600;font-size:14px;white-space:nowrap}
+.c-back:hover{border-color:var(--gold)}
+.c-brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+.c-brand span{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;font-size:22px;color:var(--gold);background:linear-gradient(145deg,#0b4a33,#05261b);border:1px solid var(--line)}
+.c-brand h1{font-size:24px;margin:0;white-space:nowrap}
+.c-me{display:flex;align-items:center;gap:10px}
+.c-me .mii-pick{margin:0;flex-direction:row;gap:8px}
+.c-me .mii-face{width:auto;flex-direction:row;padding:3px 10px 3px 3px;border-radius:999px;gap:6px}
+.c-me .mii-face img,.c-me .mii-empty{width:34px;height:34px;font-size:16px}
+.c-me .mii-face small{font-size:13px;max-width:90px}
+.c-me .mii-acc{display:none}
+.c-me .mii-pop{left:auto;right:-200px}
+.c-name{display:flex;flex-direction:column;gap:2px;margin:0}
+.c-name small,.c-wallet small{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;opacity:.65}
+.c-name input{margin:0;width:130px;padding:7px 10px;font-size:14px}
+.c-wallet{display:flex;flex-direction:column;align-items:flex-end;padding:4px 14px;border:1px solid var(--gold);border-radius:12px;background:#00000073}
+.c-wallet b{font:700 20px/1.1 var(--serif);color:var(--gold)}
+
+.c-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start;max-width:1240px;margin:0 auto;padding:22px 16px 48px}
+.c-main{min-width:0}
+.c-alert{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;margin-bottom:12px;border-radius:14px;border:1px solid #ff8a8a66;background:#3a0d0d99;font-size:14px}
+.c-alert .btn{flex:none;padding:9px 14px;font-size:14px}
+.c-debt{margin:0 0 12px;font-size:13px;opacity:.75}
+
+.c-tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.c-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.c-tabs button{padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:#0006;color:var(--ink);font-size:14px;font-weight:600}
+.c-tabs button:hover{border-color:var(--gold)}
+.c-tabs button.on{background:var(--gold);border-color:var(--gold);color:#231703}
+.c-search{margin:0 0 0 auto;width:220px;padding:8px 12px;font-size:14px;border-radius:999px}
+
+.c-sec{margin-top:22px}
+.c-sec-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.c-sec-head h2{font:700 20px var(--serif);margin:0;color:var(--gold)}
+.c-sec-head small{font-size:12px;opacity:.6}
+.c-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+
+.tile{--hue:#14804a;display:flex;gap:12px;align-items:flex-start;width:100%;padding:14px;text-align:left;color:var(--ink);text-decoration:none;font:inherit;border-radius:16px;border:1px solid var(--line);background:linear-gradient(150deg,color-mix(in srgb,var(--hue) 45%,#05120c),#05120c 70%);cursor:pointer;transition:transform .12s,border-color .15s,box-shadow .15s}
+.tile:hover:not(:disabled),.tile:focus-visible{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 10px 30px #0008;outline:none}
+.tile:disabled{opacity:.45;cursor:not-allowed}
+.tile-icon{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:13px;font-size:26px;color:var(--gold);background:#0000004d;border:1px solid #ffffff1a}
+.tile-body{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.tile-body b{font:700 17px var(--serif)}
+.tile-meta{display:flex;gap:5px;flex-wrap:wrap}
+.tile-meta span{font-size:11px;padding:2px 7px;border-radius:999px;background:#ffffff14;opacity:.85}
+.tile-meta .chip-gold{background:#e8c46833;color:var(--gold);opacity:1}
+.tile-desc{font-size:13px;opacity:.75;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tile-cta{margin-top:4px;font-size:13px;font-weight:700;color:var(--gold)}
+.tile-cta i{font-style:normal;display:inline-block;transition:transform .15s}
+.tile:hover .tile-cta i{transform:translateX(3px)}
+.tile.friend{border-style:dashed;background:linear-gradient(150deg,color-mix(in srgb,var(--hue) 25%,#05120c),#05120c 70%)}
+.c-empty{opacity:.7;text-align:center;margin:40px 0}
+
+.c-side{position:sticky;top:84px;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 100px)}
+.c-box{padding:14px;border-radius:16px;border:1px solid var(--line);background:var(--panel)}
+.c-box h2{font:700 17px var(--serif);margin:0 0 10px}
+.c-box .join{margin:0}
+.c-box .join input{min-width:0;flex:1;letter-spacing:5px;font-size:16px;padding:10px}
+.c-box .join .btn{padding:10px 16px;font-size:15px}
+.c-box .join .btn{flex:none}
+.c-box.pubbar{margin:0;align-items:flex-start}
+.c-box.pubbar small{line-height:1.4;margin-top:2px}
+.c-side .rooms{width:auto;max-height:none;min-height:0;flex:1 1 auto;margin:0;padding:14px;border-radius:16px;box-shadow:none}
+.c-side .rooms-head h2{font-size:17px}
+.c-board{margin:0;align-self:center}
+
+@media (max-width:980px){
+  .c-layout{grid-template-columns:minmax(0,1fr)}
+  .c-side{position:static;max-height:none;order:-1;display:grid;grid-template-columns:1fr 1fr}
+  .c-side .rooms,.c-board{grid-column:1/-1}
+}
+@media (max-width:700px){
+  .c-top{flex-wrap:wrap;gap:10px}
+  .c-brand h1{font-size:20px}
+  .c-me{order:3;width:100%}
+  .c-name{flex:1}.c-name input{width:100%}
+  .c-me .mii-pop{right:auto;left:0}
+  .c-side{grid-template-columns:1fr;order:1}
+  .c-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;width:100%}
+  .c-tabs button{flex:none}
+  .c-search{width:100%;margin:0}
+  .c-grid{grid-template-columns:1fr}
+}
