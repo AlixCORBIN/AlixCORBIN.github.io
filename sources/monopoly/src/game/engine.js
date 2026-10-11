@@ -630,6 +630,7 @@ export function applyAction(s0, actorId, a) {
       const iB = intr(t.give.props), iA = intr(t.get.props)
       if (iB) pay(s, idxOf(s, B.id), null, iB, 'intérêts 10 % sur hypothèques reçues')
       if (iA) pay(s, idxOf(s, A.id), null, iA, 'intérêts 10 % sur hypothèques reçues')
+      s.lastTrade = { ...t, result: 'accepted', by: me.id, rev: s.rev + 1 }
       s.trade = null
       break
     }
@@ -637,6 +638,7 @@ export function applyAction(s0, actorId, a) {
       const t = s.trade
       if (!t || (t.to !== me.id && t.from !== me.id)) throw new Error('Aucun échange')
       log(s, t.to === me.id ? `${me.name} refuse l’échange.` : `${me.name} annule sa proposition.`)
+      s.lastTrade = { ...t, result: t.to === me.id ? 'rejected' : 'cancelled', by: me.id, rev: s.rev + 1 }
       s.trade = null
       break
     }

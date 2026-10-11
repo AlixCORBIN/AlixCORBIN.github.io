@@ -257,3 +257,10 @@ button.ment.place:hover{background:var(--c)}
 .pubbar>div{display:flex;flex-direction:column}.pubbar small{font-size:.75rem;color:var(--muted)}
 .pubbar .switch{flex:none}
 .pubbar.compact{padding:4px 12px 4px 6px;border-radius:20px;background:var(--panel)}
+
+.tresult{width:min(520px,94vw);background:#10251b;border:2px solid var(--line);border-radius:20px;padding:18px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6);animation:rise .25s ease-out;display:flex;flex-direction:column;gap:8px;align-items:center}
+.tresult.ok{border-color:#5be39a}.tresult.ko{border-color:#ff8a8d}
+.tresult .tr-icon{font-size:2.4rem;line-height:1}
+.tresult h3{margin:0}
+.tresult .tcols{width:100%;text-align:left;padding:6px 0}
+.tresult .btn{min-width:120px}

@@ -216,6 +216,7 @@ function GameView({ g }) {
       {modal === 'rules' && <Rules onClose={close} />}
       {modal?.player && <PlayerSheet s={s} id={modal.player} me={me} onClose={close} onTrade={() => setModal({ trade: { to: modal.player } })} onPick={(i) => { setModal(null); setSel(i) }} />}
       <TradeIncoming s={s} me={me} act={g.act} />
+      <TradeResult s={s} me={me} />
       {s.auction && <Auction s={s} me={me} act={g.act} />}
       {s.phase === 'over' && <GameOver s={s} g={g} />}
       <Toast toast={g.toast} />
@@ -852,6 +853,46 @@ function TradeSummary({ s, side }) {
   ].filter(Boolean)
   if (!items.length) return <p className="muted small">Rien</p>
   return <div className="tsum">{items.map((x) => <div key={x.k} className="tsum-item" style={{ '--c': x.c }}><b>{x.name}</b><small>{x.sub}</small></div>)}</div>
+}
+
+// Popup de résultat d'un échange (accepté / refusé / annulé) pour les deux joueurs concernés
+function TradeResult({ s, me }) {
+  const [shown, setShown] = useState(null)
+  const seen = useRef(s.lastTrade?.rev)
+  useEffect(() => {
+    const t = s.lastTrade
+    if (!t || t.rev === seen.current) return
+    seen.current = t.rev
+    if (!me || (t.from !== me.id && t.to !== me.id)) return
+    if (t.result === 'cancelled' && t.by === me.id) return
+    if (t.result === 'rejected' && t.by === me.id) return
+    setShown(t)
+    sfx(t.result === 'accepted' ? 'buy' : 'error')
+    const k = setTimeout(() => setShown(null), 5000)
+    return () => clearTimeout(k)
+  }, [s.lastTrade?.rev])
+  if (!shown) return null
+  const other = s.players.find((p) => p.id === (shown.from === me.id ? shown.to : shown.from))
+  const iGive = shown.from === me.id ? shown.give : shown.get
+  const iGet = shown.from === me.id ? shown.get : shown.give
+  const ok = shown.result === 'accepted'
+  const title = ok
+    ? (shown.by === me.id ? 'Échange conclu' : `${other?.name} a accepté ton échange`)
+    : shown.result === 'cancelled' ? `${other?.name} a annulé sa proposition` : `${other?.name} a refusé ton échange`
+  return (
+    <div className="modal-bg soft" onClick={() => setShown(null)}>
+      <div className={`tresult ${ok ? 'ok' : 'ko'}`} onClick={(e) => e.stopPropagation()}>
+        <div className="tr-icon">{ok ? '🤝' : '✋'}</div>
+        <h3>{title}</h3>
+        <div className="tcols">
+          <div className="tside"><div className="tside-head"><b>{ok ? 'Tu as reçu' : 'Tu aurais reçu'}</b></div><TradeSummary s={s} side={iGet} /></div>
+          <div className="tarrow">⇄</div>
+          <div className="tside"><div className="tside-head"><b>{ok ? 'Tu as donné' : 'Tu aurais donné'}</b></div><TradeSummary s={s} side={iGive} /></div>
+        </div>
+        <button className="btn primary" onClick={() => setShown(null)}>OK</button>
+      </div>
+    </div>
+  )
 }
 
 function TradeIncoming({ s, me, act }) {
