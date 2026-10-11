@@ -4,6 +4,8 @@ import { sessionStats } from "./games/blackjack/engine.js";
 import { BlackjackScene } from "./games/blackjack/three/BlackjackScene.jsx";
 import { BlackjackHud } from "./games/blackjack/ui/BlackjackHud.jsx";
 import { saveRouletteSession } from "./games/roulette/api.js";
+import { HorsesScreen } from "./games/horses/ui/HorsesScreen.jsx";
+import { NavalScreen } from "./games/naval/ui/NavalScreen.jsx";
 import { UnoScreen } from "./games/uno/ui/UnoScreen.jsx";
 import { WerewolfScreen } from "./games/werewolf/ui/WerewolfScreen.jsx";
 import { RouletteScreen } from "./games/roulette/ui/RouletteScreen.jsx";
@@ -122,7 +124,11 @@ export function GameScreen({ ctrl, onQuit }) {
   ) : (
     <>
       <PublicToggle ctrl={ctrl} />
-      {state.game === "uno" ? (
+      {state.game === "naval" ? (
+    <NavalScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
+  ) : state.game === "horses" ? (
+    <HorsesScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
+  ) : state.game === "uno" ? (
     <UnoScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />
   ) : state.game === "werewolf" ? (
     <WerewolfScreen ctrl={ctrl} state={state} me={me} onQuit={onQuit} />

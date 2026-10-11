@@ -2,14 +2,19 @@ import React from "react";
 import { BlackjackHost } from "./games/blackjack/host.js";
 import { RouletteHost } from "./games/roulette/host.js";
 import { UnoHost } from "./games/uno/host.js";
+import { NavalHost } from "./games/naval/host.js";
+import { HorsesHost } from "./games/horses/host.js";
 import { WerewolfHost } from "./games/werewolf/host.js";
 import { GameScreen } from "./GameScreen.jsx";
 import { ClientController } from "./net/controller.js";
 import { Lobby } from "./ui/Lobby.jsx";
+import { RacingApp } from "./games/racing/ui/RacingApp.jsx";
 
 export function App() {
   const [ctrl, setCtrl] = React.useState(null);
+  const [racing, setRacing] = React.useState(null);
   const start = (game, mode, name, code, bankroll, opts = {}) => {
+    if (game === "racing") return setRacing({ pseudo: name });
     const Host =
       game === "roulette"
         ? RouletteHost
@@ -17,7 +22,11 @@ export function App() {
           ? WerewolfHost
           : game === "uno"
             ? UnoHost
-            : BlackjackHost;
+            : game === "naval"
+              ? NavalHost
+              : game === "horses"
+                ? HorsesHost
+                : BlackjackHost;
     setCtrl(
       mode === "join"
         ? new ClientController(name, code, bankroll, opts.mii)
@@ -35,6 +44,7 @@ export function App() {
     setCtrl(null);
     history.replaceState(null, "", location.pathname);
   };
+  if (racing) return <RacingApp pseudo={racing.pseudo} onQuit={() => setRacing(null)} />;
   return ctrl ? (
     <GameScreen ctrl={ctrl} onQuit={quit} />
   ) : (

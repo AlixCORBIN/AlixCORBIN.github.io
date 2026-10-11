@@ -1,6 +1,6 @@
 # Casino 3D (sources)
 
-Blackjack, roulette européenne, Loup-Garou et UNO, React + three.js, multijoueur via Supabase Realtime.
+Blackjack, roulette européenne, Loup-Garou, UNO et Turbo Rush (course), React + three.js, multijoueur via Supabase Realtime.
 Le build sort directement dans `/jeux` du portfolio.
 
 ```bash
@@ -23,6 +23,7 @@ src/
     roulette/   rules (mises, roue), engine (règles pures), host, chips, three/, ui/
     werewolf/   roles, engine (règles pures + vue filtrée par joueur), bots, host, api (stats), three/, ui/ (chat)
     uno/        cards (paquet, points), engine (règles pures + vue filtrée), bots, host, api (stats), three/ (cartes animées), ui/
+    racing/     track (blocs, sol), physics (pas fixe 100 Hz), session, maps (25 officielles), api (records), three/, ui/ (menu, course, éditeur)
 public/monopoly-card.js   carte Monopoly injectée dans le lobby (script séparé)
 ```
 
@@ -43,3 +44,12 @@ Les joueurs sont représentés par leur Mii, créé dans la chaîne Mii du portf
 Le code 3D est partagé : `vite.config.js` expose `../../mii/lib` sous l'alias `@mii`, et `src/ui/MiiAvatar.jsx` l'affiche dans les scènes.
 L'hôte diffuse les Mii de la salle (message `miis`), les bots reçoivent un Mii stable tiré de leur id.
 Comptes facultatifs (e-mail / mot de passe ou Google) via Supabase Auth : tables `user_miis` et `user_mii_settings` (`supabase/mii-accounts.sql`).
+
+## Turbo Rush
+
+Course 3D contre la montre façon Trackmania, en solo, sans salle : 5 mondes × 5 pistes (Stadium, Canyon, Glacier, Forêt, Néon),
+checkpoints, turbos, pentes et sauts, réapparition au dernier checkpoint (Entrée), redémarrage (R).
+Les pistes sont des blocs sur une grille ; les maps officielles sont écrites au format « tortue » dans `maps.js`.
+`node tools/racing-check.mjs --write` vérifie qu'elles sont faisables (pilote automatique) et régénère les temps auteur (médailles).
+Éditeur : grille de blocs sur plusieurs niveaux, test obligatoire avant publication. Les maps publiées et les records
+(meilleur temps par pseudo et par map, avec fantôme) sont dans Supabase : `supabase/racing.sql`.

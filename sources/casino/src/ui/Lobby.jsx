@@ -11,6 +11,9 @@ const GAMES = [
   { id: "roulette", title: "Roulette Européenne", tag: "Table partagée", desc: "Roue 3D, une seule bille, tous les types de mises.", icon: "◉", hue: "#a31a2a" },
   { id: "werewolf", title: "Loup-Garou", tag: "5 à 16 joueurs · bots", desc: "Village 3D jour/nuit, rôles secrets, chat de salle et de meute.", icon: "🐺", hue: "#2a3a8a", free: true },
   { id: "uno", title: "UNO 3D", tag: "2 à 10 joueurs · bots", desc: "Table 3D, règles officielles complètes : +2, +4 avec défi, UNO! et manches.", icon: "🃏", hue: "#b3202a", free: true },
+  { id: "naval", title: "Bataille navale 3D", tag: "1 contre 1 · bot", desc: "Place ta flotte, tirs animés tour par tour : missiles, explosions, naufrages.", icon: "⚓", hue: "#1f5f8a", free: true },
+  { id: "horses", title: "Petits Chevaux", tag: "2 à 4 joueurs · bots", desc: "Plateau 3D, dés et chevaux : sors tes 4 chevaux et rentre-les à l’écurie.", icon: "🐴", hue: "#8a5a1f", free: true },
+  { id: "racing", title: "Turbo Rush", tag: "Solo · records en ligne", desc: "Course 3D contre la montre : 25 pistes, éditeur de maps, fantômes et classement par piste.", icon: "🏁", hue: "#1f4fa8", free: true, solo: true },
   { id: "monopoly", title: "Monopoly 3D", tag: "2 à 8 joueurs · bots", desc: "Plateau Paris en 3D, enchères, échanges, maisons, hôtels.", icon: "🎩", hue: "#1f6b3a", free: true, external: "../monopoly/index.html" },
 ];
 
@@ -129,7 +132,7 @@ export function Lobby({ onStart }) {
               <p>{game.desc}</p>
               <div className="row">
                 <button className="btn primary" disabled={broke && !game.free} onClick={() => start(game.id, "room")}>
-                  {isPublic ? "🌐 Salle publique" : "🔒 Salle privée"}
+                  {game.solo ? "▶ Jouer" : isPublic ? "🌐 Salle publique" : "🔒 Salle privée"}
                 </button>
               </div>
             </div>
