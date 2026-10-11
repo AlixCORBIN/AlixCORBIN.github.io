@@ -115,9 +115,11 @@ const CHANNELS = [
         type: "blackjack"
     },
     {
-        title: "TicTacToe",
-        link: "assets/tictactoe_alixCorbin.zip",
-        type: "tictactoe"
+        title: "Mii", titleEn: "Mii",
+        emoji: "🙂",
+        cardLabel: "Mii", cardLabelEn: "Mii",
+        link: "mii/index.html",
+        type: "mii"
     },
     {
         title: "Culture",
@@ -282,6 +284,11 @@ const CHANNELS = [
         overlayTitleShadow: "0 0 20px rgba(34,211,238,0.5)",
         overlayEmojiShadow: "0 4px 15px rgba(34,211,238,0.6)",
         overlayBgOpacity: 0.15
+    },
+    {
+        title: "TicTacToe",
+        link: "assets/tictactoe_alixCorbin.zip",
+        type: "tictactoe"
     }
 ];
 

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Mii — Portfolio Alix Corbin</title>
+    <meta name="description" content="Crée et modifie tes Mii en 3D : visage, coiffure, yeux, lunettes, tenue… Ils te suivront ensuite dans les jeux du Casino.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Portfolio Alix Corbin">
+    <meta property="og:title" content="Mii — Portfolio Alix Corbin">
+    <meta property="og:description" content="Crée et modifie tes Mii en 3D, puis joue-les dans les jeux du Casino.">
+    <meta property="og:url" content="https://alixcorbin.github.io/mii/">
+    <meta name="theme-color" content="#eef3f7">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23ffe3cc'/%3E%3Cpath d='M8 44a42 42 0 0 1 84 0c-10-14-30-20-42-18S18 32 8 44z' fill='%233d2618'/%3E%3Ccircle cx='36' cy='52' r='5'/%3E%3Ccircle cx='64' cy='52' r='5'/%3E%3Cpath d='M36 70q14 10 28 0' stroke='%23000' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ================= PLAZA ================= -->
+    <section id="plaza" class="view view--active" aria-label="Plaza">
+        <header class="topbar">
+            <a href="../index.html" class="pill pill--ghost" id="btn-home" data-i18n="back">← Menu</a>
+            <h1 class="brand"><span class="brand-dot"></span>Mii</h1>
+            <div class="topbar-right">
+                <button class="pill pill--ghost" id="btn-account"><span class="acc-dot" id="acc-dot"></span><span id="acc-label">Compte</span></button>
+                <button class="pill pill--ghost" id="btn-lang" aria-label="Language">EN</button>
+            </div>
+        </header>
+
+        <div class="plaza-stage" id="plaza-stage">
+            <div class="plaza-label" id="plaza-label" hidden></div>
+            <div class="plaza-empty" id="plaza-empty" hidden>
+                <div class="empty-face" aria-hidden="true"></div>
+                <p data-i18n="empty">Aucun Mii pour l'instant.</p>
+                <button class="pill pill--primary pill--big" data-action="new" data-i18n="newMii">Créer un Mii</button>
+            </div>
+        </div>
+
+        <aside class="roster">
+            <div class="roster-head">
+                <span class="roster-count" id="roster-count"></span>
+                <select id="roster-sort" class="select" aria-label="Tri">
+                    <option value="recent" data-i18n="sortRecent">Récents</option>
+                    <option value="name" data-i18n="sortName">Nom</option>
+                    <option value="fav" data-i18n="sortFav">Favoris</option>
+                </select>
+            </div>
+            <ul class="roster-list" id="roster-list"></ul>
+            <p class="roster-storage" id="roster-storage">Enregistrés sur cet appareil</p>
+        </aside>
+
+        <nav class="toolbar" aria-label="Actions">
+            <button class="tool tool--primary" data-action="new"><span class="tool-ic">＋</span><span data-i18n="new">Nouveau</span></button>
+            <button class="tool" data-action="edit" data-needs-sel><span class="tool-ic">✎</span><span data-i18n="edit">Modifier</span></button>
+            <button class="tool" data-action="main" data-needs-sel><span class="tool-ic">★</span><span data-i18n="setMain">Mon Mii</span></button>
+            <button class="tool" data-action="fav" data-needs-sel><span class="tool-ic">♥</span><span data-i18n="fav">Favori</span></button>
+            <button class="tool" data-action="dup" data-needs-sel><span class="tool-ic">⧉</span><span data-i18n="dup">Copier</span></button>
+            <button class="tool" data-action="share" data-needs-sel><span class="tool-ic">⇪</span><span data-i18n="share">Partager</span></button>
+            <button class="tool" data-action="import"><span class="tool-ic">⇩</span><span data-i18n="import">Importer</span></button>
+            <button class="tool tool--danger" data-action="delete" data-needs-sel><span class="tool-ic">✕</span><span data-i18n="delete">Effacer</span></button>
+        </nav>
+    </section>
+
+    <!-- ================= ÉDITEUR ================= -->
+    <section id="editor" class="view" aria-label="Éditeur">
+        <div class="ed-stage" id="ed-stage">
+            <div class="ed-stage-tools">
+                <button class="round" id="btn-undo" title="Annuler (Ctrl+Z)" aria-label="Annuler">↶</button>
+                <button class="round" id="btn-redo" title="Rétablir (Ctrl+Y)" aria-label="Rétablir">↷</button>
+                <button class="round" id="btn-zoom" title="Zoom" aria-label="Zoom">⌕</button>
+                <button class="round" id="btn-spin" title="Tourner" aria-label="Tourner">⟳</button>
+            </div>
+            <div class="ed-name" id="ed-name"></div>
+        </div>
+
+        <div class="ed-panel">
+            <div class="tabs" id="tabs" role="tablist"></div>
+            <div class="tab-body" id="tab-body"></div>
+            <div class="ed-actions">
+                <button class="pill pill--ghost" id="btn-quit" data-i18n="cancel">Annuler</button>
+                <button class="pill" id="btn-random" data-i18n="randomize">Au hasard</button>
+                <button class="pill pill--primary" id="btn-save" data-i18n="save">Enregistrer</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= MODALES ================= -->
+    <div class="modal" id="modal" hidden>
+        <div class="modal-card" role="dialog" aria-modal="true" id="modal-card"></div>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+            "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm"
+        }
+    }
+    </script>
+    <script type="module" src="editor.js"></script>
+</body>
+</html>

@@ -200,6 +200,34 @@ const WII_SCENES = {
         <g class="wii-drift"><path d="M150 96a16 16 0 0 1 4-31 22 22 0 0 1 41-4 16 16 0 0 1 9 35Z" fill="#fff"/></g>
         <g class="wii-drift wii-delay" opacity=".85"><path d="M40 150a12 12 0 0 1 3-23 16 16 0 0 1 30-3 12 12 0 0 1 7 26Z" fill="#fff"/></g>`,
 
+    // Mii : trois têtes de Mii sur fond rayé
+    mii: () => `
+        <rect width="320" height="180" fill="#eef5f9"/>
+        <g stroke="#e1ecf2" stroke-width="6"><path d="M0 20h320M0 44h320M0 68h320M0 92h320M0 116h320M0 140h320M0 164h320"/></g>
+        <ellipse cx="160" cy="166" rx="140" ry="14" fill="#d3e7ef"/>
+        <g transform="translate(78 96)"><g class="wii-float wii-delay">
+            <circle r="34" fill="#f9cfa8"/>
+            <path d="M-36 -2c-2-30 16-44 36-44s38 14 36 44c-6-16-18-24-36-24s-30 8-36 24z" fill="#a0442a"/>
+            <circle cx="-12" cy="2" r="4" fill="#22170f"/><circle cx="12" cy="2" r="4" fill="#22170f"/>
+            <path d="M-10 18q10 8 20 0" stroke="#7a2a22" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </g></g>
+        <g transform="translate(242 96)"><g class="wii-float">
+            <circle r="34" fill="#bb7c50"/>
+            <path d="M-38 6c-6-34 14-50 38-50s44 16 38 50c-4-22-20-30-38-30s-34 8-38 30z" fill="#1e1a18"/>
+            <rect x="-28" y="-6" width="22" height="16" rx="6" fill="none" stroke="#2a5bd7" stroke-width="3"/><rect x="6" y="-6" width="22" height="16" rx="6" fill="none" stroke="#2a5bd7" stroke-width="3"/>
+            <circle cx="-17" cy="2" r="3.5" fill="#22170f"/><circle cx="17" cy="2" r="3.5" fill="#22170f"/>
+            <path d="M-9 20h18" stroke="#5a2a22" stroke-width="3" stroke-linecap="round"/>
+        </g></g>
+        <g transform="translate(160 88)">
+            <circle r="44" fill="#ffe3cc"/>
+            <path d="M-46 -4c-2-38 20-54 46-54s48 16 46 54c-8-20-24-30-46-30s-38 10-46 30z" fill="#3d2618"/>
+            <path d="M-26 -10q8-6 16 0M10 -10q8-6 16 0" stroke="#3d2618" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <ellipse cx="-16" cy="4" rx="6" ry="7" fill="#22170f"/><ellipse cx="16" cy="4" rx="6" ry="7" fill="#22170f"/>
+            <circle cx="-18" cy="1" r="2" fill="#fff"/><circle cx="14" cy="1" r="2" fill="#fff"/>
+            <ellipse cx="0" cy="16" rx="5" ry="4" fill="#f2b896"/>
+            <path d="M-14 26q14 12 28 0" stroke="#7a2a22" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        </g>`,
+
     // Statistiques : graphique qui se construit
     stats: () => `
         <rect width="320" height="180" fill="#e2f6fb"/>
@@ -223,6 +251,7 @@ const WII_CARDS = {
     'Culture':          { scene: 'culture' },
     'Arduino':          { scene: 'arduino' },
     'Projet Jeu':       { scene: 'jeu' },
+    'Mii':              { scene: 'mii' },
     'Récompenses':      { scene: 'awards' },
     'Stage':            { scene: 'stage' },
     'Alternance':       { scene: 'alternance' },
