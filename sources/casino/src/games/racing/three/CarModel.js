@@ -1,12 +1,16 @@
-// Voiture stylisée (blocs), regard vers -z. Retourne { group, wheels, frontPivots }.
+// Voiture stylisée (blocs), regard vers -z, origine au centre du châssis physique.
+// Retourne { group, wheels, pivots } (pivots dans l'ordre des roues de physics.js).
 import * as THREE from "three";
 
 export function buildCar(color = "#e63946", { ghost = false } = {}) {
-  const g = new THREE.Group();
+  const root = new THREE.Group();
+  const shell = new THREE.Group();
+  shell.position.y = -1.0; // le sol est ~1 u sous le centre du châssis
+  root.add(shell);
   const body = new THREE.MeshStandardMaterial({ color, roughness: 0.35, metalness: 0.4, transparent: ghost, opacity: ghost ? 0.4 : 1, depthWrite: !ghost });
   const dark = new THREE.MeshStandardMaterial({ color: "#16181d", roughness: 0.6, transparent: ghost, opacity: ghost ? 0.35 : 1, depthWrite: !ghost });
   const glass = new THREE.MeshStandardMaterial({ color: "#9fd4ff", roughness: 0.1, metalness: 0.6, transparent: true, opacity: ghost ? 0.25 : 0.85 });
-  const add = (geo, mat, x, y, z, parent = g) => {
+  const add = (geo, mat, x, y, z, parent = shell) => {
     const m = new THREE.Mesh(geo, mat);
     m.position.set(x, y, z);
     m.castShadow = !ghost;
@@ -20,21 +24,20 @@ export function buildCar(color = "#e63946", { ghost = false } = {}) {
   add(new THREE.BoxGeometry(0.12, 0.5, 0.5), dark, -1.0, 1.25, 2.1);
   add(new THREE.BoxGeometry(0.12, 0.5, 0.5), dark, 1.0, 1.25, 2.1);
   add(new THREE.BoxGeometry(2.7, 0.12, 0.6), dark, 0, 0.5, -2.45); // lame avant
-  const wheelGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.5, 14);
+  const wheelGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.45, 16);
   wheelGeo.rotateZ(Math.PI / 2);
-  const wheels = [], frontPivots = [];
-  for (const [x, z, front] of [[-1.25, -1.5, 1], [1.25, -1.5, 1], [-1.25, 1.6, 0], [1.25, 1.6, 0]]) {
+  const wheels = [], pivots = [];
+  for (const [x, z] of [[-1.15, -1.45], [1.15, -1.45], [-1.15, 1.55], [1.15, 1.55]]) {
     const pivot = new THREE.Group();
-    pivot.position.set(x, 0.55, z);
-    g.add(pivot);
-    const w = add(wheelGeo, dark, 0, 0, 0, pivot);
-    wheels.push(w);
-    if (front) frontPivots.push(pivot);
+    pivot.position.set(x, -0.5, z);
+    root.add(pivot);
+    wheels.push(add(wheelGeo, dark, 0, 0, 0, pivot));
+    pivots.push(pivot);
   }
   if (!ghost) {
     const lightMat = new THREE.MeshBasicMaterial({ color: "#ff2a2a" });
     add(new THREE.BoxGeometry(0.5, 0.15, 0.05), lightMat, -0.75, 0.85, 2.31);
     add(new THREE.BoxGeometry(0.5, 0.15, 0.05), lightMat, 0.75, 0.85, 2.31);
   }
-  return { group: g, wheels, frontPivots };
+  return { group: root, wheels, pivots };
 }

@@ -2,20 +2,20 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import React from "react";
 import * as THREE from "three";
-import { TILE, cellCenter } from "../track.js";
-import { ghostPose, speedOf } from "../physics.js";
+import { TILE } from "../track.js";
+import { carFrame, ghostPose } from "../physics.js";
 import { readInput } from "../input.js";
 import { buildCar } from "./CarModel.js";
 import { buildDecor, buildTrackGroup } from "./buildTrack.js";
 
-function Environment({ track, world }) {
+function Environment({ track, world, fog = true }) {
   const { scene } = useThree();
   const [w, h] = track.size;
   React.useEffect(() => {
     scene.background = new THREE.Color(world.sky);
-    scene.fog = new THREE.Fog(world.fog, 120, world.night ? 520 : 760);
+    scene.fog = fog ? new THREE.Fog(world.fog, 120, world.night ? 520 : 760) : null;
     return () => { scene.fog = null; };
-  }, [world, scene]);
+  }, [world, scene, fog]);
   const trackObj = React.useMemo(() => buildTrackGroup(track, world), [track, world]);
   const decor = React.useMemo(() => buildDecor(track, world, track.tiles.length), [track, world]);
   const cx = (w * TILE) / 2, cz = (h * TILE) / 2;
@@ -42,60 +42,62 @@ function Environment({ track, world }) {
 function Ghost({ data, color, session }) {
   const car = React.useMemo(() => buildCar(color, { ghost: true }), [color]);
   useFrame(() => {
-    const p = session.phase === "countdown" ? ghostPose(data, 0) : ghostPose(data, session.timeMs);
+    const p = ghostPose(data, session.phase === "countdown" ? 0 : session.timeMs);
     if (!p) { car.group.visible = false; return; }
     car.group.visible = true;
     car.group.position.set(p.x, p.y, p.z);
-    car.group.rotation.set(0, -p.yaw, 0);
+    car.group.quaternion.set(p.q.x, p.q.y, p.q.z, p.q.w);
   });
   return <primitive object={car.group} />;
 }
 
 const tmpV = new THREE.Vector3();
+const tmpUp = new THREE.Vector3();
+const WHEEL_Y = -0.05;
 
 function PlayerCar({ session, color, hudRef }) {
   const car = React.useMemo(() => buildCar(color), [color]);
   const { camera } = useThree();
-  const cam = React.useRef({ init: false, yaw: 0, pos: new THREE.Vector3(), look: new THREE.Vector3() });
-  const pitch = React.useRef(0);
+  const cam = React.useRef({ init: false, dir: new THREE.Vector3(0, 0, -1), up: new THREE.Vector3(0, 1, 0), pos: new THREE.Vector3(), look: new THREE.Vector3() });
   useFrame((_s, dt) => {
     session.update(dt, readInput());
-    const c = session.run.car;
-    car.group.position.set(c.x, c.y, c.z);
-    // assiette : pente du sol sous la voiture, ou lacet seul en l'air
-    if (c.grounded) {
-      const fx = Math.sin(c.yaw), fz = -Math.cos(c.yaw);
-      const a = session.track.ground(c.x + fx * 2, c.z + fz * 2, c.y).h;
-      const b = session.track.ground(c.x - fx * 2, c.z - fz * 2, c.y).h;
-      pitch.current += (Math.atan2(a - b, 4) - pitch.current) * Math.min(1, dt * 14);
-    } else {
-      pitch.current += (Math.atan2(c.vy, Math.max(speedOf(c), 1)) * 0.6 - pitch.current) * Math.min(1, dt * 3);
-    }
-    car.group.rotation.set(0, 0, 0);
-    car.group.rotateY(-c.yaw);
-    car.group.rotateX(pitch.current);
-    car.group.rotateZ(-c.steerVis * c.slip * 0.08);
-    const sp = speedOf(c);
-    for (const w of car.wheels) w.rotation.x -= sp * dt / 0.55;
-    for (const p of car.frontPivots) p.rotation.y = -c.steerVis * 0.45;
+    const c = session.car;
+    const t = c.body.translation(), q = c.body.rotation();
+    car.group.position.set(t.x, t.y, t.z);
+    car.group.quaternion.set(q.x, q.y, q.z, q.w);
+    // roues : suspension, rotation, braquage
+    const vc = c.vc;
+    car.pivots.forEach((pv, i) => {
+      const len = vc.wheelSuspensionLength(i) ?? 0.45;
+      pv.position.y = WHEEL_Y - len;
+      pv.rotation.y = vc.wheelSteering(i) || 0;
+      car.wheels[i].rotation.x = -(vc.wheelRotation(i) || 0);
+    });
 
-    // caméra de poursuite
+    const fr = carFrame(c);
     const k = cam.current;
-    let dyaw = c.yaw - k.yaw;
-    while (dyaw > Math.PI) dyaw -= 2 * Math.PI;
-    while (dyaw < -Math.PI) dyaw += 2 * Math.PI;
-    if (!k.init || session.phase === "countdown") { k.yaw = c.yaw; k.init = true; }
-    else k.yaw += dyaw * Math.min(1, dt * 5);
-    const back = 10 + sp * 0.04, up = 4 + sp * 0.012;
-    tmpV.set(c.x - Math.sin(k.yaw) * back, c.y + up, c.z + Math.cos(k.yaw) * back);
-    if (session.phase === "countdown") k.pos.copy(tmpV);
-    else k.pos.lerp(tmpV, Math.min(1, dt * 8));
+    const fwd = tmpV.set(...fr.fwd);
+    // la caméra suit le haut de la voiture dans les loopings et sur les murs, sinon garde le ciel en haut
+    const steep = c.contacts > 0 && fr.up[1] < 0.8;
+    tmpUp.set(...(steep ? fr.up : [0, 1, 0]));
+    if (!k.init || session.phase === "countdown") {
+      k.dir.copy(fwd); k.up.set(0, 1, 0); k.init = true;
+    } else {
+      k.dir.lerp(fwd, Math.min(1, dt * 6)).normalize();
+      k.up.lerp(tmpUp, Math.min(1, dt * 3)).normalize();
+    }
+    const sp = c.speed;
+    const back = 9 + Math.min(sp, 100) * 0.04, upOff = 3.6 + Math.min(sp, 100) * 0.01;
+    const target = new THREE.Vector3(t.x, t.y, t.z).addScaledVector(k.dir, -back).addScaledVector(k.up, upOff);
+    if (session.phase === "countdown" || k.pos.distanceTo(target) > 60) k.pos.copy(target);
+    else k.pos.lerp(target, Math.min(1, dt * 10));
     camera.position.copy(k.pos);
-    k.look.set(c.x + Math.sin(k.yaw) * 6, c.y + 1.5, c.z - Math.cos(k.yaw) * 6);
+    camera.up.copy(k.up);
+    k.look.set(t.x, t.y, t.z).addScaledVector(k.dir, 6).addScaledVector(k.up, 1.4);
     camera.lookAt(k.look);
-    const fov = 68 + Math.min(sp, 110) * 0.12 + (c.boost > 0 ? 6 : 0);
+    const fov = 68 + Math.min(sp, 110) * 0.14 + (c.boost > 0 ? 6 : 0);
     if (Math.abs(camera.fov - fov) > 0.05) { camera.fov += (fov - camera.fov) * Math.min(1, dt * 4); camera.updateProjectionMatrix(); }
-    hudRef.current?.(session, sp);
+    hudRef.current?.(session, c);
   });
   return <primitive object={car.group} />;
 }
@@ -114,13 +116,13 @@ export function RaceScene({ session, ghosts = [], color, hudRef }) {
 export function TrackPreview({ track, world }) {
   const [w, h] = track.size;
   const cx = (w * TILE) / 2, cz = (h * TILE) / 2;
-  const s = track.start ? cellCenter(track.start.x, track.start.z) : [cx, cz];
+  const sp = track.start ? track.spawn().p : null;
   return (
-    <Canvas camera={{ fov: 50, near: 1, far: 4000, position: [cx + w * 18, Math.max(w, h) * 26, cz + h * 28] }}>
-      <Environment track={track} world={world} />
+    <Canvas camera={{ fov: 50, near: 1, far: 4000, position: [cx + w * 14, Math.max(w, h) * 14 + 40, cz + h * 20] }}>
+      <Environment track={track} world={world} fog={false} />
       <OrbitControls target={[cx, 0, cz]} maxPolarAngle={Math.PI / 2.1} />
-      {track.start && (
-        <mesh position={[s[0], track.start.level * 8 + 1.5, s[1]]}>
+      {sp && (
+        <mesh position={sp}>
           <boxGeometry args={[2.3, 1.5, 4.6]} />
           <meshStandardMaterial color="#e63946" />
         </mesh>

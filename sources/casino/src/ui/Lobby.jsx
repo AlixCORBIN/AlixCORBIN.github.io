@@ -17,7 +17,7 @@ const GAMES = [
   { id: "horses", cat: "board", title: "Petits Chevaux", players: "2 à 4", bots: true, desc: "Sors tes 4 chevaux et rentre-les à l’écurie avant les autres.", icon: "🐴", hue: "#8a5a1f", free: true },
   { id: "naval", cat: "board", title: "Bataille navale 3D", players: "1 contre 1", bots: true, desc: "Place ta flotte, tirs animés : missiles, explosions, naufrages.", icon: "⚓", hue: "#1f5f8a", free: true },
   { id: "buckshot", cat: "arcade", title: "Buckshot", players: "1 à 4", bots: true, desc: "Roulette au fusil à pompe : réelles ou à blanc, objets, 3 manches.", icon: "☠", hue: "#8a1030", free: true },
-  { id: "racing", cat: "arcade", title: "Turbo Rush", players: "Solo", desc: "Course contre la montre : 25 pistes, éditeur, fantômes, records en ligne.", icon: "🏁", hue: "#1f4fa8", free: true, solo: true },
+  { id: "racing", cat: "arcade", title: "Turbo Rush", players: "Solo", desc: "Course 3D à vraie physique : loopings, wallrides, sauts, 25 pistes, éditeur et records en ligne.", icon: "🏁", hue: "#1f4fa8", free: true, solo: true },
 ];
 
 const FRIENDS = [

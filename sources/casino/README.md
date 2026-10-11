@@ -48,19 +48,13 @@ Comptes facultatifs (e-mail / mot de passe ou Google) via Supabase Auth : tables
 
 ## Turbo Rush
 
-Course 3D contre la montre façon Trackmania, en solo, sans salle : 5 mondes × 5 pistes (Stadium, Canyon, Glacier, Forêt, Néon),
-checkpoints, turbos, pentes et sauts, réapparition au dernier checkpoint (Entrée), redémarrage (R).
-Les pistes sont des blocs sur une grille ; les maps officielles sont écrites au format « tortue » dans `maps.js`.
-`node tools/racing-check.mjs --write` vérifie qu'elles sont faisables (pilote automatique) et régénère les temps auteur (médailles).
-Éditeur : grille de blocs sur plusieurs niveaux, test obligatoire avant publication. Les maps publiées et les records
-(meilleur temps par pseudo et par map, avec fantôme) sont dans Supabase : `supabase/racing.sql`.
-
-## Mille Bornes
-
-Règles officielles : feu vert pour partir, attaques (accident, panne, crevaison, feu rouge, limite à 50) et parades,
-4 bottes, coup fourré (la botte posée en réponse à l'attaque fait rejouer et rapporte 300 points), deux 200 km maximum,
-arrivée pile à l'objectif. Équipes de 2 à 4 et 6 joueurs (voiture partagée), sinon chacun pour soi.
-Objectif automatique : 700 km en individuel, 1000 km en équipes. Scores : distance, bottes, coups fourrés,
-voyage terminé, allonge, sans 200, capot ; partie en une manche ou en 5000 points.
-Animations tour par tour pilotées par l'hôte (`effectDelay` dans `host.js`) : la caméra suit la voiture qui roule,
-la fenêtre du coup fourré dure le même temps que le joueur visé ait la botte ou non. Bruitages synthétisés en WebAudio (`sfx.js`).
+Course 3D contre la montre façon Trackmania, en solo : 5 mondes × 5 pistes (Stadium, Canyon, Glacier, Forêt, Néon).
+Physique Rapier (`@dimforge/rapier3d-compat`, chargé à la demande) : châssis rigide, 4 roues à suspensions (contrôleur de
+véhicule à rayons), appui aéro, adhérence renforcée sur les murs et dans les loopings, surfaces (route, terre, glace, turbo).
+Blocs balayés le long d'un chemin 3D (`blocks.js`) : droites, virages (normaux, relevés, grands), pentes, montée longue,
+tremplin, looping, wallride, plateforme ; chaque bloc sert au rendu, à la collision et à l'éditeur.
+Les maps officielles sont écrites au format « tortue » dans `maps.js`.
+`node tools/racing-check.mjs --write` les fait rouler par un pilote automatique sur la vraie physique (faisabilité, chevauchements)
+et régénère les temps auteur. `--path "S3 O S2 F S"` teste une piste à la volée.
+Éditeur : grille de blocs sur plusieurs niveaux, test obligatoire avant publication. Maps publiées et records
+(meilleur temps par pseudo et par map, avec fantôme) dans Supabase : `supabase/racing.sql`.

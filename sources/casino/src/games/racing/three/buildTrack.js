@@ -1,9 +1,8 @@
 // Construit la piste en three.js pur (un Group), à partir d'un Track. Matériaux partagés par monde.
 import * as THREE from "three";
-import { LEVEL_H, ROAD_HALF, TILE, cellCenter } from "../track.js";
+import { BLOCKS, TILE, occupancy, sampleBlock, sectionPoints, toWorld } from "../blocks.js";
 
-const H = TILE / 2;
-const DECK = 1.2;
+const DECK = 1.2; // épaisseur visuelle de la chaussée
 
 function canvasTex(w, h, draw, repeat) {
   const c = document.createElement("canvas");
@@ -17,9 +16,9 @@ function canvasTex(w, h, draw, repeat) {
   return t;
 }
 
-function roadTex(world, dirt) {
+function roadTex(world, dirt, ice) {
   return canvasTex(256, 256, (g, w, h) => {
-    g.fillStyle = dirt ? "#7a5634" : world.road;
+    g.fillStyle = dirt ? "#7a5634" : ice ? "#bfe6f7" : world.road;
     g.fillRect(0, 0, w, h);
     // grain
     for (let i = 0; i < 1400; i++) {
@@ -91,7 +90,9 @@ function materials(world) {
   const emissive = world.night ? 0.35 : 0;
   const road = new THREE.MeshStandardMaterial({ map: roadTex(world, false), roughness: 0.85 });
   const dirt = new THREE.MeshStandardMaterial({ map: roadTex(world, true), roughness: 1 });
-  const side = new THREE.MeshStandardMaterial({ color: world.night ? "#2a2250" : "#c9ccd2", roughness: 0.7, emissive: world.night ? world.accent : "#000", emissiveIntensity: emissive * 0.4 });
+  const ice = new THREE.MeshStandardMaterial({ map: roadTex(world, false, true), roughness: 0.15, metalness: 0.2 });
+  for (const m of [road, dirt, ice]) { m.map.wrapS = m.map.wrapT = THREE.RepeatWrapping; m.side = THREE.DoubleSide; }
+  const side = new THREE.MeshStandardMaterial({ color: world.night ? "#2a2250" : "#c9ccd2", roughness: 0.7, emissive: world.night ? world.accent : "#000", emissiveIntensity: emissive * 0.4, side: THREE.DoubleSide });
   const plain = new THREE.MeshStandardMaterial({ color: world.road, roughness: 0.85 });
   const kerb = new THREE.MeshStandardMaterial({ color: world.night ? world.accent : "#e8e8e8", emissive: world.night ? world.accent : "#000", emissiveIntensity: world.night ? 0.8 : 0 });
   const pillar = new THREE.MeshStandardMaterial({ color: world.night ? "#1d1640" : "#9aa0a8", roughness: 0.9 });
@@ -102,7 +103,7 @@ function materials(world) {
     finish: new THREE.MeshBasicMaterial({ map: bannerTex("ARRIVÉE", "#000", "#fff", true) }),
   };
   const post = new THREE.MeshStandardMaterial({ color: "#2b2f36", roughness: 0.5, metalness: 0.3 });
-  const m = { road, dirt, side, plain, kerb, pillar, boost, gates, post };
+  const m = { road, dirt, ice, side, plain, kerb, pillar, boost, gates, post };
   cache.set(world.id, m);
   return m;
 }
@@ -114,95 +115,131 @@ const box = (w, h, d) => {
   return boxGeo.get(k);
 };
 
-let turnGeo = null;
-function turnGeometry() {
-  if (turnGeo) return turnGeo;
-  const s = new THREE.Shape();
-  s.absarc(H, -H, H + ROAD_HALF, Math.PI / 2, Math.PI, false);
-  s.absarc(H, -H, H - ROAD_HALF, Math.PI, Math.PI / 2, true);
-  const g = new THREE.ExtrudeGeometry(s, { depth: DECK, bevelEnabled: false, curveSegments: 24 });
-  g.rotateX(-Math.PI / 2);
-  turnGeo = g;
+// Chaussée balayée : dessus texturé (u = travers, v = longueur / largeur), dessous et flancs
+function sweptGeometry(tile) {
+  const S = sampleBlock(tile.type);
+  const rows = S.map((f) => {
+    const sec = sectionPoints(tile.type, f);
+    return sec.map((lp) => ({ top: toWorld(tile, lp), bot: toWorld(tile, [lp[0] - f.u[0] * DECK, lp[1] - f.u[1] * DECK, lp[2] - f.u[2] * DECK]) }));
+  });
+  const m = rows[0].length;
+  const pos = [], uv = [], idx = [];
+  // abscisses le long (au centre) et en travers
+  let along = 0;
+  const vAt = [0];
+  for (let i = 1; i < S.length; i++) {
+    const a = S[i - 1].p, b = S[i].p;
+    along += Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+    vAt.push(along);
+  }
+  const push = (p, u, v) => { pos.push(...p); uv.push(u, v); return pos.length / 3 - 1; };
+  const width = 20;
+  // dessus
+  const topIdx = rows.map((row, i) => {
+    let acc = 0;
+    return row.map((pt, j) => {
+      if (j) { const q = row[j - 1].top; acc += Math.hypot(pt.top[0] - q[0], pt.top[1] - q[1], pt.top[2] - q[2]); }
+      return { i: push(pt.top, 0, 0), acc };
+    });
+  });
+  // u normalisé par rangée (la texture garde ses bordures sur le bord de la route)
+  topIdx.forEach((row, i) => {
+    const tot = row[row.length - 1].acc || 1;
+    row.forEach((c) => { uv[c.i * 2] = row.length > 2 ? c.acc / width : c.acc / tot; uv[c.i * 2 + 1] = vAt[i] / width; });
+  });
+  const topCount = idx.length;
+  for (let i = 0; i < rows.length - 1; i++)
+    for (let j = 0; j < m - 1; j++) {
+      const a = topIdx[i][j].i, b = topIdx[i][j + 1].i, c = topIdx[i + 1][j].i, d = topIdx[i + 1][j + 1].i;
+      idx.push(a, b, c, b, d, c);
+    }
+  const topEnd = idx.length;
+  // dessous
+  const botIdx = rows.map((row) => row.map((pt) => push(pt.bot, 0, 0)));
+  for (let i = 0; i < rows.length - 1; i++)
+    for (let j = 0; j < m - 1; j++) {
+      const a = botIdx[i][j], b = botIdx[i][j + 1], c = botIdx[i + 1][j], d = botIdx[i + 1][j + 1];
+      idx.push(a, c, b, b, c, d);
+    }
+  // flancs gauche et droit
+  for (const j of [0, m - 1]) {
+    for (let i = 0; i < rows.length - 1; i++) {
+      const a = topIdx[i][j].i, b = topIdx[i + 1][j].i, c = botIdx[i][j], d = botIdx[i + 1][j];
+      if (j === 0) idx.push(a, c, b, b, c, d);
+      else idx.push(a, b, c, b, d, c);
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+  g.setIndex(idx);
+  g.addGroup(topCount, topEnd - topCount, 0);
+  g.addGroup(topEnd, idx.length - topEnd, 1);
+  g.computeVertexNormals();
   return g;
 }
-let kerbTurn = null;
-function turnKerbs() {
-  if (kerbTurn) return kerbTurn;
-  const mk = (r) => {
-    const s = new THREE.Shape();
-    s.absarc(H, -H, r + 0.6, Math.PI / 2, Math.PI, false);
-    s.absarc(H, -H, r - 0.6, Math.PI, Math.PI / 2, true);
-    const g = new THREE.ExtrudeGeometry(s, { depth: 0.35, bevelEnabled: false, curveSegments: 24 });
-    g.rotateX(-Math.PI / 2);
-    return g;
-  };
-  kerbTurn = [mk(H + ROAD_HALF), mk(H - ROAD_HALF)];
-  return kerbTurn;
-}
 
-function mesh(geo, mat, x = 0, y = 0, z = 0) {
-  const m = new THREE.Mesh(geo, mat);
-  m.position.set(x, y, z);
+// Repère (matrice) d'un portique ou d'un décor posé sur la route
+function basis(f) {
+  const m = new THREE.Matrix4();
+  const r = new THREE.Vector3(...f.r), u = new THREE.Vector3(...f.u), b = new THREE.Vector3(...f.t).negate();
+  m.makeBasis(r, u, b);
+  m.setPosition(...f.p);
   return m;
 }
 
-function gate(type, mats, base) {
+function gate(kind, mats, f, start) {
   const g = new THREE.Group();
-  // le portique de départ est à l'avant du bloc, pour que la caméra ne démarre pas dessous
-  if (type === "start") g.position.z = -H + 2;
-  const hgt = 9;
-  g.add(mesh(box(1.2, hgt, 1.2), mats.post, -ROAD_HALF - 1.2, base + hgt / 2, 0));
-  g.add(mesh(box(1.2, hgt, 1.2), mats.post, ROAD_HALF + 1.2, base + hgt / 2, 0));
-  const banner = mesh(box(2 * ROAD_HALF + 3.6, 2.4, 0.6), [mats.post, mats.post, mats.post, mats.post, mats.gates[type], mats.gates[type]], 0, base + hgt, 0);
-  g.add(banner);
+  const hgt = 9, half = 11.2;
+  const add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); g.add(m); return m; };
+  add(box(1.2, hgt, 1.2), mats.post, -half, hgt / 2, 0);
+  add(box(1.2, hgt, 1.2), mats.post, half, hgt / 2, 0);
+  add(box(2 * half + 1.2, 2.4, 0.6), [mats.post, mats.post, mats.post, mats.post, mats.gates[kind], mats.gates[kind]], 0, hgt, 0);
+  g.matrixAutoUpdate = false;
+  g.matrix.copy(basis(f));
+  if (start) g.matrix.multiply(new THREE.Matrix4().makeTranslation(0, 0, -12));
   return g;
 }
+
+const frameOf = (tile, s) => {
+  const S = sampleBlock(tile.type);
+  const f = S[Math.round(s * (S.length - 1))];
+  return { p: toWorld(tile, f.p), t: toWorld(tile, f.t, true), r: toWorld(tile, f.r, true), u: toWorld(tile, f.u, true) };
+};
 
 export function buildTrackGroup(track, world) {
   const mats = materials(world);
   const root = new THREE.Group();
+  const pillars = [];
   for (const t of track.tiles) {
-    const g = new THREE.Group();
-    const [cx, cz] = cellCenter(t.x, t.z);
-    g.position.set(cx, 0, cz);
-    g.rotation.y = (-t.rot * Math.PI) / 2;
-    const base = t.level * LEVEL_H;
-    const sideMats = (top) => [mats.side, mats.side, top, mats.side, mats.side, mats.side];
-    if (t.type === "turn") {
-      const m = new THREE.Mesh(turnGeometry(), mats.plain);
-      m.position.y = base - DECK;
-      g.add(m);
-      for (const k of turnKerbs()) {
-        const km = new THREE.Mesh(k, mats.kerb);
-        km.position.y = base - 0.3;
-        g.add(km);
-      }
-    } else if (t.type === "ramp") {
-      const len = Math.hypot(TILE, LEVEL_H);
-      const a = Math.atan2(LEVEL_H, TILE);
-      const m = mesh(box(2 * ROAD_HALF, DECK, len + 0.4), sideMats(mats.road), 0, base + LEVEL_H / 2 - DECK / 2 / Math.cos(a), 0);
-      m.rotation.x = a;
-      g.add(m);
-    } else if (t.type === "wide") {
-      g.add(mesh(box(TILE, DECK, TILE), sideMats(mats.plain), 0, base - DECK / 2, 0));
-    } else {
-      const top = t.type === "dirt" ? mats.dirt : mats.road;
-      g.add(mesh(box(2 * ROAD_HALF, DECK, TILE), sideMats(top), 0, base - DECK / 2, 0));
-      if (t.type === "boost") {
-        const p = mesh(new THREE.PlaneGeometry(12, 24), mats.boost, 0, base + 0.05, 0);
-        p.rotation.x = -Math.PI / 2;
-        g.add(p);
-      }
-      if (t.type === "start" || t.type === "cp" || t.type === "finish") g.add(gate(t.type, mats, base));
+    const def = BLOCKS[t.type];
+    const top = def.surface === "dirt" ? mats.dirt : def.surface === "ice" ? mats.ice : t.type === "platform" ? mats.plain : mats.road;
+    root.add(new THREE.Mesh(sweptGeometry(t), [top, mats.side]));
+    if (def.surface === "boost") {
+      const p = new THREE.Mesh(new THREE.PlaneGeometry(12, 24), mats.boost);
+      p.matrixAutoUpdate = false;
+      p.matrix.copy(basis(frameOf(t, 0.5))).multiply(new THREE.Matrix4().makeTranslation(0, 0.06, 0)).multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+      root.add(p);
     }
-    // Piliers sous les blocs surélevés
-    const top = base + (t.type === "ramp" ? LEVEL_H / 2 : 0) - DECK;
-    if (top > 0.5) {
-      const ph = top;
-      const offs = t.type === "turn" ? [[H - 6, H - 22], [H - 22, H - 6]] : [[0, -9], [0, 9]];
-      for (const [u, v] of offs) g.add(mesh(box(2.4, ph, 2.4), mats.pillar, u, ph / 2, v));
+    if (def.gate) root.add(gate(def.gate, mats, frameOf(t, 0.5), def.gate === "start"));
+    // piliers sous les parties à peu près horizontales et en hauteur
+    if (t.type !== "loop" && t.type !== "wall") {
+      const S = sampleBlock(t.type);
+      const step = Math.max(1, Math.round(S.length / 3));
+      for (let i = Math.floor(step / 2); i < S.length; i += step) {
+        const f = S[i];
+        const p = toWorld(t, f.p);
+        if (p[1] > 2 && f.u[1] > 0.85) pillars.push([p[0], p[1] - DECK, p[2]]);
+      }
     }
-    root.add(g);
+  }
+  if (pillars.length) {
+    const geo = new THREE.BoxGeometry(2.6, 1, 2.6);
+    geo.translate(0, 0.5, 0);
+    const inst = new THREE.InstancedMesh(geo, mats.pillar, pillars.length);
+    const m4 = new THREE.Matrix4();
+    pillars.forEach(([x, y, z], i) => inst.setMatrixAt(i, m4.makeScale(1, y + 0.3, 1).setPosition(x, -0.3, z)));
+    root.add(inst);
   }
   return root;
 }
@@ -212,7 +249,8 @@ export function buildDecor(track, world, seed = 1) {
   const [w, h] = track.size;
   let s = seed * 9301 + 49297;
   const rnd = () => ((s = (s * 9301 + 49297) % 233280) / 233280);
-  const occupied = new Set(track.tiles.map((t) => `${t.x},${t.z}`));
+  const occupied = new Set();
+  for (const t of track.tiles) for (const k of occupancy(t)) occupied.add(k.split(",").slice(0, 2).join(","));
   const spots = [];
   const pad = 6;
   for (let i = 0; i < 260; i++) {

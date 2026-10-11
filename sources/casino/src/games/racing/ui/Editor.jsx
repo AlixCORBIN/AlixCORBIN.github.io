@@ -2,70 +2,79 @@ import React from "react";
 import { deleteDraft, loadDrafts, publishMap, saveDraft } from "../api.js";
 import { OFFICIAL } from "../maps.js";
 import { WORLDS, formatTime } from "../physics.js";
-import { BLOCKS, GRID, ROAD_HALF, TILE, Track } from "../track.js";
+import { BLOCKS, BLOCK_KEYS, TILE, occupancy, sampleBlock, sectionPoints, toWorld } from "../blocks.js";
+import { GRID, MAX_LEVEL, Track } from "../track.js";
 import { TrackPreview } from "../three/RaceScene.jsx";
 
-const TYPES = Object.keys(BLOCKS);
-const COLORS = { road: "#4a4e57", turn: "#4a4e57", ramp: "#6b7480", boost: "#4a4e57", start: "#4a4e57", cp: "#4a4e57", finish: "#4a4e57", wide: "#5a5e68", dirt: "#7a5634" };
+const CATS = [...new Set(BLOCK_KEYS.map((k) => BLOCKS[k].cat))];
+const HOTKEYS = ["road", "turn", "bank", "bigturn", "slope", "steep", "loop", "wall", "cp"];
+const FILL = { road: "#4a4e57", dirt: "#7a5634", ice: "#9fd6ee", boost: "#4a4e57" };
+const GATE = { start: "#18a04a", cp: "#1f6fe0", finish: "#f2f2f2" };
 
 export const newDoc = () => ({ id: crypto.randomUUID(), name: "", world: 0, tiles: [], authorTime: null });
 
-// Cases (niveaux) occupées par un bloc : une pente occupe son niveau et le suivant
-const occ = ([, , type, , l]) => (type === "ramp" ? [l, l + 1] : [l]);
+const asTile = ([x, z, type, rot, level]) => ({ x, z, type, rot, level });
+const occCache = new Map();
+function occOf(t) {
+  const k = t.join(",");
+  if (!occCache.has(k)) occCache.set(k, occupancy(asTile(t)));
+  return occCache.get(k);
+}
+const levelsOf = (t) => new Set([...occOf(t)].map((k) => +k.split(",")[2]));
 
+// Dessin vu de dessus : le profil de la route projeté au sol, plus clair quand c'est haut
 function drawTile(g, t, s, alpha) {
-  const [x, z, type, rot, level] = t;
+  const tile = asTile(t);
+  const def = BLOCKS[tile.type];
+  const S = sampleBlock(tile.type);
   const k = s / TILE;
+  const P = (lp) => { const w = toWorld(tile, lp); return [w[0] * k, w[2] * k, w[1]]; };
   g.save();
   g.globalAlpha = alpha;
-  g.translate((x + 0.5) * s, (z + 0.5) * s);
-  g.rotate((rot * Math.PI) / 2);
-  g.scale(k, k);
-  const H = TILE / 2, R = ROAD_HALF;
-  g.fillStyle = COLORS[type];
-  if (type === "turn") {
+  for (let i = 0; i < S.length - 1; i++) {
+    const A = sectionPoints(tile.type, S[i]), B = sectionPoints(tile.type, S[i + 1]);
+    const a0 = P(A[0]), a1 = P(A[A.length - 1]), b0 = P(B[0]), b1 = P(B[B.length - 1]);
+    const h = (a0[2] + a1[2]) / 2;
+    const light = Math.min(40, h * 1.2);
+    g.fillStyle = h > 0.5 ? `hsl(220 8% ${30 + light}%)` : FILL[def.surface] || "#4a4e57";
+    if (def.surface === "dirt") g.fillStyle = "#7a5634";
+    if (def.surface === "ice") g.fillStyle = "#9fd6ee";
     g.beginPath();
-    g.arc(H, H, H + R, Math.PI, 1.5 * Math.PI);
-    g.arc(H, H, H - R, 1.5 * Math.PI, Math.PI, true);
+    g.moveTo(a0[0], a0[1]); g.lineTo(a1[0], a1[1]); g.lineTo(b1[0], b1[1]); g.lineTo(b0[0], b0[1]);
     g.closePath();
     g.fill();
-  } else if (type === "wide") {
-    g.fillRect(-H, -H, TILE, TILE);
-  } else {
-    g.fillRect(-R, -H, 2 * R, TILE);
-    if (type === "ramp") {
-      const gr = g.createLinearGradient(0, H, 0, -H);
-      gr.addColorStop(0, "#3d424a");
-      gr.addColorStop(1, "#a9b3c0");
-      g.fillStyle = gr;
-      g.fillRect(-R, -H, 2 * R, TILE);
-    }
-    const bar = { start: "#18a04a", cp: "#1f6fe0", finish: "#f2f2f2" }[type];
-    if (bar) {
-      g.fillStyle = bar;
-      g.fillRect(-R - 2, -2.5, 2 * R + 4, 5);
-      if (type === "finish") {
-        g.fillStyle = "#111";
-        for (let i = -R - 2; i < R + 2; i += 5) g.fillRect(i, ((i / 5) & 1) * 2.5 - 2.5, 2.5, 2.5);
-      }
-    }
-    if (type === "boost" || type === "ramp" || type === "start") {
-      g.strokeStyle = type === "boost" ? "#ff8a1f" : "#fff";
-      g.lineWidth = 2.5;
-      g.beginPath();
-      g.moveTo(-6, 6); g.lineTo(0, -6); g.lineTo(6, 6);
-      g.stroke();
-    }
   }
-  g.restore();
-  if (level > 0) {
+  // axe et sens
+  g.strokeStyle = def.surface === "boost" ? "#ff8a1f" : "rgba(255,255,255,.55)";
+  g.lineWidth = Math.max(1, s * 0.05);
+  g.beginPath();
+  S.forEach((f, i) => { const p = P(f.p); i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]); });
+  g.stroke();
+  if (def.dir || def.gate) {
+    const f = S[Math.floor(S.length / 2)];
+    const p = P(f.p), t2 = toWorld(tile, f.t, true);
+    const ang = Math.atan2(t2[2], t2[0]);
     g.save();
-    g.globalAlpha = alpha;
-    g.fillStyle = "#ffd23f";
-    g.font = `700 ${Math.max(9, s * 0.3)}px system-ui`;
-    g.fillText(String(level), x * s + 3, z * s + s * 0.32);
+    g.translate(p[0], p[1]);
+    g.rotate(ang);
+    if (def.gate) {
+      g.fillStyle = GATE[def.gate];
+      g.fillRect(-s * 0.08, -s * 0.36, s * 0.16, s * 0.72);
+    }
+    if (def.dir) {
+      g.strokeStyle = "#fff";
+      g.beginPath(); g.moveTo(-s * 0.15, -s * 0.15); g.lineTo(s * 0.12, 0); g.lineTo(-s * 0.15, s * 0.15); g.stroke();
+    }
     g.restore();
   }
+  // niveau max du bloc
+  const lv = Math.max(...levelsOf(t));
+  if (lv > 0) {
+    g.fillStyle = "#ffd23f";
+    g.font = `700 ${Math.max(9, s * 0.3)}px system-ui`;
+    g.fillText(String(lv), tile.x * s + 3, tile.z * s + s * 0.32);
+  }
+  g.restore();
 }
 
 export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished }) {
@@ -97,17 +106,21 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
 
   const place = (x, z, erase) => {
     if (x < 0 || z < 0 || x >= GRID || z >= GRID) return;
-    const t = [x, z, tool, BLOCKS[tool].dir || tool === "turn" || tool === "cp" || tool === "finish" || tool === "road" || tool === "dirt" ? rot : 0, level];
-    const mine = occ(t);
-    let tiles = doc.tiles.filter((o) => !(o[0] === x && o[1] === z && occ(o).some((l) => (erase ? l === level : mine.includes(l)))));
-    if (!erase) {
-      if (tool === "start") tiles = tiles.filter((o) => o[2] !== "start");
-      tiles.push(t);
+    if (erase) {
+      // efface le bloc le plus haut qui touche cette case au niveau courant (ou n'importe quel niveau à défaut)
+      const hits = doc.tiles.filter((o) => occOf(o).has(`${x},${z},${level}`) || (o[0] === x && o[1] === z));
+      if (!hits.length) return;
+      const victim = hits.find((o) => levelsOf(o).has(level)) || hits[0];
+      update(doc.tiles.filter((o) => o !== victim));
+      return;
     }
-    if (tiles.length !== doc.tiles.length || !erase) {
-      const same = !erase && doc.tiles.some((o) => o.join() === t.join());
-      if (!same) update(tiles);
-    }
+    const t = [x, z, tool, tool === "platform" ? 0 : rot, level];
+    if (doc.tiles.some((o) => o.join() === t.join())) return;
+    const mine = occOf(t);
+    let tiles = doc.tiles.filter((o) => ![...occOf(o)].some((k) => mine.has(k)));
+    if (tool === "start") tiles = tiles.filter((o) => o[2] !== "start");
+    tiles.push(t);
+    update(tiles);
   };
 
   // taille des cases selon la place disponible
@@ -137,7 +150,7 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
       g.beginPath(); g.moveTo(0, i * s); g.lineTo(GRID * s, i * s); g.stroke();
     }
     const sorted = [...doc.tiles].sort((a, b) => a[4] - b[4]);
-    for (const t of sorted) drawTile(g, t, s, occ(t).includes(level) ? 1 : 0.35);
+    for (const t of sorted) drawTile(g, t, s, levelsOf(t).has(level) || t[4] === level ? 1 : 0.35);
     if (hover && !preview) {
       const [x, z] = hover;
       if (tool !== "erase") drawTile(g, [x, z, tool, rot, level], s, 0.55);
@@ -151,13 +164,13 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
     const onKey = (e) => {
       if (e.target instanceof HTMLInputElement) return;
       if (e.code === "KeyR") setRot((r) => (r + (e.shiftKey ? 3 : 1)) & 3);
-      else if (e.code === "PageUp" || e.key === "+") setLevel((l) => Math.min(8, l + 1));
+      else if (e.code === "PageUp" || e.key === "+") setLevel((l) => Math.min(MAX_LEVEL, l + 1));
       else if (e.code === "PageDown" || e.key === "-") setLevel((l) => Math.max(0, l - 1));
       else if (e.code === "KeyE") setTool("erase");
       else if ((e.ctrlKey || e.metaKey) && e.code === "KeyZ") { e.preventDefault(); undo(); }
       else {
-        const i = TYPES.findIndex((t) => BLOCKS[t].key === e.key);
-        if (i >= 0) setTool(TYPES[i]);
+        const i = Number(e.key) - 1;
+        if (i >= 0 && i < HOTKEYS.length) setTool(HOTKEYS[i]);
       }
     };
     addEventListener("keydown", onKey);
@@ -218,10 +231,15 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
           </select>
         </label>
         <div className="rc-palette">
-          {TYPES.map((t) => (
-            <button key={t} className={tool === t ? "on" : ""} onClick={() => setTool(t)}>
-              <kbd>{BLOCKS[t].key}</kbd>{BLOCKS[t].label}
-            </button>
+          {CATS.map((c) => (
+            <React.Fragment key={c}>
+              <small className="rc-cat">{c}</small>
+              {BLOCK_KEYS.filter((k) => BLOCKS[k].cat === c).map((t) => (
+                <button key={t} className={tool === t ? "on" : ""} onClick={() => setTool(t)}>
+                  {HOTKEYS.includes(t) && <kbd>{HOTKEYS.indexOf(t) + 1}</kbd>}{BLOCKS[t].label}
+                </button>
+              ))}
+            </React.Fragment>
           ))}
           <button className={tool === "erase" ? "on danger" : "danger"} onClick={() => setTool("erase")}><kbd>E</kbd>Gomme</button>
         </div>
@@ -230,10 +248,10 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
           <div className="rc-level">
             <button className="btn" onClick={() => setLevel((l) => Math.max(0, l - 1))}>−</button>
             <span>Niveau <b>{level}</b></span>
-            <button className="btn" onClick={() => setLevel((l) => Math.min(8, l + 1))}>+</button>
+            <button className="btn" onClick={() => setLevel((l) => Math.min(MAX_LEVEL, l + 1))}>+</button>
           </div>
         </div>
-        <p className="hint">Clic : poser · clic droit : effacer · Ctrl+Z : annuler. Une pente monte d’un niveau dans le sens de la flèche.</p>
+        <p className="hint">Clic : poser · clic droit : effacer · Ctrl+Z : annuler. Les blocs s’enchaînent dans les deux sens ; les pentes montent depuis le côté d’entrée (R pour tourner). Le chiffre jaune donne la hauteur.</p>
         <div className="rc-status">
           {err ? <span className="err">{err}</span> : doc.authorTime ? <span className="ok">Validée en {formatTime(doc.authorTime)}</span> : <span>Termine la map en test pour pouvoir la publier.</span>}
         </div>

@@ -10,7 +10,9 @@ import { WerewolfHost } from "./games/werewolf/host.js";
 import { GameScreen } from "./GameScreen.jsx";
 import { ClientController } from "./net/controller.js";
 import { Lobby } from "./ui/Lobby.jsx";
-import { RacingApp } from "./games/racing/ui/RacingApp.jsx";
+
+// Turbo Rush (et son moteur physique WebAssembly) n'est chargé que quand on lance le jeu
+const RacingApp = React.lazy(() => import("./games/racing/ui/RacingApp.jsx").then((m) => ({ default: m.RacingApp })));
 
 export function App() {
   const [ctrl, setCtrl] = React.useState(null);
@@ -50,7 +52,12 @@ export function App() {
     setCtrl(null);
     history.replaceState(null, "", location.pathname);
   };
-  if (racing) return <RacingApp pseudo={racing.pseudo} onQuit={() => setRacing(null)} />;
+  if (racing)
+    return (
+      <React.Suspense fallback={<div className="center-screen"><div className="panel"><div className="spinner" /><p>Chargement…</p></div></div>}>
+        <RacingApp pseudo={racing.pseudo} onQuit={() => setRacing(null)} />
+      </React.Suspense>
+    );
   return ctrl ? (
     <GameScreen ctrl={ctrl} onQuit={quit} />
   ) : (

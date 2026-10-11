@@ -18,8 +18,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         entryFileNames: 'assets/app.js',
-        assetFileNames: 'assets/app.[ext]',
-        inlineDynamicImports: true,
+        assetFileNames: (a) => (a.name && a.name.endsWith('.css') && a.name !== 'index.css' ? 'assets/[name].[ext]' : 'assets/app.[ext]'),
+        // les jeux chargés à la demande gardent un nom fixe (pas de hash) : les builds écrasent les mêmes fichiers
+        chunkFileNames: 'assets/[name].js',
       },
     },
   },

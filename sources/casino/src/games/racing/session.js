@@ -1,29 +1,33 @@
 // Une tentative de course : compte à rebours, pas fixe de la physique, réapparition, arrivée.
-import { DT, createRun, respawn, step } from "./physics.js";
+// Le monde Rapier est créé une fois par piste ; recommencer replace simplement la voiture.
+import { DT, createCar, createRun, createWorld, driveCar, placeCar, stepRun } from "./physics.js";
 
 export const COUNTDOWN = 2.4; // secondes avant le top départ
+const IDLE = { throttle: 0, brake: 0, steer: 0, drift: false };
 
 export class RaceSession {
   constructor(track, world, { onFinish, onEvent } = {}) {
     this.track = track;
     this.world = world;
     this.onFinish = onFinish;
+    this.phys = createWorld(track);
+    this.car = createCar(this.phys, track.spawn());
     this.restart();
     this.onEvent = onEvent;
   }
 
   restart() {
     this.run = createRun(this.track);
+    placeCar(this.car, this.run.lastSpawn);
     this.phase = "countdown";
     this.count = COUNTDOWN;
     this.acc = 0;
-    this.attempt = (this.attempt || 0) + 1;
     this.onEvent?.("restart");
   }
 
   respawnCp() {
     if (this.phase !== "race") return;
-    respawn(this.run);
+    placeCar(this.car, this.run.lastSpawn);
     this.onEvent?.("respawn");
   }
 
@@ -37,27 +41,27 @@ export class RaceSession {
       const before = Math.ceil(this.count);
       this.count -= dt;
       if (Math.ceil(this.count) !== before && this.count > 0) this.onEvent?.("tick");
+      // la voiture se pose sur ses roues pendant le décompte
+      this.acc += dt;
+      while (this.acc >= DT) { this.acc -= DT; driveCar(this.phys, this.car, this.world, IDLE); this.phys.world.step(); }
       if (this.count <= 0) {
+        this.acc = 0;
         this.phase = "race";
         this.onEvent?.("go");
       }
       return;
     }
-    if (this.phase !== "race") {
-      // après l'arrivée la voiture roue libre
-      this.acc += dt;
-      while (this.acc >= DT) {
-        this.acc -= DT;
-        const steps = this.run.steps;
-        step(this.run, this.track, this.world, { throttle: 0, brake: 0.4, steer: 0, drift: false });
-        this.run.steps = steps;
-      }
-      return;
-    }
     this.acc += dt;
-    while (this.acc >= DT && this.phase === "race") {
+    while (this.acc >= DT) {
       this.acc -= DT;
-      step(this.run, this.track, this.world, input);
+      if (this.phase !== "race") {
+        // après l'arrivée : roue libre, le chrono ne bouge plus
+        const steps = this.run.steps;
+        stepRun(this.run, this.track, this.phys, this.car, this.world, IDLE);
+        this.run.steps = steps;
+        continue;
+      }
+      stepRun(this.run, this.track, this.phys, this.car, this.world, input);
       for (const e of this.run.events) {
         this.onEvent?.(e);
         if (e === "finish") {
@@ -66,5 +70,9 @@ export class RaceSession {
         }
       }
     }
+  }
+
+  dispose() {
+    this.phys.world.free();
   }
 }

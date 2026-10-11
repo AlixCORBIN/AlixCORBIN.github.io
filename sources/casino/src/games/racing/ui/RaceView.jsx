@@ -3,7 +3,7 @@ import { fetchGhost, leaderboard, localPB, submitTime } from "../api.js";
 import { engine, sfx, stopEngine } from "../audio.js";
 import { bindKeys, touch } from "../input.js";
 import { medalFor, medalTimes } from "../maps.js";
-import { WORLDS, formatTime } from "../physics.js";
+import { WORLDS, formatTime, initPhysics } from "../physics.js";
 import { RaceSession } from "../session.js";
 import { Track } from "../track.js";
 import { RaceScene } from "../three/RaceScene.jsx";
@@ -38,7 +38,22 @@ function TouchPad() {
   );
 }
 
-export function RaceView({ map, pseudo, mode = "play", onExit, onNext, onTestDone }) {
+// La physique (WebAssembly) se charge une fois avant la première course
+export function RaceView(props) {
+  const [ready, setReady] = React.useState(false);
+  const [err, setErr] = React.useState(null);
+  React.useEffect(() => { initPhysics().then(() => setReady(true), (e) => setErr(e.message)); }, []);
+  if (!ready) {
+    return (
+      <div className="center-screen">
+        <div className="panel">{err ? <p className="err">{err}</p> : <><div className="spinner" /><p>Chargement de la physique…</p></>}</div>
+      </div>
+    );
+  }
+  return <RaceViewInner {...props} />;
+}
+
+function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone }) {
   const track = React.useMemo(() => new Track(map.data), [map]);
   const world = WORLDS[map.data.world ?? map.world ?? 0] || WORLDS[0];
   const [color] = React.useState(loadCarColor);
@@ -117,16 +132,16 @@ export function RaceView({ map, pseudo, mode = "play", onExit, onNext, onTestDon
     onRespawn: () => session.respawnCp(),
     onEscape: () => onExit(),
   }), [session]);
-  React.useEffect(() => () => stopEngine(), []);
+  React.useEffect(() => () => { stopEngine(); session.dispose(); }, [session]);
 
   // HUD mis à jour à chaque image sans passer par React
   const timeEl = React.useRef(), speedEl = React.useRef(), cpEl = React.useRef(), boostEl = React.useRef();
-  const hudRef = React.useRef((s, sp) => {
+  const hudRef = React.useRef((s, car) => {
     if (timeEl.current) timeEl.current.textContent = formatTime(s.phase === "countdown" ? 0 : s.timeMs);
-    if (speedEl.current) speedEl.current.textContent = String(Math.round(sp * 3.6));
+    if (speedEl.current) speedEl.current.textContent = String(car.kmh);
     if (cpEl.current) cpEl.current.textContent = `${s.run.cps.size}/${s.track.cps.length}`;
-    if (boostEl.current) boostEl.current.style.opacity = s.run.car.boost > 0 ? "1" : "0";
-    engine(s.phase === "countdown" ? 0 : sp, s.run.car.boost > 0);
+    if (boostEl.current) boostEl.current.style.opacity = car.boost > 0 ? "1" : "0";
+    engine(s.phase === "countdown" ? 0 : car.speed, car.boost > 0);
   });
 
   const medals = map.author_time ? medalTimes(map.author_time) : [];
