@@ -151,3 +151,11 @@
 .rc-vol{display:flex;align-items:center;gap:8px;pointer-events:auto;background:#0007;border:1px solid #ffffff22;border-radius:999px;padding:4px 12px;font-size:13px}
 .rc-vol input{width:110px;margin:0;padding:0;accent-color:#ffd23f;background:none;border:0}
 .rc-podium th{font-size:12px!important;opacity:.8!important}.rc-podium th[title]{font-size:18px!important;opacity:1!important}
+.rc-menu-layout{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;width:min(1360px,100%);margin:0 auto;padding:0 16px 24px}
+.rc-menu-layout .rc-menu-body{width:auto;margin:0;padding:0;overflow:auto;min-height:0}
+.rc-side-rank{min-height:0;overflow:auto;padding:14px;border-radius:16px;background:#ffffff0b;border:1px solid #ffd23f55;align-self:start;max-height:100%}
+.rc-side-rank h3{margin:0 0 4px;font:italic 900 17px system-ui;text-transform:uppercase}
+.rc-side-rank .hint{margin:0 0 8px!important;font-size:12px}
+.rc-side-rank .rc-podium{font-size:14px;margin:0}
+.rc-side-rank .rc-podium td{padding:6px 4px}
+@media (max-width:1000px){.rc-menu-layout{grid-template-columns:1fr;overflow:auto}.rc-menu-layout .rc-menu-body{overflow:visible}.rc-side-rank{max-height:none}}

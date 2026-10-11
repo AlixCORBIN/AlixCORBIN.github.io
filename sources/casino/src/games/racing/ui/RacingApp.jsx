@@ -195,11 +195,11 @@ export function RacingApp({ pseudo, onQuit }) {
           <b>{medals}/{OFFICIAL.length}</b>
         </div>
       </header>
+      <div className="rc-menu-layout">
       <div className="rc-menu-body">
         <nav className="rc-tabs">
           <button className={tab === "campaign" ? "on" : ""} onClick={() => pickTab("campaign")}>Campagne</button>
           <button className={tab === "community" ? "on" : ""} onClick={() => pickTab("community")}>Communauté</button>
-          <button className={tab === "pilots" ? "on" : ""} onClick={() => pickTab("pilots")}>Pilotes</button>
           <button className={tab === "records" ? "on" : ""} onClick={() => pickTab("records")}>
             Records{rec.alerts.length > 0 && <span className="rc-badge">{rec.alerts.length}</span>}
           </button>
@@ -212,15 +212,18 @@ export function RacingApp({ pseudo, onQuit }) {
           </div>
         </nav>
         <p className="rc-pilot">Pilote : <b>{pseudo}</b>{pseudo === "Joueur" && " · choisis un pseudo dans le Casino pour entrer au classement"}</p>
-        {tab === "pilots" ? (
-          <Pilots pseudo={pseudo} />
-        ) : tab === "records" ? (
+        {tab === "records" ? (
           <Records pseudo={pseudo} alerts={rec.alerts} history={rec.history} onPlay={play} onBoard={setBoard} />
         ) : tab === "community" ? (
           <Community pbs={pbs} onPlay={play} onBoard={setBoard} />
         ) : (
           <Campaign pbs={pbs} wrs={wrs} onPlay={play} onBoard={setBoard} />
         )}
+      </div>
+      <aside className="rc-side-rank">
+        <h3>🏆 Classement des pilotes</h3>
+        <Pilots pseudo={pseudo} compact />
+      </aside>
       </div>
       {loading && <div className="modal soft"><div className="spinner" /></div>}
       {toast}
