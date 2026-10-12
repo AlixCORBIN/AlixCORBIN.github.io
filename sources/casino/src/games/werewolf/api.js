@@ -1,3 +1,4 @@
+import { reportResult } from "../../lib/report.js";
 import { supabase } from "../../lib/supabase.js";
 import { ROLES } from "./roles.js";
 
@@ -6,13 +7,14 @@ export async function saveWerewolfGame(g) {
   const camp = { village: "village", wolves: "wolves", lovers: "solo", none: "none" }[g.winner] || "none";
   const players = g.players.map((p) => ({
     pseudo: p.name,
+    id: p.id,
     bot: !!p.bot,
     role: ROLES[p.role]?.name || "?",
     camp: ROLES[p.role]?.team || "?",
     won: !!p.won,
     alive: p.alive,
   }));
-  const { error } = await supabase.rpc("save_werewolf_game", {
+  const { error } = await reportResult("werewolf", {
     p_id: crypto.randomUUID(),
     p_nights: g.day,
     p_duration: Math.round((Date.now() - (g.startedAt || Date.now())) / 1000),

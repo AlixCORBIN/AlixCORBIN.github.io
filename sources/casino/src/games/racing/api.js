@@ -1,5 +1,6 @@
 // Records et maps de la communauté (RPC Supabase, voir supabase/racing.sql)
 import { supabase } from "../../lib/supabase.js";
+import { callFunction } from "../../lib/identity.js";
 
 const PB_KEY = "racing-pb";
 
@@ -25,14 +26,22 @@ function savePB(mapId, ms, ghost, splits) {
 }
 
 // Enregistre automatiquement chaque arrivée. Retourne { pb, rank }.
-export async function submitTime(mapId, pseudo, ms, ghost, splits) {
+// Le temps en ligne n'est pas celui du navigateur : le serveur rejoue les entrées (log)
+// et calcule lui-même le temps et le fantôme (Edge Function racing-verify). Le pseudo
+// enregistré est celui réservé par le compte.
+export async function submitTime(mapId, pseudo, ms, ghost, splits, log) {
   const prev = localPB(mapId);
   const pb = !prev || ms < prev.ms;
   if (pb) savePB(mapId, ms, ghost, splits);
-  if (!pseudo || pseudo === "Joueur") return { pb, rank: null };
-  const { data, error } = await supabase.rpc("racing_submit", { p_map: mapId, p_pseudo: pseudo, p_time: ms, p_ghost: ghost });
-  if (error) console.warn("racing_submit", error.message);
-  return { pb, rank: data ?? null };
+  if (!pseudo || pseudo === "Joueur" || !log) return { pb, rank: null };
+  try {
+    const res = await callFunction("racing-verify", { map: mapId, ms, log });
+    if (res.error) console.warn("racing-verify", res.error);
+    return { pb, rank: res.rank ?? null, rejected: res.error || null };
+  } catch (e) {
+    console.warn("racing-verify", e.message);
+    return { pb, rank: null, rejected: e.message };
+  }
 }
 
 export async function leaderboard(mapId, limit = 100) {

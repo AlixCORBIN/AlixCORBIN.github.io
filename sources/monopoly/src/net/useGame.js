@@ -7,7 +7,7 @@ import { mentionedIds } from '../ui/mentions.js'
 import { sfx } from '../ui/sfx.js'
 import { announceRoom, withdrawRoom } from './rooms.js'
 import { BOT_NAMES } from '../game/data.js'
-import { saveMonopolyGame } from './stats.js'
+import { buildMonopolyReport, confirmReport, myUid } from './stats.js'
 import { DICE_MS, moveDelay } from '../ui/present.js'
 
 // Session sauvegardée pour pouvoir reprendre une partie après un rechargement / une coupure
@@ -29,6 +29,10 @@ export function useGame() {
   const myIdRef = useRef(clientId)
   const setMe = (id) => { myIdRef.current = id; setMyId(id) }
   const session = useRef({})
+  // identité serveur des joueurs humains (id de joueur -> uid), pour confirmer le résultat
+  const uidOf = useRef({})
+  const myUidRef = useRef(null)
+  useEffect(() => { myUid().then((u) => { myUidRef.current = u }) }, [])
   const [game, setGame] = useState(null)
   const [role, setRole] = useState(null) // 'host' | 'client'
   const [code, setCode] = useState('')
@@ -98,6 +102,7 @@ export function useGame() {
       onData: (conn, d) => {
         const g = gameRef.current
         if (d.type === 'hello') {
+          if (typeof d.uid === 'string' && /^[0-9a-f-]{36}$/.test(d.uid)) uidOf.current[d.id] = d.uid
           let ex = g.players.find((p) => p.id === d.id)
           // autre appareil / navigateur : on reprend la place d'un joueur déconnecté du même pseudo
           if (!ex && g.phase !== 'lobby') {
@@ -179,7 +184,7 @@ export function useGame() {
           setStatus(''); setRole('client'); setCode(c)
           session.current = { role: 'client', code: c, name }
           saveSession(session.current)
-          conn.send({ type: 'hello', id: myIdRef.current, name })
+          myUid().then((uid) => conn.send({ type: 'hello', id: myIdRef.current, name, uid }))
         },
         onData: (d) => {
           if (d.type === 'state') { gameRef.current = d.state; setGame(d.state); if (d.state.phase !== 'over' && session.current.role === 'client') saveSession(session.current) }
@@ -309,14 +314,24 @@ export function useGame() {
     return () => clearTimeout(t)
   }, [game, role, commit])
 
-  // Fin de partie : l'hôte enregistre la partie une seule fois (id unique côté base)
+  // Fin de partie : l'hôte publie le résultat dans l'état, chaque humain le confirme au serveur
   const savedGame = useRef(null)
   useEffect(() => {
     if (game?.phase === 'over') clearSession()
-    if (role !== 'host' || game?.phase !== 'over' || savedGame.current === game.id) return
-    savedGame.current = game.id
-    saveMonopolyGame(game)
-  }, [game, role])
+    if (role === 'host' && game?.phase === 'over' && !game.report) {
+      const report = buildMonopolyReport(game, (id) => (id === myIdRef.current ? myUidRef.current : uidOf.current[id]))
+      if (report) {
+        const next = structuredClone(game)
+        next.report = report
+        next.rev++
+        commit(next)
+        return
+      }
+    }
+    if (game?.phase !== 'over' || !game.report || savedGame.current === game.report.id) return
+    savedGame.current = game.report.id
+    confirmReport(game.report)
+  }, [game, role, commit])
 
   useEffect(() => () => { stopJoin.current?.(); net.current?.destroy() }, [])
 
