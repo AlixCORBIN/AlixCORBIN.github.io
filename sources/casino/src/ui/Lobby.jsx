@@ -230,6 +230,7 @@ export function Lobby({ onStart }) {
               <button className="btn primary" disabled={code.trim().length < 5 || broke} onClick={() => start(null, "join")}>Rejoindre</button>
             </div>
           </div>
+          <div id="gchat-dock" className="c-box gchat-dock" />
           <div className="c-box pubbar">
             <button className={`switch ${isPublic ? "on" : ""}`} onClick={togglePub} aria-pressed={isPublic} aria-label="Salle publique"><i /></button>
             <div>
