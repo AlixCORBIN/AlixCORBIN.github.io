@@ -22,13 +22,15 @@ export function createAccount(createClient) {
         auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce', storageKey: STORAGE_KEY },
     });
     let user = null;
+    // Session anonyme automatique (Casino) : invisible pour l'UI, ce n'est pas un vrai compte
+    const real = (u) => (u && !u.is_anonymous ? u : null);
     let recovering = false;
     const listeners = new Set();
     const emit = (event) => listeners.forEach((fn) => { try { fn(user, event); } catch { /* ignore */ } });
 
-    const ready = sb.auth.getSession().then(({ data }) => { user = data.session?.user || null; emit('INIT'); return user; }).catch(() => null);
+    const ready = sb.auth.getSession().then(({ data }) => { user = real(data.session?.user); emit('INIT'); return user; }).catch(() => null);
     sb.auth.onAuthStateChange((event, session) => {
-        const next = session?.user || null;
+        const next = real(session?.user);
         if (event === 'PASSWORD_RECOVERY') recovering = true;
         if (next?.id === user?.id && event !== 'PASSWORD_RECOVERY' && event !== 'USER_UPDATED') return;
         user = next;

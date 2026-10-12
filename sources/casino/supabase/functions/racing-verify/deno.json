@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "@dimforge/rapier3d-compat": "npm:@dimforge/rapier3d-compat@0.12.0"
+  }
+}
