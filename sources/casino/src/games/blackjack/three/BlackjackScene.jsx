@@ -13,7 +13,7 @@ function CameraRig() {
   React.useEffect(() => {
     const aspect = size.width / size.height;
     const zoom = Math.min(2.4, Math.max(1, 1.75 / aspect));
-    camera.position.set(0, 7.4 * zoom, 8.4 * zoom);
+    camera.position.set(0, 6.3 * zoom, 9.3 * zoom);
     camera.lookAt(0, 0, 1.3);
     controls.current?.update();
   }, [size.width, size.height]);
