@@ -259,9 +259,11 @@ export class HostController extends Store {
   }
   decorate() {}
   // Résultat de fin de partie : diffusé à tous, chaque humain le confirme au serveur
+  // (appelé pendant schedule() : on publie au tour suivant, sinon schedule → save → setReport → publish → schedule… boucle)
   setReport(game, args) {
     this.report = buildReport(game, args, (id) => (id === this.me ? this.myUid : this.uids[id]));
-    this.publish();
+    clearTimeout(this.reportTimer);
+    this.reportTimer = setTimeout(() => this.status !== "closed" && this.publish(), 0);
   }
   // Mii de chaque joueur : le sien, celui envoyé par le client, ou un Mii stable (bots)
   updateMiis() {
