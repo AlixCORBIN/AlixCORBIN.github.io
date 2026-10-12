@@ -205,7 +205,7 @@ begin
   if exists (select 1 from game_finalized where game_id = gid) then return 'deja enregistree'; end if;
 
   -- pseudos des humains = ceux de leurs portefeuilles ; un banni ne compte pas
-  if a ? 'p_players' then
+  if jsonb_typeof(a->'p_players') = 'array' then
     select jsonb_agg(case when coalesce((e->>'bot')::boolean, false) then e - 'uid'
       else (e - 'uid') || jsonb_build_object('pseudo', coalesce((select case when w.banned or player_banned(w.pseudo) then 'Banni' else w.pseudo end
                                                                     from wallets w where w.user_id = (e->>'uid')::uuid), 'Joueur')) end order by ord)
