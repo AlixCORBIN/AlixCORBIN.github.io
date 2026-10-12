@@ -11,6 +11,7 @@ import { WerewolfHost } from "./games/werewolf/host.js";
 import { GameScreen } from "./GameScreen.jsx";
 import { ClientController } from "./net/controller.js";
 import { Lobby } from "./ui/Lobby.jsx";
+import { GAME_INFO } from "./net/rooms.js";
 
 // TrackMerdia (et son moteur physique WebAssembly) n'est chargé que quand on lance le jeu
 const RacingApp = React.lazy(() => import("./games/racing/ui/RacingApp.jsx").then((m) => ({ default: m.RacingApp })));
@@ -18,6 +19,8 @@ const RacingApp = React.lazy(() => import("./games/racing/ui/RacingApp.jsx").the
 export function App() {
   const [ctrl, setCtrl] = React.useState(null);
   const [racing, setRacing] = React.useState(null);
+  // Jeu de la salle en cours, affiché à côté du pseudo dans le chat général (rien dans les menus)
+  window.__gchatGame = () => (racing ? "TrackMerdia" : ctrl?.state?.game ? GAME_INFO[ctrl.state.game]?.title || null : null);
   const start = (game, mode, name, code, bankroll, opts = {}) => {
     if (game === "racing") return setRacing({ pseudo: name });
     const Host =

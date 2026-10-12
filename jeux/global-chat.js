@@ -30,6 +30,11 @@
     return n || guestName()
   }
 
+  function myGame() {
+    if (/\/monopoly\//.test(location.pathname)) return 'Monopoly 3D'
+    try { return (window.__gchatGame && window.__gchatGame()) || null } catch (e) { return null }
+  }
+
   // ---------- interface ----------
   var css = document.createElement('style')
   css.textContent = [
@@ -43,6 +48,7 @@
     '.gchat-list{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:4px;padding-right:2px;overscroll-behavior:contain}',
     '.gchat-msg{padding:4px 8px;border-radius:8px;background:rgba(232,196,104,.08);border-left:3px solid rgba(232,196,104,.5);word-wrap:break-word;line-height:1.35}',
     '.gchat-msg b{color:#e8c468;margin-right:5px}',
+    '.gchat-msg b small{font-weight:400;opacity:.7;margin-left:4px}',
     '.gchat-msg.me{border-left-color:#6be28f}.gchat-msg.me b{color:#6be28f}',
     '.gchat-msg time{float:right;font-size:10px;opacity:.45;margin-left:6px}',
     '.gchat-empty{opacity:.6;text-align:center;font-size:13px;margin:auto 0}',
@@ -127,6 +133,7 @@
     el.className = 'gchat-msg' + (m.name === myName() ? ' me' : '')
     var t = document.createElement('time'); t.textContent = hhmm(new Date(m.at || Date.now()))
     var b = document.createElement('b'); b.textContent = m.name
+    if (m.game) { var g = document.createElement('small'); g.textContent = '(' + String(m.game).slice(0, 20) + ')'; b.appendChild(g) }
     el.appendChild(t); el.appendChild(b); el.appendChild(document.createTextNode(m.msg))
     list.appendChild(el)
     while (list.children.length > 150) list.firstChild.remove()
@@ -140,17 +147,17 @@
     var msg = input.value.trim().slice(0, MAX)
     if (!msg || !channel || Date.now() - last < 1000) return
     last = Date.now()
-    var m = { key: Math.random().toString(36).slice(2) + last, name: myName(), msg: msg, at: new Date().toISOString() }
+    var m = { key: Math.random().toString(36).slice(2) + last, name: myName(), game: myGame(), msg: msg, at: new Date().toISOString() }
     input.value = ''
     add(m)
     channel.send({ type: 'broadcast', event: 'msg', payload: m })
-    client.from('global_chat').insert({ name: m.name, msg: m.msg }).then(function () {})
+    client.from('global_chat').insert({ name: m.name, msg: m.msg, game: m.game }).then(function () {})
   }
 
   function start() {
     client = window.supabase.createClient(URL_, KEY, { auth: { persistSession: false } })
-    client.from('global_chat').select('id,name,msg,created_at').order('id', { ascending: false }).limit(60).then(function (r) {
-      ;(r.data || []).reverse().forEach(function (row) { add({ key: 'db' + row.id, name: row.name, msg: row.msg, at: row.created_at }, true) })
+    client.from('global_chat').select('id,name,msg,game,created_at').order('id', { ascending: false }).limit(60).then(function (r) {
+      ;(r.data || []).reverse().forEach(function (row) { add({ key: 'db' + row.id, name: row.name, game: row.game, msg: row.msg, at: row.created_at }, true) })
     })
     var me = Math.random().toString(36).slice(2)
     channel = client.channel('casino-global-chat', { config: { broadcast: { self: false }, presence: { key: me } } })
