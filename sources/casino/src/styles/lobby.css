@@ -84,3 +84,15 @@
   .c-search{width:100%;margin:0}
   .c-grid{grid-template-columns:1fr}
 }
+
+/* Choix de la sauvegarde du compte */
+.save-chooser { width: min(480px, 100%); text-align: left; }
+.save-chooser .hint { margin: 0 0 14px !important; }
+.save-list { display: flex; flex-direction: column; gap: 10px; }
+.save-item { display: flex; flex-direction: column; gap: 6px; text-align: left; padding: 12px 14px; border-radius: 14px;
+  border: 2px solid #3c7a5f; background: #10261d; transition: border-color .15s, background .15s; }
+.save-item:hover:not(:disabled) { border-color: var(--gold); background: #16382b; }
+.save-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.save-head small { opacity: .6; font-size: 12px; }
+.save-stats { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; opacity: .85; }
+.save-stats span:first-child { color: var(--gold); font-weight: 700; }

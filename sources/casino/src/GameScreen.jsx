@@ -15,12 +15,17 @@ import { RouletteScreen } from "./games/roulette/ui/RouletteScreen.jsx";
 import { sound } from "./lib/sound.js";
 import { loadWallet, saveWallet, settledBankroll } from "./lib/wallet.js";
 import { PublicToggle } from "./ui/PublicToggle.jsx";
+import { setCanApply } from "./lib/cloudSave.js";
 
 export function GameScreen({ ctrl, onQuit }) {
   React.useSyncExternalStore(ctrl.subscribe, ctrl.getSnapshot);
   const state = ctrl.state;
   const me = state?.players.find((p) => p.id === ctrl.me);
   const debtAtStart = React.useRef(loadWallet().debt);
+  React.useEffect(() => {
+    setCanApply(false);
+    return () => setCanApply(true);
+  }, []);
   const credit = me?.stats?.credit || 0;
   React.useEffect(() => {
     if (me) {

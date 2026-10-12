@@ -3,6 +3,7 @@ import { Leaderboard } from "../games/blackjack/ui/Leaderboard.jsx";
 import { START_BANKROLL, loadWallet, saveWallet } from "../lib/wallet.js";
 import { GAME_INFO, watchRooms } from "../net/rooms.js";
 import { loadPlayMii } from "../lib/mii.js";
+import { setCanApply } from "../lib/cloudSave.js";
 import { MiiPicker } from "./MiiPicker.jsx";
 import "../styles/rooms.css";
 import "../styles/lobby.css";
@@ -135,6 +136,17 @@ export function Lobby({ onStart }) {
     onStart(game, mode, pseudo, joinCode, bankroll, { isPublic, mii });
   };
   const [debt, setDebt] = React.useState(wallet.debt);
+  React.useEffect(() => {
+    setCanApply(true);
+    const reload = () => {
+      const w = loadWallet();
+      setBankroll(w.bankroll);
+      setDebt(w.debt);
+      setName(w.name || "");
+    };
+    window.addEventListener("casino-save", reload);
+    return () => window.removeEventListener("casino-save", reload);
+  }, []);
   const borrow = () => {
     const newDebt = debt + Math.max(0, START_BANKROLL - bankroll);
     saveWallet({ bankroll: START_BANKROLL, debt: newDebt });

@@ -1,3 +1,5 @@
+import { notifyLocalChange } from "./cloudSave.js";
+
 const WALLET_KEY = "casino3d-wallet";
 
 export const START_BANKROLL = 1000;
@@ -29,6 +31,7 @@ export function saveWallet(patch) {
         ...patch,
       }),
     );
+    notifyLocalChange();
   } catch {}
 }
 
