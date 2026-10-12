@@ -3,25 +3,23 @@ import { handValue } from "../cards.js";
 import { Badge } from "./Badge.jsx";
 import { Card } from "./Card.jsx";
 import { FELT_Y } from "./layout.js";
+import { useArrival } from "./useArrival.js";
 
 export function Dealer({ g }) {
   const cards = g.dealer.cards;
   const spacing = 0.34;
-  const value = handValue(cards);
-  const label =
-    cards.length === 0
-      ? null
-      : g.dealer.hidden
-        ? String(handValue([cards[0]]).total)
-        : value.total > 21
-          ? "BUST"
-          : String(value.total);
   const players = g.players.filter((p) => p.hands.length).length;
+  const keys = cards.map((_, i) => `${g.round}-d-${i}`);
+  const delays = cards.map((_, i) => (i === 0 ? players * 0.3 : 0));
+  const arrived = useArrival(keys, delays);
+  const value = handValue(cards.slice(0, arrived));
+  const label =
+    arrived === 0 ? null : value.total > 21 ? "BUST" : String(value.total);
   return (
     <group>
       {cards.map((card, i) => (
         <Card
-          key={`${g.round}-d-${i}`}
+          key={keys[i]}
           card={card}
           hiddenFlip={!!card.hidden}
           target={[
@@ -29,7 +27,7 @@ export function Dealer({ g }) {
             FELT_Y + 0.01 + i * 0.012,
             -2.4,
           ]}
-          delay={i === 0 ? players * 0.3 : 0}
+          delay={delays[i]}
         />
       ))}
       {label && (

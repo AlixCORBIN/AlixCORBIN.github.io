@@ -3,6 +3,7 @@ import { handValue, isNatural } from "../cards.js";
 import { Badge } from "./Badge.jsx";
 import { Card } from "./Card.jsx";
 import { ChipStack } from "./ChipStack.jsx";
+import { useArrival } from "./useArrival.js";
 import { FELT_Y, seatPosition } from "./layout.js";
 import { signed } from "../../../lib/format.js";
 import { useRoomMii } from "../../../lib/mii.js";
@@ -23,6 +24,30 @@ function handLabel(hand) {
     : isNatural(hand)
       ? ["BJ", "#e8c468"]
       : [soft && total < 21 ? `${total - 10}/${total}` : String(total), "#fff"];
+}
+
+// Score et résultat d'une main, affichés carte par carte pendant la distribution.
+function HandBadges({ hand, keys, delays, position, resultPosition, result }) {
+  const arrived = useArrival(keys, delays);
+  const complete = arrived >= hand.cards.length;
+  const [label, labelColor] = handLabel({
+    ...hand,
+    cards: hand.cards.slice(0, arrived),
+  });
+  return (
+    <>
+      {arrived > 0 && (
+        <Badge position={position} color={labelColor}>
+          {label}
+        </Badge>
+      )}
+      {result && complete && (
+        <Badge position={resultPosition} color={result[1]} bg="rgba(0,0,0,.78)">
+          {result[0]} {hand.payout - hand.bet !== 0 ? signed(hand.payout - hand.bet) : ""}
+        </Badge>
+      )}
+    </>
+  );
 }
 
 export function PlayerSeat({ p, index, isMe, g }) {
@@ -122,7 +147,6 @@ export function PlayerSeat({ p, index, isMe, g }) {
         const dz = handCount > 2 ? -Math.floor(hi / 2) * 0.62 + 0.3 : 0;
         const spread = handCount > 1 ? 0.22 : 0.36;
         const active = myTurn && g.turn.h === hi;
-        const [label, labelColor] = handLabel(h);
         const result = h.result ? RESULT_LABELS[h.result] : null;
         return (
           <group key={hi}>
@@ -155,22 +179,18 @@ export function PlayerSeat({ p, index, isMe, g }) {
                 <meshBasicMaterial color="#ffd36a" toneMapped={false} />
               </mesh>
             )}
-            <Badge
+            <HandBadges
+              hand={h}
+              keys={h.cards.map((_, ci) => `${g.round}-${p.id}-${hi}-${ci}`)}
+              delays={h.cards.map((_, ci) =>
+                ci < 2 && h.cards.length <= 2
+                  ? (ci * (dealtIds.length + 1) + dealOrder) * 0.3
+                  : 0,
+              )}
               position={[pos.x + dx, 0.45, cardZ + dz + 0.72]}
-              color={labelColor}
-            >
-              {label}
-            </Badge>
-            {result && (
-              <Badge
-                position={[pos.x + dx, 1.05, cardZ + dz + 0.3]}
-                color={result[1]}
-                bg="rgba(0,0,0,.78)"
-              >
-                {result[0]}{" "}
-                {h.payout - h.bet !== 0 ? signed(h.payout - h.bet) : ""}
-              </Badge>
-            )}
+              resultPosition={[pos.x + dx, 1.05, cardZ + dz + 0.3]}
+              result={result}
+            />
           </group>
         );
       })}
