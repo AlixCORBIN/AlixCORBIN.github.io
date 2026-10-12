@@ -1,7 +1,7 @@
-import { Html, Sparkles } from "@react-three/drei";
+import { Html, RoundedBox, Sparkles } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import React from "react";
-import { ACESFilmicToneMapping, CanvasTexture, Euler, MathUtils, Quaternion, SRGBColorSpace, Vector3 } from "three";
+import { ACESFilmicToneMapping, CanvasTexture, MathUtils, Quaternion, SRGBColorSpace, Vector3 } from "three";
 import { useRoomMii } from "../../../lib/mii.js";
 import { sound } from "../../../lib/sound.js";
 import { MiiAvatar } from "../../../ui/MiiAvatar.jsx";
@@ -258,38 +258,62 @@ function SelectRing() {
 
 /* ---------- dé ---------- */
 
-function pipTexture(v) {
-  const cv = document.createElement("canvas");
-  cv.width = cv.height = 128;
-  const ctx = cv.getContext("2d");
-  ctx.fillStyle = "#fbfaf5";
-  ctx.fillRect(0, 0, 128, 128);
-  const P = { 1: [[64, 64]], 2: [[34, 34], [94, 94]], 3: [[30, 30], [64, 64], [98, 98]], 4: [[34, 34], [94, 34], [34, 94], [94, 94]], 5: [[30, 30], [98, 30], [64, 64], [30, 98], [98, 98]], 6: [[34, 28], [94, 28], [34, 64], [94, 64], [34, 100], [94, 100]] };
-  ctx.fillStyle = v === 1 ? "#c81d2c" : "#1b1b1b";
-  P[v].forEach(([x, y]) => {
-    ctx.beginPath();
-    ctx.arc(x, y, v === 1 ? 17 : 12, 0, Math.PI * 2);
-    ctx.fill();
-  });
-  const t = new CanvasTexture(cv);
-  t.colorSpace = SRGBColorSpace;
-  return t;
-}
-// ordre des faces d'une BoxGeometry : +x, -x, +y, -y, +z, -z
-const FACES = [2, 5, 1, 6, 3, 4];
-const FACE_UP = {
-  1: new Euler(0, 0, 0),
-  6: new Euler(Math.PI, 0, 0),
-  2: new Euler(0, 0, Math.PI / 2),
-  5: new Euler(0, 0, -Math.PI / 2),
-  3: new Euler(-Math.PI / 2, 0, 0),
-  4: new Euler(Math.PI / 2, 0, 0),
+const DIE = 0.62; // arête
+const H = DIE / 2;
+// Normale de chaque face et ses deux axes dans le plan de la face. Faces opposées : 1-6, 2-5, 3-4.
+const FACE_AXES = {
+  1: [[0, 1, 0], [1, 0, 0], [0, 0, 1]],
+  6: [[0, -1, 0], [1, 0, 0], [0, 0, 1]],
+  2: [[1, 0, 0], [0, 0, 1], [0, 1, 0]],
+  5: [[-1, 0, 0], [0, 0, 1], [0, 1, 0]],
+  3: [[0, 0, 1], [1, 0, 0], [0, 1, 0]],
+  4: [[0, 0, -1], [1, 0, 0], [0, 1, 0]],
 };
+const PIPS = {
+  1: [[0, 0]],
+  2: [[-1, -1], [1, 1]],
+  3: [[-1, -1], [0, 0], [1, 1]],
+  4: [[-1, -1], [1, -1], [-1, 1], [1, 1]],
+  5: [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1]],
+  6: [[-1, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [1, 1]],
+};
+// Rotation qui amène la face v vers le haut (+y).
+const UP = new Vector3(0, 1, 0);
+const faceUp = (v) => new Quaternion().setFromUnitVectors(new Vector3(...FACE_AXES[v][0]), UP);
 
+function DieBody() {
+  const pips = [];
+  for (let v = 1; v <= 6; v++) {
+    const [n, u, w] = FACE_AXES[v].map((a) => new Vector3(...a));
+    PIPS[v].forEach(([i, j], k) => {
+      const p = n.clone().multiplyScalar(H + 0.002).addScaledVector(u, i * 0.16).addScaledVector(w, j * 0.16);
+      const q = new Quaternion().setFromUnitVectors(new Vector3(0, 0, 1), n);
+      pips.push(
+        <mesh key={v + "-" + k} position={p.toArray()} quaternion={q}>
+          <circleGeometry args={[v === 1 ? 0.075 : 0.052, 24]} />
+          <meshStandardMaterial color={v === 1 ? "#b3121f" : "#161616"} roughness={0.5} polygonOffset polygonOffsetFactor={-2} />
+        </mesh>,
+      );
+    });
+  }
+  return (
+    <group>
+      <RoundedBox args={[DIE, DIE, DIE]} radius={0.09} smoothness={4} castShadow>
+        <meshPhysicalMaterial color="#fbf8ef" roughness={0.25} clearcoat={0.8} clearcoatRoughness={0.2} />
+      </RoundedBox>
+      {pips}
+    </group>
+  );
+}
+
+/**
+ * Lancer « à rebours » : on part de l'orientation finale (face tirée en haut) et on lui ajoute
+ * une rotation autour de l'axe de roulement qui décroît jusqu'à zéro. Le dé roule donc
+ * réellement dans le sens de son déplacement et finit pile sur la bonne face, sans recalage.
+ */
 function Die({ die, at }) {
-  const mats = React.useMemo(() => FACES.map((v) => pipTexture(v)), []);
   const ref = React.useRef();
-  const st = React.useRef({ seq: null, t: 1, spin: new Vector3(), q: new Quaternion(), from: new Vector3(), landed: true, at: [0, 0] });
+  const st = React.useRef({ seq: null, t: 1, landed: true });
   useFrame((_s, dt) => {
     const s = st.current;
     const m = ref.current;
@@ -298,39 +322,52 @@ function Die({ die, at }) {
       s.seq = die.seq;
       s.t = 0;
       s.landed = false;
-      s.spin.set(8 + Math.random() * 6, 6 + Math.random() * 6, 5 + Math.random() * 5);
-      s.at = at;
-      s.from.set(at[0] * 0.2, 2.6, at[1] * 0.2);
-      const yaw = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.random() * Math.PI * 2);
-      s.q = yaw.multiply(new Quaternion().setFromEuler(FACE_UP[die.v]));
+      s.bounced = 0;
+      const end = new Vector3(at[0], 0, at[1]);
+      const dir = new Vector3(-at[0], 0, -at[1]).normalize();
+      if (!Number.isFinite(dir.x)) dir.set(0, 0, -1);
+      // départ décalé vers le centre du plateau, avec un léger angle aléatoire
+      dir.applyAxisAngle(UP, (Math.random() - 0.5) * 0.8);
+      s.from = end.clone().addScaledVector(dir, 3.2);
+      s.to = end;
+      s.axis = new Vector3().crossVectors(UP, dir.clone().negate()).normalize();
+      s.turns = (5 + Math.floor(Math.random() * 3)) * (Math.PI / 2); // multiple de quart de tour
+      s.wobble = new Vector3(Math.random() - 0.5, 0, Math.random() - 0.5).normalize();
+      const yaw = new Quaternion().setFromAxisAngle(UP, Math.round(Math.random() * 4) * (Math.PI / 2) + (Math.random() - 0.5) * 0.5);
+      s.qEnd = yaw.multiply(faceUp(die.v));
       sound.dice();
     }
-    s.t = Math.min(1, s.t + (dt * 1000) / (ROLL_MS * 0.85));
+    s.t = Math.min(1, s.t + (dt * 1000) / (ROLL_MS * 0.9));
     const k = s.t;
-    // trajectoire : lancé vers la zone du joueur, quelques rebonds
-    m.position.x = MathUtils.lerp(s.from.x, s.at[0], k);
-    m.position.z = MathUtils.lerp(s.from.z, s.at[1], k);
-    m.position.y = 0.33 + Math.abs(Math.cos(k * Math.PI * 2.5)) * (1 - k) * 2.2;
-    if (k < 0.8) {
-      m.rotation.x += s.spin.x * dt * (1 - k);
-      m.rotation.y += s.spin.y * dt * (1 - k);
-      m.rotation.z += s.spin.z * dt * (1 - k);
-    } else m.quaternion.slerp(s.q, 1 - Math.exp(-14 * dt));
+    const ease = 1 - Math.pow(1 - k, 3); // ralentit en fin de course
+    m.position.lerpVectors(s.from, s.to, ease);
+    // trois rebonds de plus en plus petits
+    const b = [[0, 0.38, 1.1], [0.38, 0.68, 0.45], [0.68, 0.88, 0.14]];
+    let y = 0;
+    for (const [a0, a1, hgt] of b) if (k >= a0 && k < a1) y = Math.sin(((k - a0) / (a1 - a0)) * Math.PI) * hgt;
+    m.position.y = H + y;
+    const bounceIdx = b.findIndex(([, a1]) => k < a1);
+    if (bounceIdx > s.bounced) {
+      s.bounced = bounceIdx;
+      sound.diceLand();
+    }
+    const left = s.turns * (1 - ease);
+    const wob = Math.sin(k * Math.PI * 3) * (1 - k) * 0.35;
+    const q = new Quaternion().setFromAxisAngle(s.axis, -left);
+    q.multiply(new Quaternion().setFromAxisAngle(s.wobble, wob));
+    m.quaternion.copy(q.multiply(s.qEnd));
     if (k >= 1 && !s.landed) {
       s.landed = true;
-      m.quaternion.copy(s.q);
+      m.quaternion.copy(s.qEnd);
       sound.diceLand();
       if (die.v === 6) sound.six();
     }
   });
   if (!die) return null;
   return (
-    <mesh ref={ref} castShadow position={[at[0], 0.33, at[1]]}>
-      <boxGeometry args={[0.62, 0.62, 0.62]} />
-      {mats.map((t, i) => (
-        <meshStandardMaterial key={i} attach={`material-${i}`} map={t} roughness={0.35} />
-      ))}
-    </mesh>
+    <group ref={ref} position={[at[0], H, at[1]]}>
+      <DieBody />
+    </group>
   );
 }
 
