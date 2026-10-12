@@ -178,6 +178,7 @@ function dealHand(g) {
   g.phase = "playing";
   g.deck = shuffle(makeDeck());
   g.discard = [];
+  g.table = [];
   g.reshuffles = 0;
   g.effect = null;
   g.endReason = null;
@@ -261,7 +262,8 @@ export function play(g, id, cardId, targetId) {
     applySafety(p, card.k);
     note(g, `${p.name} pose la botte ${LABEL[card.k]} et rejoue.`, "safety");
   }
-  if (kind !== "hazard") g.discard.push(card);
+  // Les cartes posées restent sur les piles des voitures : seules les défausses seront remélangées.
+  if (kind !== "hazard") g.table.push(card);
   return ok();
 }
 
@@ -315,7 +317,7 @@ export function resolveEffect(g) {
     const t = find(g, e.target);
     if (e.card.k === "limit") t.car.limit = true;
     else t.car.battle = e.card.k;
-    g.discard.push(e.card);
+    g.table.push(e.card);
   }
   if (e.finish) return endHand(g, "trip", e.by);
   if (e.coup) g.turn = g.players.findIndex((p) => p.id === e.coupBy);
