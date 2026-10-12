@@ -138,20 +138,27 @@ export function PlayerSeat({ p, index, isMe, g }) {
         </Badge>
       )}
       {p.hands.map((h, hi) => {
-        const dx =
-          handCount === 1
-            ? 0
-            : handCount === 2
-              ? (hi - 0.5) * 1.15
-              : ((hi % 2) - 0.5) * 1.15;
-        const dz = handCount > 2 ? -Math.floor(hi / 2) * 0.62 + 0.3 : 0;
-        const spread = handCount > 1 ? 0.22 : 0.36;
+        // Disposition des mains après split : 1 ou 2 côte à côte, 3-4 sur deux rangées bien séparées
+        // (une carte fait 1,02 de haut), le tout tourné comme le siège pour ne pas déborder chez le voisin.
+        const col = handCount <= 2 ? hi : hi % 2;
+        const cols = handCount === 1 ? 1 : 2;
+        const row = handCount > 2 ? Math.floor(hi / 2) : 0;
+        const lx = (col - (cols - 1) / 2) * 1.32;
+        const lz = handCount > 2 ? (row === 0 ? 0.5 : -0.72) : 0;
+        const spread = handCount > 1 ? 0.2 : 0.36;
+        const cos = Math.cos(cardRot), sin = Math.sin(cardRot);
+        const place = (x, z) => [pos.x + x * cos + z * sin, cardZ - x * sin + z * cos];
+        const [hx, hz] = place(lx, lz);
+        const dx = hx - pos.x;
+        const dz = hz - cardZ;
+        // étiquette du total : devant la main (rangée du joueur) ou derrière (rangée du croupier)
+        const [bx, bz] = place(lx, lz + (row === 1 ? -0.66 : 0.72));
         const active = myTurn && g.turn.h === hi;
         const result = h.result ? RESULT_LABELS[h.result] : null;
         return (
           <group key={hi}>
             {h.cards.map((card, ci) => {
-              const x = pos.x + dx + (ci - (h.cards.length - 1) / 2) * spread;
+              const [cx, cz] = place(lx + (ci - (h.cards.length - 1) / 2) * spread, lz - ci * 0.025);
               const delay =
                 ci < 2 && h.cards.length <= 2
                   ? (ci * (dealtIds.length + 1) + dealOrder) * 0.3
@@ -160,11 +167,7 @@ export function PlayerSeat({ p, index, isMe, g }) {
                 <Card
                   key={`${g.round}-${p.id}-${hi}-${ci}`}
                   card={card}
-                  target={[
-                    x,
-                    FELT_Y + 0.01 + ci * 0.012,
-                    cardZ + dz - ci * 0.025,
-                  ]}
+                  target={[cx, FELT_Y + 0.01 + ci * 0.012, cz]}
                   rotY={cardRot}
                   delay={delay}
                 />
@@ -187,7 +190,7 @@ export function PlayerSeat({ p, index, isMe, g }) {
                   ? (ci * (dealtIds.length + 1) + dealOrder) * 0.3
                   : 0,
               )}
-              position={[pos.x + dx, 0.45, cardZ + dz + 0.72]}
+              position={[bx, 0.45, bz]}
               resultPosition={[pos.x + dx, 1.05, cardZ + dz + 0.3]}
               result={result}
             />

@@ -21,6 +21,7 @@ const LOCAL = {
   },
 };
 const FLUSH_MS = 350;
+const FAST_BJ = new Set(["hit", "stand", "double", "split", "insurance"]);
 
 const HEARTBEAT_MS = 5000;
 
@@ -185,7 +186,26 @@ export class ServerTable {
     // action qui révèle une information (cartes, tirage) : on envoie tout de suite, mises en attente comprises.
     // Tirer / doubler : la carte part tout de suite face cachée vers la main, et se retourne à la réponse du serveur.
     if (game === "blackjack" && (action.t === "hit" || action.t === "double")) this.placeholderCard();
+    // Blackjack, actions en cours de main : appel direct à la base (bj_act, ~70 ms), sinon la fonction
+    if (game === "blackjack" && FAST_BJ.has(action.t) && !this.queue.length) return this.fastBlackjack(action);
     return this.flush([action]);
+  }
+  fastBlackjack(action) {
+    this.chain = this.chain.then(async () => {
+      if (this.status !== "ready") return;
+      try {
+        const { data, error } = await db().rpc("bj_act", { p_code: this.code, p_action: action });
+        if (!error && data && !data.fallback) {
+          if (data.ok === false) this.lastError = data.error || "Action refusee";
+          this.apply(data);
+          if (data.ok === false) this.emit();
+          return;
+        }
+      } catch {}
+      // cas rare (minuterie échue, remélange…) : la fonction prend le relais
+      await this.call({ op: "act", actions: [action] });
+    });
+    return this.chain;
   }
   placeholderCard() {
     const g = this.state;
