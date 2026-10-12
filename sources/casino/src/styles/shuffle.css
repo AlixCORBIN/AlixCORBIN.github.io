@@ -1,0 +1,61 @@
+.shuffle-note {
+  position: fixed;
+  left: 50%;
+  top: 30%;
+  transform: translate(-50%, -50%);
+  z-index: 55;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 26px 12px;
+  border-radius: 16px;
+  background: rgba(8, 24, 17, 0.82);
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+  animation: shuffle-note 2.6s ease-in-out forwards;
+}
+.shuffle-note b {
+  font: 700 17px var(--serif);
+  color: var(--gold);
+  letter-spacing: 0.5px;
+}
+.shuffle-note small {
+  font-size: 12px;
+  opacity: 0.7;
+}
+.shuffle-cards {
+  position: relative;
+  width: 74px;
+  height: 56px;
+  margin-bottom: 6px;
+}
+.shuffle-cards span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 48px;
+  margin: -24px 0 0 -17px;
+  border-radius: 5px;
+  border: 1px solid #e8c468;
+  background:
+    repeating-linear-gradient(45deg, rgba(232, 196, 104, 0.35) 0 2px, transparent 2px 6px),
+    linear-gradient(145deg, #7c1d2a, #4a0f19);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  animation: shuffle-riffle 0.9s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.07s);
+}
+@keyframes shuffle-riffle {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(calc((var(--i) - 2.5) * 9px)) rotate(calc((var(--i) - 2.5) * 5deg)); }
+  50% { transform: translateX(calc((2.5 - var(--i)) * 9px)) rotate(calc((2.5 - var(--i)) * 5deg)); }
+  75% { transform: translateX(calc((var(--i) - 2.5) * 4px)) rotate(0deg); }
+}
+@keyframes shuffle-note {
+  0% { opacity: 0; transform: translate(-50%, -40%); }
+  12%, 82% { opacity: 1; transform: translate(-50%, -50%); }
+  100% { opacity: 0; transform: translate(-50%, -58%); }
+}

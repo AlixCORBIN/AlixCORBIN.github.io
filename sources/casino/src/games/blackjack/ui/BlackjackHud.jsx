@@ -4,6 +4,7 @@ import { BettingDock } from "./BettingDock.jsx";
 import { InsuranceDock } from "./InsuranceDock.jsx";
 import { Leaderboard } from "./Leaderboard.jsx";
 import { SettleDock } from "./SettleDock.jsx";
+import { ShuffleNotice } from "./ShuffleNotice.jsx";
 import { sound } from "../../../lib/sound.js";
 import { AfkToast } from "../../../ui/AfkToast.jsx";
 import { Balance } from "../../../ui/Balance.jsx";
@@ -78,7 +79,10 @@ export function BlackjackHud({ ctrl, state, me, onQuit }) {
           ✕
         </button>
       </header>
-      {state.notice && <div className="toast">{state.notice}</div>}
+      {state.notice && state.notice !== "Sabot re-melange" && (
+        <div className="toast">{state.notice}</div>
+      )}
+      <ShuffleNotice shuffles={state.rng?.shuffles} />
       <AfkToast afk={state.afk} state={state} me={me} />
       {state.phase === "betting" && (
         <BettingDock ctrl={ctrl} state={state} me={me} />
