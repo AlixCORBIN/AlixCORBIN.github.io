@@ -5,6 +5,22 @@
 import { callFunction, db } from "../lib/identity.js";
 import { refreshWallet } from "../lib/wallet.js";
 import { sanitizeMii, setRoomMiis } from "../lib/mii.js";
+import * as BJ from "../games/blackjack/engine.js";
+import * as RO from "../games/roulette/engine.js";
+
+// Actions qui ne révèlent aucune information cachée : appliquées tout de suite à l'écran avec le même
+// moteur que le serveur, puis envoyées ensemble au serveur, qui reste seul juge (sa réponse fait foi).
+const LOCAL = {
+  blackjack: { bet: (g, id, a) => BJ.setBets(g, id, a), rebet: (g, id) => BJ.rebet(g, id) },
+  roulette: {
+    bet: (g, id, a) => RO.placeBet(g, id, a.key, a.amount),
+    undo: (g, id) => RO.undoBet(g, id),
+    clear: (g, id) => RO.clearBets(g, id),
+    rebet: (g, id) => RO.rebet(g, id),
+    double: (g, id) => RO.doubleBets(g, id),
+  },
+};
+const FLUSH_MS = 350;
 
 const HEARTBEAT_MS = 5000;
 
@@ -30,6 +46,9 @@ export class ServerTable {
     this.error = null;
     this.miis = {};
     this.rowVersion = 0;
+    this.queue = []; // actions locales pas encore confirmées par le serveur
+    this.undo = []; // pile d'annulation des mises (roulette), gardée côté navigateur
+    this.chain = Promise.resolve();
     this.open();
   }
   emit() {
@@ -76,7 +95,8 @@ export class ServerTable {
     if (res.version) this.rowVersion = res.version;
     if (!res.view) return;
     const prevPhase = this.state?.phase;
-    this.state = res.view;
+    if (res.view.phase !== "betting" || res.view.round !== this.state?.round) this.undo = [];
+    this.state = this.queue.length ? this.replayLocal(res.view) : res.view;
     this.isPublic = res.view.isPublic ?? this.isPublic;
     if (res.miis) {
       const map = {};
@@ -124,10 +144,54 @@ export class ServerTable {
     }
   }
   ping() {
+    if (this.queue.length) return this.flush();
     return this.call({ op: "ping" });
   }
+  replayLocal(view) {
+    const g = structuredClone(view);
+    for (const a of this.queue) this.applyLocal(g, a);
+    return g;
+  }
+  applyLocal(g, a) {
+    const fn = LOCAL[this.game]?.[a.t];
+    const me = g.players?.find((p) => p.id === this.me);
+    if (!fn || !me) return { ok: false };
+    me.undo = this.undo;
+    const res = fn(g, this.me, a) || { ok: false };
+    this.undo = me.undo || [];
+    delete me.undo;
+    return res;
+  }
   act(action) {
-    return this.call({ op: "act", action });
+    if (this.status !== "ready" || !action) return;
+    const game = this.state?.game || this.game;
+    this.game = game;
+    if (LOCAL[game]?.[action.t] && this.state) {
+      // affichage immédiat, envoi groupé un peu plus tard
+      const g = structuredClone(this.state);
+      const res = this.applyLocal(g, action);
+      if (!res.ok) {
+        this.lastError = res.error || "Action refusee";
+        this.emit();
+        return;
+      }
+      this.state = g;
+      this.queue.push(action);
+      this.emit();
+      clearTimeout(this.flushTimer);
+      this.flushTimer = setTimeout(() => this.flush(), FLUSH_MS);
+      return;
+    }
+    // action qui révèle une information (cartes, tirage) : on envoie tout de suite, mises en attente comprises
+    return this.flush([action]);
+  }
+  flush(extra = []) {
+    clearTimeout(this.flushTimer);
+    const actions = [...this.queue.splice(0), ...extra];
+    if (!actions.length) return this.chain;
+    // un seul envoi à la fois, dans l'ordre
+    this.chain = this.chain.then(() => this.call({ op: "act", actions }));
+    return this.chain;
   }
   setPublic(v) {
     this.isPublic = !!v;
@@ -136,6 +200,7 @@ export class ServerTable {
   }
   destroy() {
     clearInterval(this.hb);
+    clearTimeout(this.flushTimer);
     clearTimeout(this.timer);
     if (this.status === "ready") callFunction("casino-table", { op: "leave", code: this.code }).then(() => refreshWallet()).catch(() => {});
     this.status = "closed";

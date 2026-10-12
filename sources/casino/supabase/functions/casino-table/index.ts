@@ -3,6 +3,7 @@
 // Les moteurs de jeu sont copiés dans _lib par tools/sync-server.mjs (ne pas modifier _lib à la main).
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import * as T from "./_lib/server/tables.js";
+import { createRemoteJWKSet, jwtVerify } from "npm:jose@5.9.6";
 
 const URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -46,12 +47,44 @@ async function fetchRandom(kind: string, n: number) {
   }
 }
 
-async function topUpRandom(room: any) {
-  const need = T.needsRandom(room);
+// random.org en arrière-plan, après la réponse au joueur : la réserve est rechargée avant d'être vide,
+// le joueur n'attend jamais l'appel externe (si elle était vide, les moteurs utilisent le CSPRNG serveur).
+function refillLater(code: string, need: { kind: string; n: number } | null) {
   if (!need) return;
-  const r = await fetchRandom(need.kind, need.n);
-  if (r) T.feedRandom(room, r.values, r.meta);
-  else if (room.game === "blackjack") room.g.rng.error = "random.org injoignable : CSPRNG serveur utilise";
+  const task = (async () => {
+    const r = await fetchRandom(need.kind, need.n);
+    if (!r) return;
+    for (let i = 0; i < 4; i++) {
+      const { data: row } = await db.from("casino_rooms").select("room, version").eq("code", code).maybeSingle();
+      if (!row || !T.needsRandom(row.room)) return;
+      T.feedRandom(row.room, r.values, r.meta);
+      try {
+        await commit(row.room, row.version, new Set(seatedOf(row.room)));
+        return;
+      } catch (e) {
+        if (!String(e).includes("conflict")) return;
+      }
+    }
+  })().catch(() => {});
+  // @ts-ignore EdgeRuntime existe dans le runtime Supabase
+  if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
+}
+
+const seatedOf = (room: any) => Object.entries(room.members).filter(([, m]: any) => !m.kicked).map(([u]) => u);
+
+// Vérification complète du jeton en local (signature ES256 avec les clés publiques du projet, mises en cache,
+// émetteur, expiration) : plus d'aller-retour vers le service d'authentification à chaque action.
+// Si la clé n'est pas reconnue (ancien jeton), on retombe sur la vérification par le service d'authentification.
+const JWKS = createRemoteJWKSet(new globalThis.URL(`${URL}/auth/v1/.well-known/jwks.json`));
+async function verifiedUid(jwt: string): Promise<string | null> {
+  if (!jwt) return null;
+  try {
+    const { payload } = await jwtVerify(jwt, JWKS, { issuer: `${URL}/auth/v1`, audience: "authenticated" });
+    return typeof payload.sub === "string" ? payload.sub : null;
+  } catch {
+    const { data } = await db.auth.getUser(jwt);
+    return data?.user?.id ?? null;
+  }
 }
 
 function sanitizeMii(m: unknown) {
@@ -87,31 +120,31 @@ async function commit(room: any, version: number, before: Set<string>) {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   try {
-    const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
-    const { data: auth } = await db.auth.getUser(jwt);
-    const uid = auth?.user?.id;
+    const uid = await verifiedUid((req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, ""));
     if (!uid) return reply({ error: "Connexion requise" }, 401);
     const body = await req.json().catch(() => ({}));
     const op = String(body.op || "");
+    const code = op === "create" ? null : String(body.code || "").toUpperCase().trim();
+    if (code !== null && !/^[A-Z0-9]{5}$/.test(code)) return reply({ error: "Code invalide" }, 400);
 
-    await db.from("wallets").upsert({ user_id: uid }, { onConflict: "user_id", ignoreDuplicates: true });
-    const { data: wallet } = await db.from("wallets").select("*").eq("user_id", uid).maybeSingle();
-    if (!wallet) return reply({ error: "Portefeuille introuvable" }, 400);
-    const { data: banned } = await db.rpc("player_banned", { p: wallet.pseudo || "" });
-    if (wallet.banned || banned) return reply({ error: "Compte banni pour triche" }, 403);
+    // une seule lecture : portefeuille (créé au besoin), bannissement et salle
+    let { data: load, error: loadErr } = await db.rpc("casino_load", { p_uid: uid, p_code: code });
+    if (loadErr || !load) return reply({ error: loadErr?.message || "Portefeuille introuvable" }, 400);
+    const wallet = load.wallet;
+    if (load.banned) return reply({ error: "Compte banni pour triche" }, 403);
     const name = wallet.pseudo || "Joueur";
+    const seatBusy = (other: string | null) =>
+      wallet.seat && wallet.seat !== other && wallet.seat_at && Date.now() - Date.parse(wallet.seat_at) < 30000;
 
     if (op === "create") {
       if (!T.GAMES.includes(body.game)) return reply({ error: "Jeu inconnu" }, 400);
-      if (wallet.seat && wallet.seat_at && Date.now() - Date.parse(wallet.seat_at) < 30000)
-        return reply({ error: "Tu es deja assis a une autre table" }, 409);
+      if (seatBusy(null)) return reply({ error: "Tu es deja assis a une autre table" }, 409);
       for (let i = 0; i < 6; i++) {
         const room = T.createRoom(body.game, makeCode(), !!body.isPublic);
-        const now = Date.now();
-        T.join(room, uid, name, Number(wallet.bankroll), sanitizeMii(body.mii), now, crypto.randomUUID());
-        await topUpRandom(room);
+        T.join(room, uid, name, Number(wallet.bankroll), sanitizeMii(body.mii), Date.now(), crypto.randomUUID());
         try {
           const version = await commit(room, 0, new Set());
+          refillLater(room.code, T.needsRandom(room));
           return reply({ code: room.code, me: uid, version, view: T.view(room, Date.now()) });
         } catch (e) {
           if (!String(e).includes("duplicate")) throw e;
@@ -120,25 +153,27 @@ Deno.serve(async (req) => {
       return reply({ error: "Impossible de creer la salle" }, 500);
     }
 
-    const code = String(body.code || "").toUpperCase().trim();
-    if (!/^[A-Z0-9]{5}$/.test(code)) return reply({ error: "Code invalide" }, 400);
+    // plusieurs actions peuvent arriver d'un coup (mises posées en local puis envoyées ensemble)
+    const actions = op === "act" ? (Array.isArray(body.actions) ? body.actions.slice(0, 60) : [body.action]) : [];
     for (let attempt = 0; attempt < 8; attempt++) {
-      const { data: row } = await db.from("casino_rooms").select("room, version").eq("code", code).maybeSingle();
+      if (attempt > 0) load = (await db.rpc("casino_load", { p_uid: uid, p_code: code })).data;
+      const row = load?.room;
       if (!row) return reply({ error: "Salle introuvable" }, 404);
       const room = row.room;
-      const before = new Set(Object.entries(room.members).filter(([, m]: any) => !m.kicked).map(([u]) => u));
+      const before = new Set(seatedOf(room));
       const now = Date.now();
       T.dropStale(room, now);
       T.tick(room, now);
-      await topUpRandom(room);
       let res: any = { ok: true };
       const m = room.members[uid];
       if (op === "join") {
-        if (!m && wallet.seat && wallet.seat !== code && wallet.seat_at && now - Date.parse(wallet.seat_at) < 30000)
-          return reply({ error: "Tu es deja assis a une autre table" }, 409);
+        if (!m && seatBusy(code)) return reply({ error: "Tu es deja assis a une autre table" }, 409);
         res = T.join(room, uid, name, Number(wallet.bankroll), sanitizeMii(body.mii), now, crypto.randomUUID());
       } else if (op === "act") {
-        res = T.act(room, uid, body.action, now);
+        for (const a of actions) {
+          res = T.act(room, uid, a, now);
+          if (!res.ok) break;
+        }
       } else if (op === "ping") {
         if (m && !m.kicked) m.seen = now;
       } else if (op === "public") {
@@ -151,14 +186,14 @@ Deno.serve(async (req) => {
         }
       } else return reply({ error: "Operation inconnue" }, 400);
       T.tick(room, Date.now());
-      await topUpRandom(room);
       try {
         const version = await commit(room, row.version, before);
+        refillLater(code!, T.needsRandom(room));
         const kicked = room.members[uid]?.kicked;
         return reply({ ok: !!res.ok, error: res.ok ? undefined : res.error, code, me: uid, version, kicked, view: T.view(room, Date.now()) });
       } catch (e) {
         if (!String(e).includes("conflict")) throw e;
-        await new Promise((r) => setTimeout(r, 30 + Math.random() * 80));
+        await new Promise((r) => setTimeout(r, 20 + Math.random() * 60));
       }
     }
     return reply({ error: "Table occupee, reessaie" }, 503);
