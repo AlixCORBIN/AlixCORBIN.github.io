@@ -293,7 +293,10 @@ export function cardBackTexture() {
 export function chipTextures(value) {
   const key = "chip" + value;
   if (textureCache.has(key)) return textureCache.get(key);
-  const chip = CHIPS.find((c) => c.v === value);
+  const chip =
+    CHIPS.find((c) => c.v === value) ||
+    [...CHIPS].reverse().find((c) => c.v >= value) ||
+    CHIPS[0];
   const topCanvas = makeCanvas(256, 256);
   const ctx = topCanvas.getContext("2d");
   ctx.fillStyle = chip.c;

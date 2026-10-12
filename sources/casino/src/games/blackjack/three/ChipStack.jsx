@@ -24,7 +24,13 @@ function chipStacks(amount) {
       stacks.push([chip.v, Math.min(count, 14)]);
     }
   }
-  return stacks;
+  if (amount > 0) {
+    const small = CHIPS[CHIPS.length - 1].v;
+    const at = stacks.findIndex(([v]) => v === small);
+    if (at >= 0) stacks[at][1] = Math.min(stacks[at][1] + 1, 14);
+    else stacks.push([small, 1]);
+  }
+  return stacks.slice(0, 6);
 }
 
 export function ChipStack({ position, amount, flat }) {
@@ -37,7 +43,7 @@ export function ChipStack({ position, amount, flat }) {
     ref.current.scale.setScalar(0.4 + 0.6 * ease);
     ref.current.position.y = position[1] + (1 - ease) * 0.5;
   });
-  const stacks = flat ? [[amount / 9, 9]] : chipStacks(amount);
+  const stacks = flat ? [[amount / 9, 9]] : chipStacks(Math.max(0, Math.floor(Number(amount) || 0)));
   return amount ? (
     <group ref={ref} position={position}>
       {stacks.map(([value, count], i) => (
