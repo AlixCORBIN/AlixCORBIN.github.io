@@ -19,21 +19,28 @@ const reply = (body: unknown, status = 200) =>
 const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const makeCode = () => Array.from(crypto.getRandomValues(new Uint8Array(5)), (b) => ALPHA[b % ALPHA.length]).join("");
 
+// Tirages random.org signés, demandés directement par la fonction (clé RANDOM_ORG_KEY, secret du projet).
+// Passer par random-shoe ne marchait pas : elle limite à 1 appel / 3 s par IP, et tous les appels
+// de casino-table partent des mêmes serveurs.
 async function fetchRandom(kind: string, n: number) {
+  const key = Deno.env.get("RANDOM_ORG_KEY");
+  if (!key) return null; // les moteurs retombent sur le CSPRNG du serveur
   const [min, max] = kind === "keys" ? [0, 999999999] : [0, 36];
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 5000);
   try {
-    const res = await fetch(`${URL}/functions/v1/random-shoe?n=${n}&min=${min}&max=${max}`, {
+    const res = await fetch("https://api.random.org/json-rpc/4/invoke", {
+      method: "POST",
       signal: ctrl.signal,
-      headers: { Authorization: `Bearer ${SERVICE}`, apikey: SERVICE },
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "generateSignedIntegers", params: { apiKey: key, n, min, max, replacement: true } }),
     });
     const body = await res.json();
-    const values = body?.random?.data;
+    const values = body?.result?.random?.data;
     if (!Array.isArray(values) || values.length !== n) return null;
-    return { values, meta: { source: "random.org", at: Date.now(), proof: { random: body.random, signature: body.signature } } };
+    return { values, meta: { source: "random.org", at: Date.now(), proof: { random: body.result.random, signature: body.result.signature } } };
   } catch {
-    return null; // les moteurs retombent sur le CSPRNG
+    return null;
   } finally {
     clearTimeout(timer);
   }

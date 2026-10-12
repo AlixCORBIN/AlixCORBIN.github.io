@@ -141,27 +141,39 @@
     if (!fromHistory && !visible()) setUnread(unread + 1)
   }
 
-  var client = null, channel = null, last = 0
+  var client = null, channel = null, last = 0, ready = null
   form.onsubmit = function (e) {
     e.preventDefault()
     var msg = input.value.trim().slice(0, MAX)
     if (!msg || !channel || Date.now() - last < 1000) return
     last = Date.now()
-    var m = { key: Math.random().toString(36).slice(2) + last, name: myName(), game: myGame(), msg: msg, at: new Date().toISOString() }
     input.value = ''
-    add(m)
-    channel.send({ type: 'broadcast', event: 'msg', payload: m })
-    client.from('global_chat').insert({ name: m.name, msg: m.msg, game: m.game }).then(function () {})
+    // le serveur signe le message avec le pseudo du compte ; il revient ici en direct depuis la table
+    // identité créée seulement au premier envoi (le Casino l'a en général déjà créée)
+    ready = ready || client.auth.getSession().then(function (r) {
+      if (r.data && r.data.session) return
+      return client.auth.signInAnonymously()
+    }).catch(function (e) { ready = null; throw e })
+    ready.then(function () {
+      return client.rpc('chat_say', { p_msg: msg, p_game: myGame(), p_name: myName() })
+    }).then(function (r) {
+      if (r && r.error) add({ key: 'err' + last, name: 'Chat', msg: r.error.message.indexOf('banni') >= 0 ? 'Compte banni.' : 'Message non envoyé.', at: new Date().toISOString() })
+    })
   }
 
   function start() {
-    client = window.supabase.createClient(URL_, KEY, { auth: { persistSession: false } })
+    // même session que le Casino et le Monopoly (compte ou identité anonyme automatique)
+    client = window.supabase.createClient(URL_, KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'portfolio-auth' } })
+
     client.from('global_chat').select('id,name,msg,game,created_at').order('id', { ascending: false }).limit(60).then(function (r) {
       ;(r.data || []).reverse().forEach(function (row) { add({ key: 'db' + row.id, name: row.name, game: row.game, msg: row.msg, at: row.created_at }, true) })
     })
     var me = Math.random().toString(36).slice(2)
     channel = client.channel('casino-global-chat', { config: { broadcast: { self: false }, presence: { key: me } } })
-    channel.on('broadcast', { event: 'msg' }, function (p) { add(p.payload) })
+    channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'global_chat' }, function (p) {
+      var row = p.new
+      if (row) add({ key: 'db' + row.id, name: row.name, game: row.game, msg: row.msg, at: row.created_at })
+    })
     channel.on('presence', { event: 'sync' }, function () {
       var st = channel.presenceState(), names = []
       Object.keys(st).forEach(function (k) { if (st[k][0]) names.push(st[k][0].name) })

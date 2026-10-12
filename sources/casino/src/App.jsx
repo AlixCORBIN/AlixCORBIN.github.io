@@ -32,7 +32,7 @@ export function App() {
     if (mode === "join") {
       let server = SERVER_GAMES.includes(game);
       if (!game) {
-        const { data } = await db().from("casino_room_views").select("game").eq("code", String(code).toUpperCase().trim()).maybeSingle();
+        const { data } = await db().rpc("casino_room_game", { p_code: String(code) });
         server = !!data;
       }
       if (server) return setCtrl(new ServerTable(game, { code: String(code).toUpperCase().trim(), mii: opts.mii }));
