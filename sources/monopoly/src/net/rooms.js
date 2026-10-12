@@ -1,8 +1,7 @@
 // Annuaire des salles publiques : présence Supabase Realtime sur un canal commun.
 // L'hôte d'une salle publique s'y « présente » ; le hub liste ce qui est présent.
 // Rien en base : une salle disparaît toute seule quand l'hôte ferme sa page.
-import { createClient } from "@supabase/supabase-js";
-const supabase = createClient("https://njkbhgmwylletmdmsmyl.supabase.co", "sb_publishable_VYQeM9TBjjoqs4CeAT06mQ_1AJ4uf7p", { auth: { persistSession: false } });
+import { supabase } from "./supabase.js";
 
 const TOPIC = "casino-rooms";
 let ch = null;
