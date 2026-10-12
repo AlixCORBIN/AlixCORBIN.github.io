@@ -185,3 +185,110 @@ returns json language sql stable security definer set search_path to 'public' as
     'date', to_char(last_at, 'DD/MM/YYYY'))), '[]'::json)
   from public.racing_podium(10);
 $$;
+
+-- ---------- Anti-triche : vérification du fantôme dans racing_submit (aucune requête en plus côté client) ----------
+-- racing_official : repères des maps officielles (départ, arrivées, checkpoints, axe de la piste), remplis par
+-- `node tools/racing-meta.mjs` (calculés à partir de maps.js). racing_rejected garde la trace des temps refusés.
+create table if not exists public.racing_official (map_id text primary key, meta jsonb not null);
+alter table public.racing_official enable row level security;
+create table if not exists public.racing_rejected (
+  id bigserial primary key, map_id text, pseudo text, time_ms integer, reason text, created_at timestamptz not null default now());
+alter table public.racing_rejected enable row level security;
+
+-- Retourne null si le fantôme est plausible, sinon la raison du refus (~50 ms sur la plus longue map).
+-- Contrôles : durée du fantôme = temps annoncé, vitesse max entre deux points (sauf réapparition sur un checkpoint),
+-- et pour les maps officielles : départ, arrivée, passage par chaque checkpoint, pas plus de 15 % du trajet loin de la piste.
+create or replace function public.racing_ghost_problem(p_map text, p_time integer, g jsonb)
+returns text language plpgsql stable security definer set search_path to 'public' as $$
+declare
+  n int; meta jsonb; i int; j int; d float; best float; off int := 0; checked int := 0; ok boolean; teleport boolean;
+  gx float8[]; gy float8[]; gz float8[];
+  lx float8[]; ly float8[]; lz float8[];
+  cx float8[]; cy float8[]; cz float8[];
+  fx float8[]; fy float8[]; fz float8[];
+begin
+  if g is null or jsonb_typeof(g) <> 'array' or (g->>0) is distinct from '-2' then return 'fantôme absent'; end if;
+  n := (jsonb_array_length(g) - 1) / 7;
+  if (jsonb_array_length(g) - 1) % 7 <> 0 or n < 10 then return 'fantôme mal formé'; end if;
+  if n * 50 < p_time - 60 or n * 50 > p_time + 10 then return 'durée du fantôme ≠ temps'; end if;
+  select array_agg((g->>(1 + k * 7))::float8 / 10 order by k), array_agg((g->>(2 + k * 7))::float8 / 10 order by k),
+         array_agg((g->>(3 + k * 7))::float8 / 10 order by k)
+    into gx, gy, gz from generate_series(0, n - 1) k;
+  select o.meta into meta from racing_official o where o.map_id = p_map;
+  if meta is not null then
+    select array_agg((e->>0)::float8), array_agg((e->>1)::float8), array_agg((e->>2)::float8) into lx, ly, lz from jsonb_array_elements(meta->'line') e;
+    select array_agg((e->>0)::float8), array_agg((e->>1)::float8), array_agg((e->>2)::float8) into cx, cy, cz
+      from (select e from jsonb_array_elements(meta->'cps') e union all select meta->'start') s;
+    select array_agg((e->>0)::float8), array_agg((e->>1)::float8), array_agg((e->>2)::float8) into fx, fy, fz from jsonb_array_elements(meta->'finish') e;
+  end if;
+  for i in 2 .. n loop
+    d := sqrt((gx[i] - gx[i-1])^2 + (gy[i] - gy[i-1])^2 + (gz[i] - gz[i-1])^2);
+    if d > 5.5 then
+      teleport := false;
+      if cx is not null then
+        for j in 1 .. array_length(cx, 1) loop
+          if sqrt((gx[i] - cx[j])^2 + (gy[i] - cy[j])^2 + (gz[i] - cz[j])^2) < 12 then teleport := true; end if;
+        end loop;
+      end if;
+      if not teleport then return 'vitesse impossible'; end if;
+    end if;
+  end loop;
+  if meta is null then return null; end if;
+  i := 1;
+  while i <= n loop
+    best := 1e18;
+    for j in 1 .. array_length(lx, 1) loop
+      d := (gx[i] - lx[j])^2 + (gy[i] - ly[j])^2 + (gz[i] - lz[j])^2;
+      if d < best then best := d; end if;
+    end loop;
+    checked := checked + 1;
+    if best > 3600 then off := off + 1; end if;
+    i := i + 3;
+  end loop;
+  if off > checked * 0.15 then return 'hors piste'; end if;
+  if sqrt((gx[1] - (meta->'start'->>0)::float8)^2 + (gy[1] - (meta->'start'->>1)::float8)^2 + (gz[1] - (meta->'start'->>2)::float8)^2) > 25 then return 'mauvais départ'; end if;
+  ok := false;
+  for j in 1 .. array_length(fx, 1) loop
+    if sqrt((gx[n] - fx[j])^2 + (gy[n] - fy[j])^2 + (gz[n] - fz[j])^2) < 30 then ok := true; end if;
+  end loop;
+  if not ok then return 'arrivée non atteinte'; end if;
+  for j in 1 .. coalesce(array_length(cx, 1), 1) - 1 loop
+    ok := false;
+    for i in 1 .. n loop
+      if sqrt((gx[i] - cx[j])^2 + (gy[i] - cy[j])^2 + (gz[i] - cz[j])^2) < 22 then ok := true; exit; end if;
+    end loop;
+    if not ok then return 'checkpoint manqué'; end if;
+  end loop;
+  return null;
+end $$;
+revoke execute on function public.racing_ghost_problem(text, integer, jsonb) from anon, authenticated, public;
+
+-- racing_submit (version finale) : refuse et journalise les temps dont le fantôme n'est pas plausible
+create or replace function public.racing_submit(p_map text, p_pseudo text, p_time integer, p_ghost jsonb)
+returns integer language plpgsql security definer set search_path to 'public' as $$
+declare r int; wr_p text; wr_t int; why text;
+begin
+  p_pseudo := btrim(p_pseudo);
+  if p_map is null or length(p_map) > 40 or p_pseudo is null or length(p_pseudo) not between 1 and 16
+     or p_time not between 2000 and 3600000
+     or (p_ghost is not null and pg_column_size(p_ghost) > 300000) then return null; end if;
+  why := racing_ghost_problem(p_map, p_time, p_ghost);
+  if why is not null then
+    insert into racing_rejected (map_id, pseudo, time_ms, reason) values (p_map, p_pseudo, p_time, why);
+    return null;
+  end if;
+  select pseudo, time_ms into wr_p, wr_t from racing_records where map_id = p_map order by time_ms, updated_at limit 1;
+  insert into racing_records as rr (map_id, pseudo, time_ms, ghost)
+  values (p_map, p_pseudo, p_time, p_ghost)
+  on conflict (map_id, pseudo) do update
+    set attempts = rr.attempts + 1,
+        time_ms = least(rr.time_ms, excluded.time_ms),
+        ghost = case when excluded.time_ms < rr.time_ms then excluded.ghost else rr.ghost end,
+        updated_at = case when excluded.time_ms < rr.time_ms then now() else rr.updated_at end;
+  if wr_p is not null and p_time < wr_t and lower(wr_p) <> lower(p_pseudo) then
+    insert into racing_events (map_id, new_pseudo, new_time, old_pseudo, old_time) values (p_map, p_pseudo, p_time, wr_p, wr_t);
+  end if;
+  select count(*) + 1 into r from racing_records
+   where map_id = p_map and time_ms < (select time_ms from racing_records where map_id = p_map and pseudo = p_pseudo);
+  return r;
+end $$;
