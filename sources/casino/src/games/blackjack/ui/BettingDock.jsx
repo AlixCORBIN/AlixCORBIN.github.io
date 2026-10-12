@@ -1,3 +1,4 @@
+import "../../../styles/paytable.css";
 import React from "react";
 import { CHIPS } from "../chips.js";
 import { RULES } from "../engine.js";
@@ -10,8 +11,21 @@ const CHIP_VALUES = [...CHIPS]
 
 const CHIP_BY_VALUE = Object.fromEntries(CHIPS.map((c) => [c.v, c]));
 
+const PAYTABLE = {
+  bet: [["Gain", 1], ["Blackjack", 1.5]],
+  pp: [["Paire mixte", 5], ["Paire de couleur", 12], ["Paire parfaite", 25]],
+  t3: [
+    ["Couleur", 5],
+    ["Suite", 10],
+    ["Brelan", 30],
+    ["Quinte flush", 40],
+    ["Brelan assorti", 100],
+  ],
+};
+
 export function BettingDock({ ctrl, state, me }) {
   const [spot, setSpot] = React.useState("bet");
+  const [showGains, setShowGains] = React.useState(false);
   const limits = {
     bet: RULES.maxBet,
     pp: RULES.sideMax,
@@ -73,9 +87,33 @@ export function BettingDock({ ctrl, state, me }) {
           >
             <small>{label}</small>
             <b>{bets[key]}</b>
+            {showGains && bets[key] > 0 && (
+              <small>
+                {key === "bet"
+                  ? `BJ +${Math.floor(bets[key] * 1.5)}`
+                  : `max +${bets[key] * PAYTABLE[key][PAYTABLE[key].length - 1][1]}`}
+              </small>
+            )}
           </button>
         ))}
+        <button
+          className={"spot" + (showGains ? " on" : "")}
+          onClick={() => setShowGains((v) => !v)}
+        >
+          <small>Gains</small>
+          <b>{showGains ? "ON" : "OFF"}</b>
+        </button>
       </div>
+      {showGains && (
+        <div className="paytable">
+          {PAYTABLE[spot].map(([name, m]) => (
+            <span key={name}>
+              {name} <b>{m}:1</b>
+              {bets[spot] > 0 && ` (+${Math.floor(bets[spot] * m)})`}
+            </span>
+          ))}
+        </div>
+      )}
       <div className="chips">
         {CHIP_VALUES.map((v) => (
           <button
