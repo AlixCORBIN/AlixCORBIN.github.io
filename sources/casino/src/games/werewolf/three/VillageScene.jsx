@@ -190,9 +190,9 @@ function CameraRig({ meAngle, radius }) {
   const { camera, size } = useThree();
   const ctl = React.useRef();
   React.useEffect(() => {
-    const far = radius + (size.width < size.height ? 14 : 10);
+    const far = radius + (size.width < size.height ? 15 : 11.5);
     const a = meAngle ?? Math.PI / 2;
-    camera.position.set(Math.cos(a) * far, 9.5, Math.sin(a) * far);
+    camera.position.set(Math.cos(a) * far, 6, Math.sin(a) * far);
     camera.lookAt(0, 0.8, 0);
     ctl.current?.update();
   }, [meAngle, radius, size.width, size.height]);
