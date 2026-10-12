@@ -1,6 +1,6 @@
 import React from "react";
 import { Leaderboard } from "../games/blackjack/ui/Leaderboard.jsx";
-import { START_BANKROLL, borrow as borrowServer, claimPseudo, loadWallet, refreshWallet, saveWallet } from "../lib/wallet.js";
+import { START_BANKROLL, loadWallet, saveWallet } from "../lib/wallet.js";
 import { GAME_INFO, watchRooms } from "../net/rooms.js";
 import { loadPlayMii } from "../lib/mii.js";
 import { setCanApply } from "../lib/cloudSave.js";
@@ -125,20 +125,8 @@ export function Lobby({ onStart }) {
     setIsPublic(v);
     try { localStorage.setItem(PUB_KEY, v ? "1" : "0"); } catch {}
   };
-  const [err, setErr] = React.useState("");
-  const [busy, setBusy] = React.useState(false);
-  const start = async (game, mode, joinCode = code) => {
+  const start = (game, mode, joinCode = code) => {
     saveWallet({ name: name.trim() });
-    setErr("");
-    // le pseudo est réservé côté serveur : c'est lui qui s'affiche aux tables et dans les classements
-    setBusy(true);
-    try {
-      await claimPseudo(name.trim());
-    } catch (e) {
-      setBusy(false);
-      return setErr(e.message);
-    }
-    setBusy(false);
     const g = GAMES.find((x) => x.id === game);
     if (g?.external) {
       const q = mode === "join" ? `room=${joinCode}&join=1` : `mode=host&public=${isPublic ? 1 : 0}`;
@@ -148,22 +136,24 @@ export function Lobby({ onStart }) {
     onStart(game, mode, pseudo, joinCode, bankroll, { isPublic, mii });
   };
   const [debt, setDebt] = React.useState(wallet.debt);
-  const [banned, setBanned] = React.useState(wallet.banned);
   React.useEffect(() => {
     setCanApply(true);
     const reload = () => {
       const w = loadWallet();
       setBankroll(w.bankroll);
       setDebt(w.debt);
-      setBanned(w.banned);
-      setName((n) => n || w.name || "");
+      setName(w.name || "");
     };
     window.addEventListener("casino-save", reload);
-    refreshWallet().catch((e) => setErr(e.message));
     return () => window.removeEventListener("casino-save", reload);
   }, []);
-  const borrow = () => borrowServer().catch((e) => setErr(e.message));
-  const broke = bankroll === null || bankroll < 5 || banned;
+  const borrow = () => {
+    const newDebt = debt + Math.max(0, START_BANKROLL - bankroll);
+    saveWallet({ bankroll: START_BANKROLL, debt: newDebt });
+    setBankroll(START_BANKROLL);
+    setDebt(newDebt);
+  };
+  const broke = bankroll < 5;
 
   const q = norm(query.trim());
   const match = (g) => !q || norm(`${g.title} ${g.desc} ${g.author || ""}`).includes(q);
@@ -184,16 +174,14 @@ export function Lobby({ onStart }) {
           </label>
           <div className="c-wallet" title="Jetons virtuels, aucun argent réel. Solde partagé entre les jeux de casino.">
             <small>Solde</small>
-            <b>{bankroll === null ? "…" : Math.round(bankroll).toLocaleString("fr-FR")}</b>
+            <b>{Math.round(bankroll).toLocaleString("fr-FR")}</b>
           </div>
         </div>
       </header>
 
       <div className="c-layout">
         <main className="c-main">
-          {err && <div className="c-alert"><span>{err}</span></div>}
-          {banned && <div className="c-alert"><span>Ce compte est banni des jeux de casino pour triche.</span></div>}
-          {broke && !banned && bankroll !== null && (
+          {broke && (
             <div className="c-alert">
               <span>Solde épuisé : les jeux de casino sont bloqués.</span>
               <button className="btn primary" onClick={borrow}>Emprunter {START_BANKROLL} jetons</button>
@@ -239,7 +227,7 @@ export function Lobby({ onStart }) {
             <h2>Rejoindre un ami</h2>
             <div className="join">
               <input value={code} maxLength={5} placeholder="CODE" onChange={(ev) => setCode(ev.target.value.toUpperCase())} />
-              <button className="btn primary" disabled={code.trim().length < 5 || busy} onClick={() => start(null, "join")}>Rejoindre</button>
+              <button className="btn primary" disabled={code.trim().length < 5 || broke} onClick={() => start(null, "join")}>Rejoindre</button>
             </div>
           </div>
           <div id="gchat-dock" className="c-box gchat-dock" />

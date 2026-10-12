@@ -14,25 +14,8 @@ let subscribed = false;
 let rooms = [];
 const watchers = new Set();
 
-// Tables d'argent tenues par le serveur : listées depuis casino_room_views
-let serverRooms = [];
-let poll = null;
-async function loadServerRooms() {
-  try {
-    const since = new Date(Date.now() - 120000).toISOString();
-    const { data } = await supabase.from("casino_room_views").select("code, game, players, view, updated_at")
-      .eq("is_public", true).gt("players", 0).gt("updated_at", since).limit(30);
-    serverRooms = (data || []).map((r) => ({
-      public: true, game: r.game, code: r.code, players: r.players, bots: 0,
-      host: r.view?.players?.[0]?.name || "Table", status: "playing", at: Date.parse(r.updated_at),
-    }));
-  } catch {}
-  rooms = readRooms();
-  watchers.forEach((cb) => cb(rooms));
-}
-
 function readRooms() {
-  const list = [...Object.values(ch?.presenceState() || {}).flat(), ...serverRooms].filter((r) => r && r.public && r.code);
+  const list = Object.values(ch.presenceState()).flat().filter((r) => r && r.public && r.code);
   const uniq = new Map(list.map((r) => [r.game + r.code, r]));
   return [...uniq.values()].sort((a, b) => (b.at || 0) - (a.at || 0));
 }
@@ -82,17 +65,7 @@ export function watchRooms(cb) {
   }
   watchers.add(cb);
   if (subscribed) cb(rooms);
-  if (!poll) {
-    loadServerRooms();
-    poll = setInterval(loadServerRooms, 10000);
-  }
-  return () => {
-    watchers.delete(cb);
-    if (!watchers.size) {
-      clearInterval(poll);
-      poll = null;
-    }
-  };
+  return () => watchers.delete(cb);
 }
 
 export const GAME_INFO = {

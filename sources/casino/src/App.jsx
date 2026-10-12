@@ -10,33 +10,19 @@ import { HorsesHost } from "./games/horses/host.js";
 import { WerewolfHost } from "./games/werewolf/host.js";
 import { GameScreen } from "./GameScreen.jsx";
 import { ClientController } from "./net/controller.js";
-import { ServerTable } from "./net/serverTable.js";
-import { db } from "./lib/identity.js";
 import { Lobby } from "./ui/Lobby.jsx";
 import { GAME_INFO } from "./net/rooms.js";
 
 // TrackMerdia (et son moteur physique WebAssembly) n'est chargé que quand on lance le jeu
 const RacingApp = React.lazy(() => import("./games/racing/ui/RacingApp.jsx").then((m) => ({ default: m.RacingApp })));
 
-const SERVER_GAMES = ["blackjack", "roulette"];
-
 export function App() {
   const [ctrl, setCtrl] = React.useState(null);
   const [racing, setRacing] = React.useState(null);
   // Jeu de la salle en cours, affiché à côté du pseudo dans le chat général (rien dans les menus)
   window.__gchatGame = () => (racing ? "TrackMerdia" : ctrl?.state?.game ? GAME_INFO[ctrl.state.game]?.title || null : null);
-  const start = async (game, mode, name, code, bankroll, opts = {}) => {
+  const start = (game, mode, name, code, bankroll, opts = {}) => {
     if (game === "racing") return setRacing({ pseudo: name });
-    // Blackjack et roulette : tables tenues par le serveur (solde, cartes et tirages côté serveur)
-    if (SERVER_GAMES.includes(game) && mode !== "join") return setCtrl(new ServerTable(game, { isPublic: !!opts.isPublic, mii: opts.mii }));
-    if (mode === "join") {
-      let server = SERVER_GAMES.includes(game);
-      if (!game) {
-        const { data } = await db().from("casino_room_views").select("game").eq("code", String(code).toUpperCase().trim()).maybeSingle();
-        server = !!data;
-      }
-      if (server) return setCtrl(new ServerTable(game, { code: String(code).toUpperCase().trim(), mii: opts.mii }));
-    }
     const Host =
       game === "buckshot"
         ? BuckshotHost

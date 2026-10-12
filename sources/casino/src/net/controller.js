@@ -1,8 +1,6 @@
 import { RoomChannel, makeRoomCode } from "./channel.js";
 import { announceRoom, withdrawRoom } from "./rooms.js";
 import { miiForId, sanitizeMii, setRoomMiis } from "../lib/mii.js";
-import { myUid } from "../lib/identity.js";
-import { buildReport, setActiveHost } from "../lib/report.js";
 
 export const AFK_MS = 60000;
 
@@ -47,13 +45,6 @@ export class HostController extends Store {
     this.bankroll = bankroll;
     this.g = this.makeGame();
     this.seen = new Map();
-    // identité serveur de chaque joueur humain (pour la confirmation des résultats)
-    this.uids = {};
-    this.report = null;
-    setActiveHost(this);
-    myUid().then((u) => {
-      this.myUid = u;
-    });
     this.timers = {};
     this.lastAct = {};
     this.afk = null;
@@ -139,7 +130,6 @@ export class HostController extends Store {
     const peer = from;
     if (msg.t === "hello") {
       if (msg.mii && typeof msg.mii === "object") this.peerMiis[peer] = sanitizeMii(msg.mii);
-      if (typeof msg.uid === "string" && /^[0-9a-f-]{36}$/.test(msg.uid)) this.uids[peer] = msg.uid;
       if (this.seen.has(peer)) {
         this.link.send(peer, {
           t: "welcome",
@@ -247,7 +237,6 @@ export class HostController extends Store {
     this.schedule();
     this.state = this.viewOf();
     this.decorate(this.state);
-    if (this.report) this.state.report = this.report;
     this.updateMiis();
     this.emit();
     if (this.online && this.link && this.status === "ready") {
@@ -258,11 +247,6 @@ export class HostController extends Store {
     }
   }
   decorate() {}
-  // Résultat de fin de partie : diffusé à tous, chaque humain le confirme au serveur
-  setReport(game, args) {
-    this.report = buildReport(game, args, (id) => (id === this.me ? this.myUid : this.uids[id]));
-    this.publish();
-  }
   // Mii de chaque joueur : le sien, celui envoyé par le client, ou un Mii stable (bots)
   updateMiis() {
     const map = {};
@@ -289,7 +273,6 @@ export class HostController extends Store {
     this.timers = {};
   }
   destroy() {
-    setActiveHost(null);
     withdrawRoom();
     this.clearTimers();
     clearInterval(this.hb);
@@ -314,9 +297,8 @@ export class ClientController extends Store {
     this.bankroll = bankroll;
     this.attempt();
   }
-  async attempt() {
+  attempt() {
     const { name, bankroll } = this;
-    const uid = await myUid();
     const link = new RoomChannel(this.code, (msg) => this.onMsg(msg));
     this.link = link;
     this.lastHost = Date.now();
@@ -342,7 +324,6 @@ export class ClientController extends Store {
               t: "hello",
               name,
               bankroll,
-              uid,
               mii: this.mii,
             });
           }

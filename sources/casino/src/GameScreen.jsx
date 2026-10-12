@@ -1,6 +1,9 @@
 import React from "react";
+import { saveBlackjackSession, submitScore } from "./games/blackjack/api.js";
+import { sessionStats } from "./games/blackjack/engine.js";
 import { BlackjackScene } from "./games/blackjack/three/BlackjackScene.jsx";
 import { BlackjackHud } from "./games/blackjack/ui/BlackjackHud.jsx";
+import { saveRouletteSession } from "./games/roulette/api.js";
 import { HorsesScreen } from "./games/horses/ui/HorsesScreen.jsx";
 import { BuckshotScreen } from "./games/buckshot/ui/BuckshotScreen.jsx";
 import { NavalScreen } from "./games/naval/ui/NavalScreen.jsx";
@@ -10,7 +13,7 @@ import { MbScreen } from "./games/milleborne/ui/MbScreen.jsx";
 import { WerewolfScreen } from "./games/werewolf/ui/WerewolfScreen.jsx";
 import { RouletteScreen } from "./games/roulette/ui/RouletteScreen.jsx";
 import { sound } from "./lib/sound.js";
-import { useReportResult } from "./lib/report.js";
+import { loadWallet, saveWallet, settledBankroll } from "./lib/wallet.js";
 import { PublicToggle } from "./ui/PublicToggle.jsx";
 import { setCanApply } from "./lib/cloudSave.js";
 
@@ -18,13 +21,68 @@ export function GameScreen({ ctrl, onQuit }) {
   React.useSyncExternalStore(ctrl.subscribe, ctrl.getSnapshot);
   const state = ctrl.state;
   const me = state?.players.find((p) => p.id === ctrl.me);
+  const debtAtStart = React.useRef(loadWallet().debt);
   React.useEffect(() => {
     setCanApply(false);
     return () => setCanApply(true);
   }, []);
-  // Solde, stats de session et classement des jetons : calculés et écrits par le serveur
-  // (Edge Function casino-table). Fin de partie des autres jeux : chaque humain confirme le résultat.
-  useReportResult(ctrl, state);
+  const credit = me?.stats?.credit || 0;
+  React.useEffect(() => {
+    if (me) {
+      saveWallet({
+        debt: debtAtStart.current + credit,
+      });
+    }
+  }, [credit, !!me]);
+  React.useEffect(() => {
+    const bankroll = settledBankroll(state, me);
+    if (bankroll !== null) {
+      saveWallet({
+        bankroll,
+      });
+    }
+  }, [state?.phase, state?.round, me?.bankroll]);
+  const savedRound = React.useRef(0);
+  React.useEffect(() => {
+    if (
+      state?.game === "blackjack" &&
+      state?.phase === "settle" &&
+      me &&
+      savedRound.current !== state.round
+    ) {
+      savedRound.current = state.round;
+      saveBlackjackSession(sessionStats(me));
+    }
+    if (
+      state?.game === "roulette" &&
+      state?.phase === "settle" &&
+      me?.bets.length &&
+      savedRound.current !== state.round
+    ) {
+      savedRound.current = state.round;
+      saveRouletteSession(me);
+    }
+  }, [state?.phase, state?.round]);
+  // Classement general des jetons : enregistre automatiquement a la fin de chaque manche
+  const boardRound = React.useRef(0);
+  React.useEffect(() => {
+    const played =
+      state?.phase === "settle" &&
+      me &&
+      (state.game === "blackjack" ||
+        (state.game === "roulette" && me.bets.length > 0));
+    const pseudo = me?.name?.trim();
+    if (!played || !pseudo || pseudo === "Joueur") return;
+    if (boardRound.current === state.round) return;
+    boardRound.current = state.round;
+    const bankroll = settledBankroll(state, me) ?? me.bankroll;
+    submitScore({
+      pseudo,
+      bankroll: bankroll - (debtAtStart.current + credit),
+      hands: 0,
+      won: 0,
+    }).catch(() => {});
+  }, [state?.phase, state?.round]);
   const prev = React.useRef({});
   React.useEffect(() => {
     if (!state || state.game !== "blackjack") return;

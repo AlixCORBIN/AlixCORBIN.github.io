@@ -122,7 +122,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
           showFlash({ text: formatTime(t), sub: ref != null ? delta(t - ref) : null, bad: ref != null && t > ref });
         }
       },
-      onFinish: (ms, ghost, splits, log) => {
+      onFinish: (ms, ghost, splits) => {
         sfx.finish();
         rumble(0.8, 0.8, 350);
         const prev = pbRef.current;
@@ -130,7 +130,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
         setResult(r);
         if (mode === "test") { onTestDone?.(ms); return; }
         if (r.pbNew) setPb({ ms, ghost, splits });
-        submitTime(map.id, pseudo, ms, ghost, splits, log).then(({ rank }) => { setResult((x) => x && x.ms === ms ? { ...x, rank, saving: false } : x); loadTop(); }).catch(() => setResult((x) => x && { ...x, saving: false }));
+        submitTime(map.id, pseudo, ms, ghost, splits).then(({ rank }) => { setResult((x) => x && x.ms === ms ? { ...x, rank, saving: false } : x); loadTop(); }).catch(() => setResult((x) => x && { ...x, saving: false }));
       },
     });
     return s;

@@ -1,4 +1,3 @@
-import { reportResult } from "../../lib/report.js";
 import { supabase } from "../../lib/supabase.js";
 import { FINISH } from "./engine.js";
 
@@ -6,14 +5,13 @@ import { FINISH } from "./engine.js";
 export async function saveHorsesGame(g) {
   const players = g.players.map((p) => ({
     pseudo: p.name,
-    id: p.id,
     bot: !!p.bot,
     won: p.id === g.winner,
     captures: p.captures,
     home: p.horses.filter((x) => x === FINISH).length,
   }));
   const s = g.stats;
-  const { error } = await reportResult("horses", {
+  const { error } = await supabase.rpc("save_horses_game", {
     p_id: g.gameId || crypto.randomUUID(),
     p_duration: Math.round(((g.endedAt || Date.now()) - (g.startedAt || Date.now())) / 1000),
     p_rolls: s.rolls,
