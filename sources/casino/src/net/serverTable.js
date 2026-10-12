@@ -182,8 +182,20 @@ export class ServerTable {
       this.flushTimer = setTimeout(() => this.flush(), FLUSH_MS);
       return;
     }
-    // action qui révèle une information (cartes, tirage) : on envoie tout de suite, mises en attente comprises
+    // action qui révèle une information (cartes, tirage) : on envoie tout de suite, mises en attente comprises.
+    // Tirer / doubler : la carte part tout de suite face cachée vers la main, et se retourne à la réponse du serveur.
+    if (game === "blackjack" && (action.t === "hit" || action.t === "double")) this.placeholderCard();
     return this.flush([action]);
+  }
+  placeholderCard() {
+    const g = this.state;
+    const turn = g?.phase === "playing" && g.turn;
+    const p = turn && g.players[turn.p];
+    if (!p || p.id !== this.me || !p.hands[turn.h]) return;
+    const next = structuredClone(g);
+    next.players[turn.p].hands[turn.h].cards.push({ hidden: true, pending: true });
+    this.state = next;
+    this.emit();
   }
   flush(extra = []) {
     clearTimeout(this.flushTimer);
