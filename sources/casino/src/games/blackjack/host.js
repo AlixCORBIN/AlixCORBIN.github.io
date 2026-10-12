@@ -147,7 +147,7 @@ export class BlackjackHost extends HostController {
         this.settledAt = Date.now();
         this.arm("next", 9000, () => nextRound(g));
       } else if (g.phase === "insurance")
-        this.arm("ins", 15000, () => closeInsurance(g));
+        this.arm("ins", 8000, () => closeInsurance(g));
       else if (g.phase === "playing" && multi && g.turn) {
         const id = g.players[g.turn.p].id;
         this.afk = {

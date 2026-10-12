@@ -1,0 +1,44 @@
+.insurance-note {
+  position: fixed;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+  width: min(360px, calc(100% - 32px));
+  padding: 14px 16px 18px;
+  border-radius: 16px;
+  text-align: center;
+  overflow: hidden;
+  background: rgba(8, 24, 17, 0.82);
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  pointer-events: auto;
+  animation: insurance-in 0.25s ease-out;
+}
+.insurance-note p {
+  margin: 0 0 10px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.insurance-note .btn {
+  padding: 10px 12px;
+  font-size: 15px;
+}
+.insurance-timer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--gold);
+  transform-origin: left;
+  animation: insurance-timer linear forwards;
+}
+@keyframes insurance-in {
+  from { opacity: 0; transform: translate(-50%, -46%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+@keyframes insurance-timer {
+  to { transform: scaleX(0); }
+}
