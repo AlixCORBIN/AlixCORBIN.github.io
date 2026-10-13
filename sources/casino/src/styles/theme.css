@@ -1,0 +1,390 @@
+/* =========================================================================
+   CASINO : THÈME COMMUN
+   Chargé en dernier. Les sélecteurs sont préfixés par « html » pour passer
+   devant les feuilles de chaque jeu (y compris TrackMerdia, chargé à part)
+   sans toucher à leur positionnement : on harmonise l'apparence
+   (couleurs, typo, rayons, ombres, tailles de texte), pas la mise en page.
+
+   Grammaire :
+   - Surfaces : verre sombre sur feutre, filet doré fin (--line), reflet haut.
+   - Typo : Inter pour l'interface (chiffres tabulaires), Fraunces pour les titres
+     et les montants. Rien sous 12px.
+   - Boutons : primaire doré (1 seul par zone), secondaire verre, fantôme.
+   - Rayons : 10 / 14 / 20 / 24 / pilule.  Ombres : 3 niveaux.
+   ========================================================================= */
+
+:root {
+    --bg: #050c09;
+    --felt: #0b2c20;
+    --felt-2: #0f3b2a;
+
+    --gold: #e9c46a;
+    --gold-d: #b98f35;
+    --gold-l: #f6dc97;
+    --gold-grad: linear-gradient(180deg, #f4d88f 0%, #e2b85a 55%, #c9973c 100%);
+
+    --ink: #f6f2e8;
+    --ink-2: rgba(246, 242, 232, 0.74);
+    --ink-3: rgba(246, 242, 232, 0.54);
+
+    --panel: rgba(10, 21, 17, 0.84);
+    --surface: linear-gradient(180deg, rgba(20, 36, 29, 0.9), rgba(8, 16, 13, 0.92));
+    --glass: rgba(7, 15, 12, 0.62);
+    --line: rgba(233, 196, 106, 0.24);
+    --hair: rgba(255, 255, 255, 0.08);
+    --hair-2: rgba(255, 255, 255, 0.14);
+
+    --ok: #4ad295;
+    --bad: #ff7a7a;
+    --warn: #ffb870;
+
+    --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+    --r-sm: 10px;
+    --r-md: 14px;
+    --r-lg: 20px;
+    --r-xl: 24px;
+
+    --sh-1: 0 2px 10px rgba(0, 0, 0, 0.35);
+    --sh-2: 0 14px 36px rgba(0, 0, 0, 0.45);
+    --sh-3: 0 30px 80px rgba(0, 0, 0, 0.6);
+    --hl: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+
+    --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ---------- base ---------- */
+html body {
+    font-family: var(--ui);
+    font-size: 14px;
+    letter-spacing: -0.003em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "tnum" 1, "cv11" 1;
+}
+html h1, html h2, html h3 { font-family: var(--serif); font-weight: 600; letter-spacing: 0.005em; }
+html h1 em, html .brand em { font-style: italic; font-weight: 500; }
+html .sub { color: var(--ink-2); opacity: 1; font-size: 14px; line-height: 1.5; }
+html .fine { color: var(--ink-3); opacity: 1; font-size: 12px; }
+html kbd { font: 600 10.5px/1 var(--ui); border-color: var(--hair-2); opacity: 0.7; }
+html :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+html ::selection { background: rgba(233, 196, 106, 0.35); }
+html * { scrollbar-width: thin; scrollbar-color: rgba(233, 196, 106, 0.35) transparent; }
+
+/* ---------- champs ---------- */
+html input:not([type=range]):not([type=checkbox]):not([type=radio]),
+html select,
+html textarea {
+    font-family: var(--ui);
+    color: var(--ink);
+    background-color: rgba(0, 0, 0, 0.34);
+    border: 1px solid var(--hair-2);
+    border-radius: var(--r-sm);
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+html input:not([type=range]):not([type=checkbox]):not([type=radio]):hover,
+html select:hover { border-color: rgba(233, 196, 106, 0.4); }
+html input:not([type=range]):not([type=checkbox]):not([type=radio]):focus,
+html select:focus,
+html textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(233, 196, 106, 0.18);
+    background-color: rgba(0, 0, 0, 0.45);
+}
+html input::placeholder { color: var(--ink-3); }
+html select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 30px !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23e9c46a' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 11px center;
+    cursor: pointer;
+}
+html select option { background: #0b1712; color: var(--ink); }
+
+/* ---------- boutons ---------- */
+html .btn {
+    min-height: 40px;
+    border-radius: var(--r-md);
+    border: 1px solid var(--hair-2);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+    color: var(--ink);
+    font-family: var(--ui);
+    font-weight: 600;
+    letter-spacing: 0.005em;
+    box-shadow: var(--hl), 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: transform 0.12s var(--ease), background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+html .btn:hover:not(:disabled) {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05));
+    border-color: rgba(233, 196, 106, 0.55);
+    transform: translateY(-1px);
+}
+html .btn:active:not(:disabled) { transform: translateY(0) scale(0.985); }
+html .btn:disabled { opacity: 0.38; }
+html .btn.primary {
+    background: var(--gold-grad);
+    color: #1d1404;
+    border-color: rgba(255, 232, 170, 0.9);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 6px 18px rgba(233, 196, 106, 0.22), 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+html .btn.primary:hover:not(:disabled) {
+    background: linear-gradient(180deg, #f8e1a2 0%, #eac169 55%, #d3a245 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 10px 26px rgba(233, 196, 106, 0.32), 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+html .btn.ghost { background: transparent; box-shadow: none; }
+html .link { color: var(--gold); text-underline-offset: 3px; font-weight: 600; }
+
+/* ---------- barre de jeu (tous les jeux) ---------- */
+html header,
+html .topbar {
+    gap: 10px;
+    padding: calc(12px + env(safe-area-inset-top)) 16px 22px;
+    background: linear-gradient(180deg, rgba(3, 8, 6, 0.82) 0%, rgba(3, 8, 6, 0.45) 60%, rgba(3, 8, 6, 0) 100%);
+}
+html .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: 0.005em;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+html .pill,
+html .pubtoggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 32px;
+    padding: 0 13px;
+    border-radius: 999px;
+    border: 1px solid var(--hair-2);
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    color: var(--ink-2);
+    font-family: var(--ui);
+    font-size: 12.5px;
+    font-weight: 500;
+    box-shadow: var(--hl);
+    transition: border-color 0.15s, color 0.15s;
+}
+html button.pill:hover, html .pubtoggle:hover { border-color: rgba(233, 196, 106, 0.5); color: var(--ink); }
+html .pill b { color: var(--gold); letter-spacing: 0.18em; font-weight: 700; }
+html .pubtoggle { left: 16px; font-weight: 600; color: var(--ink); }
+html .pubtoggle i { box-shadow: 0 0 0 3px rgba(255, 184, 112, 0.18); }
+html .pubtoggle.on i { box-shadow: 0 0 0 3px rgba(74, 210, 149, 0.2), 0 0 8px var(--ok); background: var(--ok); }
+html .icon {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--hair-2);
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    font-size: 16px;
+    box-shadow: var(--hl);
+    transition: border-color 0.15s, background 0.15s, transform 0.12s var(--ease);
+}
+html .icon:hover { border-color: rgba(233, 196, 106, 0.55); background: rgba(20, 34, 28, 0.8); transform: translateY(-1px); }
+html .stat small { font-size: 10.5px; letter-spacing: 0.1em; color: var(--ink-3); opacity: 1; }
+html .stat b { font-family: var(--serif); font-weight: 600; }
+
+/* solde */
+html .balance {
+    border-color: rgba(233, 196, 106, 0.55);
+    border-radius: var(--r-md);
+    background: linear-gradient(180deg, rgba(30, 24, 8, 0.75), rgba(8, 10, 6, 0.8));
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: inset 0 1px 0 rgba(255, 232, 170, 0.18), var(--sh-1);
+}
+html .balance small { font-size: 10px; letter-spacing: 0.14em; color: var(--ink-3); opacity: 1; font-weight: 600; }
+html .balance b { font-family: var(--serif); font-weight: 600; font-size: 28px; letter-spacing: -0.01em; }
+
+/* ---------- panneaux, fenêtres, fin de partie ---------- */
+html .panel,
+html .lobby-card,
+html .rooms {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-xl);
+    -webkit-backdrop-filter: blur(18px) saturate(1.15);
+    backdrop-filter: blur(18px) saturate(1.15);
+    box-shadow: var(--sh-3), var(--hl);
+}
+html .panel h2 { font-weight: 600; letter-spacing: 0.005em; line-height: 1.15; }
+html .panel p { line-height: 1.5; }
+html .modal { background: rgba(2, 6, 4, 0.6); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+html .modal.soft { background: rgba(2, 6, 4, 0.35); }
+html .spinner { border-color: rgba(233, 196, 106, 0.18); border-top-color: var(--gold); }
+html .err { color: var(--bad); }
+
+/* réglages de salle */
+html .un-opt, html .c4-opt, html .hc-opt, html .mb-opt, html .nv-opt, html .bs-opt, html .ww-row {
+    color: var(--ink-2);
+    font-size: 14px;
+}
+html .un-opt select, html .c4-opt select, html .hc-opt select, html .mb-opt select,
+html .nv-opt select, html .bs-opt select, html .ww-row select {
+    min-height: 36px;
+    padding: 6px 12px;
+    font-size: 13.5px;
+    font-weight: 600;
+}
+html .un-settings, html .c4-settings, html .mb-settings, html .nv-settings, html .ww-settings {
+    padding: 12px 14px;
+    border-radius: var(--r-md);
+    background: rgba(0, 0, 0, 0.22);
+    border: 1px solid var(--hair);
+}
+
+/* listes de joueurs en salle */
+html .un-pl, html .c4-pl, html .hc-pl, html .mb-pl, html .nv-pl, html .bs-pl {
+    min-height: 38px;
+    align-items: center;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid var(--hair);
+    font-size: 13.5px;
+    font-weight: 500;
+}
+html .un-pl.me, html .c4-pl.me, html .hc-pl.me, html .mb-pl.me, html .nv-pl.me, html .bs-pl.me {
+    border-color: rgba(233, 196, 106, 0.65);
+    background: linear-gradient(90deg, rgba(233, 196, 106, 0.12), rgba(233, 196, 106, 0.03));
+}
+html .un-pl em, html .c4-pl em, html .hc-pl em, html .mb-pl em, html .nv-pl em, html .bs-pl em {
+    color: var(--ink-3); opacity: 1; font-size: 12px; font-weight: 500;
+}
+
+/* interrupteurs de règles */
+html .un-tg, html .mb-tg, html .nv-tg, html .ww-role-tg {
+    border-radius: 999px;
+    border: 1px solid var(--hair-2);
+    background: rgba(0, 0, 0, 0.28);
+    color: var(--ink-2);
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 1;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+html .un-tg.on, html .mb-tg.on, html .nv-tg.on, html .ww-role-tg.on {
+    border-color: rgba(233, 196, 106, 0.75);
+    background: rgba(233, 196, 106, 0.14);
+    color: var(--gold-l);
+}
+
+/* tableaux de scores de fin */
+html .un-sc, html .mb-sc, html .bs-sc {
+    border-radius: 12px;
+    border-color: var(--hair);
+    background: rgba(255, 255, 255, 0.04);
+}
+html .un-sc.me, html .mb-sc.me, html .bs-sc.me { border-color: rgba(233, 196, 106, 0.65); }
+
+/* ---------- barres d'action ---------- */
+html .dock,
+html .toast {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(18px) saturate(1.15);
+    backdrop-filter: blur(18px) saturate(1.15);
+    box-shadow: var(--sh-2), var(--hl);
+}
+html .dock { border-radius: var(--r-lg); }
+html .dock.slim, html .toast { border-radius: 999px; }
+html .dock p { font-size: 14.5px; font-weight: 500; }
+html .dock.slim p, html .hint { color: var(--ink-2); opacity: 1; font-size: 13px; }
+html .toast { color: var(--ink); font-size: 13px; font-weight: 500; }
+
+/* mises (blackjack) */
+html .spot {
+    border-radius: var(--r-md);
+    border-color: var(--hair-2);
+    background: rgba(0, 0, 0, 0.32);
+    transition: border-color 0.15s, background 0.15s;
+}
+html .spot small { font-size: 10.5px; letter-spacing: 0.1em; color: var(--ink-3); opacity: 1; font-weight: 600; }
+html .spot b { font-family: var(--serif); font-weight: 600; }
+html .spot.on { border-color: var(--gold); background: rgba(233, 196, 106, 0.1); box-shadow: 0 0 0 1px var(--gold) inset, 0 0 22px rgba(233, 196, 106, 0.15); }
+html .chipbtn { font-family: var(--serif); font-weight: 700; box-shadow: 0 5px 0 rgba(0, 0, 0, 0.45), 0 0 0 3px var(--c) inset, 0 8px 18px rgba(0, 0, 0, 0.35); }
+html .chipbtn:hover:not(:disabled) { transform: translateY(-4px); box-shadow: 0 9px 0 rgba(0, 0, 0, 0.35), 0 0 0 3px var(--c) inset, 0 14px 22px rgba(0, 0, 0, 0.35); }
+
+/* ---------- étiquettes de joueurs dans la scène ---------- */
+html .nameplate,
+html .un-plate, html .c4-plate, html .hc-plate, html .mb-plate, html .nv-plate, html .ww-plate {
+    font-family: var(--ui);
+    border-radius: 12px;
+    border: 1px solid var(--hair-2);
+    background-color: rgba(6, 12, 10, 0.84);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    box-shadow: var(--sh-1);
+}
+html .nameplate { font-size: 12.5px; }
+
+/* journaux de partie */
+html .un-log p, html .c4-log p, html .hc-log p, html .mb-log p, html .nv-log p, html .bs-log p {
+    font-size: 12.5px;
+    color: var(--ink);
+    opacity: 0.82;
+    text-shadow: 0 1px 2px #000, 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+/* bannières d'état */
+html .un-color-pill, html .c4-banner, html .mb-banner, html .nv-banner, html .bs-banner, html .ww-phase {
+    font-family: var(--ui);
+    font-weight: 600;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--sh-2);
+}
+
+/* ---------- classements ---------- */
+html .lb { font-size: 13.5px; }
+html .lb th { font-size: 10.5px; letter-spacing: 0.1em; color: var(--ink-3); opacity: 1; font-weight: 600; }
+html .lb td { border-top-color: var(--hair); }
+html .lb td:nth-child(3) { font-family: var(--serif); }
+html .badge { font-size: 12px; }
+
+/* ---------- salles en cours (hub et listes) ---------- */
+html .room {
+    border-radius: var(--r-md);
+    border-color: var(--hair);
+    background: rgba(255, 255, 255, 0.035);
+    transition: border-color 0.15s, background 0.15s;
+}
+html .room:hover { border-color: rgba(233, 196, 106, 0.4); background: rgba(255, 255, 255, 0.06); }
+html .room-main b { font-family: var(--serif); font-weight: 600; }
+html .room-main small { font-size: 12px; color: var(--ink-3); opacity: 1; }
+html .room-status { font-size: 10.5px; font-weight: 700; }
+html .live { font-size: 12px; color: var(--ink-2); opacity: 1; }
+html .rooms-empty { color: var(--ink-3); opacity: 1; font-size: 13px; }
+html .switch { border-color: var(--hair-2); background: rgba(255, 255, 255, 0.12); }
+html .switch.on { background: #1f9d62; border-color: #5be09a; }
+html .switch i { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); }
+
+@media (prefers-reduced-motion: reduce) {
+    html *, html *::before, html *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ---------- lisibilité des panneaux de salle (plancher 13px) ---------- */
+html .panel .sub { font-size: 13.5px; color: var(--ink-2); opacity: 1; }
+html .panel li { font-size: 13.5px; line-height: 1.55; color: var(--ink-2); }
+html .panel li + li { margin-top: 4px; }
+html .panel h2 + .sub { margin-top: -4px; }
+html .bs-rules, html .hc-rules { color: var(--ink-2); }
+html .center-screen { background: radial-gradient(ellipse at 50% 20%, #0f4632 0%, #072619 50%, #030a07 100%); }
+html .center-screen .panel p { color: var(--ink-2); font-size: 14px; }

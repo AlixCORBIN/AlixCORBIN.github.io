@@ -195,6 +195,11 @@ export function Lobby({ onStart }) {
 
       <div className="c-layout">
         <main className="c-main">
+          <div className="c-hero">
+            <small>Salle de jeux</small>
+            <h2>Choisis ta <em>table</em></h2>
+            <p>Jetons virtuels, parties en ligne entre amis ou contre des bots, classements en direct. Aucun argent réel.</p>
+          </div>
           {err && <div className="c-alert"><span>{err}</span></div>}
           {banned && <div className="c-alert"><span>Ce compte est banni des jeux de casino pour triche.</span></div>}
           {broke && !banned && bankroll !== null && (
