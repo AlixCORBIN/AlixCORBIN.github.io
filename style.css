@@ -2694,3 +2694,49 @@ body.dark-mode .footer-container .footer-bg path:not(.footer-line) { stroke: non
 body.dark-mode .footer-bg { filter: none; }
 body.phone .digital-time { font-size: 1.35rem; }
 body.phone .clock-area { margin-bottom: 8px; }
+
+/* =========================================
+   BARRE DU BAS FIDÈLE : creux profond au centre,
+   l'heure posée DANS le creux (au-dessus du filet), la date dans la barre.
+   Positions en % de la hauteur de barre (le creux fait 54/140 de la hauteur).
+   ========================================= */
+.footer-container .clock-area {
+    position: absolute;
+    top: 0; bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    margin: 0 !important;
+    display: block;
+}
+.footer-container .digital-time {
+    position: absolute;
+    left: 50%; top: 4%;
+    transform: translateX(-50%);
+    font-size: 2.3rem !important;
+    color: #8c8f93;
+}
+.footer-container .date-text {
+    position: absolute;
+    left: 50%; top: 47%;
+    transform: translateX(-50%);
+    margin: 0 !important;
+    white-space: nowrap;
+    font-size: 1.75rem !important;
+    color: #84878b;
+}
+.footer-container .visitor-count {
+    position: absolute;
+    left: 50%; top: 79%;
+    transform: translateX(-50%);
+    margin: 0;
+    white-space: nowrap;
+}
+.seg path { fill: #9da0a4; stroke: #85888c; }
+body.phone .footer-container .digital-time { font-size: 1.3rem !important; top: 3%; }
+body.phone .footer-container .date-text { font-size: 1rem !important; top: 46%; }
+body.phone .footer-container .visitor-count { top: 76%; font-size: .62rem; }
+/* style de la capture de référence : segments clairs cerclés de gris, date en graisse normale */
+.seg path { fill: #d7d9dc; stroke: #8a8d91; stroke-width: 1.6; }
+.footer-container .date-text { font-family: 'Roboto', 'Nunito', sans-serif; font-weight: 400; letter-spacing: .01em; color: #7d8085; }
+.footer-container .digital-time > span:nth-child(2) { color: #8a8d91; font-weight: 700; }
+body.dark-mode .seg path { fill: #2a2f44; stroke: #6a7090; }
