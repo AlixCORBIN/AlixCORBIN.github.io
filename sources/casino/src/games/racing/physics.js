@@ -243,7 +243,8 @@ export function driveCar(phys, car, world, input) {
   }
 
   // traînée, résistance, appui aérodynamique (colle la voiture dans les loopings et sur les murs)
-  const drag = CAR.drag / (car.boost > 0 ? car.boostDrag : 1);
+  // surface collante : forte traînée, la vitesse reste plafonnée
+  const drag = (CAR.drag * (surface === "glue" ? param(surfTile.glue, "drag") ?? 4 : 1)) / (car.boost > 0 ? car.boostDrag : 1);
   const f = [-vel[0] * speed * drag, -vel[1] * speed * drag, -vel[2] * speed * drag];
   if (contacts) {
     const roll = Math.min(CAR.roll, Math.abs(vf) * 40) * Math.sign(vf);
