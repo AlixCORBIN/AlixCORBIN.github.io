@@ -1,8 +1,8 @@
 import React from "react";
-import { deleteDraft, loadDrafts, publishMap, saveDraft } from "../api.js";
+import { adminCampaignUpsert, amIAdmin, deleteDraft, loadDrafts, publishMap, saveDraft, seasonLive } from "../api.js";
 import { OFFICIAL } from "../maps.js";
 import { WORLDS, formatTime } from "../physics.js";
-import { BLOCKS, BLOCK_KEYS, TILE, occupancy, sampleBlock, sectionPoints, toWorld } from "../blocks.js";
+import { BLOCKS, BLOCK_KEYS, TILE, blockKeysForSeason, occupancy, sampleBlock, sectionPoints, toWorld } from "../blocks.js";
 import { GRID, MAX_LEVEL, Track } from "../track.js";
 import { TrackPreview } from "../three/RaceScene.jsx";
 
@@ -91,6 +91,17 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
   const [busy, setBusy] = React.useState(false);
   const history = React.useRef([]);
   const painting = React.useRef(null);
+  // Blocs de la saison 2 : visibles seulement pour un admin ou une fois la saison 's2' ouverte
+  const [admin, setAdmin] = React.useState(false);
+  const [s2Live, setS2Live] = React.useState(false);
+  const [s2Form, setS2Form] = React.useState(null); // { name, ord } quand le formulaire d'envoi est ouvert
+  React.useEffect(() => {
+    let off = false;
+    amIAdmin().then((v) => !off && setAdmin(v));
+    seasonLive("s2").then((v) => !off && setS2Live(v));
+    return () => { off = true; };
+  }, []);
+  const keys = React.useMemo(() => blockKeysForSeason(admin || s2Live ? 2 : 1), [admin, s2Live]);
 
   const err = React.useMemo(() => new Track({ tiles: doc.tiles }).validate(), [doc.tiles]);
 
@@ -215,6 +226,26 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
     }
   };
 
+  const sendToS2 = async () => {
+    const name = s2Form.name.trim();
+    const ord = parseInt(s2Form.ord, 10);
+    if (!name || !Number.isInteger(ord) || ord < 1) { setMsg("Nom et ordre (entier ≥ 1) requis."); return; }
+    setBusy(true);
+    try {
+      const v = doc.tiles.some((t) => t[5] !== undefined && t[5] !== null) ? 2 : 1;
+      await adminCampaignUpsert({
+        mapId: `s2-${String(ord).padStart(2, "0")}`, seasonId: "s2", ord, name,
+        data: { v, world: doc.world, tiles: doc.tiles }, authorMs: doc.authorTime,
+      });
+      setMsg(`Map « ${name} » envoyée dans la campagne S2 (position ${ord}).`);
+      setS2Form(null);
+    } catch (e) {
+      setMsg(e.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const previewTrack = React.useMemo(() => (preview ? new Track({ tiles: doc.tiles, world: doc.world }) : null), [preview, doc]);
 
   return (
@@ -234,7 +265,7 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
           {CATS.map((c) => (
             <React.Fragment key={c}>
               <small className="rc-cat">{c}</small>
-              {BLOCK_KEYS.filter((k) => BLOCKS[k].cat === c).map((t) => (
+              {keys.filter((k) => BLOCKS[k].cat === c).map((t) => (
                 <button key={t} className={tool === t ? "on" : ""} onClick={() => setTool(t)}>
                   {HOTKEYS.includes(t) && <kbd>{HOTKEYS.indexOf(t) + 1}</kbd>}{BLOCKS[t].label}
                 </button>
@@ -261,7 +292,18 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
           <button className="btn" onClick={save}>Sauvegarder</button>
           <button className="btn" onClick={() => setOpen(true)}>Ouvrir…</button>
           <button className="btn primary" disabled={!doc.authorTime || busy || !!err} onClick={publish}>{busy ? "Publication…" : "🌐 Publier"}</button>
+          {admin && <button className="btn" disabled={!doc.authorTime || busy || !!err} onClick={() => setS2Form({ name: doc.name || "", ord: "1" })}>Envoyer dans la campagne S2</button>}
         </div>
+        {admin && s2Form && (
+          <div className="rc-s2form">
+            <label>Nom dans la campagne<input value={s2Form.name} maxLength={40} onChange={(e) => setS2Form({ ...s2Form, name: e.target.value })} /></label>
+            <label>Ordre<input type="number" min="1" value={s2Form.ord} onChange={(e) => setS2Form({ ...s2Form, ord: e.target.value })} /></label>
+            <div className="rc-actions">
+              <button className="btn primary" disabled={busy} onClick={sendToS2}>{busy ? "Envoi…" : "Envoyer"}</button>
+              <button className="btn" onClick={() => setS2Form(null)}>Annuler</button>
+            </div>
+          </div>
+        )}
         {msg && <p className="hint">{msg}</p>}
       </aside>
       <div className="rc-canvas" ref={wrap}>

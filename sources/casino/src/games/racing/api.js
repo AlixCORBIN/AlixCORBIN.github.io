@@ -94,6 +94,38 @@ export async function publishMap(name, author, data, authorTime) {
   return id;
 }
 
+// ---------- Campagne par saison (voir supabase/racing-season2.sql) ----------
+// Maps visibles de la saison (la RLS cache celles qui ne sont pas encore ouvertes, sauf aux admins)
+export async function campaignList(season) {
+  const { data, error } = await supabase.rpc("racing_campaign_list", { p_season: season });
+  if (error) throw error;
+  return data || [];
+}
+
+// Le compte connecté est-il admin ? (vérifié par le serveur ; false si la fonction n'existe pas)
+export async function amIAdmin() {
+  try {
+    const { data, error } = await supabase.rpc("is_admin");
+    return !error && data === true;
+  } catch { return false; }
+}
+
+// La saison est-elle ouverte à tous ? (publiée, ou date de début passée)
+export async function seasonLive(id) {
+  try {
+    const { data, error } = await supabase.rpc("season_live", { p_id: id });
+    return !error && data === true;
+  } catch { return false; }
+}
+
+// Admin : envoie une map dans la campagne (refusé côté serveur si le compte n'est pas admin)
+export async function adminCampaignUpsert({ mapId, seasonId, ord, name, data, authorMs, startsAt = null }) {
+  const { error } = await supabase.rpc("admin_campaign_upsert", {
+    p_map_id: mapId, p_season_id: seasonId, p_ord: ord, p_name: name, p_data: data, p_author_ms: authorMs, p_starts_at: startsAt,
+  });
+  if (error) throw error;
+}
+
 // Brouillons de l'éditeur (local)
 const DRAFT_KEY = "racing-drafts";
 export function loadDrafts() {

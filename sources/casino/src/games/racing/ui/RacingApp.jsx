@@ -1,5 +1,5 @@
 import React from "react";
-import { getMap, listMaps, loadPBs, playerRecords, worldRecords } from "../api.js";
+import { campaignList, getMap, listMaps, loadPBs, playerRecords, worldRecords } from "../api.js";
 import { MEDALS, OFFICIAL, medalFor } from "../maps.js";
 import { WORLDS, formatTime } from "../physics.js";
 import { Board } from "./Board.jsx";
@@ -57,6 +57,38 @@ function Campaign({ pbs, wrs, onPlay, onBoard }) {
         })}
       </div>
     </>
+  );
+}
+
+// Campagne de la saison 2 : lue côté serveur, la RLS ne renvoie que les maps ouvertes (tout pour un admin)
+function Season2({ onPlay, onBoard, pbs }) {
+  const [maps, setMaps] = React.useState(null);
+  const [err, setErr] = React.useState(null);
+  React.useEffect(() => {
+    campaignList("s2").then(setMaps).catch((e) => { setErr(e.message); setMaps([]); });
+  }, []);
+  if (!maps) return <p className="hint">Chargement…</p>;
+  if (!maps.length) return <p className="hint">{err ? `Saison 2 : ${err}` : "Bientôt disponible"}</p>;
+  return (
+    <div className="rc-maps">
+      {maps.map((m, i) => {
+        const map = { id: m.map_id, name: m.name, author_time: m.author_ms, world: m.data?.world ?? 0, data: m.data };
+        const pb = pbs[m.map_id]?.ms;
+        return (
+          <div key={m.map_id} className="rc-map" style={{ "--acc": WORLDS[map.world]?.accent }}>
+            <div className="rc-map-num">{m.ord ?? i + 1}</div>
+            <div className="rc-map-main">
+              <b>{m.name}</b>
+              <small><MedalDot medal={medalFor(pb, m.author_ms)} /> {pb ? formatTime(pb) : "pas encore de temps"}</small>
+            </div>
+            <div className="rc-map-btns">
+              <button className="btn primary" onClick={() => onPlay(map)}>Jouer</button>
+              <button className="btn ghost" onClick={() => onBoard(map)} title="Classement">🏆</button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -209,6 +241,7 @@ export function RacingApp({ pseudo, onQuit }) {
       <div className="rc-menu-body">
         <nav className="rc-tabs">
           <button className={tab === "campaign" ? "on" : ""} onClick={() => pickTab("campaign")}>Campagne</button>
+          <button className={tab === "season2" ? "on" : ""} onClick={() => pickTab("season2")}>Saison 2</button>
           <button className={tab === "community" ? "on" : ""} onClick={() => pickTab("community")}>Communauté</button>
           <button className={tab === "records" ? "on" : ""} onClick={() => pickTab("records")}>
             Records{rec.alerts.length > 0 && <span className="rc-badge">{rec.alerts.length}</span>}
@@ -224,6 +257,8 @@ export function RacingApp({ pseudo, onQuit }) {
         <p className="rc-pilot">Pilote : <b>{pseudo}</b>{pseudo === "Joueur" && " · choisis un pseudo dans le Casino pour entrer au classement"}</p>
         {tab === "records" ? (
           <Records pseudo={pseudo} alerts={rec.alerts} history={rec.history} onPlay={play} onBoard={setBoard} />
+        ) : tab === "season2" ? (
+          <Season2 pbs={pbs} onPlay={play} onBoard={setBoard} />
         ) : tab === "community" ? (
           <Community pbs={pbs} onPlay={play} onBoard={setBoard} />
         ) : (

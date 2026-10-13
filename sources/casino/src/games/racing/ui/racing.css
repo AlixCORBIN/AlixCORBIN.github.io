@@ -164,3 +164,6 @@
 .rc-side .rc-row.me{background:#ffd23f33;border-radius:6px;padding:0 4px;margin:0 -4px}
 .rc-side .rc-row small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px}
 .rc-unsynced{color:#ff8a8a;font-style:normal;font-weight:700}
+
+.rc-s2form{display:grid;gap:6px;margin-top:8px}
+.rc-s2form .rc-actions .btn:first-child,.rc-s2form .rc-actions .btn:last-child{grid-column:auto}

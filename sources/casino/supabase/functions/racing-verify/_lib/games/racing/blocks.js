@@ -130,6 +130,11 @@ export const BLOCKS = {
 
 export const BLOCK_KEYS = Object.keys(BLOCKS);
 
+// Saison d'un bloc : season absent = 1 (aucun bloc existant ne change). Les futurs blocs `season: 2`
+// restent cachés de la palette de l'éditeur tant que la saison 2 n'est pas ouverte (voir Editor.jsx).
+export const blockSeason = (type) => BLOCKS[type]?.season ?? 1;
+export const blockKeysForSeason = (maxSeason = 1) => BLOCK_KEYS.filter((k) => blockSeason(k) <= maxSeason);
+
 // ---------- échantillonnage ----------
 const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
