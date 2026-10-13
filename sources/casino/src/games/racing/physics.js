@@ -1,7 +1,7 @@
 // Physique : Rapier (corps rigides) + contrôleur de véhicule à rayons (4 roues à suspensions).
 // Pas fixe de 1/100 s : 1 pas = 10 ms de chrono. Tout tourne hors de React.
 import RAPIER from "@dimforge/rapier3d-compat";
-import { BLOCKS, sampleBlock, sectionPoints, toWorld } from "./blocks.js";
+import { BLOCKS, param, sampleBlock, sectionPoints, toWorld } from "./blocks.js";
 
 export const DT = 1 / 100;
 const GHOST_TAG = -2;
@@ -25,6 +25,18 @@ const SURF = {
   dirt: { side: 0.62, slip: 0.75 },
   ice: { side: 0.28, slip: 0.35 },
   grass: { side: 0.55, slip: 0.6 },
+  // saison 2
+  boost2: { side: 1, slip: 1 },
+  brake: { side: 1, slip: 0.9 },
+  glue: { side: 1.6, slip: 1.3 },
+  oil: { side: 0.07, slip: 0.1 },
+};
+
+// Turbo réglable : durée (s), force du moteur, division de la traînée. Le niveau 2 = turbo classique.
+const BOOST2 = {
+  1: { dur: 1.1, k: 1.18, drag: 1.06 },
+  2: { dur: 1.8, k: 1.3, drag: 1.12 },
+  3: { dur: 2.6, k: 1.5, drag: 1.2 },
 };
 
 const CAR = {
@@ -110,6 +122,7 @@ export function createWorld(track) {
   const world = new RAPIER.World({ x: 0, y: -GRAVITY, z: 0 });
   world.timestep = DT;
   const surfaceOf = new Map();
+  const tileOf = new Map(); // collider -> tuile (réglages tile.p lus par driveCar)
   // sol (herbe)
   const [w, h] = track.size;
   const ground = world.createCollider(
@@ -120,8 +133,9 @@ export function createWorld(track) {
     const { verts, idx } = roadTriangles(t);
     const c = world.createCollider(RAPIER.ColliderDesc.trimesh(verts, idx).setFriction(1));
     surfaceOf.set(c.handle, BLOCKS[t.type].surface || "road");
+    tileOf.set(c.handle, t);
   }
-  return { world, surfaceOf };
+  return { world, surfaceOf, tileOf };
 }
 
 export function createCar(phys, spawn) {
@@ -153,7 +167,7 @@ export function createCar(phys, spawn) {
     vc.setWheelMaxSuspensionForce(i, 150000);
     vc.setWheelFrictionSlip(i, CAR.slip);
   });
-  return { body, vc, steer: 0, boost: 0, airTime: 0, contacts: 0, surface: "road", speed: 0, kmh: 0, slip: 0, wheelSpin: [0, 0, 0, 0] };
+  return { body, vc, steer: 0, boost: 0, boostMax: 1.8, boostK: CAR.topBoost, boostDrag: 1.12, airTime: 0, contacts: 0, surface: "road", speed: 0, kmh: 0, slip: 0, wheelSpin: [0, 0, 0, 0] };
 }
 
 // Vecteurs du châssis en monde
@@ -175,19 +189,25 @@ export function driveCar(phys, car, world, input) {
   // contacts et surface sous les roues
   let contacts = 0;
   const surfCount = {};
+  const surfTile = {};
   for (let i = 0; i < 4; i++) {
     if (vc.wheelIsInContact(i)) {
       contacts++;
       const g = vc.wheelGroundObject(i);
       const s = (g && phys.surfaceOf.get(g.handle)) || "road";
       surfCount[s] = (surfCount[s] || 0) + 1;
+      if (!surfTile[s] && g) surfTile[s] = phys.tileOf.get(g.handle);
     }
   }
   car.contacts = contacts;
   const surface = Object.keys(surfCount).sort((a, b) => surfCount[b] - surfCount[a])[0] || "air";
   car.surface = surface;
   const sf = SURF[surface] || SURF.road;
-  if (surface === "boost") car.boost = 1.8;
+  if (surface === "boost") { car.boost = 1.8; car.boostMax = 1.8; car.boostK = CAR.topBoost; car.boostDrag = 1.12; }
+  else if (surface === "boost2") {
+    const b = BOOST2[Math.max(1, Math.min(3, Math.round(param(surfTile.boost2, "level") ?? 2)))];
+    car.boost = car.boostMax = b.dur; car.boostK = b.k; car.boostDrag = b.drag;
+  }
   car.boost = Math.max(0, car.boost - DT);
 
   // direction : angle max qui baisse avec la vitesse
@@ -197,7 +217,7 @@ export function driveCar(phys, car, world, input) {
   vc.setWheelSteering(1, -car.steer);
 
   // moteur / frein / marche arrière
-  const boostK = car.boost > 0 ? CAR.topBoost : 1;
+  const boostK = car.boost > 0 ? car.boostK : 1;
   let engine = 0, brake = 0;
   // couple plus fort à bas régime (permet de repartir dans une pente raide)
   const lowRpm = 1 + 1.3 * Math.max(0, 1 - Math.abs(vf) / 28);
@@ -217,7 +237,7 @@ export function driveCar(phys, car, world, input) {
   }
 
   // traînée, résistance, appui aérodynamique (colle la voiture dans les loopings et sur les murs)
-  const drag = CAR.drag / (car.boost > 0 ? 1.12 : 1);
+  const drag = CAR.drag / (car.boost > 0 ? car.boostDrag : 1);
   const f = [-vel[0] * speed * drag, -vel[1] * speed * drag, -vel[2] * speed * drag];
   if (contacts) {
     const roll = Math.min(CAR.roll, Math.abs(vf) * 40) * Math.sign(vf);
@@ -291,7 +311,7 @@ export function stepRun(run, track, phys, car, world, input) {
   run.steps++;
   const p1 = car.body.translation();
   const cur = [p1.x, p1.y, p1.z];
-  if (car.boost > 1.79) run.events.push("boost");
+  if (car.boost > car.boostMax - 0.01) run.events.push("boost");
 
   for (const g of track.gates) {
     if (!gateHit(g, prev, cur)) continue;
