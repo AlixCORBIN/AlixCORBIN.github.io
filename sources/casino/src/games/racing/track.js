@@ -8,11 +8,21 @@ export const MAX_LEVEL = 12;
 // Anciennes maps (v1) : types renommés
 const LEGACY = { ramp: "slope", wide: "platform" };
 
+// Versions de format acceptées : v absent = 1. La v2 ajoute un champ optionnel tile.p (paramètres par bloc),
+// 6e élément du tuple [x, z, type, rot, level, p], conservé tel quel.
+export const FORMAT_VERSIONS = [1, 2];
+
 export class Track {
   constructor(data) {
+    const v = data.v === undefined ? 1 : data.v;
+    if (!FORMAT_VERSIONS.includes(v)) throw new Error(`Version de map inconnue : ${JSON.stringify(data.v)} (versions acceptées : ${FORMAT_VERSIONS.join(", ")}).`);
     this.data = data;
     this.tiles = (data.tiles || [])
-      .map(([x, z, type, rot = 0, level = 0]) => ({ x, z, type: LEGACY[type] || type, rot: rot & 3, level }))
+      .map(([x, z, type, rot = 0, level = 0, p]) => {
+        const t = { x, z, type: LEGACY[type] || type, rot: rot & 3, level };
+        if (v >= 2 && p !== undefined && p !== null) t.p = p;
+        return t;
+      })
       .filter((t) => BLOCKS[t.type]);
     this.start = this.tiles.find((t) => t.type === "start") || null;
     this.cps = this.tiles.filter((t) => t.type === "cp");
@@ -98,7 +108,11 @@ export function buildTrack(path, { x = 0, z = 0, d = 0, l = 0 } = {}) {
 export function normalizeTiles(tiles) {
   const t = new Track({ tiles });
   const minL = Math.min(0, ...tiles.map((x) => x[4]));
-  return tiles.map(([x, z, type, rot, l]) => [x - t.min[0] + 1, z - t.min[1] + 1, type, rot, l - minL]);
+  return tiles.map(([x, z, type, rot, l, p]) => {
+    const o = [x - t.min[0] + 1, z - t.min[1] + 1, type, rot, l - minL];
+    if (p !== undefined && p !== null) o.push(p);
+    return o;
+  });
 }
 
 // Paires de blocs qui se chevauchent (même case, même bande de niveau)

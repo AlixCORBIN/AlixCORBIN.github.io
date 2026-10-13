@@ -2,9 +2,10 @@
 // node tools/sync-server.mjs  — à relancer après toute modification d'un moteur.
 import { cpSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const SRC = new URL("../src/", import.meta.url).pathname;
-const FN = new URL("../supabase/functions/", import.meta.url).pathname;
+const SRC = fileURLToPath(new URL("../src/", import.meta.url));
+const FN = fileURLToPath(new URL("../supabase/functions/", import.meta.url));
 
 const RANDOM_SHIM = `// Version serveur de lib/random.js (CSPRNG uniquement ; random.org est fourni par la fonction)
 export function secureRandomInt(max) {
