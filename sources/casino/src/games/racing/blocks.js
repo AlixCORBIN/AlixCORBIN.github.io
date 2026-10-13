@@ -140,8 +140,8 @@ const kicker2Path = (deg, len) => {
   const a = Math.tan((deg * Math.PI) / 180) * TILE * len * 0.5;
   return (s) => ({ p: [0, a * s * s, H - TILE * len * s], up: null });
 };
-// Lacets de 9 unités : tangente droite aux deux bouts (le bloc s'enchaîne comme un bloc droit)
-const railPath = (s) => ({ p: [9 * Math.sin(2 * Math.PI * s) * Math.sin(Math.PI * s), 0, H - TILE * s], up: Y });
+// Lacets de 7 unités : tangente droite aux deux bouts (le bloc s'enchaîne comme un bloc droit)
+const railPath = (s) => ({ p: [7 * Math.sin(2 * Math.PI * s) * Math.sin(Math.PI * s) ** 2, 0, H - TILE * s], up: Y });
 
 Object.assign(BLOCKS, {
   boost2: { label: "Turbo réglable", path: straight, n: 2, surface: "boost2", dir: true, ...S2, params: { level: P("Niveau", 1, 3, 2) } },
