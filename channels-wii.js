@@ -343,3 +343,28 @@ function createWiiPhotoCard(data, imgSrc, label, extraClass = '') {
         </div>`;
     return div;
 }
+
+
+/* =========================================
+   BULLE DE NOM AU SURVOL (comme le curseur du menu Wii)
+   ========================================= */
+(function () {
+    const tip = document.createElement('div');
+    tip.id = 'wii-tip';
+    tip.setAttribute('aria-hidden', 'true');
+    document.addEventListener('DOMContentLoaded', () => document.body.appendChild(tip));
+    let cur = null;
+    document.addEventListener('pointerover', (e) => {
+        const el = e.target.closest && e.target.closest('#grid-track .channel:not(.empty)');
+        if (el === cur) return;
+        cur = el;
+        if (!el || e.pointerType === 'touch') { tip.classList.remove('on'); return; }
+        tip.textContent = el.getAttribute('aria-label') || '';
+        const r = el.getBoundingClientRect();
+        tip.style.left = Math.round(r.left + r.width * 0.08) + 'px';
+        tip.style.top = Math.round(r.bottom + 10) + 'px';
+        tip.classList.add('on');
+    });
+    document.addEventListener('pointerleave', () => { cur = null; tip.classList.remove('on'); });
+    window.addEventListener('scroll', () => tip.classList.remove('on'), true);
+})();

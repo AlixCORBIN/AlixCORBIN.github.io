@@ -1188,6 +1188,21 @@ function closeContact() {
 /* =========================================
    11. HORLOGE
    ========================================= */
+// Afficheur 7 segments (horloge du menu Wii)
+const SEG_ON = ['abcdef','bc','abged','abgcd','fgbc','afgcd','afgedc','abc','abcdefg','abcdfg'];
+const SEG_PATH = {
+    a: 'M7 3h22l-4 5H11z',   b: 'M31 5l-4 5v17l4 4z',   c: 'M31 37l-4 4v17l4 5z',
+    d: 'M7 65h22l-4-5H11z',  e: 'M5 37l4 4v17l-4 5z',    f: 'M5 5l4 5v17l-4 4z',
+    g: 'M8 34l4-3h12l4 3-4 3H12z',
+};
+function segDigits(str) {
+    return [...str].map(ch => {
+        const on = SEG_ON[+ch] || '';
+        const paths = Object.keys(SEG_PATH).map(k => `<path d="${SEG_PATH[k]}"${on.includes(k) ? '' : ' class="off"'}/>`).join('');
+        return `<svg class="seg" viewBox="0 0 36 68" aria-hidden="true">${paths}</svg>`;
+    }).join('');
+}
+
 function updateClock() {
     const now = new Date();
     const hEl = document.getElementById('h');
@@ -1195,14 +1210,16 @@ function updateClock() {
     const ampmEl = document.getElementById('ampm');
     const dateEl = document.getElementById('date');
 
-    if (hEl) hEl.innerText = now.getHours();
-    if (mEl) mEl.innerText = String(now.getMinutes()).padStart(2, '0');
+    // Chiffres à segments façon Wii (SVG), mis à jour seulement quand ils changent
+    const hh = String(now.getHours()), mm = String(now.getMinutes()).padStart(2, '0');
+    if (hEl && hEl.dataset.v !== hh) { hEl.dataset.v = hh; hEl.innerHTML = segDigits(hh); }
+    if (mEl && mEl.dataset.v !== mm) { mEl.dataset.v = mm; mEl.innerHTML = segDigits(mm); }
     if (ampmEl) ampmEl.innerText = '';
     if (dateEl) {
         const daysFr = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
         const daysEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         const days = currentLang === 'en' ? daysEn : daysFr;
-        dateEl.innerText = `${days[now.getDay()]} ${now.getDate()}/${now.getMonth() + 1}`;
+        dateEl.innerText = `${days[now.getDay()]} ${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}`;
     }
 }
 
