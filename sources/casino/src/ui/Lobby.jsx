@@ -79,7 +79,9 @@ function GameTile({ game, broke, isPublic, onPlay }) {
   const action = game.solo ? "Jouer" : isPublic ? "Créer une salle publique" : "Créer une salle privée";
   return (
     <button className="tile" style={{ "--hue": game.hue }} disabled={locked} onClick={onPlay}>
-      <span className="tile-icon">{game.icon}</span>
+      <span className="tile-icon tile-img">
+        <img src={`tiles/${game.id}.webp`} alt="" loading="lazy" decoding="async" />
+      </span>
       <span className="tile-body">
         <b>{game.title}</b>
         <span className="tile-meta">
