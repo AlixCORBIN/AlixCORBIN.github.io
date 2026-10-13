@@ -633,7 +633,7 @@ function Captain({ p, bx, active, won }) {
 
 /* ---------------- scène ---------------- */
 
-export function NavalScene({ state, meId, placing, onAim, onFire, aim }) {
+export function NavalScene({ state, meId, placing, onAim, onFire, aim, spectator = false }) {
   const shake = React.useRef(0);
   const me = state.players.find((p) => p.id === meId);
   const foe = state.players.find((p) => p.id !== meId);
@@ -784,7 +784,7 @@ export function NavalScene({ state, meId, placing, onAim, onFire, aim }) {
       {foe && <Captain p={foe} bx={RIGHT} active={state.turn === foe.id} won={state.phase === "end" && state.winner === foe.id} />}
       {me && (
         <Html position={[LEFT, 0.4, HALF + 1.1]} center zIndexRange={[20, 0]}>
-          <div className={"nv-plate mine" + (state.turn === me.id ? " turn" : "")}>Ta flotte</div>
+          <div className={"nv-plate mine" + (state.turn === me.id ? " turn" : "")}>{spectator ? `${me.bot ? "🤖 " : ""}Flotte de ${me.name}` : "Ta flotte"}</div>
         </Html>
       )}
       {foe && (

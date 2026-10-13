@@ -19,7 +19,7 @@ import "./styles/spectator.css";
 // Siège fictif d'un observateur : les écrans attendent un « me », il ne joue jamais
 const SPECTATOR_ME = {
   id: "__spectator__", name: "Observateur", spectator: true, alive: false, ready: true, left: false,
-  items: [], cut: false, cuffed: false, hp: 0, maxHp: 0, wins: 0, ships: [], hits: 0, shots: 0,
+  items: [], cut: false, cuffed: false, hp: 0, maxHp: 0, wins: 0, ships: [], hits: 0, shots: 0, fired: 0, sunk: [],
   bets: [], lastBets: [], bankroll: 0, net: 0, win: 0, count: 0, score: 0, uno: false,
   role: null, lover: false, hands: [],
   stats: { played: 0, won: 0, lost: 0, push: 0, wagered: 0, splits: 0, doubles: 0, blackjacks: 0, peak: 0, drawdown: 0, credit: 0 },
@@ -29,7 +29,15 @@ export function GameScreen({ ctrl, onQuit }) {
   React.useSyncExternalStore(ctrl.subscribe, ctrl.getSnapshot);
   const state = ctrl.state;
   const spectator = !!ctrl.spectator;
-  const me = state?.players.find((p) => p.id === ctrl.me) || (spectator && state ? SPECTATOR_ME : undefined);
+  // Bataille navale (1 contre 1) : l'observateur suit la partie depuis le côté du premier joueur
+  // (sa vue reste celle d'un non-joueur : seuls les bateaux coulés sont visibles)
+  const me =
+    state?.players.find((p) => p.id === ctrl.me) ||
+    (spectator && state
+      ? state.game === "naval" && state.players[0]
+        ? { ...state.players[0], spectator: true }
+        : SPECTATOR_ME
+      : undefined);
   const watchers = useWatchers(ctrl);
   React.useEffect(() => {
     document.body.classList.toggle("spectating", spectator);

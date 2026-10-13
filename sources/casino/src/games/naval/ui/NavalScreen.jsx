@@ -332,13 +332,13 @@ function Banner({ state, me }) {
       </div>
     );
   }
-  return state.turn === me.id ? (
+  return state.turn === me.id && !me.spectator ? (
     <div key={"a" + state.turn + (shot?.seq || 0)} className="nv-banner mine">
       🎯 À toi de tirer ! Vise une case de la grille ennemie
     </div>
   ) : (
     <div key={"w" + state.turn + (shot?.seq || 0)} className="nv-banner">
-      🔭 {shooter?.name} vise ta flotte…
+      🔭 {shooter?.name} vise {me.spectator ? `la flotte de ${state.players.find((p) => p.id !== state.turn)?.name || "l'adversaire"}` : "ta flotte"}…
     </div>
   );
 }
@@ -361,7 +361,7 @@ function EndPanel({ ctrl, state, me }) {
   return (
     <div className="nv-panel panel nv-end">
       <h2>{won ? "🏆 Victoire !" : `⚓ ${winner?.name} gagne la bataille`}</h2>
-      <p className="sub">{won ? "Toute la flotte ennemie repose au fond de l'océan." : "Ta flotte a sombré… revanche ?"}</p>
+      {!me.spectator && <p className="sub">{won ? "Toute la flotte ennemie repose au fond de l'océan." : "Ta flotte a sombré… revanche ?"}</p>}
       <div className="nv-endstats">
         {state.players.map((p) => (
           <div key={p.id} className={p.id === state.winner ? "won" : ""}>
@@ -452,7 +452,7 @@ export function NavalScreen({ ctrl, state, me, onQuit }) {
 
   return (
     <div className="nv-root">
-      <NavalScene state={state} meId={me.id} placing={placing ? pl.scene : null} aim={aim} onAim={onAim} onFire={onFire} />
+      <NavalScene state={state} meId={me.id} spectator={!!me.spectator} placing={placing ? pl.scene : null} aim={aim} onAim={onAim} onFire={onFire} />
       <Header ctrl={ctrl} state={state} onQuit={onQuit} left={left} />
       {state.phase === "lobby" && <Lobby ctrl={ctrl} state={state} me={me} />}
       {placing && (
@@ -467,7 +467,7 @@ export function NavalScreen({ ctrl, state, me, onQuit }) {
       {battle && (
         <>
           <Banner state={state} me={me} />
-          <FleetCard p={me} title="Ta flotte" side="left" mine />
+          <FleetCard p={me} title={me.spectator ? `Flotte de ${me.name}` : "Ta flotte"} side="left" mine />
           {foe && <FleetCard p={foe} title={`Flotte de ${foe.name}`} side="right" />}
           <Log log={state.log} />
           {err && (
