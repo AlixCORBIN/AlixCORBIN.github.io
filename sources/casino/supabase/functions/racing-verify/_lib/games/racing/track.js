@@ -1,5 +1,5 @@
 // Piste = liste de blocs placés sur une grille (x, z, type, rot, niveau). Voir blocks.js pour la géométrie.
-import { BLOCKS, LEVEL_H, TILE, occupancy, placeFrom, sampleBlock, toWorld } from "./blocks.js";
+import { BLOCKS, LEVEL_H, TILE, occupancy, placeFrom, resolveType, sampleBlock, toWorld } from "./blocks.js";
 
 export { TILE, LEVEL_H } from "./blocks.js";
 export const GRID = 32; // taille max d'une map (cases)
@@ -24,8 +24,10 @@ export class Track {
         return t;
       })
       .filter((t) => BLOCKS[t.type]);
+    // blocs à géométrie réglable : le type devient « base~réglages » (voir resolveType)
+    for (const t of this.tiles) if (BLOCKS[t.type].variant) t.type = resolveType(t.type, t.p);
     this.start = this.tiles.find((t) => t.type === "start") || null;
-    this.cps = this.tiles.filter((t) => t.type === "cp");
+    this.cps = this.tiles.filter((t) => BLOCKS[t.type].gate === "cp");
     this.finishes = this.tiles.filter((t) => t.type === "finish");
     this.gates = this.tiles.filter((t) => BLOCKS[t.type].gate).map((t) => ({ tile: t, kind: BLOCKS[t.type].gate, ...frameAt(t, 0.5) }));
     let mx = 0, mz = 0, nx = 0, nz = 0;
@@ -115,11 +117,17 @@ export function normalizeTiles(tiles) {
   });
 }
 
+// Format à écrire pour une liste de tuiles : v2 dès qu'une tuile porte des réglages ou un bloc de saison 2
+export function mapVersion(tiles) {
+  return tiles.some((t) => (t[5] !== undefined && t[5] !== null) || BLOCKS[t[2]]?.season === 2) ? 2 : 1;
+}
+export const mapData = (world, tiles) => ({ v: mapVersion(tiles), world, tiles });
+
 // Paires de blocs qui se chevauchent (même case, même bande de niveau)
 export function overlaps(tiles) {
   const seen = new Map(), bad = [];
-  tiles.forEach(([x, z, type, rot, level], i) => {
-    for (const k of occupancy({ x, z, type, rot, level })) {
+  tiles.forEach(([x, z, type, rot, level, p], i) => {
+    for (const k of occupancy({ x, z, type, rot, level, p })) {
       if (seen.has(k) && seen.get(k) !== i) bad.push(`${k} (${tiles[seen.get(k)][2]}/${type})`);
       seen.set(k, i);
     }

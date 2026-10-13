@@ -1,7 +1,7 @@
 // Physique : Rapier (corps rigides) + contrôleur de véhicule à rayons (4 roues à suspensions).
 // Pas fixe de 1/100 s : 1 pas = 10 ms de chrono. Tout tourne hors de React.
 import RAPIER from "@dimforge/rapier3d-compat";
-import { BLOCKS, sampleBlock, sectionPoints, toWorld } from "./blocks.js";
+import { BLOCKS, TILE, param, sampleBlock, sectionPoints, toWorld } from "./blocks.js";
 
 export const DT = 1 / 100;
 const GHOST_TAG = -2;
@@ -25,6 +25,18 @@ const SURF = {
   dirt: { side: 0.62, slip: 0.75 },
   ice: { side: 0.28, slip: 0.35 },
   grass: { side: 0.55, slip: 0.6 },
+  // saison 2
+  boost2: { side: 1, slip: 1 },
+  brake: { side: 1, slip: 0.9 },
+  glue: { side: 1.6, slip: 1.3 },
+  oil: { side: 0.07, slip: 0.1 },
+};
+
+// Turbo réglable : durée (s), force du moteur, division de la traînée. Le niveau 2 = turbo classique.
+const BOOST2 = {
+  1: { dur: 1.1, k: 1.18, drag: 1.06 },
+  2: { dur: 1.8, k: 1.3, drag: 1.12 },
+  3: { dur: 2.6, k: 1.5, drag: 1.2 },
 };
 
 const CAR = {
@@ -105,11 +117,107 @@ export function rotate(q, v) {
   return [ix * q.w + iw * -q.x + iy * -q.z - iz * -q.y, iy * q.w + iw * -q.y + iz * -q.x - ix * -q.z, iz * q.w + iw * -q.z + ix * -q.y - iy * -q.x];
 }
 
+// Repère monde d'un bloc posé, au milieu de son axe : { p, t (avant), r (droite), u (haut) }
+function tileFrame(tile) {
+  const S = sampleBlock(tile.type);
+  const f = S[Math.floor((S.length - 1) / 2)];
+  return { p: toWorld(tile, f.p), t: toWorld(tile, f.t, true), r: toWorld(tile, f.r, true), u: toWorld(tile, f.u, true) };
+}
+
+// Plateforme mobile : va-et-vient le long du bloc sur `dist` cases, période `period` pas.
+// Position = fonction pure de run.steps (déterminisme du rejeu).
+export function liftPhase(tile, steps) {
+  const period = Math.max(2, Math.round(param(tile, "period") ?? 500));
+  const x = (steps % period) / period;
+  const tri = x < 0.5 ? x * 2 : 2 - x * 2;
+  return tri * tri * (3 - 2 * tri);
+}
+function liftPos(f, tile, steps) {
+  const d = (param(tile, "dist") ?? 2) * TILE * liftPhase(tile, steps);
+  return [f.p[0] - f.u[0] * 0.3 + f.t[0] * d, f.p[1] - f.u[1] * 0.3 + f.t[1] * d, f.p[2] - f.u[2] * 0.3 + f.t[2] * d];
+}
+// Barrière cyclique : fermée tant que (pas + décalage) % période < durée fermée
+export function gateClosed(tile, steps) {
+  const period = Math.max(2, Math.round(param(tile, "period") ?? 300));
+  return (steps + Math.round(param(tile, "offset") ?? 0)) % period < (param(tile, "closed") ?? 150);
+}
+export const crateKey = (t) => `crate:${t.x},${t.z},${t.level}`;
+export const switchKey = (id) => `sw:${id}`;
+
+// Met à jour barrières, portes, caisses et plateformes pour le pas qui va être simulé
+function updateMechanisms(phys, run, car) {
+  const n = run.steps;
+  let bp = null;
+  for (const m of phys.mech) {
+    let on = m.on;
+    if (m.kind === "lift") {
+      const p = liftPos(m.f, m.tile, n + 1);
+      m.body.setNextKinematicTranslation({ x: p[0], y: p[1], z: p[2] });
+      continue;
+    }
+    if (m.kind === "gate") on = gateClosed(m.tile, n);
+    else if (m.kind === "door") on = !run.flags[switchKey(param(m.tile, "id"))];
+    else if (m.kind === "crate") {
+      const key = crateKey(m.tile);
+      if (!run.flags[key]) {
+        // la voiture touche la caisse (rayon ~2,4 m autour de son centre) assez vite : elle explose, sinon elle bloque
+        bp ||= car.body.translation();
+        const d = [bp.x - m.f.p[0] - m.f.u[0] * 2, bp.y - m.f.p[1] - m.f.u[1] * 2, bp.z - m.f.p[2] - m.f.u[2] * 2];
+        const gap = Math.hypot(Math.max(0, Math.abs(dot(d, m.f.r)) - 4), Math.max(0, Math.abs(dot(d, m.f.u)) - 2), Math.max(0, Math.abs(dot(d, m.f.t)) - 4));
+        if (gap <= 2.4 && car.speed * 3.6 >= (param(m.tile, "minSpeed") ?? 90)) { run.flags[key] = true; run.events.push("crate"); }
+      }
+      on = !run.flags[key];
+    }
+    if (on !== m.on) { m.collider.setEnabled(on); m.on = on; }
+  }
+}
+
+// Rail : la voiture est accrochée à l'axe du bloc (direction ignorée), vitesse constante, sortie libre en fin de rail
+const RAIL_GRAB = 6;
+function railStep(phys, run, car) {
+  if (!car.rail) {
+    if (run.railCool > 0 || car.speed < 5) return false;
+    const bp = car.body.translation();
+    for (const r of phys.rails) {
+      for (const end of [0, r.pts.length - 1]) {
+        const q = r.pts[end];
+        if (Math.hypot(bp.x - q.p[0], bp.y - q.p[1], bp.z - q.p[2]) < RAIL_GRAB) {
+          car.rail = { r, s: end === 0 ? 0 : r.len, dir: end === 0 ? 1 : -1, v: Math.max(car.speed, 14) };
+          break;
+        }
+      }
+      if (car.rail) break;
+    }
+    if (!car.rail) return false;
+  }
+  const rl = car.rail;
+  rl.s += rl.dir * rl.v * DT;
+  if (rl.s < 0 || rl.s > rl.r.len) { car.rail = null; run.railCool = 100; return false; }
+  const { cum, pts } = rl.r;
+  let i = 0;
+  while (i < cum.length - 2 && cum[i + 1] < rl.s) i++;
+  const k = (rl.s - cum[i]) / Math.max(1e-6, cum[i + 1] - cum[i]);
+  const mix = (a, b) => a.map((v, j) => v + (b[j] - v) * k);
+  const p = mix(pts[i].p, pts[i + 1].p), t = norm(mix(pts[i].t, pts[i + 1].t)), u = norm(mix(pts[i].u, pts[i + 1].u));
+  const fwd = t.map((v) => v * rl.dir);
+  car.body.setTranslation({ x: p[0] + u[0] * 0.45, y: p[1] + u[1] * 0.45, z: p[2] + u[2] * 0.45 }, true);
+  car.body.setRotation(quatFromBasis(fwd, u), true);
+  car.body.setLinvel({ x: fwd[0] * rl.v, y: fwd[1] * rl.v, z: fwd[2] * rl.v }, true);
+  car.body.setAngvel({ x: 0, y: 0, z: 0 }, true);
+  car.speed = rl.v; car.kmh = Math.round(rl.v * 3.6); car.contacts = 4; car.surface = "road"; car.airTime = 0;
+  return true;
+}
+
 // --------- Monde ---------
 export function createWorld(track) {
   const world = new RAPIER.World({ x: 0, y: -GRAVITY, z: 0 });
   world.timestep = DT;
   const surfaceOf = new Map();
+  const tileOf = new Map(); // collider -> tuile (réglages tile.p lus par driveCar)
+  const winds = [];
+  const mech = []; // barrières, portes, caisses, plateformes mobiles (pilotés par run.steps, voir updateMechanisms)
+  const rails = [];
+  const gravs = [];
   // sol (herbe)
   const [w, h] = track.size;
   const ground = world.createCollider(
@@ -117,11 +225,44 @@ export function createWorld(track) {
   );
   surfaceOf.set(ground.handle, "grass");
   for (const t of track.tiles) {
+    const mk = BLOCKS[t.type].mech;
+    if (mk === "lift") {
+      // plateforme mobile : pas de route statique, un corps cinématique dont la position ne dépend que de run.steps
+      const f = tileFrame(t);
+      const body = world.createRigidBody(RAPIER.RigidBodyDesc.kinematicPositionBased().setTranslation(...liftPos(f, t, 0)).setRotation(quatFromBasis(f.t, f.u)));
+      const c = world.createCollider(RAPIER.ColliderDesc.cuboid(10, 0.3, 16).setFriction(1), body);
+      surfaceOf.set(c.handle, "road");
+      tileOf.set(c.handle, t);
+      mech.push({ kind: "lift", tile: t, f, body, collider: c });
+      continue;
+    }
     const { verts, idx } = roadTriangles(t);
     const c = world.createCollider(RAPIER.ColliderDesc.trimesh(verts, idx).setFriction(1));
     surfaceOf.set(c.handle, BLOCKS[t.type].surface || "road");
+    tileOf.set(c.handle, t);
+    const def = BLOCKS[t.type];
+    if (def.wind) winds.push({ ...tileFrame(t), force: param(t, "force") ?? 0 });
+    if (mk === "gate" || mk === "door" || mk === "crate") {
+      // obstacle plein sur la route (désactivé par updateMechanisms)
+      const f = tileFrame(t);
+      const [hx, hy, hz, up] = mk === "gate" ? [10, 3, 0.5, 3] : mk === "door" ? [10, 4, 0.8, 4] : [4, 2, 4, 2];
+      const c = world.createCollider(
+        RAPIER.ColliderDesc.cuboid(hx, hy, hz)
+          .setTranslation(f.p[0] + f.u[0] * up, f.p[1] + f.u[1] * up, f.p[2] + f.u[2] * up)
+          .setRotation(quatFromBasis(f.t, f.u)).setFriction(0.5),
+      );
+      surfaceOf.set(c.handle, "road");
+      mech.push({ kind: mk, tile: t, f, collider: c, on: true });
+    }
+    if (mk === "rail") {
+      const pts = sampleBlock(t.type).map((s) => ({ p: toWorld(t, s.p), t: toWorld(t, s.t, true), u: toWorld(t, s.u, true) }));
+      const cum = [0];
+      for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(...sub(pts[i].p, pts[i - 1].p)));
+      rails.push({ tile: t, pts, cum, len: cum[cum.length - 1] });
+    }
+    if (def.gravity) gravs.push({ pts: sampleBlock(t.type).map((s) => ({ p: toWorld(t, s.p), u: toWorld(t, s.u, true) })) });
   }
-  return { world, surfaceOf };
+  return { world, surfaceOf, tileOf, winds, mech, rails, gravs };
 }
 
 export function createCar(phys, spawn) {
@@ -153,7 +294,7 @@ export function createCar(phys, spawn) {
     vc.setWheelMaxSuspensionForce(i, 150000);
     vc.setWheelFrictionSlip(i, CAR.slip);
   });
-  return { body, vc, steer: 0, boost: 0, airTime: 0, contacts: 0, surface: "road", speed: 0, kmh: 0, slip: 0, wheelSpin: [0, 0, 0, 0] };
+  return { body, vc, steer: 0, boost: 0, boostMax: 1.8, boostK: CAR.topBoost, boostDrag: 1.12, rail: null, airTime: 0, contacts: 0, surface: "road", speed: 0, kmh: 0, slip: 0, wheelSpin: [0, 0, 0, 0] };
 }
 
 // Vecteurs du châssis en monde
@@ -175,19 +316,39 @@ export function driveCar(phys, car, world, input) {
   // contacts et surface sous les roues
   let contacts = 0;
   const surfCount = {};
+  const surfTile = {};
   for (let i = 0; i < 4; i++) {
     if (vc.wheelIsInContact(i)) {
       contacts++;
       const g = vc.wheelGroundObject(i);
       const s = (g && phys.surfaceOf.get(g.handle)) || "road";
       surfCount[s] = (surfCount[s] || 0) + 1;
+      if (!surfTile[s] && g) surfTile[s] = phys.tileOf.get(g.handle);
     }
   }
   car.contacts = contacts;
   const surface = Object.keys(surfCount).sort((a, b) => surfCount[b] - surfCount[a])[0] || "air";
   car.surface = surface;
   const sf = SURF[surface] || SURF.road;
-  if (surface === "boost") car.boost = 1.8;
+
+  // zone de gravité de piste : la gravité suit la normale de la route (force compensatrice m·g·(ŷ − n))
+  let gravN = null;
+  if (phys.gravs.length) {
+    const bp = body.translation();
+    let best = 14 * 14;
+    for (const z of phys.gravs) {
+      for (const q of z.pts) {
+        const d2 = (bp.x - q.p[0]) ** 2 + (bp.y - q.p[1]) ** 2 + (bp.z - q.p[2]) ** 2;
+        if (d2 < best) { best = d2; gravN = q.u; }
+      }
+    }
+  }
+  const inGrav = !!gravN;
+  if (surface === "boost") { car.boost = 1.8; car.boostMax = 1.8; car.boostK = CAR.topBoost; car.boostDrag = 1.12; }
+  else if (surface === "boost2") {
+    const b = BOOST2[Math.max(1, Math.min(3, Math.round(param(surfTile.boost2, "level") ?? 2)))];
+    car.boost = car.boostMax = b.dur; car.boostK = b.k; car.boostDrag = b.drag;
+  }
   car.boost = Math.max(0, car.boost - DT);
 
   // direction : angle max qui baisse avec la vitesse
@@ -197,7 +358,7 @@ export function driveCar(phys, car, world, input) {
   vc.setWheelSteering(1, -car.steer);
 
   // moteur / frein / marche arrière
-  const boostK = car.boost > 0 ? CAR.topBoost : 1;
+  const boostK = car.boost > 0 ? car.boostK : 1;
   let engine = 0, brake = 0;
   // couple plus fort à bas régime (permet de repartir dans une pente raide)
   const lowRpm = 1 + 1.3 * Math.max(0, 1 - Math.abs(vf) / 28);
@@ -207,6 +368,12 @@ export function driveCar(phys, car, world, input) {
     else engine = -CAR.engine * 0.55 * input.brake;
   }
   if (!input.throttle && !input.brake) brake = 4; // frein moteur
+  if (surface === "brake") {
+    // zone de freinage : coupe le turbo, freine fort et réduit la poussée
+    car.boost = 0;
+    brake = Math.max(brake, 70 * (param(surfTile.brake, "power") ?? 1));
+    engine *= 0.3;
+  }
   for (let i = 0; i < 4; i++) {
     vc.setWheelEngineForce(i, -engine * sf.slip);
     vc.setWheelBrake(i, brake);
@@ -217,7 +384,8 @@ export function driveCar(phys, car, world, input) {
   }
 
   // traînée, résistance, appui aérodynamique (colle la voiture dans les loopings et sur les murs)
-  const drag = CAR.drag / (car.boost > 0 ? 1.12 : 1);
+  // surface collante : forte traînée, la vitesse reste plafonnée
+  const drag = (CAR.drag * (surface === "glue" ? param(surfTile.glue, "drag") ?? 4 : 1)) / (car.boost > 0 ? car.boostDrag : 1);
   const f = [-vel[0] * speed * drag, -vel[1] * speed * drag, -vel[2] * speed * drag];
   if (contacts) {
     const roll = Math.min(CAR.roll, Math.abs(vf) * 40) * Math.sign(vf);
@@ -226,7 +394,7 @@ export function driveCar(phys, car, world, input) {
     f[0] -= up[0] * dn; f[1] -= up[1] * dn; f[2] -= up[2] * dn;
     // adhérence sur les surfaces raides (murs, loopings) : plaque la voiture et compense la glissade
     const tilt = 1 - up[1];
-    if (tilt > 0.15 && speed > 8) {
+    if (tilt > 0.15 && speed > 8 && !inGrav) {
       const k = Math.min(1, (speed - 8) / 14) * Math.min(1, tilt);
       const m = CAR.mass * GRAVITY;
       f[0] -= up[0] * m * k; f[1] -= up[1] * m * k; f[2] -= up[2] * m * k;
@@ -237,6 +405,21 @@ export function driveCar(phys, car, world, input) {
     car.airTime = 0;
   } else {
     car.airTime += DT;
+  }
+  if (gravN) {
+    const m = CAR.mass * GRAVITY;
+    f[0] += -gravN[0] * m; f[1] += (1 - gravN[1]) * m; f[2] += -gravN[2] * m;
+  }
+  // vent : force latérale constante (vers la droite du bloc si positive) tant que la voiture est dans la zone
+  if (phys.winds.length) {
+    const bp = body.translation();
+    for (const w of phys.winds) {
+      const d = [bp.x - w.p[0], bp.y - w.p[1], bp.z - w.p[2]];
+      if (Math.abs(dot(d, w.t)) <= TILE / 2 && Math.abs(dot(d, w.r)) <= 18 && dot(d, w.u) > -4 && dot(d, w.u) < 20) {
+        const a = CAR.mass * w.force;
+        f[0] += w.r[0] * a; f[1] += w.r[1] * a; f[2] += w.r[2] * a;
+      }
+    }
   }
   body.resetForces(true);
   body.addForce({ x: f[0], y: f[1], z: f[2] }, true);
@@ -267,11 +450,26 @@ export function placeCar(car, spawn) {
   car.body.setAngvel({ x: 0, y: 0, z: 0 }, true);
   car.boost = 0;
   car.steer = 0;
+  car.rail = null;
 }
 
 // --------- Une tentative ---------
 export function createRun(track) {
-  return { flipped: 0, steps: 0, cps: new Set(), splits: [], finished: false, finishMs: null, ghost: [GHOST_TAG], events: [], lastSpawn: track.spawn(), missingCool: 0 };
+  return { flipped: 0, steps: 0, cps: new Set(), splits: [], finished: false, finishMs: null, ghost: [GHOST_TAG], events: [], lastSpawn: track.spawn(), missingCool: 0, flags: {}, tpCool: 0, railCool: 0 };
+}
+
+// Téléporteur : la voiture ressort à 4 m du plan de sortie, vitesse conservée, réorientée selon la sortie
+function teleportCar(car, g, out) {
+  const v = car.body.linvel();
+  const vel = [v.x, v.y, v.z];
+  const vt = dot(vel, g.t), vr = dot(vel, g.r), vu = dot(vel, g.u);
+  const nv = [0, 1, 2].map((i) => out.t[i] * vt + out.r[i] * vr + out.u[i] * vu);
+  const pos = [0, 1, 2].map((i) => out.p[i] + out.t[i] * 4 + out.u[i] * 0.5);
+  car.body.setTranslation({ x: pos[0], y: pos[1], z: pos[2] }, true);
+  car.body.setRotation(quatFromBasis(out.t, out.u), true);
+  car.body.setLinvel({ x: nv[0], y: nv[1], z: nv[2] }, true);
+  car.body.setAngvel({ x: 0, y: 0, z: 0 }, true);
+  car.steer = 0;
 }
 
 // Passage d'un portique : la voiture traverse le plan du portique, près de son axe
@@ -286,15 +484,38 @@ export function stepRun(run, track, phys, car, world, input) {
   run.events.length = 0;
   const p0 = car.body.translation();
   const prev = [p0.x, p0.y, p0.z];
-  driveCar(phys, car, world, input);
+  if (phys.mech.length) updateMechanisms(phys, run, car);
+  if (run.railCool > 0) run.railCool--;
+  if (!(phys.rails.length && railStep(phys, run, car))) driveCar(phys, car, world, input);
   phys.world.step();
   run.steps++;
   const p1 = car.body.translation();
   const cur = [p1.x, p1.y, p1.z];
-  if (car.boost > 1.79) run.events.push("boost");
+  if (car.boost > car.boostMax - 0.01) run.events.push("boost");
 
+  if (run.tpCool > 0) run.tpCool--;
   for (const g of track.gates) {
     if (!gateHit(g, prev, cur)) continue;
+    if (g.kind === "switch") {
+      const key = switchKey(param(g.tile, "id") ?? 1);
+      if (!run.flags[key]) { run.flags[key] = true; run.events.push("switch"); }
+      continue;
+    }
+    if (g.kind === "teleport") {
+      // entrée (role 0) franchie dans le sens de la marche : sortie de la même paire
+      if (run.tpCool > 0 || (param(g.tile, "role") ?? 0) !== 0 || dot(sub(cur, prev), g.t) <= 0) continue;
+      const pair = param(g.tile, "pair");
+      const out = track.gates.find((o) => o.kind === "teleport" && o !== g && param(o.tile, "pair") === pair && param(o.tile, "role") === 1);
+      if (!out) continue;
+      teleportCar(car, g, out);
+      const tp = car.body.translation();
+      cur[0] = tp.x; cur[1] = tp.y; cur[2] = tp.z;
+      run.tpCool = 50;
+      run.events.push("teleport");
+      break;
+    }
+    // checkpoint conditionnel : sous la vitesse minimale (km/h), il ne se passe rien
+    if (BLOCKS[g.tile.type].fast && car.speed * 3.6 < (param(g.tile, "minSpeed") ?? 100)) continue;
     const id = `${g.tile.x},${g.tile.z},${g.tile.level}`;
     if (g.kind === "cp" && !run.cps.has(id)) {
       run.cps.add(id);

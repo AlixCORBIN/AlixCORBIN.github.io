@@ -128,6 +128,71 @@ export const BLOCKS = {
   platform: { label: "Plateforme", path: straight, n: 2, width: TILE, cat: "Routes" },
 };
 
+// ---------- Blocs de la saison 2 ----------
+// Réglages par tuile : tile.p = { clé: valeur }, valeurs par défaut dans params[clé].def (voir param()).
+// Tout ce qui est dynamique dépend uniquement du numéro de pas (run.steps) : voir physics.js.
+const S2 = { season: 2, cat: "Saison 2" };
+const OFF = { season: "off", cat: "Saison 2" }; // pas encore validé : caché de la palette
+const P = (label, min, max, def, step = 1) => ({ label, min, max, def, step });
+
+// Tremplin réglable : angle d'arrivée (degrés) et longueur (1 ou 2 cases)
+const kicker2Path = (deg, len) => {
+  const a = Math.tan((deg * Math.PI) / 180) * TILE * len * 0.5;
+  return (s) => ({ p: [0, a * s * s, H - TILE * len * s], up: null });
+};
+// Lacets de 7 unités : tangente droite aux deux bouts (le bloc s'enchaîne comme un bloc droit)
+const railPath = (s) => ({ p: [7 * Math.sin(2 * Math.PI * s) * Math.sin(Math.PI * s) ** 2, 0, H - TILE * s], up: Y });
+
+Object.assign(BLOCKS, {
+  boost2: { label: "Turbo réglable", path: straight, n: 2, surface: "boost2", dir: true, ...S2, params: { level: P("Niveau", 1, 3, 2) } },
+  brake: { label: "Frein", path: straight, n: 2, surface: "brake", ...S2, params: { power: P("Force", 1, 3, 1) } },
+  glue: { label: "Colle", path: straight, n: 2, surface: "glue", ...S2, params: { drag: P("Traînée", 2, 8, 4) } },
+  oil: { label: "Huile", path: straight, n: 2, surface: "oil", ...S2 },
+  kicker2: {
+    label: "Tremplin réglable", path: kicker2Path(13, 1), n: 10, dir: true, ...S2,
+    params: { angle: P("Angle (°)", 10, 35, 13), len: P("Longueur (cases)", 1, 2, 1) },
+    variant: (p) => {
+      const angle = Math.round(Math.max(10, Math.min(35, p.angle ?? 13))), len = Math.round(Math.max(1, Math.min(2, p.len ?? 1)));
+      return { key: `${angle}:${len}`, path: kicker2Path(angle, len), n: 10 * len };
+    },
+  },
+  cpfast: { label: "Checkpoint rapide", path: straight, n: 2, gate: "cp", fast: true, ...S2, params: { minSpeed: P("Vitesse min (km/h)", 40, 250, 100, 10) } },
+  teleport: {
+    label: "Téléporteur", path: straight, n: 2, gate: "teleport", ...S2,
+    params: { pair: P("Paire n°", 1, 9, 1), role: P("0 = entrée, 1 = sortie", 0, 1, 0) },
+  },
+  wind: { label: "Vent", path: straight, n: 2, wind: true, ...S2, params: { force: P("Force latérale (m/s², signe = sens)", -30, 30, 12) } },
+  // blocs lourds
+  gate: {
+    label: "Barrière", path: straight, n: 2, mech: "gate", ...S2,
+    params: { period: P("Période (pas de 10 ms)", 50, 1000, 300, 10), closed: P("Fermée (pas)", 10, 990, 150, 10), offset: P("Décalage (pas)", 0, 990, 0, 10) },
+  },
+  lift: { label: "Plateforme mobile", path: straight, n: 2, mech: "lift", ...S2, params: { dist: P("Course (cases)", 1, 4, 2), period: P("Période (pas)", 100, 1500, 500, 10) } },
+  switch: { label: "Interrupteur", path: straight, n: 2, gate: "switch", ...S2, params: { id: P("Identifiant", 1, 5, 1) } },
+  door: { label: "Porte", path: straight, n: 2, mech: "door", ...S2, params: { id: P("Identifiant", 1, 5, 1) } },
+  crate: { label: "Caisse", path: straight, n: 2, mech: "crate", ...S2, params: { minSpeed: P("Vitesse min (km/h)", 40, 250, 90, 10) } },
+  gravity: { label: "Gravité de piste", path: loopPath(16, 11), n: 110, gravity: true, ...S2 },
+  rail: { label: "Rail", path: railPath, n: 14, mech: "rail", ...S2 },
+});
+
+// Valeur d'un réglage de tuile (tile.p ou valeur par défaut du bloc)
+export function param(tile, key) {
+  const v = tile?.p?.[key];
+  if (typeof v === "number" && Number.isFinite(v)) return v;
+  return BLOCKS[tile?.type]?.params?.[key]?.def;
+}
+export const defaultParams = (type) => Object.fromEntries(Object.entries(BLOCKS[type]?.params || {}).map(([k, d]) => [k, d.def]));
+
+// Blocs à géométrie réglable : le type résolu inclut les réglages ("kicker2~25:2"), enregistré à la demande
+export function resolveType(type, p) {
+  const def = BLOCKS[type];
+  if (!def || !def.variant) return type;
+  const v = def.variant(p || {});
+  const key = `${type}~${v.key}`;
+  if (!BLOCKS[key]) BLOCKS[key] = { ...def, variant: null, path: v.path, n: v.n, base: type };
+  return key;
+}
+
 export const BLOCK_KEYS = Object.keys(BLOCKS);
 
 // Saison d'un bloc : season absent = 1 (aucun bloc existant ne change). Les futurs blocs `season: 2`
@@ -235,7 +300,8 @@ export function placeFrom(type, cx, cz, d, l, reverse = false) {
 }
 
 // Cases occupées (x, z, bande de niveau) par un bloc placé
-export function occupancy(tile) {
+export function occupancy(tile0) {
+  const tile = tile0.p ? { ...tile0, type: resolveType(tile0.type, tile0.p) } : tile0;
   const S = sampleBlock(tile.type);
   const set = new Set();
   for (let i = 1; i < S.length - 1; i++) {
