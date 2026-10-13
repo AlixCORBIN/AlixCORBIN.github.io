@@ -149,7 +149,7 @@ Object.assign(BLOCKS, {
   glue: { label: "Colle", path: straight, n: 2, surface: "glue", ...S2, params: { drag: P("Traînée", 2, 8, 4) } },
   oil: { label: "Huile", path: straight, n: 2, surface: "oil", ...S2 },
   kicker2: {
-    label: "Tremplin réglable", path: kicker2Path(13, 1), n: 10, dir: true, ...OFF,
+    label: "Tremplin réglable", path: kicker2Path(13, 1), n: 10, dir: true, ...S2,
     params: { angle: P("Angle (°)", 10, 35, 13), len: P("Longueur (cases)", 1, 2, 1) },
     variant: (p) => {
       const angle = Math.round(Math.max(10, Math.min(35, p.angle ?? 13))), len = Math.round(Math.max(1, Math.min(2, p.len ?? 1)));
