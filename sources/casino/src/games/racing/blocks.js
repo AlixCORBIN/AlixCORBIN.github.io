@@ -164,7 +164,7 @@ Object.assign(BLOCKS, {
   wind: { label: "Vent", path: straight, n: 2, wind: true, ...S2, params: { force: P("Force latérale (m/s², signe = sens)", -30, 30, 12) } },
   // blocs lourds
   gate: {
-    label: "Barrière", path: straight, n: 2, mech: "gate", ...OFF,
+    label: "Barrière", path: straight, n: 2, mech: "gate", ...S2,
     params: { period: P("Période (pas de 10 ms)", 50, 1000, 300, 10), closed: P("Fermée (pas)", 10, 990, 150, 10), offset: P("Décalage (pas)", 0, 990, 0, 10) },
   },
   lift: { label: "Plateforme mobile", path: straight, n: 2, mech: "lift", ...OFF, params: { dist: P("Course (cases)", 1, 4, 2), period: P("Période (pas)", 100, 1500, 500, 10) } },
