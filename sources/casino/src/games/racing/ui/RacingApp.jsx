@@ -1,5 +1,5 @@
 import React from "react";
-import { getMap, listMaps, loadPBs, worldRecords } from "../api.js";
+import { getMap, listMaps, loadPBs, playerRecords, worldRecords } from "../api.js";
 import { MEDALS, OFFICIAL, medalFor } from "../maps.js";
 import { WORLDS, formatTime } from "../physics.js";
 import { Board } from "./Board.jsx";
@@ -45,7 +45,7 @@ function Campaign({ pbs, wrs, onPlay, onBoard }) {
               <div className="rc-map-num">{i + 1}</div>
               <div className="rc-map-main">
                 <b>{m.name.split(" · ")[1]}</b>
-                <small><MedalDot medal={medal} /> {pb ? formatTime(pb) : "pas encore de temps"}</small>
+                <small><MedalDot medal={medal} /> {pb ? formatTime(pb) : "pas encore de temps"}{pbs[m.id]?.synced === false && <em className="rc-unsynced" title="Ce temps n'a pas été validé par le serveur : refais une course pour entrer au classement"> · non classé</em>}</small>
                 <small className="rc-wr">🏆 {wr ? `${formatTime(wr.time_ms)} · ${wr.pseudo}` : "aucun record"}{wr ? ` · ${wr.players} pilote${wr.players > 1 ? "s" : ""}` : ""}</small>
               </div>
               <div className="rc-map-btns">
@@ -134,7 +134,17 @@ export function RacingApp({ pseudo, onQuit }) {
   const pickTab = (t) => { setTab(t); try { localStorage.setItem(TAB_KEY, t); } catch {} };
   React.useEffect(() => {
     if (race) return;
-    setPbs(loadPBs());
+    // records perso locaux comparés à ceux du serveur : un temps local plus rapide que le temps classé n'a pas été validé
+    const local = loadPBs();
+    setPbs(local);
+    if (pseudo && pseudo !== "Joueur") {
+      playerRecords(pseudo).then((rows) => {
+        const srv = Object.fromEntries(rows.map((r) => [r.map_id, r.time_ms]));
+        const next = { ...local };
+        for (const [id, p] of Object.entries(next)) next[id] = { ...p, synced: srv[id] != null && srv[id] <= p.ms };
+        setPbs(next);
+      }).catch(() => {});
+    }
     worldRecords(OFFICIAL.map((m) => m.id)).then(setWrs);
   }, [race]);
 

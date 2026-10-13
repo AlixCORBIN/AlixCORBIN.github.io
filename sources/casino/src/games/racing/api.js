@@ -25,6 +25,17 @@ function savePB(mapId, ms, ghost, splits) {
   }
 }
 
+// Record perso local : synced = false si le serveur ne l'a pas accepté (il n'est alors pas au classement)
+function markSynced(mapId, ms, ok) {
+  try {
+    const all = loadPBs();
+    if (all[mapId] && all[mapId].ms === ms) {
+      all[mapId].synced = ok;
+      localStorage.setItem(PB_KEY, JSON.stringify(all));
+    }
+  } catch {}
+}
+
 // Enregistre automatiquement chaque arrivée. Retourne { pb, rank }.
 // Le temps en ligne n'est pas celui du navigateur : le serveur rejoue les entrées (log)
 // et calcule lui-même le temps et le fantôme (Edge Function racing-verify). Le pseudo
@@ -37,9 +48,11 @@ export async function submitTime(mapId, pseudo, ms, ghost, splits, log) {
   try {
     const res = await callFunction("racing-verify", { map: mapId, ms, log });
     if (res.error) console.warn("racing-verify", res.error);
+    if (pb) markSynced(mapId, ms, !res.error);
     return { pb, rank: res.rank ?? null, rejected: res.error || null };
   } catch (e) {
     console.warn("racing-verify", e.message);
+    if (pb) markSynced(mapId, ms, false);
     return { pb, rank: null, rejected: e.message };
   }
 }
