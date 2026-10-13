@@ -63,6 +63,13 @@ export class UnoHost extends HostController {
       this.decorate(s);
       this.link.send(p.id, { t: "state", s });
     }
+
+    this.sendWatchers();
+  }
+  spectatorView() {
+    const s = viewFor(this.g, "__spectator__");
+    this.decorate(s);
+    return s;
   }
   // Un message « état » perdu laisserait un client figé jusqu'à la prochaine action : on le renvoie à chaque battement.
   heartbeat() {

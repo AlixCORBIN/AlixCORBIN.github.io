@@ -27,6 +27,9 @@ export function App() {
   window.__gchatGame = () => (racing ? "TrackMerdia" : ctrl?.state?.game ? GAME_INFO[ctrl.state.game]?.title || null : null);
   const start = async (game, mode, name, code, bankroll, opts = {}) => {
     if (game === "racing") return setRacing({ pseudo: name });
+    // Observateur : même chemin que « rejoindre », sans prendre de place à la table
+    const watch = mode === "watch";
+    if (watch) mode = "join";
     // Blackjack et roulette : tables tenues par le serveur (solde, cartes et tirages côté serveur)
     if (SERVER_GAMES.includes(game) && mode !== "join") return setCtrl(new ServerTable(game, { isPublic: !!opts.isPublic, mii: opts.mii }));
     if (mode === "join") {
@@ -35,7 +38,7 @@ export function App() {
         const { data } = await db().rpc("casino_room_game", { p_code: String(code) });
         server = !!data;
       }
-      if (server) return setCtrl(new ServerTable(game, { code: String(code).toUpperCase().trim(), mii: opts.mii }));
+      if (server) return setCtrl(new ServerTable(game, { code: String(code).toUpperCase().trim(), mii: opts.mii, spectate: watch }));
     }
     const Host =
       game === "buckshot"
@@ -57,7 +60,7 @@ export function App() {
                 : BlackjackHost;
     setCtrl(
       mode === "join"
-        ? new ClientController(name, code, bankroll, opts.mii)
+        ? new ClientController(name, code, bankroll, opts.mii, { spectate: watch })
         : new Host(name, {
             online: true,
             bankroll,

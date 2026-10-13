@@ -53,6 +53,13 @@ export class MilleBorneHost extends HostController {
       this.decorate(s);
       this.link.send(p.id, { t: "state", s });
     }
+
+    this.sendWatchers();
+  }
+  spectatorView() {
+    const s = viewFor(this.g, "__spectator__");
+    this.decorate(s);
+    return s;
   }
   heartbeat() {
     super.heartbeat();

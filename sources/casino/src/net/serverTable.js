@@ -26,7 +26,8 @@ const FAST_BJ = new Set(["hit", "stand", "double", "split", "insurance"]);
 const HEARTBEAT_MS = 5000;
 
 export class ServerTable {
-  constructor(game, { code = null, isPublic = false, mii = null } = {}) {
+  constructor(game, { code = null, isPublic = false, mii = null, spectate = false } = {}) {
+    this.spectator = !!spectate && !!code;
     this.listeners = new Set();
     this.subscribe = (fn) => {
       this.listeners.add(fn);
@@ -63,6 +64,14 @@ export class ServerTable {
     this.emit();
   }
   async open() {
+    // Observateur : on lit seulement la vue publique de la table (lisible par tous pour une salle publique)
+    if (this.spectator) {
+      this.me = "__spectator__";
+      this.status = "ready";
+      this.listen();
+      this.emit();
+      return;
+    }
     try {
       const res = this.code
         ? await callFunction("casino-table", { op: "join", code: this.code, mii: this.mii })
@@ -118,7 +127,7 @@ export class ServerTable {
   armTimer() {
     clearTimeout(this.timer);
     const v = this.state;
-    if (!v?.due) return;
+    if (!v?.due || this.spectator) return;
     const wait = Math.max(150, v.due - v.at + 60);
     this.timer = setTimeout(() => this.ping(), wait);
   }
@@ -164,7 +173,7 @@ export class ServerTable {
     return res;
   }
   act(action) {
-    if (this.status !== "ready" || !action) return;
+    if (this.status !== "ready" || !action || this.spectator) return;
     const game = this.state?.game || this.game;
     this.game = game;
     if (LOCAL[game]?.[action.t] && this.state) {
@@ -234,7 +243,7 @@ export class ServerTable {
     clearInterval(this.hb);
     clearTimeout(this.flushTimer);
     clearTimeout(this.timer);
-    if (this.status === "ready") callFunction("casino-table", { op: "leave", code: this.code }).then(() => refreshWallet()).catch(() => {});
+    if (this.status === "ready" && !this.spectator) callFunction("casino-table", { op: "leave", code: this.code }).then(() => refreshWallet()).catch(() => {});
     this.status = "closed";
     try {
       this.ch && db().removeChannel(this.ch);

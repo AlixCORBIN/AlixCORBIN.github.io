@@ -47,6 +47,8 @@ export class HostController extends Store {
     this.bankroll = bankroll;
     this.g = this.makeGame();
     this.seen = new Map();
+    // observateurs (mode spectateur) : reçoivent la vue publique, ne jouent pas
+    this.watchers = new Map();
     // identité serveur de chaque joueur humain (pour la confirmation des résultats)
     this.uids = {};
     this.report = null;
@@ -116,11 +118,15 @@ export class HostController extends Store {
       t: "hb",
     });
     const now = Date.now();
+    for (const [id, lastSeen] of this.watchers) {
+      if (now - lastSeen > PEER_TIMEOUT_MS) this.watchers.delete(id);
+    }
     for (const [id, lastSeen] of this.seen) {
       if (now - lastSeen > PEER_TIMEOUT_MS) {
         this.drop(id);
       }
     }
+    this.sendWatchers();
   }
   onMsg(msg, from) {
     if (!msg || typeof msg != "object" || this.status !== "ready") {
@@ -137,6 +143,21 @@ export class HostController extends Store {
     }
     if (msg.t === "taken") return;
     const peer = from;
+    if (msg.t === "hello" && msg.spectate) {
+      this.watchers.set(peer, Date.now());
+      this.link.send(peer, { t: "welcome", id: peer, spectator: true });
+      this.link.send(peer, { t: "miis", m: this.miis });
+      this.sendWatchers();
+      return;
+    }
+    if (this.watchers.has(peer)) {
+      if (msg.t === "bye") this.watchers.delete(peer);
+      else {
+        this.watchers.set(peer, Date.now());
+        if (msg.t === "ping") this.link.send(peer, { t: "hb" });
+      }
+      return;
+    }
     if (msg.t === "hello") {
       if (msg.mii && typeof msg.mii === "object") this.peerMiis[peer] = sanitizeMii(msg.mii);
       if (typeof msg.uid === "string" && /^[0-9a-f-]{36}$/.test(msg.uid)) this.uids[peer] = msg.uid;
@@ -258,6 +279,17 @@ export class HostController extends Store {
     }
   }
   decorate() {}
+  // Vue envoyée aux observateurs : la vue publique par défaut (jeux sans info cachée).
+  // Les jeux à vue par joueur la redéfinissent pour ne rien révéler de caché.
+  spectatorView() {
+    return this.state;
+  }
+  sendWatchers() {
+    if (!this.online || !this.link || this.status !== "ready" || !this.watchers.size) return;
+    const s = this.spectatorView();
+    if (!s) return;
+    for (const id of this.watchers.keys()) this.link.send(id, { t: "state", s });
+  }
   // Résultat de fin de partie : diffusé à tous, chaque humain le confirme au serveur
   // (appelé pendant schedule() : on publie au tour suivant, sinon schedule → save → setReport → publish → schedule… boucle)
   setReport(game, args) {
@@ -305,8 +337,9 @@ export class HostController extends Store {
 }
 
 export class ClientController extends Store {
-  constructor(name, code, bankroll = 1000, mii = null) {
+  constructor(name, code, bankroll = 1000, mii = null, { spectate = false } = {}) {
     super();
+    this.spectator = !!spectate;
     this.mii = mii ? sanitizeMii(mii) : null;
     this.role = "client";
     this.online = true;
@@ -346,6 +379,7 @@ export class ClientController extends Store {
               bankroll,
               uid,
               mii: this.mii,
+              spectate: this.spectator || undefined,
             });
           }
         };
@@ -389,6 +423,7 @@ export class ClientController extends Store {
         setRoomMiis(map);
         this.emit();
       } else if (msg.t === "full") {
+        if (this.spectator) return;
         this.fail("Table pleine");
       } else if (msg.t === "kicked") {
         this.kicked = true;
@@ -408,7 +443,7 @@ export class ClientController extends Store {
     }
   }
   act(action) {
-    if (this.me) {
+    if (this.me && !this.spectator) {
       this.link?.send("host", {
         t: "act",
         a: action,

@@ -39,7 +39,7 @@ const norm = (t) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCa
 const PUB_KEY = "casino-public";
 const loadPub = () => { try { return localStorage.getItem(PUB_KEY) !== "0"; } catch { return true; } };
 
-function RoomsPanel({ onJoin, broke }) {
+function RoomsPanel({ onJoin, onWatch, broke }) {
   const [rooms, setRooms] = React.useState(null);
   React.useEffect(() => watchRooms(setRooms), []);
   return (
@@ -65,7 +65,11 @@ function RoomsPanel({ onJoin, broke }) {
                 </small>
               </div>
               <span className={`room-status ${r.status === "lobby" ? "waiting" : r.status}`}>{r.status === "lobby" ? "En attente" : "En jeu"}</span>
-              <button className="btn" disabled={full || blocked} onClick={() => onJoin(r)}>{full ? "Plein" : "Rejoindre"}</button>
+              {r.status === "playing" && r.game !== "monopoly" ? (
+                <button className="btn watch" onClick={() => onWatch(r)}>👁 Observer</button>
+              ) : (
+                <button className="btn" disabled={full || blocked} onClick={() => onJoin(r)}>{full ? "Plein" : "Rejoindre"}</button>
+              )}
             </div>
           );
         })}
@@ -264,7 +268,7 @@ export function Lobby({ onStart }) {
               </small>
             </div>
           </div>
-          <RoomsPanel broke={broke} onJoin={(r) => start(r.game, "join", r.code)} />
+          <RoomsPanel broke={broke} onJoin={(r) => start(r.game, "join", r.code)} onWatch={(r) => start(r.game, "watch", r.code)} />
           <button className="link c-board" onClick={() => setShowBoard(true)}>🏆 Classement général des jetons</button>
         </aside>
       </div>

@@ -1,0 +1,29 @@
+/* ---------- Mode observateur ---------- */
+.spect-badge,
+.watch-count {
+  position: fixed; z-index: 400; left: 50%; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px;
+  font: 600 12.5px/1 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #f4efe2;
+  background: rgba(0, 0, 0, .7); border: 1px solid rgba(233, 196, 106, .45);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); pointer-events: none;
+}
+.spect-badge { top: calc(64px + env(safe-area-inset-top)); color: #e9c46a; }
+.watch-count { top: calc(64px + env(safe-area-inset-top)); }
+.spectating .watch-count { top: calc(98px + env(safe-area-inset-top)); }
+
+/* L'observateur voit la table et les messages, mais aucune commande de joueur */
+.spectating .dock button,
+.spectating .dock .chips,
+.spectating .dock .spots,
+.spectating .balance,
+.spectating .stat,
+.spectating .rchips,
+.spectating .r-controls .row,
+.spectating .r-controls > button,
+.spectating .un-me,
+.spectating .un-uno,
+.spectating .mb-hand,
+.spectating .ww-input,
+.spectating .nv-banner.mine { display: none !important; }
+.spectating .board, .spectating canvas { pointer-events: none; }
+.spectating .board { cursor: default; }
