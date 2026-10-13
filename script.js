@@ -286,6 +286,13 @@ const CHANNELS = [
         overlayBgOpacity: 0.15
     },
     {
+        title: "Groupe Générator", titleEn: "Group Generator",
+        emoji: "🎲",
+        cardLabel: "Groupe Générator", cardLabelEn: "Group Generator",
+        link: "groupes/index.html",
+        type: "groupes"
+    },
+    {
         title: "TicTacToe",
         link: "assets/tictactoe_alixCorbin.zip",
         type: "tictactoe"

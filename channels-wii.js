@@ -201,6 +201,19 @@ const WII_SCENES = {
         <g class="wii-drift wii-delay" opacity=".85"><path d="M40 150a12 12 0 0 1 3-23 16 16 0 0 1 30-3 12 12 0 0 1 7 26Z" fill="#fff"/></g>`,
 
     // Mii : trois têtes de Mii sur fond rayé
+    // Groupes : des pions répartis en équipes, un dé au centre
+    groupes: () => `
+        <rect width="320" height="180" fill="#eef5f9"/>
+        <g stroke="#e1ecf2" stroke-width="6"><path d="M0 20h320M0 44h320M0 68h320M0 92h320M0 116h320M0 140h320M0 164h320"/></g>
+        <rect x="22" y="40" width="96" height="100" rx="14" fill="#fff" stroke="#cfe3ec" stroke-width="3"/>
+        <rect x="202" y="40" width="96" height="100" rx="14" fill="#fff" stroke="#cfe3ec" stroke-width="3"/>
+        <g fill="#00b3d6"><circle cx="50" cy="72" r="11"/><circle cx="90" cy="72" r="11"/><circle cx="70" cy="110" r="11"/></g>
+        <g fill="#f5a524"><circle cx="230" cy="72" r="11"/><circle cx="270" cy="72" r="11"/><circle cx="230" cy="110" r="11"/><circle cx="270" cy="110" r="11"/></g>
+        <g class="wii-float" transform="translate(160 92)">
+            <rect x="-24" y="-24" width="48" height="48" rx="10" fill="#fff" stroke="#9fb7c3" stroke-width="3" transform="rotate(12)"/>
+            <g fill="#2b3a44" transform="rotate(12)"><circle cx="-11" cy="-11" r="4.5"/><circle r="4.5"/><circle cx="11" cy="11" r="4.5"/></g>
+        </g>`,
+
     mii: () => `
         <rect width="320" height="180" fill="#eef5f9"/>
         <g stroke="#e1ecf2" stroke-width="6"><path d="M0 20h320M0 44h320M0 68h320M0 92h320M0 116h320M0 140h320M0 164h320"/></g>
@@ -298,6 +311,7 @@ const WII_CARDS = {
     'Arduino':          { scene: 'arduino' },
     'Projet Jeu':       { scene: 'jeu' },
     'Mii':              { scene: 'mii' },
+    'Groupe Générator': { scene: 'groupes' },
     'Récompenses':      { scene: 'awards' },
     'Stage':            { scene: 'stage' },
     'Alternance':       { scene: 'alternance' },

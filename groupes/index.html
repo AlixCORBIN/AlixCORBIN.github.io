@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Groupe Générator — Portfolio Alix Corbin</title>
+    <meta name="description" content="Tirage au sort de groupes équitable : une liste de noms, une taille min / max, un vrai tirage cryptographique.">
+    <meta name="theme-color" content="#eef3f7">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='14' y='14' width='72' height='72' rx='16' fill='%23fff' stroke='%2300b3d6' stroke-width='6'/%3E%3Ccircle cx='34' cy='34' r='7'/%3E%3Ccircle cx='50' cy='50' r='7'/%3E%3Ccircle cx='66' cy='66' r='7'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="topbar">
+        <a href="../index.html" class="pill" data-i18n="back">← Menu</a>
+        <h1 class="brand"><span class="brand-dot"></span><span data-i18n="title">Groupe Générator</span></h1>
+        <button class="pill" id="btn-lang" aria-label="Language">EN</button>
+    </header>
+
+    <main class="layout">
+        <section class="panel">
+            <label class="field">
+                <span class="field-head"><span data-i18n="names">Noms</span> <span class="count" id="count">0</span></span>
+                <textarea id="names" rows="12" spellcheck="false" data-i18n-ph="namesPh" placeholder="Un nom par ligne (ou séparés par des virgules)"></textarea>
+            </label>
+
+            <div class="row">
+                <label class="field small">
+                    <span class="field-head" data-i18n="min">Min / groupe</span>
+                    <input type="number" id="min" min="1" value="2" inputmode="numeric">
+                </label>
+                <label class="field small">
+                    <span class="field-head" data-i18n="max">Max / groupe</span>
+                    <input type="number" id="max" min="1" value="4" inputmode="numeric">
+                </label>
+                <label class="field small">
+                    <span class="field-head" data-i18n="nb">Nb de groupes</span>
+                    <input type="number" id="nb" min="1" data-i18n-ph="auto" placeholder="auto" inputmode="numeric">
+                </label>
+            </div>
+
+            <p class="hint" id="hint"></p>
+
+            <button class="pill pill--primary pill--big" id="btn-draw" data-i18n="draw">Tirer au sort</button>
+        </section>
+
+        <section class="results" id="results" aria-live="polite">
+            <div class="empty" id="empty">
+                <div class="die" aria-hidden="true"><i></i><i></i><i></i></div>
+                <p data-i18n="empty">Ajoute des noms puis lance le tirage.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="foot">
+        <span data-i18n="rng">Tirage via crypto.getRandomValues (générateur cryptographique du navigateur), mélange de Fisher-Yates sans biais.</span>
+        <button class="link" id="btn-copy" hidden data-i18n="copy">Copier le résultat</button>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
