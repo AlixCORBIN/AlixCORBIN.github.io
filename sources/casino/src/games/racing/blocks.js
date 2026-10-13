@@ -172,7 +172,7 @@ Object.assign(BLOCKS, {
   door: { label: "Porte", path: straight, n: 2, mech: "door", ...S2, params: { id: P("Identifiant", 1, 5, 1) } },
   crate: { label: "Caisse", path: straight, n: 2, mech: "crate", ...S2, params: { minSpeed: P("Vitesse min (km/h)", 40, 250, 90, 10) } },
   gravity: { label: "Gravité de piste", path: loopPath(16, 11), n: 110, gravity: true, ...S2 },
-  rail: { label: "Rail", path: railPath, n: 14, mech: "rail", ...OFF },
+  rail: { label: "Rail", path: railPath, n: 14, mech: "rail", ...S2 },
 });
 
 // Valeur d'un réglage de tuile (tile.p ou valeur par défaut du bloc)
