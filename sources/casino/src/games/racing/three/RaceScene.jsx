@@ -8,7 +8,7 @@ import { readInput } from "../input.js";
 import { buildCar } from "./CarModel.js";
 import { buildDecor, buildTrackGroup } from "./buildTrack.js";
 
-function Environment({ track, world, fog = true }) {
+function Environment({ track, world, fog = true, session = null }) {
   const { scene } = useThree();
   const [w, h] = track.size;
   React.useEffect(() => {
@@ -18,6 +18,13 @@ function Environment({ track, world, fog = true }) {
   }, [world, scene, fog]);
   const trackObj = React.useMemo(() => buildTrackGroup(track, world), [track, world]);
   const decor = React.useMemo(() => buildDecor(track, world, track.tiles.length), [track, world]);
+  // éléments mobiles de la saison 2 (plateformes, barrières, portes, caisses) : fonction du pas de la course
+  useFrame(() => {
+    const anim = trackObj.userData.anim;
+    if (!anim?.length) return;
+    const steps = session?.run?.steps ?? 0, flags = session?.run?.flags ?? {};
+    for (const a of anim) a(steps, flags);
+  });
   const cx = (w * TILE) / 2, cz = (h * TILE) / 2;
   return (
     <>
@@ -105,7 +112,7 @@ function PlayerCar({ session, color, hudRef }) {
 export function RaceScene({ session, ghosts = [], color, hudRef }) {
   return (
     <Canvas camera={{ fov: 70, near: 0.5, far: 3000 }} dpr={[1, 1.75]} gl={{ antialias: true }}>
-      <Environment track={session.track} world={session.world} />
+      <Environment track={session.track} world={session.world} session={session} />
       {ghosts.map((g) => <Ghost key={g.key} data={g.data} color={g.color} session={session} />)}
       <PlayerCar session={session} color={color} hudRef={hudRef} />
     </Canvas>

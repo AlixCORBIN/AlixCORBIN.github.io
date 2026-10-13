@@ -7,6 +7,7 @@ import { Pilots } from "./Pilots.jsx";
 import { AlertToasts, Records, useRecordAlerts } from "./Records.jsx";
 import { padLabels, useGamepad, useGamepadNav } from "../gamepad.js";
 import { Editor, newDoc } from "./Editor.jsx";
+import { mapData } from "../track.js";
 import { CAR_COLORS, RaceView, loadCarColor, saveCarColor } from "./RaceView.jsx";
 import "./racing.css";
 
@@ -220,7 +221,7 @@ export function RacingApp({ pseudo, onQuit }) {
         setDoc={setDoc}
         pseudo={pseudo}
         onExit={() => pickTab("campaign")}
-        onTest={(d) => setRace({ map: { id: "test", name: d.name || "Test", author_time: null, world: d.world, data: { v: 1, world: d.world, tiles: d.tiles } }, mode: "test" })}
+        onTest={(d) => setRace({ map: { id: "test", name: d.name || "Test", author_time: null, world: d.world, data: mapData(d.world, d.tiles) }, mode: "test" })}
         onPlayPublished={(m) => { setDoc(newDoc()); pickTab("community"); setRace({ map: m, mode: "play" }); }}
       />
     );

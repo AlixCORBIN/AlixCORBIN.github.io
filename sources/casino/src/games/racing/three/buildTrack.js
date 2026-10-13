@@ -1,6 +1,7 @@
 // Construit la piste en three.js pur (un Group), à partir d'un Track. Matériaux partagés par monde.
 import * as THREE from "three";
-import { BLOCKS, TILE, occupancy, sampleBlock, sectionPoints, toWorld } from "../blocks.js";
+import { BLOCKS, TILE, occupancy, param, sampleBlock, sectionPoints, toWorld } from "../blocks.js";
+import { crateKey, gateClosed, liftPhase, switchKey } from "../physics.js";
 
 const DECK = 1.2; // épaisseur visuelle de la chaussée
 
@@ -101,9 +102,27 @@ function materials(world) {
     start: new THREE.MeshBasicMaterial({ map: bannerTex("DÉPART", "#18a04a", "#fff") }),
     cp: new THREE.MeshBasicMaterial({ map: bannerTex("CHECKPOINT", "#1f6fe0", "#fff") }),
     finish: new THREE.MeshBasicMaterial({ map: bannerTex("ARRIVÉE", "#000", "#fff", true) }),
+    // saison 2
+    cpfast: new THREE.MeshBasicMaterial({ map: bannerTex("CP RAPIDE", "#d9731a", "#fff") }),
+    teleport: new THREE.MeshBasicMaterial({ map: bannerTex("TÉLÉPORT", "#7a2fd0", "#fff") }),
+    switch: new THREE.MeshBasicMaterial({ map: bannerTex("INTERRUPTEUR", "#c9a100", "#111") }),
+  };
+  const s2 = {
+    brake: new THREE.MeshStandardMaterial({ color: "#8a1f24", roughness: 0.9, side: THREE.DoubleSide }),
+    glue: new THREE.MeshStandardMaterial({ color: "#6b2fa0", roughness: 0.4, side: THREE.DoubleSide }),
+    oil: new THREE.MeshStandardMaterial({ color: "#07070b", roughness: 0.05, metalness: 0.7, side: THREE.DoubleSide }),
+    grav: new THREE.MeshStandardMaterial({ color: "#3b2a78", emissive: "#6a4cff", emissiveIntensity: 0.45, roughness: 0.6, side: THREE.DoubleSide }),
+    boost: [1, 2, 3].map((l) => new THREE.MeshBasicMaterial({ map: boostTex(["#3ad06b", "#ff8a1f", "#ff2f4f"][l - 1]), transparent: true, depthWrite: false })),
+    kick: new THREE.MeshBasicMaterial({ map: boostTex("#ffd23f"), transparent: true, depthWrite: false }),
+    windR: new THREE.MeshBasicMaterial({ map: boostTex("#6fe3ff"), transparent: true, depthWrite: false, opacity: 0.8 }),
+    barrier: new THREE.MeshStandardMaterial({ color: "#e0262c", emissive: "#a00", emissiveIntensity: 0.4 }),
+    lift: new THREE.MeshStandardMaterial({ color: "#c9ccd2", metalness: 0.5, roughness: 0.4 }),
+    crate: new THREE.MeshStandardMaterial({ color: "#a8743a", roughness: 0.9 }),
+    rail: new THREE.MeshStandardMaterial({ color: "#d8dde4", metalness: 0.8, roughness: 0.25 }),
+    door: ["#d4262c", "#1f6fe0", "#1fa84a", "#d9a800", "#8a3fd0"].map((c) => new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 0.3 })),
   };
   const post = new THREE.MeshStandardMaterial({ color: "#2b2f36", roughness: 0.5, metalness: 0.3 });
-  const m = { road, dirt, ice, side, plain, kerb, pillar, boost, gates, post };
+  const m = { road, dirt, ice, side, plain, kerb, pillar, boost, gates, post, s2 };
   cache.set(world.id, m);
   return m;
 }
@@ -207,13 +226,69 @@ const frameOf = (tile, s) => {
   return { p: toWorld(tile, f.p), t: toWorld(tile, f.t, true), r: toWorld(tile, f.r, true), u: toWorld(tile, f.u, true) };
 };
 
+// Éléments de la saison 2 : décor posé sur le bloc et animations (fonction du pas et des drapeaux de la course)
+function decorS2(t, def, mats, root, anim) {
+  const m = mats.s2;
+  const f = frameOf(t, 0.5);
+  const flat = (mat, w, l, lift = 0.07, yaw = 0) => {
+    const p = new THREE.Mesh(new THREE.PlaneGeometry(w, l), mat);
+    p.matrixAutoUpdate = false;
+    p.matrix.copy(basis(f)).multiply(new THREE.Matrix4().makeTranslation(0, lift, 0)).multiply(new THREE.Matrix4().makeRotationY(yaw)).multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+    root.add(p);
+  };
+  const solid = (geo, mat, off = [0, 0, 0]) => {
+    const o = new THREE.Mesh(geo, mat);
+    o.matrixAutoUpdate = false;
+    o.matrix.copy(basis(f)).multiply(new THREE.Matrix4().makeTranslation(...off));
+    root.add(o);
+    return o;
+  };
+  if (def.surface === "boost2") flat(m.boost[Math.max(1, Math.min(3, Math.round(param(t, "level") ?? 2))) - 1], 12, 24);
+  if (def.base === "kicker2") flat(m.kick, 10, 14, 0.07);
+  if (def.wind) flat(m.windR, 14, 28, 0.9, (param(t, "force") ?? 0) >= 0 ? -Math.PI / 2 : Math.PI / 2);
+  if (def.mech === "gate") {
+    const o = solid(box(20, 6, 1), m.barrier, [0, 3, 0]);
+    anim.push((steps) => { o.visible = gateClosed(t, steps); });
+  }
+  if (def.mech === "door") {
+    const o = solid(box(20, 8, 1.6), m.door[(Math.max(1, Math.round(param(t, "id") ?? 1)) - 1) % 5], [0, 4, 0]);
+    anim.push((steps, flags) => { o.visible = !flags[switchKey(param(t, "id"))]; });
+  }
+  if (def.mech === "crate") {
+    const o = solid(box(8, 4, 8), m.crate, [0, 2, 0]);
+    anim.push((steps, flags) => { o.visible = !flags[crateKey(t)]; });
+  }
+  if (def.mech === "lift") {
+    const slab = new THREE.Mesh(box(20, 0.6, 32), m.lift);
+    slab.matrixAutoUpdate = true;
+    const dist = TILE * (param(t, "dist") ?? 2);
+    root.add(slab);
+    const q = new THREE.Quaternion().setFromRotationMatrix(basis({ ...f, p: [0, 0, 0] }));
+    slab.quaternion.copy(q);
+    anim.push((steps) => {
+      const d = dist * liftPhase(t, steps);
+      slab.position.set(f.p[0] - f.u[0] * 0.3 + f.t[0] * d, f.p[1] - f.u[1] * 0.3 + f.t[1] * d, f.p[2] - f.u[2] * 0.3 + f.t[2] * d);
+    });
+    anim.at(-1)(0);
+  }
+  if (def.mech === "rail") {
+    const pts = sampleBlock(t.type).map((s) => new THREE.Vector3(...toWorld(t, s.p)).addScaledVector(new THREE.Vector3(...toWorld(t, s.u, true)), 0.7));
+    root.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 40, 0.35, 6), m.rail));
+  }
+}
+
 export function buildTrackGroup(track, world) {
   const mats = materials(world);
   const root = new THREE.Group();
+  const anim = [];
+  root.userData.anim = anim;
   const pillars = [];
   for (const t of track.tiles) {
     const def = BLOCKS[t.type];
-    const top = def.surface === "dirt" ? mats.dirt : def.surface === "ice" ? mats.ice : t.type === "platform" ? mats.plain : mats.road;
+    if (def.season === 2 || def.base) decorS2(t, def, mats, root, anim);
+    if (def.mech === "lift") continue; // pas de route fixe : la plateforme est animée
+    const s2top = { brake: mats.s2.brake, glue: mats.s2.glue, oil: mats.s2.oil }[def.surface] || (def.gravity ? mats.s2.grav : null);
+    const top = s2top || (def.surface === "dirt" ? mats.dirt : def.surface === "ice" ? mats.ice : t.type === "platform" ? mats.plain : mats.road);
     root.add(new THREE.Mesh(sweptGeometry(t), [top, mats.side]));
     if (def.surface === "boost") {
       const p = new THREE.Mesh(new THREE.PlaneGeometry(12, 24), mats.boost);
@@ -221,7 +296,7 @@ export function buildTrackGroup(track, world) {
       p.matrix.copy(basis(frameOf(t, 0.5))).multiply(new THREE.Matrix4().makeTranslation(0, 0.06, 0)).multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
       root.add(p);
     }
-    if (def.gate) root.add(gate(def.gate, mats, frameOf(t, 0.5), def.gate === "start"));
+    if (def.gate) root.add(gate(def.fast ? "cpfast" : def.gate, mats, frameOf(t, 0.5), def.gate === "start"));
     // piliers sous les parties à peu près horizontales et en hauteur
     if (t.type !== "loop" && t.type !== "wall") {
       const S = sampleBlock(t.type);

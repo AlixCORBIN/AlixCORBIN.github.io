@@ -2,18 +2,20 @@ import React from "react";
 import { adminCampaignUpsert, amIAdmin, deleteDraft, loadDrafts, publishMap, saveDraft, seasonLive } from "../api.js";
 import { OFFICIAL } from "../maps.js";
 import { WORLDS, formatTime } from "../physics.js";
-import { BLOCKS, BLOCK_KEYS, TILE, blockKeysForSeason, occupancy, sampleBlock, sectionPoints, toWorld } from "../blocks.js";
-import { GRID, MAX_LEVEL, Track } from "../track.js";
+import { BLOCKS, BLOCK_KEYS, TILE, blockKeysForSeason, defaultParams, occupancy, resolveType, sampleBlock, sectionPoints, toWorld } from "../blocks.js";
+import { GRID, MAX_LEVEL, Track, mapData } from "../track.js";
 import { TrackPreview } from "../three/RaceScene.jsx";
 
 const CATS = [...new Set(BLOCK_KEYS.map((k) => BLOCKS[k].cat))];
 const HOTKEYS = ["road", "turn", "bank", "bigturn", "slope", "steep", "loop", "wall", "cp"];
-const FILL = { road: "#4a4e57", dirt: "#7a5634", ice: "#9fd6ee", boost: "#4a4e57" };
-const GATE = { start: "#18a04a", cp: "#1f6fe0", finish: "#f2f2f2" };
+const FILL = { road: "#4a4e57", dirt: "#7a5634", ice: "#9fd6ee", boost: "#4a4e57", boost2: "#4a4e57", brake: "#8a1f24", glue: "#6b2fa0", oil: "#0a0a0f" };
+const GATE = { start: "#18a04a", cp: "#1f6fe0", finish: "#f2f2f2", teleport: "#7a2fd0", switch: "#c9a100" };
+// Couleur d'un bloc de la saison 2 sans surface propre (pastille dessinée au centre)
+const S2_DOT = { gate: "#e0262c", door: "#d4262c", crate: "#a8743a", lift: "#c9ccd2", wind: "#6fe3ff", gravity: "#6a4cff", rail: "#d8dde4", kicker2: "#ffd23f" };
 
 export const newDoc = () => ({ id: crypto.randomUUID(), name: "", world: 0, tiles: [], authorTime: null });
 
-const asTile = ([x, z, type, rot, level]) => ({ x, z, type, rot, level });
+const asTile = ([x, z, type, rot, level, p]) => ({ x, z, type, rot, level, ...(p ? { p } : {}) });
 const occCache = new Map();
 function occOf(t) {
   const k = t.join(",");
@@ -25,6 +27,7 @@ const levelsOf = (t) => new Set([...occOf(t)].map((k) => +k.split(",")[2]));
 // Dessin vu de dessus : le profil de la route projeté au sol, plus clair quand c'est haut
 function drawTile(g, t, s, alpha) {
   const tile = asTile(t);
+  tile.type = resolveType(tile.type, tile.p);
   const def = BLOCKS[tile.type];
   const S = sampleBlock(tile.type);
   const k = s / TILE;
@@ -67,6 +70,18 @@ function drawTile(g, t, s, alpha) {
     }
     g.restore();
   }
+  // blocs de la saison 2 : pastille de couleur et réglage principal
+  if (def.season === 2) {
+    const base = def.base || tile.type;
+    const c = S2_DOT[base] || (def.surface && FILL[def.surface]) || GATE[def.gate];
+    if (c) { g.fillStyle = c; g.beginPath(); g.arc(tile.x * s + s / 2, tile.z * s + s / 2, s * 0.16, 0, 7); g.fill(); }
+    const main = Object.keys(def.params || {})[0];
+    if (main && tile.p) {
+      g.fillStyle = "#fff";
+      g.font = `700 ${Math.max(8, s * 0.26)}px system-ui`;
+      g.fillText(String(tile.p[main]), tile.x * s + 2, tile.z * s + s - 3);
+    }
+  }
   // niveau max du bloc
   const lv = Math.max(...levelsOf(t));
   if (lv > 0) {
@@ -94,6 +109,7 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
   // Blocs de la saison 2 : visibles seulement pour un admin ou une fois la saison 's2' ouverte
   const [admin, setAdmin] = React.useState(false);
   const [s2Live, setS2Live] = React.useState(false);
+  const [toolP, setToolP] = React.useState({}); // réglages tile.p du bloc sélectionné, par type
   const [s2Form, setS2Form] = React.useState(null); // { name, ord } quand le formulaire d'envoi est ouvert
   React.useEffect(() => {
     let off = false;
@@ -103,7 +119,7 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
   }, []);
   const keys = React.useMemo(() => blockKeysForSeason(admin || s2Live ? 2 : 1), [admin, s2Live]);
 
-  const err = React.useMemo(() => new Track({ tiles: doc.tiles }).validate(), [doc.tiles]);
+  const err = React.useMemo(() => new Track(mapData(0, doc.tiles)).validate(), [doc.tiles]);
 
   const update = (tiles) => {
     history.current.push(doc.tiles);
@@ -126,7 +142,8 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
       return;
     }
     const t = [x, z, tool, tool === "platform" ? 0 : rot, level];
-    if (doc.tiles.some((o) => o.join() === t.join())) return;
+    if (BLOCKS[tool]?.params) t.push({ ...defaultParams(tool), ...(toolP[tool] || {}) });
+    if (doc.tiles.some((o) => JSON.stringify(o) === JSON.stringify(t))) return;
     const mine = occOf(t);
     let tiles = doc.tiles.filter((o) => ![...occOf(o)].some((k) => mine.has(k)));
     if (tool === "start") tiles = tiles.filter((o) => o[2] !== "start");
@@ -216,9 +233,9 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
     if (!pseudo || pseudo === "Joueur") { setMsg("Choisis un pseudo dans le Casino avant de publier."); return; }
     setBusy(true);
     try {
-      const id = await publishMap(name, pseudo, { v: 1, world: doc.world, tiles: doc.tiles }, doc.authorTime);
+      const id = await publishMap(name, pseudo, mapData(doc.world, doc.tiles), doc.authorTime);
       deleteDraft(doc.id);
-      onPlayPublished({ id, name, author: pseudo, author_time: doc.authorTime, world: doc.world, data: { v: 1, world: doc.world, tiles: doc.tiles } });
+      onPlayPublished({ id, name, author: pseudo, author_time: doc.authorTime, world: doc.world, data: mapData(doc.world, doc.tiles) });
     } catch (e) {
       setMsg(e.message);
     } finally {
@@ -232,10 +249,9 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
     if (!name || !Number.isInteger(ord) || ord < 1) { setMsg("Nom et ordre (entier ≥ 1) requis."); return; }
     setBusy(true);
     try {
-      const v = doc.tiles.some((t) => t[5] !== undefined && t[5] !== null) ? 2 : 1;
       await adminCampaignUpsert({
         mapId: `s2-${String(ord).padStart(2, "0")}`, seasonId: "s2", ord, name,
-        data: { v, world: doc.world, tiles: doc.tiles }, authorMs: doc.authorTime,
+        data: mapData(doc.world, doc.tiles), authorMs: doc.authorTime,
       });
       setMsg(`Map « ${name} » envoyée dans la campagne S2 (position ${ord}).`);
       setS2Form(null);
@@ -246,7 +262,7 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
     }
   };
 
-  const previewTrack = React.useMemo(() => (preview ? new Track({ tiles: doc.tiles, world: doc.world }) : null), [preview, doc]);
+  const previewTrack = React.useMemo(() => (preview ? new Track(mapData(doc.world, doc.tiles)) : null), [preview, doc]);
 
   return (
     <div className="rc-editor">
@@ -274,6 +290,23 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
           ))}
           <button className={tool === "erase" ? "on danger" : "danger"} onClick={() => setTool("erase")}><kbd>E</kbd>Gomme</button>
         </div>
+        {BLOCKS[tool]?.params && (
+          <div className="rc-params">
+            <small className="rc-cat">Réglages de « {BLOCKS[tool].label} »</small>
+            {Object.entries(BLOCKS[tool].params).map(([k, d]) => (
+              <label key={k}>{d.label}
+                <input
+                  type="number" min={d.min} max={d.max} step={d.step}
+                  value={toolP[tool]?.[k] ?? d.def}
+                  onChange={(e) => {
+                    const v = Math.max(d.min, Math.min(d.max, Number(e.target.value)));
+                    setToolP({ ...toolP, [tool]: { ...(toolP[tool] || {}), [k]: Number.isFinite(v) ? v : d.def } });
+                  }}
+                />
+              </label>
+            ))}
+          </div>
+        )}
         <div className="rc-ctrl">
           <button className="btn" onClick={() => setRot((r) => (r + 1) & 3)}>↻ Rotation <kbd>R</kbd></button>
           <div className="rc-level">
