@@ -156,7 +156,7 @@ Object.assign(BLOCKS, {
       return { key: `${angle}:${len}`, path: kicker2Path(angle, len), n: 10 * len };
     },
   },
-  cpfast: { label: "Checkpoint rapide", path: straight, n: 2, gate: "cp", fast: true, ...OFF, params: { minSpeed: P("Vitesse min (km/h)", 40, 250, 100, 10) } },
+  cpfast: { label: "Checkpoint rapide", path: straight, n: 2, gate: "cp", fast: true, ...S2, params: { minSpeed: P("Vitesse min (km/h)", 40, 250, 100, 10) } },
   teleport: {
     label: "Téléporteur", path: straight, n: 2, gate: "teleport", ...OFF,
     params: { pair: P("Paire n°", 1, 9, 1), role: P("0 = entrée, 1 = sortie", 0, 1, 0) },
