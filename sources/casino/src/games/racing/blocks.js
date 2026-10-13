@@ -161,7 +161,7 @@ Object.assign(BLOCKS, {
     label: "Téléporteur", path: straight, n: 2, gate: "teleport", ...S2,
     params: { pair: P("Paire n°", 1, 9, 1), role: P("0 = entrée, 1 = sortie", 0, 1, 0) },
   },
-  wind: { label: "Vent", path: straight, n: 2, wind: true, ...OFF, params: { force: P("Force latérale (m/s², signe = sens)", -30, 30, 12) } },
+  wind: { label: "Vent", path: straight, n: 2, wind: true, ...S2, params: { force: P("Force latérale (m/s², signe = sens)", -30, 30, 12) } },
   // blocs lourds
   gate: {
     label: "Barrière", path: straight, n: 2, mech: "gate", ...OFF,
