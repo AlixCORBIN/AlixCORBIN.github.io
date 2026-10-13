@@ -10,6 +10,7 @@ import { Track } from "../track.js";
 import { RaceScene } from "../three/RaceScene.jsx";
 import { Board } from "./Board.jsx";
 
+import { AdminName } from "../../../lib/admins.js";
 const CAR_KEY = "racing-car";
 export const CAR_COLORS = ["#e63946", "#1f6fe0", "#ffb400", "#18a04a", "#9b4dff", "#f2f2f2", "#ff5fa2", "#202228"];
 export const loadCarColor = () => { try { return localStorage.getItem(CAR_KEY) || CAR_COLORS[0]; } catch { return CAR_COLORS[0]; } };
@@ -198,11 +199,11 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
             {top && !top.length && <small className="rc-row">Aucun temps : le premier record est pour toi.</small>}
             {top && top.slice(0, 8).map((r) => (
               <div key={r.pseudo} className={`rc-row ${r.pseudo === pseudo ? "me" : ""}`}>
-                <span className="rk">{["🥇", "🥈", "🥉"][r.rank - 1] || r.rank}</span><small>{r.pseudo}</small><b>{formatTime(r.time_ms)}</b>
+                <span className="rk">{["🥇", "🥈", "🥉"][r.rank - 1] || r.rank}</span><small><AdminName name={r.pseudo} /></small><b>{formatTime(r.time_ms)}</b>
               </div>
             ))}
             {top && myRow && myRow.rank > 8 && (
-              <div className="rc-row me"><span className="rk">{myRow.rank}</span><small>{myRow.pseudo}</small><b>{formatTime(myRow.time_ms)}</b></div>
+              <div className="rc-row me"><span className="rk">{myRow.rank}</span><small><AdminName name={myRow.pseudo} /></small><b>{formatTime(myRow.time_ms)}</b></div>
             )}
             {pb && !myRow && <div className="rc-row me"><span className="rk">·</span><small>Ton record</small><b>{formatTime(pb.ms)}</b></div>}
           </div>

@@ -149,7 +149,15 @@ const clampInt = (v, lo, hi, def) => {
 const color = (v, def) => (typeof v === 'string' && HEX.test(v) ? v.toLowerCase() : def);
 const str = (v, max, def = '') => (typeof v === 'string' ? v.slice(0, max) : def);
 
-export function sanitizeMii(raw) {
+/* Chapeaux admin (couronne 9, casquette ADMIN 10) : gardés seulement si admin vaut true.
+   Le serveur (trigger user_miis) applique la même règle ; ici c'est l'affichage. */
+export const ADMIN_HATS = [9, 10];
+let selfAdmin = false;
+export const setSelfAdmin = (v) => { selfAdmin = v === true; };
+export const isSelfAdmin = () => selfAdmin;
+
+export function sanitizeMii(raw, opts) {
+    const admin = opts?.admin === true;
     const d = defaultMii(raw?.gender === 'f' ? 'f' : 'm');
     if (!raw || typeof raw !== 'object') return d;
     const r = (key, val) => { const [lo, hi, def] = RANGES[key]; return clampInt(val, lo, hi, def); };
@@ -178,9 +186,13 @@ export function sanitizeMii(raw) {
     o.facialHairColor = color(raw.facialHairColor, d.facialHairColor);
     o.glasses = { type: clampInt(g.type, 0, COUNTS.glasses - 1, 0), color: color(g.color, d.glasses.color), size: r('glasses.size', g.size), y: r('glasses.y', g.y), tint: !!g.tint };
     o.mole = { on: !!ml.on, size: r('mole.size', ml.size), x: r('mole.x', ml.x), y: r('mole.y', ml.y) };
-    o.hat = { type: clampInt(ht.type, 0, COUNTS.hat - 1, 0), color: color(ht.color, d.hat.color) };
+    let hat = clampInt(ht.type, 0, 99, 0);
+    if (hat >= COUNTS.hat && !(admin && ADMIN_HATS.includes(hat))) hat = 0;
+    o.hat = { type: hat, color: color(ht.color, d.hat.color) };
     return o;
 }
+// Mii de l'utilisateur lui-même (stockage, éditeur) : chapeau admin si le serveur a confirmé le rôle
+export const sanitizeOwnMii = (raw) => sanitizeMii(raw, { admin: selfAdmin });
 
 /* ---------- Code de partage (texte copiable) ---------- */
 const SHARE_PREFIX = 'MII1.';

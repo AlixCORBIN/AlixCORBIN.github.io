@@ -37,6 +37,17 @@ function esc(v) {
     return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+/* ── Pseudos admin en rouge (liste servie par la base, pseudos réservés côté serveur) ── */
+const ADMIN_NAMES = new Set();
+function markAdmins(root = document) {
+    root.querySelectorAll('.lb-pseudo').forEach(el => el.classList.toggle('lb-admin', ADMIN_NAMES.has(el.textContent.trim().toLowerCase())));
+}
+sbFetch('rpc/public_admins', { body: '{}' }).then(r => r.json()).then(rows => {
+    (Array.isArray(rows) ? rows : []).forEach(a => a.pseudo && ADMIN_NAMES.add(a.pseudo.toLowerCase()));
+    markAdmins();
+    new MutationObserver(() => markAdmins()).observe(document.body, { childList: true, subtree: true });
+}).catch(() => {});
+
 /* ── Fetch stats ── */
 async function fetchLeaderboard() {
     const r = await sbFetch('rpc/get_blackjack_leaderboard', { body: '{}' });

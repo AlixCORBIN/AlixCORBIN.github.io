@@ -4,7 +4,8 @@
 // l'Edge Function casino-table ; ici on n'envoie que des intentions et on affiche la vue.
 import { callFunction, db } from "../lib/identity.js";
 import { refreshWallet } from "../lib/wallet.js";
-import { sanitizeMii, setRoomMiis } from "../lib/mii.js";
+import { sanitizeMii, sanitizeOwnMii, setRoomMiis } from "../lib/mii.js";
+import { isAdminUid, loadAdmins, setRoomAdmins } from "../lib/admins.js";
 import * as BJ from "../games/blackjack/engine.js";
 import * as RO from "../games/roulette/engine.js";
 
@@ -41,7 +42,7 @@ export class ServerTable {
     this.game = game;
     this.code = code;
     this.isPublic = !!isPublic;
-    this.mii = mii ? sanitizeMii(mii) : null;
+    this.mii = mii ? sanitizeOwnMii(mii) : null;
     this.state = null;
     this.me = null;
     this.status = "connecting";
@@ -109,10 +110,19 @@ export class ServerTable {
     this.state = this.queue.length ? this.replayLocal(res.view) : res.view;
     this.isPublic = res.view.isPublic ?? this.isPublic;
     if (res.miis) {
-      const map = {};
-      for (const [id, m] of Object.entries(res.miis).slice(0, 16)) map[id] = sanitizeMii(m);
-      this.miis = map;
-      setRoomMiis(map);
+      // clés = uid garantis par le serveur (JWT vérifié dans casino-table)
+      const raw = Object.entries(res.miis).slice(0, 16);
+      const build = () => {
+        const map = {};
+        for (const [id, m] of raw) map[id] = sanitizeMii(m, { admin: isAdminUid(id) });
+        this.miis = map;
+        setRoomMiis(map);
+        setRoomAdmins(raw.map(([id]) => id).filter(isAdminUid));
+      };
+      build();
+      loadAdmins().then(() => {
+        if (raw.some(([id]) => isAdminUid(id))) { build(); this.emit(); }
+      });
     }
     if (res.kicked || (this.me && res.view.kicked?.includes(this.me))) {
       this.kicked = true;
@@ -249,5 +259,6 @@ export class ServerTable {
       this.ch && db().removeChannel(this.ch);
     } catch {}
     setRoomMiis({});
+    setRoomAdmins([]);
   }
 }

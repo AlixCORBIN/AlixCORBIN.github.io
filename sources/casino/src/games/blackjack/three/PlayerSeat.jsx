@@ -9,6 +9,7 @@ import { signed } from "../../../lib/format.js";
 import { useRoomMii } from "../../../lib/mii.js";
 import { MiiAvatar } from "../../../ui/MiiAvatar.jsx";
 
+import { AdminName } from "../../../lib/admins.js";
 const RESULT_LABELS = {
   blackjack: ["BLACKJACK", "#e8c468"],
   win: ["GAGNE", "#6be28f"],
@@ -232,7 +233,7 @@ export function PlayerSeat({ p, index, isMe, g }) {
             "nameplate" + (isMe ? " me" : "") + (myTurn ? " turn" : "")
           }
         >
-          <b>{p.name}</b>
+          <b><AdminName name={p.name} id={p.id} /></b>
           <span>{Math.round(p.bankroll)}</span>
         </div>
       </Html>

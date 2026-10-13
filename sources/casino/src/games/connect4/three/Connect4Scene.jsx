@@ -8,6 +8,7 @@ import { COLORS, COLS, ROWS } from "../engine.js";
 import { GRAVITY, RELEASE_MS } from "../host.js";
 import { sfx } from "../sfx.js";
 
+import { AdminName } from "../../../lib/admins.js";
 const BASE_Y = 0.75; // bas de la grille
 const R_TOKEN = 0.44;
 const T_TOKEN = 0.22;
@@ -397,7 +398,7 @@ function Player( { p, side, active, won, score, target } )
 					<i />
 					<span>
 						{p.bot ? "🤖 " : ""}
-						{p.name}
+						<AdminName name={p.name} id={p.id} />
 					</span>
 					{target > 1 && (
 						<em>

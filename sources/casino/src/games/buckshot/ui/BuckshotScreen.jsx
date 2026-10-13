@@ -7,6 +7,7 @@ import { sfx, startAmbience } from "../sfx.js";
 import { sound } from "../../../lib/sound.js";
 import "./buckshot.css";
 
+import { AdminName } from "../../../lib/admins.js";
 const plural = (n, w) => `${n} ${w}${n > 1 ? "s" : ""}`;
 
 function useCountdown(deadline) {
@@ -195,7 +196,7 @@ function Lobby({ ctrl, state, me }) {
           <div key={p.id} className={"bs-pl" + (p.id === me.id ? " me" : "")}>
             <span>
               {p.id === state.hostId ? "👑 " : ""}
-              {p.name}
+              <AdminName name={p.name} id={p.id} />
             </span>
             <em>{p.bot ? "bot" : "prêt"}</em>
           </div>
@@ -252,7 +253,7 @@ function EndPanel({ ctrl, state, me, left }) {
             <div key={p.id} className={"bs-sc" + (p.id === w?.id ? " won" : "") + (p.id === me.id ? " me" : "")}>
               <span>
                 {p.bot ? "🤖 " : ""}
-                {p.name}
+                <AdminName name={p.name} id={p.id} />
               </span>
               <b>{"★".repeat(p.wins) || "·"}</b>
             </div>
@@ -295,7 +296,7 @@ function Picker({ state, me, pick, onDone, onCancel }) {
             <div className="bs-choices">
               {list.map((p) => (
                 <button key={p.id} className="btn" onClick={() => (adr ? setVictim(p) : onDone({ target: p.id }))}>
-                  {p.name}
+                  <AdminName name={p.name} id={p.id} />
                 </button>
               ))}
             </div>
@@ -418,7 +419,7 @@ export function BuckshotScreen({ ctrl, state, me, onQuit }) {
           <div className="bs-bottom">
             {err && <div className="toast">{err}</div>}
             <div className={"bs-me" + (myTurn ? " turn" : "") + (!me.alive ? " dead" : "")}>
-              <b>{me.name}</b>
+              <b><AdminName name={me.name} id={me.id} /></b>
               <span className={"bs-bolts big" + (me.cut ? " cut" : "")}>
                 {Array.from({ length: me.maxHp }, (_, i) => (
                   <i key={i} className={i < hp ? "on" : ""} />
@@ -440,7 +441,7 @@ export function BuckshotScreen({ ctrl, state, me, onQuit }) {
                   </button>
                   {others.map((p) => (
                     <button key={p.id} className="btn bs-fire" onClick={() => ctrl.act({ t: "shoot", target: p.id })}>
-                      Sur {p.name}
+                      Sur <AdminName name={p.name} id={p.id} />
                       <small>{p.hp} charge{p.hp > 1 ? "s" : ""}</small>
                     </button>
                   ))}

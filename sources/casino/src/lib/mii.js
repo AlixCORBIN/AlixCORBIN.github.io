@@ -4,12 +4,12 @@ import React from "react";
 import * as THREE from "three";
 import { createClient } from "@supabase/supabase-js";
 import { createMiiKit } from "@mii/mii-three.js";
-import { GUEST_MIIS, isGuestMii, miiForId, sanitizeMii } from "@mii/mii-core.js";
+import { GUEST_MIIS, isGuestMii, miiForId, sanitizeMii, sanitizeOwnMii } from "@mii/mii-core.js";
 import { attachAccount, getMainSync, listSync, miiStore } from "@mii/mii-store.js";
 import { createAccount } from "@mii/account.js";
 
 export const miiKit = createMiiKit(THREE);
-export { getMainSync, listSync, miiStore, miiForId, sanitizeMii, GUEST_MIIS, isGuestMii };
+export { getMainSync, listSync, miiStore, miiForId, sanitizeMii, sanitizeOwnMii, GUEST_MIIS, isGuestMii };
 
 export let account = null;
 try {

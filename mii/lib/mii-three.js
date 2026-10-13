@@ -394,6 +394,40 @@ export function createMiiKit(THREE) {
                 }
                 break;
             }
+            case 9: { // couronne admin (réservée, voir ADMIN_HATS)
+                const gold = mat('#f2c230', { metalness: .85, roughness: .22 });
+                const velvet = add(new THREE.SphereGeometry(.74, 32, 16, 0, PI * 2, 0, .5 * PI), mat('#b3121b', { roughness: .85 }));
+                velvet.position.y = 1.02; velvet.scale.y = .62;
+                add(new THREE.CylinderGeometry(.82, .78, .36, 40, 1, true), gold).position.y = 1.02;
+                const rim = add(new THREE.TorusGeometry(.8, .045, 10, 48), gold); rim.rotation.x = PI / 2; rim.position.y = .86;
+                for (let i = 0; i < 8; i++) {
+                    const a = i * PI / 4;
+                    const sp = add(new THREE.ConeGeometry(.11, .42, 4), gold); sp.position.set(Math.sin(a) * .8, 1.38, Math.cos(a) * .8);
+                    add(new THREE.SphereGeometry(.06, 10, 8), gold).position.set(Math.sin(a) * .8, 1.6, Math.cos(a) * .8);
+                    add(new THREE.OctahedronGeometry(.075), mat(i % 2 ? '#1e6bff' : '#e3132c', { metalness: .3, roughness: .1 })).position.set(Math.sin(a) * .835, 1.02, Math.cos(a) * .835);
+                }
+                const orb = add(new THREE.SphereGeometry(.12, 16, 12), gold); orb.position.y = 1.55;
+                const cx = add(new THREE.BoxGeometry(.05, .26, .05), gold); cx.position.y = 1.76;
+                add(new THREE.BoxGeometry(.18, .05, .05), gold).position.y = 1.79;
+                break;
+            }
+            case 10: { // casquette ADMIN (réservée)
+                const red = mat('#c8141e', { roughness: .7 });
+                add(new THREE.SphereGeometry(1.12, 40, 20, 0, PI * 2, 0, .45 * PI), red);
+                const brim = add(new THREE.CylinderGeometry(.78, .78, .05, 32, 1, false, -PI / 2, PI), mat('#1a1a1a', { roughness: .6 }));
+                brim.scale.set(1, 1, .95); brim.position.set(0, .2, .85); brim.rotation.x = .12;
+                add(new THREE.SphereGeometry(.08, 12, 8), mat('#1a1a1a')).position.set(0, 1.12, 0);
+                if (typeof document !== 'undefined') {
+                    const cv = document.createElement('canvas'); cv.width = 256; cv.height = 96;
+                    const x = cv.getContext('2d');
+                    x.fillStyle = '#ffffff'; x.font = '900 64px Arial Black, Arial, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+                    x.lineWidth = 8; x.strokeStyle = '#1a1a1a'; x.strokeText('ADMIN', 128, 50); x.fillText('ADMIN', 128, 50);
+                    const tex = new THREE.CanvasTexture(cv); if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+                    add(new THREE.SphereGeometry(1.13, 32, 8, PI / 2 - .21 * PI, .42 * PI, .2 * PI, .2 * PI),
+                        new THREE.MeshStandardMaterial({ map: tex, transparent: true, roughness: .6 }));
+                }
+                break;
+            }
         }
         g.scale.setScalar(big);
         return g;

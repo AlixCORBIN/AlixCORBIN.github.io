@@ -2,6 +2,7 @@ import React from "react";
 import { podium } from "../api.js";
 import { formatTime } from "../physics.js";
 
+import { AdminName } from "../../../lib/admins.js";
 // Classement des pilotes : celui qui a le plus de 1res places est premier, puis 2es, puis 3es
 export function Pilots({ pseudo, compact = false }) {
   const [rows, setRows] = React.useState(null);
@@ -29,7 +30,7 @@ export function Pilots({ pseudo, compact = false }) {
             {rows.map((r, i) => (
               <tr key={r.pseudo} className={`${me(r.pseudo) ? "me" : ""} ${i < 3 ? "top" : ""}`}>
                 <td>{icon[i] || i + 1}</td>
-                <td>{r.pseudo}</td>
+                <td><AdminName name={r.pseudo} /></td>
                 <td className="p1">{r.p1}</td>
                 <td>{r.p2}</td>
                 <td>{r.p3}</td>

@@ -50,6 +50,9 @@
     '.gchat-msg b{color:#e8c468;margin-right:5px}',
     '.gchat-msg b small{font-weight:400;opacity:.7;margin-left:4px}',
     '.gchat-msg.me{border-left-color:#6be28f}.gchat-msg.me b{color:#6be28f}',
+    '.gchat-msg b.adm,.gchat-msg.me b.adm{color:#ff3b3b}',
+    '.gchat-mod{float:right;display:none;gap:2px;margin-left:4px}.gchat-admin .gchat-msg:hover .gchat-mod{display:inline-flex}',
+    '.gchat-mod button{background:none;border:0;padding:0 2px;cursor:pointer;font-size:12px;opacity:.75;color:inherit}.gchat-mod button:hover{opacity:1}',
     '.gchat-msg time{float:right;font-size:11px;opacity:.45;margin-left:6px}',
     '.gchat-empty{opacity:.6;text-align:center;font-size:13px;margin:auto 0}',
     '.gchat-form{display:flex;gap:6px;margin-top:8px}',
@@ -121,6 +124,12 @@
 
   // ---------- messages ----------
   var seen = {}
+  // admins : liste publique servie par la base (pseudos réservés côté serveur)
+  var adminNames = {}, amAdmin = false
+  function isAdm(n) { return !!adminNames[String(n || '').toLowerCase()] }
+  function recolor() { list.querySelectorAll('.gchat-msg>b').forEach(function (b) { b.classList.toggle('adm', isAdm(b.dataset.name)) }) }
+  function sys(text) { add({ key: 'sys' + Date.now() + Math.random(), name: 'Chat', msg: text, at: new Date().toISOString() }) }
+  function removeMsg(id) { var e = list.querySelector('.gchat-msg[data-id="' + id + '"]'); if (e) e.remove() }
   function scrollDown() { list.scrollTop = list.scrollHeight }
   function hhmm(d) { return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) }
   function add(m, fromHistory) {
@@ -132,7 +141,23 @@
     var el = document.createElement('div')
     el.className = 'gchat-msg' + (m.name === myName() ? ' me' : '')
     var t = document.createElement('time'); t.textContent = hhmm(new Date(m.at || Date.now()))
-    var b = document.createElement('b'); b.textContent = m.name
+    if (m.id) el.dataset.id = m.id
+    var b = document.createElement('b'); b.textContent = m.name; b.dataset.name = m.name
+    if (isAdm(m.name)) b.classList.add('adm')
+    if (m.id) {
+      // boutons de modération (visibles seulement pour l'admin ; le serveur refuse tout autre compte)
+      var mod = document.createElement('span'); mod.className = 'gchat-mod'
+      ;[['🗑', 'Supprimer le message', function () {
+        client.rpc('admin_chat_delete', { p_id: m.id }).then(function (r) {
+          if (r.error) return sys('Suppression refusée.')
+          removeMsg(m.id)
+          channel.send({ type: 'broadcast', event: 'del', payload: { id: m.id } })
+        })
+      }], ['🔇', 'Rendre muet 1 h', function () { mute(m.id, 60) }], ['🔊', 'Lever le mute', function () { mute(m.id, 0) }]].forEach(function (a) {
+        var x = document.createElement('button'); x.type = 'button'; x.textContent = a[0]; x.title = a[1]; x.onclick = a[2]; mod.appendChild(x)
+      })
+      el.appendChild(mod)
+    }
     if (m.game) { var g = document.createElement('small'); g.textContent = '(' + String(m.game).slice(0, 20) + ')'; b.appendChild(g) }
     el.appendChild(t); el.appendChild(b); el.appendChild(document.createTextNode(m.msg))
     list.appendChild(el)
@@ -157,7 +182,13 @@
     ready.then(function () {
       return client.rpc('chat_say', { p_msg: msg, p_game: myGame(), p_name: myName() })
     }).then(function (r) {
-      if (r && r.error) add({ key: 'err' + last, name: 'Chat', msg: r.error.message.indexOf('banni') >= 0 ? 'Compte banni.' : 'Message non envoyé.', at: new Date().toISOString() })
+      if (r && r.error) add({ key: 'err' + last, name: 'Chat', msg: r.error.message.indexOf('banni') >= 0 ? 'Compte banni.' : r.error.message.indexOf('muet') >= 0 ? 'Tu es muet pour le moment.' : 'Message non envoyé.', at: new Date().toISOString() })
+    })
+  }
+  function mute(id, minutes) {
+    client.rpc('admin_chat_mute', { p_id: id, p_minutes: minutes }).then(function (r) {
+      if (r.error) return sys('Refusé : ' + r.error.message)
+      sys(minutes > 0 ? r.data + ' est muet pendant ' + minutes + ' min.' : r.data + ' peut de nouveau écrire.')
     })
   }
 
@@ -166,13 +197,28 @@
     client = window.supabase.createClient(URL_, KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'portfolio-auth' } })
 
     client.from('global_chat').select('id,name,msg,game,created_at').order('id', { ascending: false }).limit(60).then(function (r) {
-      ;(r.data || []).reverse().forEach(function (row) { add({ key: 'db' + row.id, name: row.name, game: row.game, msg: row.msg, at: row.created_at }, true) })
+      ;(r.data || []).reverse().forEach(function (row) { add({ key: 'db' + row.id, id: row.id, name: row.name, game: row.game, msg: row.msg, at: row.created_at }, true) })
+    })
+    client.rpc('public_admins').then(function (r) {
+      ;(r.data || []).forEach(function (a) { if (a.pseudo) adminNames[a.pseudo.toLowerCase()] = true })
+      recolor()
+    })
+    // rôle admin vérifié par le serveur (aucun indicateur local n'est cru)
+    client.auth.getSession().then(function (r) {
+      if (!r.data || !r.data.session) return
+      return client.rpc('is_admin').then(function (x) { amAdmin = x.data === true; panel.classList.toggle('gchat-admin', amAdmin) })
     })
     var me = Math.random().toString(36).slice(2)
     channel = client.channel('casino-global-chat', { config: { broadcast: { self: false }, presence: { key: me } } })
     channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'global_chat' }, function (p) {
       var row = p.new
-      if (row) add({ key: 'db' + row.id, name: row.name, game: row.game, msg: row.msg, at: row.created_at })
+      if (row) add({ key: 'db' + row.id, id: row.id, name: row.name, game: row.game, msg: row.msg, at: row.created_at })
+    })
+    // message supprimé par l'admin : on revérifie en base avant de le retirer (une annonce falsifiée ne suffit pas)
+    channel.on('broadcast', { event: 'del' }, function (p) {
+      var id = p && p.payload && Number(p.payload.id)
+      if (!id) return
+      client.from('global_chat').select('id').eq('id', id).then(function (r) { if (r.data && !r.data.length) removeMsg(id) })
     })
     channel.on('presence', { event: 'sync' }, function () {
       var st = channel.presenceState(), names = []

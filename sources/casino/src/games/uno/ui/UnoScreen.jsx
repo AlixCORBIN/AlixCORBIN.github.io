@@ -5,6 +5,7 @@ import { UnoScene } from "../three/UnoScene.jsx";
 import { sound } from "../../../lib/sound.js";
 import "./uno.css";
 
+import { AdminName } from "../../../lib/admins.js";
 function useCountdown(deadline) {
   const [left, setLeft] = React.useState(null);
   React.useEffect(() => {
@@ -71,7 +72,7 @@ function Lobby({ ctrl, state, me }) {
           <div key={p.id} className={"un-pl" + (p.id === me.id ? " me" : "")}>
             <span>
               {p.id === state.hostId ? "👑 " : ""}
-              {p.name}
+              <AdminName name={p.name} id={p.id} />
             </span>
             <em>{p.bot ? "bot" : "prêt"}</em>
           </div>
@@ -167,7 +168,7 @@ function Scoreboard({ ctrl, state, me }) {
           <div key={p.id} className={"un-sc" + (p.id === winner?.id ? " won" : "") + (p.id === me.id ? " me" : "")}>
             <span>
               {p.bot ? "🤖 " : ""}
-              {p.name}
+              <AdminName name={p.name} id={p.id} />
             </span>
             <small>{p.count} carte{p.count > 1 ? "s" : ""}</small>
             <b>{p.score}</b>
@@ -364,7 +365,7 @@ export function UnoScreen({ ctrl, state, me, onQuit }) {
             <ActionBar ctrl={ctrl} state={state} me={me} />
           </div>
           <div className="un-me">
-            <b>{me.name}</b>
+            <b><AdminName name={me.name} id={me.id} /></b>
             <span>
               {me.count} carte{me.count > 1 ? "s" : ""}
               {state.settings.target > 0 ? ` · ${me.score} pts` : ""}

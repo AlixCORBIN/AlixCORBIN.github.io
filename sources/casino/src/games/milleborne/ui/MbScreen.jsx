@@ -7,6 +7,7 @@ import { MbScene } from "../three/MbScene.jsx";
 import { sound } from "../../../lib/sound.js";
 import "./mb.css";
 
+import { AdminName } from "../../../lib/admins.js";
 const BATTLE_TXT = { acc: "💥 Accident", gas: "⛽ Panne", flat: "🛞 Crevaison", stop: "🔴 Feu rouge" };
 const statusOf = (p) => (p.rolling ? "🟢 Roule" : BATTLE_TXT[p.battle] || "🔴 À l'arrêt");
 
@@ -89,7 +90,7 @@ function Lobby({ ctrl, state, me }) {
             <span>
               <i />
               {p.id === state.hostId ? "👑 " : ""}
-              {p.name}
+              <AdminName name={p.name} id={p.id} />
             </span>
             <em>{p.bot ? "bot" : "prêt"}</em>
           </div>

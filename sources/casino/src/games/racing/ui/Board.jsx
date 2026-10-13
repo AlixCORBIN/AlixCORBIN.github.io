@@ -3,6 +3,7 @@ import { leaderboard } from "../api.js";
 import { medalFor } from "../maps.js";
 import { formatTime } from "../physics.js";
 
+import { AdminName } from "../../../lib/admins.js";
 export function Board({ map, pseudo, onClose }) {
   const [rows, setRows] = React.useState(null);
   const [err, setErr] = React.useState(null);
@@ -28,7 +29,7 @@ export function Board({ map, pseudo, onClose }) {
                   return (
                     <tr key={r.pseudo} className={r.pseudo === pseudo ? "me" : ""}>
                       <td>{r.rank}</td>
-                      <td>{m && <i className="rc-dot" style={{ background: m.color }} title={m.label} />}{r.pseudo}</td>
+                      <td>{m && <i className="rc-dot" style={{ background: m.color }} title={m.label} />}<AdminName name={r.pseudo} /></td>
                       <td>{formatTime(r.time_ms)}</td>
                       <td className="rc-gap">{r.time_ms === wr ? "—" : `+${((r.time_ms - wr) / 1000).toFixed(3)}`}</td>
                       <td className="hide-sm">{r.attempts}</td>

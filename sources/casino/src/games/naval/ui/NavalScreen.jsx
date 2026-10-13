@@ -5,6 +5,7 @@ import { sfx, startAmbience, stopAmbience } from "../sfx.js";
 import { sound } from "../../../lib/sound.js";
 import "./naval.css";
 
+import { AdminName } from "../../../lib/admins.js";
 const shipName = (k) => FLEET.find((f) => f.k === k)?.name || k;
 
 function useCountdown(deadline) {
@@ -76,7 +77,7 @@ function Lobby({ ctrl, state, me }) {
           <div key={p.id} className={"nv-pl" + (p.id === me.id ? " me" : "")}>
             <span>
               {p.id === state.hostId ? "👑 " : ""}
-              {p.name}
+              <AdminName name={p.name} id={p.id} />
             </span>
             <em>{p.bot ? "bot" : "prêt"}</em>
           </div>
@@ -256,7 +257,7 @@ function PlacementDock({ pl, state, me, ctrl }) {
           return (
             <button key={f.k} className={"nv-ship" + (pl.sel === f.k ? " sel" : "") + (placed ? " placed" : "")} onClick={() => !placed && pl.setSel(f.k)}>
               <span className="nv-pips">{"▮".repeat(f.len)}</span>
-              {f.name}
+              <AdminName name={f.name} id={f.id} />
             </button>
           );
         })}
@@ -299,7 +300,7 @@ function FleetCard({ p, title, side, mine }) {
                 <i key={i} className={sunk || (ship && i < ship.hits) ? "hit" : ""} />
               ))}
             </span>
-            <small>{f.name}</small>
+            <small><AdminName name={f.name} id={f.id} /></small>
           </div>
         );
       })}
@@ -367,7 +368,7 @@ function EndPanel({ ctrl, state, me }) {
           <div key={p.id} className={p.id === state.winner ? "won" : ""}>
             <b>
               {p.bot ? "🤖 " : ""}
-              {p.name}
+              <AdminName name={p.name} id={p.id} />
             </b>
             <span>
               {p.fired} tirs · {p.hits} touchés · {p.fired ? Math.round((p.hits / p.fired) * 100) : 0}%

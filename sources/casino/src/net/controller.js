@@ -1,6 +1,7 @@
 import { RoomChannel, makeRoomCode } from "./channel.js";
 import { announceRoom, withdrawRoom } from "./rooms.js";
-import { miiForId, sanitizeMii, setRoomMiis } from "../lib/mii.js";
+import { miiForId, sanitizeMii, sanitizeOwnMii, setRoomMiis } from "../lib/mii.js";
+import { myBadge, setRoomAdmins, verifyBadge } from "../lib/admins.js";
 import { myUid } from "../lib/identity.js";
 import { buildReport, setActiveHost } from "../lib/report.js";
 
@@ -36,8 +37,12 @@ class Store {
 export class HostController extends Store {
   constructor(name, { online = false, bankroll = 1000, isPublic = false, game = "", mii = null } = {}) {
     super();
-    this.myMii = mii ? sanitizeMii(mii) : null;
+    this.myMii = mii ? sanitizeOwnMii(mii) : null;
     this.peerMiis = {};
+    this.peerRaw = {};
+    // joueurs admin prouvés par un badge serveur lié à "SALLE:id"
+    this.adminIds = new Set();
+    this.badgeOf = {};
     this.miiSig = "";
     this.role = "host";
     this.online = online;
@@ -95,6 +100,14 @@ export class HostController extends Store {
             }
             this.me = "host-" + link.id;
             this.addPlayer(this.me, this.name, this.bankroll);
+            myBadge(`${this.code}:${this.me}`).then((t) => {
+              if (!t || this.status === "closed") return;
+              this.badgeOf[this.me] = t;
+              this.adminIds.add(this.me);
+              this.miiSig = "";
+              this.updateMiis();
+              this.announce();
+            }, () => {});
             this.status = "ready";
             this.hb = setInterval(() => this.heartbeat(), HEARTBEAT_MS);
             this.publish();
@@ -146,7 +159,7 @@ export class HostController extends Store {
     if (msg.t === "hello" && msg.spectate) {
       this.watchers.set(peer, Date.now());
       this.link.send(peer, { t: "welcome", id: peer, spectator: true });
-      this.link.send(peer, { t: "miis", m: this.miis });
+      this.link.send(peer, this.miisMsg());
       this.sendWatchers();
       return;
     }
@@ -158,8 +171,23 @@ export class HostController extends Store {
       }
       return;
     }
+    if (msg.t === "badge") {
+      const token = msg.token;
+      verifyBadge(token, `${this.code}:${peer}`).then((u) => {
+        if (!u || this.status === "closed") return;
+        this.badgeOf[peer] = token;
+        this.adminIds.add(peer);
+        if (this.peerRaw[peer]) this.peerMiis[peer] = sanitizeMii(this.peerRaw[peer], { admin: true });
+        this.miiSig = "";
+        this.updateMiis();
+      });
+      return;
+    }
     if (msg.t === "hello") {
-      if (msg.mii && typeof msg.mii === "object") this.peerMiis[peer] = sanitizeMii(msg.mii);
+      if (msg.mii && typeof msg.mii === "object") {
+        this.peerRaw[peer] = msg.mii;
+        this.peerMiis[peer] = sanitizeMii(msg.mii, { admin: this.adminIds.has(peer) });
+      }
       if (typeof msg.uid === "string" && /^[0-9a-f-]{36}$/.test(msg.uid)) this.uids[peer] = msg.uid;
       if (this.seen.has(peer)) {
         this.link.send(peer, {
@@ -167,7 +195,7 @@ export class HostController extends Store {
           id: peer,
         });
         this.publish();
-        this.link.send(peer, { t: "miis", m: this.miis });
+        this.link.send(peer, this.miisMsg());
         return;
       }
       const bankroll = Number.isFinite(msg.bankroll)
@@ -186,7 +214,7 @@ export class HostController extends Store {
         id: peer,
       });
       this.publish();
-      this.link.send(peer, { t: "miis", m: this.miis });
+      this.link.send(peer, this.miisMsg());
     } else {
       if (this.seen.has(peer)) {
         this.seen.set(peer, Date.now());
@@ -257,6 +285,8 @@ export class HostController extends Store {
       game: this.gameId,
       code: this.code,
       host: this.name,
+      hostId: this.me,
+      badge: this.badgeOf[this.me] || undefined,
       players: players.length,
       bots: (this.g?.players || []).length - players.length,
       status: this.g?.phase === "lobby" ? "lobby" : "playing",
@@ -309,7 +339,14 @@ export class HostController extends Store {
     this.miiSig = sig;
     this.miis = map;
     setRoomMiis(map);
-    if (this.online && this.link && this.status === "ready") this.link.send("*", { t: "miis", m: map });
+    setRoomAdmins([...this.adminIds].filter((id) => map[id]));
+    if (this.online && this.link && this.status === "ready") this.link.send("*", this.miisMsg());
+  }
+  // Mii de la salle + badges admin (chaque client les fait vérifier au serveur)
+  miisMsg() {
+    const b = {};
+    for (const id of this.adminIds) if (this.miis[id] && this.badgeOf[id]) b[id] = this.badgeOf[id];
+    return { t: "miis", m: this.miis, b };
   }
   arm(name, ms, fn) {
     clearTimeout(this.timers[name]);
@@ -333,6 +370,7 @@ export class HostController extends Store {
     this.link?.close();
     this.status = "closed";
     setRoomMiis({});
+    setRoomAdmins([]);
   }
 }
 
@@ -340,7 +378,8 @@ export class ClientController extends Store {
   constructor(name, code, bankroll = 1000, mii = null, { spectate = false } = {}) {
     super();
     this.spectator = !!spectate;
-    this.mii = mii ? sanitizeMii(mii) : null;
+    this.mii = mii ? sanitizeOwnMii(mii) : null;
+    this.miiSeq = 0;
     this.role = "client";
     this.online = true;
     this.code = code.toUpperCase().trim();
@@ -410,6 +449,7 @@ export class ClientController extends Store {
       this.lastHost = Date.now();
       if (msg.t === "welcome") {
         this.me = msg.id;
+        if (!this.spectator) myBadge(`${this.code}:${msg.id}`).then((t) => t && this.link?.send("host", { t: "badge", token: t }), () => {});
         clearTimeout(this.failTimer);
         clearInterval(this.helloTimer);
       } else if (msg.t === "state" && this.me) {
@@ -417,11 +457,25 @@ export class ClientController extends Store {
         this.status = "ready";
         this.emit();
       } else if (msg.t === "miis" && msg.m && typeof msg.m === "object") {
-        const map = {};
-        for (const [id, m] of Object.entries(msg.m).slice(0, 32)) map[id] = sanitizeMii(m);
-        this.miis = map;
-        setRoomMiis(map);
-        this.emit();
+        // chapeau admin et pseudo rouge seulement si le serveur valide le badge de ce joueur dans cette salle
+        const seq = ++this.miiSeq;
+        const raw = Object.entries(msg.m).slice(0, 32);
+        const build = (ids) => {
+          const map = {};
+          for (const [id, m] of raw) map[id] = sanitizeMii(m, { admin: ids.has(id) });
+          this.miis = map;
+          setRoomMiis(map);
+          setRoomAdmins([...ids]);
+          this.emit();
+        };
+        build(new Set());
+        const b = msg.b && typeof msg.b === "object" ? Object.entries(msg.b).slice(0, 32) : [];
+        if (b.length) {
+          Promise.all(b.map(([id, t]) => verifyBadge(t, `${this.code}:${id}`).then((u) => (u ? id : null)))).then((r) => {
+            const ids = new Set(r.filter(Boolean));
+            if (seq === this.miiSeq && ids.size) build(ids);
+          });
+        }
       } else if (msg.t === "full") {
         if (this.spectator) return;
         this.fail("Table pleine");
@@ -456,6 +510,7 @@ export class ClientController extends Store {
     clearInterval(this.pingTimer);
     this.status = "closed";
     setRoomMiis({});
+    setRoomAdmins([]);
     if (this.me) {
       this.link?.send("host", {
         t: "bye",

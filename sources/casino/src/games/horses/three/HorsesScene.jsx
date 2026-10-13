@@ -8,6 +8,7 @@ import { MiiAvatar } from "../../../ui/MiiAvatar.jsx";
 import { COLORS, COLOR_HEX, FINISH, LADDER, STABLE, TRACK, cellOf, startIndex } from "../engine.js";
 import { HOP_MS, ROLL_MS } from "../host.js";
 
+import { AdminName } from "../../../lib/admins.js";
 const S = 0.8; // taille d'une case
 const BOARD_Y = 0.02;
 const toWorld = ([x, y]) => [(x - 7) * S, (y - 7) * S];
@@ -418,7 +419,7 @@ function Plate({ p, active, choosing }) {
     <div className={`hc-plate ${active ? "turn" : ""}`} style={{ "--c": COLOR_HEX[p.color] }}>
       <b>
         {p.bot ? "🤖 " : ""}
-        {p.name}
+        <AdminName name={p.name} id={p.id} />
       </b>
       <span>
         {"🐴".repeat(home)}

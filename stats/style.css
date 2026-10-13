@@ -419,6 +419,7 @@ body > * {
 
 .lb-rank   { font-size: 1.1rem; width: 40px; text-align: center; }
 .lb-pseudo { font-weight: 600; }
+.lb-pseudo.lb-admin { color: #ff3b3b; }
 .lb-bankroll { font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; }
 .lb-hands  { color: var(--muted); }
 .lb-date   { color: var(--muted); font-size: 0.75rem; }

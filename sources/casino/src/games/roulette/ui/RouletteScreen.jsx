@@ -7,6 +7,7 @@ import { RouletteBoard } from "./RouletteBoard.jsx";
 import { sound } from "../../../lib/sound.js";
 import { TopBar } from "../../../ui/TopBar.jsx";
 
+import { AdminName } from "../../../lib/admins.js";
 export function RouletteScreen({ ctrl, state, me, onQuit }) {
   const [chip, setChip] = React.useState(5);
   const [orient, setOrient] = React.useState("h");
@@ -113,7 +114,7 @@ export function RouletteScreen({ ctrl, state, me, onQuit }) {
           <div className="r-players">
             {state.players.map((p) => (
               <div key={p.id} className={"rp" + (p.id === me.id ? " me" : "")}>
-                <b>{p.name}</b>
+                <b><AdminName name={p.name} id={p.id} /></b>
                 <span>{totalBet(p) > 0 ? `mise ${totalBet(p)}` : "—"}</span>
                 {state.phase === "settle" && p.net !== 0 && (
                   <em className={p.net > 0 ? "pos" : "neg"}>

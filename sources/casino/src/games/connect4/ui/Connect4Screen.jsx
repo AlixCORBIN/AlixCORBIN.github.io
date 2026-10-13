@@ -5,6 +5,7 @@ import { sfx } from "../sfx.js";
 import { sound } from "../../../lib/sound.js";
 import "./connect4.css";
 
+import { AdminName } from "../../../lib/admins.js";
 function useCountdown( deadline )
 {
 	const [left, setLeft] = React.useState( null );
@@ -78,7 +79,7 @@ function Lobby( { ctrl, state, me } )
 						<i />
 						<span>
 							{p.id === state.hostId ? "👑 " : ""}
-							{p.name}
+							<AdminName name={p.name} id={p.id} />
 						</span>
 						<em>{p.bot ? "bot" : "prêt"}</em>
 					</div>
@@ -153,13 +154,13 @@ function Score( { state } )
 		<div className="c4-score">
 			<span className="c4-name" style={{ "--c": COLORS[0].hex }}>
 				<i />
-				{a.name}
+				<AdminName name={a.name} id={a.id} />
 			</span>
 			<b>{a.roundWins}</b>
 			<small>{state.settings.bestOf > 1 ? `manche ${state.set}/${state.settings.bestOf}` : "–"}</small>
 			<b>{b.roundWins}</b>
 			<span className="c4-name" style={{ "--c": COLORS[1].hex }}>
-				{b.name}
+				<AdminName name={b.name} id={b.id} />
 				<i />
 			</span>
 		</div>
@@ -225,7 +226,7 @@ function EndPanel( { ctrl, state, me } )
 						<b>
 							<i />
 							{p.bot ? "🤖 " : ""}
-							{p.name}
+							<AdminName name={p.name} id={p.id} />
 						</b>
 						<span>
 							{p.roundWins} manche{p.roundWins > 1 ? "s" : ""} · {p.moves} jetons

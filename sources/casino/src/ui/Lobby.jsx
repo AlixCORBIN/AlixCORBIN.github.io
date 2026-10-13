@@ -8,6 +8,7 @@ import { MiiPicker } from "./MiiPicker.jsx";
 import "../styles/rooms.css";
 import "../styles/lobby.css";
 
+import { ADMIN_RED } from "../lib/admins.js";
 const GAMES = [
   { id: "blackjack", cat: "casino", title: "Blackjack", players: "1 à 5", desc: "Assurance, Perfect Pairs, 21+3, double, split.", icon: "♠", hue: "#14804a" },
   { id: "roulette", cat: "casino", title: "Roulette Européenne", players: "Table partagée", desc: "Roue 3D, une seule bille, tous les types de mises.", icon: "◉", hue: "#a31a2a" },
@@ -60,7 +61,7 @@ function RoomsPanel({ onJoin, onWatch, broke }) {
               <div className="room-main">
                 <b>{info.title}</b>
                 <small>
-                  {r.host} · {r.players}{info.max ? `/${info.max}` : ""} joueur{r.players > 1 ? "s" : ""}
+                  {r.adminHost ? <b style={{ color: ADMIN_RED }}>{r.host}</b> : r.host} · {r.players}{info.max ? `/${info.max}` : ""} joueur{r.players > 1 ? "s" : ""}
                   {r.bots ? ` + ${r.bots} bot${r.bots > 1 ? "s" : ""}` : ""}
                 </small>
               </div>

@@ -4,7 +4,7 @@
    - Si un compte est connecté (attachAccount), chaque modification part aussi
      dans Supabase et une synchronisation fusionne les deux au login.
    ========================================================= */
-import { sanitizeMii, MII_VERSION } from './mii-core.js';
+import { sanitizeOwnMii as sanitizeMii, setSelfAdmin, MII_VERSION } from './mii-core.js';
 
 const KEY = 'portfolio.miis.v1';
 const SYNCED_KEY = 'portfolio.miis.synced.';
@@ -111,7 +111,10 @@ export function attachAccount(account) {
         const uid = user?.id || null;
         if (uid === (cloud?.uid || null)) return;
         cloud = uid ? { sb: account.sb, uid } : null;
-        if (cloud) syncNow(force); else setSync('local');
+        if (!cloud) { setSelfAdmin(false); setSync('local'); return; }
+        // rôle admin vérifié par le serveur avant toute synchro (sinon le chapeau admin serait retiré)
+        Promise.resolve(account.sb.rpc('is_admin')).then(({ data }) => setSelfAdmin(data === true), () => setSelfAdmin(false))
+            .then(() => { if (cloud?.uid === uid) { emit(); syncNow(force); } });
     };
     account.ready.then(() => apply(account.user, false));
     // Retour sur l'onglet après un moment : rattrape les changements faits ailleurs

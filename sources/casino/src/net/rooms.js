@@ -2,6 +2,7 @@
 // L'hôte d'une salle publique s'y « présente » ; le hub liste ce qui est présent.
 // Rien en base : une salle disparaît toute seule quand l'hôte ferme sa page.
 import { supabase } from "../lib/supabase.js";
+import { isAdminName, loadAdmins, verifyBadge } from "../lib/admins.js";
 
 const TOPIC = "casino-rooms";
 // Un seul canal pour tout l'onglet : supabase.channel(TOPIC) renvoie le canal existant
@@ -24,18 +25,34 @@ async function loadServerRooms() {
       .eq("is_public", true).gt("players", 0).gt("updated_at", since).limit(30);
     serverRooms = (data || []).map((r) => ({
       public: true, game: r.game, code: r.code, players: r.players, bots: 0,
-      host: r.view?.players?.[0]?.name || "Table", status: "playing", at: Date.parse(r.updated_at),
+      host: r.view?.players?.[0]?.name || "Table", server: true, status: "playing", at: Date.parse(r.updated_at),
     }));
   } catch {}
   rooms = readRooms();
   watchers.forEach((cb) => cb(rooms));
 }
 
+// Hôte admin : pseudo réservé côté serveur (tables serveur) ou badge signé lié à la salle (pair-à-pair)
+const okBadges = new Set();
+const checking = new Set();
 function readRooms() {
   const list = [...Object.values(ch?.presenceState() || {}).flat(), ...serverRooms].filter((r) => r && r.public && r.code);
   const uniq = new Map(list.map((r) => [r.game + r.code, r]));
-  return [...uniq.values()].sort((a, b) => (b.at || 0) - (a.at || 0));
+  for (const r of uniq.values()) {
+    if (r.server || !r.badge || okBadges.has(r.badge) || checking.has(r.badge)) continue;
+    checking.add(r.badge);
+    verifyBadge(r.badge, `${r.code}:${r.hostId}`).then((u) => {
+      if (!u) return;
+      okBadges.add(r.badge);
+      rooms = readRooms();
+      watchers.forEach((cb) => cb(rooms));
+    });
+  }
+  return [...uniq.values()]
+    .map((r) => ({ ...r, adminHost: r.server ? isAdminName(r.host) : okBadges.has(r.badge) }))
+    .sort((a, b) => (b.at || 0) - (a.at || 0));
 }
+loadAdmins();
 
 function channel() {
   if (!ch) {

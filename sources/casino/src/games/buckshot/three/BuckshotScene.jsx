@@ -10,6 +10,7 @@ import { GunModel, MUZZLE_Z } from "./Gun.jsx";
 import { ItemModel, Shell } from "./Models.jsx";
 import { ADRENALINE_LEAD, CAM, ITEM, SEAT_R, SHOT, TABLE_R, TABLE_Y, at, clamp01, ease, seatOf, shownHp, slotPos, spentPos, useEventTime } from "./layout.js";
 
+import { AdminName } from "../../../lib/admins.js";
 const Ctx = React.createContext(null);
 const useCtx = () => React.useContext(Ctx);
 
@@ -276,7 +277,7 @@ function Tag({ p, ev, turn, lobby }) {
   const hp = shownHp(p, ev, t);
   return (
     <div className={"bs-tag" + (turn ? " turn" : "") + (!p.alive && !lobby ? " dead" : "")}>
-      <b>{p.name}</b>
+      <b><AdminName name={p.name} id={p.id} /></b>
       {!lobby && (
         <span className={"bs-bolts" + (p.cut ? " cut" : "")}>
           {Array.from({ length: p.maxHp }, (_, i) => (

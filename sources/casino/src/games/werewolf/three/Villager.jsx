@@ -5,6 +5,7 @@ import { ROLES } from "../roles.js";
 import { useRoomMii } from "../../../lib/mii.js";
 import { MiiAvatar } from "../../../ui/MiiAvatar.jsx";
 
+import { AdminName } from "../../../lib/admins.js";
 // Loup vu par sa meute : oreilles de loup et yeux rouges
 const WOLF = (m) => {
   m.hat = { type: 8, color: "#5a5550" };
@@ -108,7 +109,7 @@ export function Villager({
           {bubble && <div className="ww-bubble">{bubble}</div>}
           <span className="nm">
             {p.lover ? "💘 " : ""}
-            {p.name}
+            <AdminName name={p.name} id={p.id} />
             {p.bot ? " 🤖" : ""}
           </span>
           {role && (

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import {
-    defaultMii, randomMii, sanitizeMii, cloneMii, encodeMii, decodeMii, newId,
+    defaultMii, randomMii, sanitizeMii, cloneMii, isSelfAdmin, ADMIN_HATS, encodeMii, decodeMii, newId,
     COUNTS, RANGES, FAV_COLORS, SKIN_COLORS, HAIR_COLORS, EYE_COLORS, LIP_COLORS,
     GLASSES_COLORS, PANTS_COLORS, HAT_COLORS, GUEST_MIIS,
 } from './lib/mii-core.js';
@@ -577,7 +577,7 @@ const TABS = {
         section(null, slider('mole.size', t('size')), slider('mole.x', t('hpos')), slider('mole.y', t('vpos'))),
     ],
     hat: () => [
-        section(t('hatType'), grid('hat.type', COUNTS.hat, 'head', undefined, { noneFirst: true })),
+        section(t('hatType'), grid('hat.type', COUNTS.hat + (isSelfAdmin() ? ADMIN_HATS.length : 0), 'head', undefined, { noneFirst: true })),
         section(t('color'), swatches('hat.color', HAT_COLORS)),
         el('p', { class: 'hint' }, t('hatHint')),
     ],

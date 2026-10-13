@@ -5,6 +5,7 @@ import { VillageScene } from "../three/VillageScene.jsx";
 import { sound } from "../../../lib/sound.js";
 import "./werewolf.css";
 
+import { AdminName } from "../../../lib/admins.js";
 function useCountdown(deadline) {
   const [left, setLeft] = React.useState(null);
   React.useEffect(() => {
@@ -84,7 +85,7 @@ function RoomPanel({ ctrl, state, me }) {
           <div key={p.id} className={"ww-pl" + (p.id === me.id ? " me" : "")}>
             <span>
               {p.id === state.hostId ? "👑 " : ""}
-              {p.name}
+              <AdminName name={p.name} id={p.id} />
               {p.bot ? " 🤖" : ""}
             </span>
             <em className={p.ready ? "pos" : ""}>{p.bot ? "bot" : p.ready ? "prêt" : "..."}</em>
@@ -304,7 +305,7 @@ function EndPanel({ ctrl, state, me }) {
             <span>
               {p.alive ? "" : "💀 "}
               {p.lover ? "💘 " : ""}
-              {p.name}
+              <AdminName name={p.name} id={p.id} />
             </span>
             <em style={{ color: ROLES[p.role]?.color }}>
               {ROLES[p.role]?.icon} {ROLES[p.role]?.name}

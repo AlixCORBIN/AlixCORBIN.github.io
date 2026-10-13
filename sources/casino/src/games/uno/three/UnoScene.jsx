@@ -8,6 +8,7 @@ import { COLORS, COLOR_HEX } from "../cards.js";
 import { Card3D } from "./Card3D.jsx";
 import { feltTexture } from "./textures.js";
 
+import { AdminName } from "../../../lib/admins.js";
 const DECK = { x: -1.55, z: 0.3 };
 const PILE = { x: 1.35, z: 0.3 };
 const PAWN = ["#d7263d", "#f2b705", "#2e9e4f", "#1f6fd1", "#b45fd6", "#ef7d22", "#2fb5b5", "#e86aa0", "#8bc34a", "#9e9e9e"];
@@ -146,7 +147,7 @@ function Plate({ p, active, risk, score, onCatch }) {
     <div className={`un-plate ${active ? "turn" : ""} ${p.uno ? "uno" : ""}`}>
       <b>
         {p.bot ? "🤖 " : ""}
-        {p.name}
+        <AdminName name={p.name} id={p.id} />
       </b>
       <span>
         {p.count} carte{p.count > 1 ? "s" : ""}

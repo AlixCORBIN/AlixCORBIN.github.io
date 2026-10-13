@@ -4,6 +4,7 @@ import { HorsesScene } from "../three/HorsesScene.jsx";
 import { sound } from "../../../lib/sound.js";
 import "./horses.css";
 
+import { AdminName } from "../../../lib/admins.js";
 function useCountdown(deadline) {
   const [left, setLeft] = React.useState(null);
   React.useEffect(() => {
@@ -63,7 +64,7 @@ function Lobby({ ctrl, state, me }) {
             <i />
             <span>
               {p.id === state.hostId ? "👑 " : ""}
-              {p.name}
+              <AdminName name={p.name} id={p.id} />
             </span>
             <em>{p.bot ? "bot" : COLOR_NAME[p.color]}</em>
           </div>
@@ -152,7 +153,7 @@ function End({ ctrl, state, me }) {
             <div key={id} className={"hc-pl" + (id === me.id ? " me" : "")} style={{ "--c": COLOR_HEX[p.color] }}>
               <i />
               <span>
-                {i + 1}. {p.name}
+                {i + 1}. <AdminName name={p.name} id={p.id} />
               </span>
               <em>
                 {p.horses.filter((x) => x === 56).length}/4 · {p.captures} 💥

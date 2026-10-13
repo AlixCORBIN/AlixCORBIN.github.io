@@ -1,6 +1,7 @@
 import React from "react";
 import { fetchLeaderboard } from "../api.js";
 
+import { AdminName } from "../../../lib/admins.js";
 export function Leaderboard({ onClose }) {
   const [rows, setRows] = React.useState(null);
   const [error, setError] = React.useState(null);
@@ -31,7 +32,7 @@ export function Leaderboard({ onClose }) {
               {rows.map((row, i) => (
                 <tr key={i}>
                   <td>{i + 1}</td>
-                  <td>{row.pseudo}</td>
+                  <td><AdminName name={row.pseudo} /></td>
                   <td>{Math.round(row.bankroll).toLocaleString("fr-FR")}</td>
                   <td>{row.date}</td>
                 </tr>

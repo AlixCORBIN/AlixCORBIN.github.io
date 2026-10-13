@@ -4,6 +4,7 @@ import { OFFICIAL, medalFor } from "../maps.js";
 import { WORLDS, formatTime } from "../physics.js";
 import { rumble } from "../gamepad.js";
 
+import { AdminName } from "../../../lib/admins.js";
 const SEEN_KEY = "racing-alerts-seen";
 const loadSeen = () => { try { return localStorage.getItem(SEEN_KEY); } catch { return null; } };
 const saveSeen = (iso) => { try { localStorage.setItem(SEEN_KEY, iso); } catch {} };
@@ -82,7 +83,7 @@ export function AlertToasts({ toasts, dismiss, onOpen }) {
       {toasts.map((e) => (
         <button key={e.id} className="rc-alert" onClick={() => { dismiss(e.id); onOpen?.(); }}>
           <b>🏁 Record perdu</b>
-          <span><em>{e.new_pseudo}</em> t'a pris le record sur <em>{e.info.name}</em></span>
+          <span><em><AdminName name={e.new_pseudo} /></em> t'a pris le record sur <em>{e.info.name}</em></span>
           <small>{formatTime(e.old_time)} → {formatTime(e.new_time)}</small>
         </button>
       ))}
@@ -134,7 +135,7 @@ export function Records({ pseudo, alerts, history, onPlay, onBoard }) {
           <h3>Records perdus {alerts.length > 0 && <span className="rc-badge">{alerts.length} nouveau{alerts.length > 1 ? "x" : ""}</span>}</h3>
           {history.slice(0, 8).map((e) => (
             <div key={e.id} className="rc-lost">
-              <span><em>{e.new_pseudo}</em> t'a pris <em>{e.info.name}</em></span>
+              <span><em><AdminName name={e.new_pseudo} /></em> t'a pris <em>{e.info.name}</em></span>
               <small>{formatTime(e.old_time)} → {formatTime(e.new_time)} · {new Date(e.created_at).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}</small>
             </div>
           ))}
