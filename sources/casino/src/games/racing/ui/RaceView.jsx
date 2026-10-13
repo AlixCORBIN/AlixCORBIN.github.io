@@ -130,7 +130,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
         setResult(r);
         if (mode === "test") { onTestDone?.(ms); return; }
         if (r.pbNew) setPb({ ms, ghost, splits });
-        submitTime(map.id, pseudo, ms, ghost, splits, log).then(({ rank }) => { setResult((x) => x && x.ms === ms ? { ...x, rank, saving: false } : x); loadTop(); }).catch(() => setResult((x) => x && { ...x, saving: false }));
+        submitTime(map.id, pseudo, ms, ghost, splits, log).then(({ rank, rejected }) => { setResult((x) => x && x.ms === ms ? { ...x, rank, rejected, saving: false } : x); loadTop(); }).catch(() => setResult((x) => x && { ...x, saving: false }));
       },
     });
     return s;
@@ -232,7 +232,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
             {result.medal && <div className="rc-medal" style={{ "--m": result.medal.color }}>Médaille {result.medal.label}</div>}
             {mode === "play" && (
               <p className="rc-save">
-                {pseudo === "Joueur" ? "Choisis un pseudo dans le Casino pour apparaître au classement." : result.saving ? "Enregistrement…" : result.rank ? `Classement : ${result.rank}${result.rank === 1 ? "er" : "e"}` : "Temps enregistré"}
+                {pseudo === "Joueur" ? "Choisis un pseudo dans le Casino pour apparaître au classement." : result.saving ? "Enregistrement…" : result.rejected ? `Temps non enregistré : ${result.rejected}` : result.rank ? `Classement : ${result.rank}${result.rank === 1 ? "er" : "e"}` : "Temps enregistré"}
               </p>
             )}
             <div className="row">

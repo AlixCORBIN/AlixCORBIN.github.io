@@ -132,11 +132,15 @@ export function Lobby({ onStart }) {
     setErr("");
     // le pseudo est réservé côté serveur : c'est lui qui s'affiche aux tables et dans les classements
     setBusy(true);
+    // sans pseudo saisi, on réserve le nom du Mii (sinon le serveur refuse les temps et les scores) ;
+    // si ce nom est déjà pris, on joue quand même, mais sans classement
     try {
-      await claimPseudo(name.trim());
+      await claimPseudo(name.trim() || mii?.name || "");
     } catch (e) {
-      setBusy(false);
-      return setErr(e.message);
+      if (name.trim()) {
+        setBusy(false);
+        return setErr(e.message);
+      }
     }
     setBusy(false);
     const g = GAMES.find((x) => x.id === game);

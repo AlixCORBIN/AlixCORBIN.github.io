@@ -292,3 +292,52 @@ begin
    where map_id = p_map and time_ms < (select time_ms from racing_records where map_id = p_map and pseudo = p_pseudo);
   return r;
 end $$;
+
+-- ---------- Bans et fantômes recopiés ----------
+-- Triche repérée le 12/10 : récupérer le fantôme du record (RPC publique racing_ghost) et le renvoyer sous son pseudo
+-- avec un temps 10 ms plus court (la tolérance de durée le laissait passer). Parades :
+--   1. durée stricte : un point toutes les 50 ms, donc n*50 <= temps < n*50 + 50 (impossible de faire mieux que l'original) ;
+--   2. trajectoire comparée aux 10 meilleurs fantômes de la map (distance moyenne < 0,3 u = copie ; un vrai pilote est à 0,8 u ou plus) ;
+--   3. vitesse max entre deux points abaissée à 92 u/s (les vrais fantômes plafonnent à 80), pour limiter une copie accélérée ;
+--   4. pseudos bannis : refusés à l'envoi et masqués de tous les classements (les lignes restent en base).
+create table if not exists public.racing_bans (pseudo_lower text primary key, reason text, created_at timestamptz not null default now());
+alter table public.racing_bans enable row level security;
+create or replace function public.racing_banned(p text) returns boolean
+language sql stable security definer set search_path to 'public' as $$
+  select exists (select 1 from racing_bans where pseudo_lower = lower(btrim(p)));
+$$;
+-- Bannir : insert into racing_bans (pseudo_lower, reason) values ('pseudo', 'raison');
+
+create or replace function public.racing_ghost_similarity(a jsonb, b jsonb)
+returns double precision language plpgsql immutable security definer set search_path to 'public' as $$
+declare na int; nb int; i int; j int; c int; best float; d float; tot float := 0; cnt int := 0;
+  ax float8[]; ay float8[]; az float8[]; bx float8[]; by_ float8[]; bz float8[];
+begin
+  if a is null or b is null or (a->>0) is distinct from '-2' or (b->>0) is distinct from '-2' then return null; end if;
+  na := (jsonb_array_length(a) - 1) / 7; nb := (jsonb_array_length(b) - 1) / 7;
+  if na < 10 or nb < 10 then return null; end if;
+  select array_agg((a->>(1+k*7))::float8/10 order by k), array_agg((a->>(2+k*7))::float8/10 order by k), array_agg((a->>(3+k*7))::float8/10 order by k)
+    into ax, ay, az from generate_series(0, na-1) k;
+  select array_agg((b->>(1+k*7))::float8/10 order by k), array_agg((b->>(2+k*7))::float8/10 order by k), array_agg((b->>(3+k*7))::float8/10 order by k)
+    into bx, by_, bz from generate_series(0, nb-1) k;
+  i := 1;
+  while i <= na loop
+    best := 1e18;
+    c := 1 + round((i - 1)::float * (nb - 1) / greatest(na - 1, 1))::int;
+    for j in greatest(1, c - 40) .. least(nb, c + 40) loop
+      d := (ax[i]-bx[j])^2 + (ay[i]-by_[j])^2 + (az[i]-bz[j])^2;
+      if d < best then best := d; end if;
+    end loop;
+    tot := tot + sqrt(best); cnt := cnt + 1;
+    i := i + 4;
+  end loop;
+  return tot / cnt;
+end $$;
+revoke execute on function public.racing_ghost_similarity(jsonb, jsonb) from anon, authenticated, public;
+-- Dans racing_ghost_problem (version en base) : durée « n*50 <= temps - 50 ou n*50 > temps » refusée, et seuil de vitesse « d > 4.6 ».
+-- Dans racing_submit (version en base) : refus si racing_banned(pseudo), puis comparaison aux 10 meilleurs fantômes :
+--   for o in select pseudo, ghost from racing_records where map_id = p_map and lower(pseudo) <> lower(p_pseudo)
+--            and ghost is not null order by time_ms limit 10 loop
+--     if racing_ghost_similarity(p_ghost, o.ghost) < 0.3 then why := 'trajectoire copiée de ' || o.pseudo; exit; end if;
+--   end loop;
+-- Les fonctions de lecture (classements, records du monde, fantômes, podium, notifications) filtrent « not racing_banned(pseudo) ».
