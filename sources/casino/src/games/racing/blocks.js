@@ -167,7 +167,7 @@ Object.assign(BLOCKS, {
     label: "Barrière", path: straight, n: 2, mech: "gate", ...S2,
     params: { period: P("Période (pas de 10 ms)", 50, 1000, 300, 10), closed: P("Fermée (pas)", 10, 990, 150, 10), offset: P("Décalage (pas)", 0, 990, 0, 10) },
   },
-  lift: { label: "Plateforme mobile", path: straight, n: 2, mech: "lift", ...OFF, params: { dist: P("Course (cases)", 1, 4, 2), period: P("Période (pas)", 100, 1500, 500, 10) } },
+  lift: { label: "Plateforme mobile", path: straight, n: 2, mech: "lift", ...S2, params: { dist: P("Course (cases)", 1, 4, 2), period: P("Période (pas)", 100, 1500, 500, 10) } },
   switch: { label: "Interrupteur", path: straight, n: 2, gate: "switch", ...OFF, params: { id: P("Identifiant", 1, 5, 1) } },
   door: { label: "Porte", path: straight, n: 2, mech: "door", ...OFF, params: { id: P("Identifiant", 1, 5, 1) } },
   crate: { label: "Caisse", path: straight, n: 2, mech: "crate", ...OFF, params: { minSpeed: P("Vitesse min (km/h)", 40, 250, 90, 10) } },
