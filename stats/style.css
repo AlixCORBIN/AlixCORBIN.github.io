@@ -10,7 +10,7 @@
     --bg3:       #141c2e;
     --border:    rgba(255,255,255,0.06);
     --text:      #e2e8f0;
-    --muted:     #64748b;
+    --muted:     #94a3b8;
     --cyan:      #22d3ee;
     --green:     #4ade80;
     --purple:    #a78bfa;
@@ -439,3 +439,11 @@ body > * {
 .game-panel { display:none; }
 .game-panel.active { display:block; }
 .lb-empty { color:var(--muted); font-size:.8rem; text-align:center; }
+
+/* Orbitron réservé aux titres et gros chiffres : lisibilité des petits textes */
+.section-title, .bar-count, .rank-num, .rank-count, .pref-pct, .lb-bankroll {
+    font-family: 'Roboto', sans-serif;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+}
+.section-title { font-weight: 700; font-size: 0.95rem; }

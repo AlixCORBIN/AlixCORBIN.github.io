@@ -1,3 +1,4 @@
+@import url('tokens.css');
 /* ============================================
    LANG SWITCHER — DRAPEAUX (pages secondaires)
    ============================================ */
@@ -78,4 +79,81 @@
     }
     .flag-img { width: 22px; height: 22px; }
     .lang-divider { height: 14px; }
+}
+
+/* =========================================
+   COQUE DE CHAÎNE (commune à toutes les sous-pages)
+   Comme sur la Wii : chaque chaîne a son univers, mais la même coque.
+   Bouton « Menu Wii » à gauche, langues à droite, même style partout.
+   ========================================= */
+#channel-menu-btn {
+    position: fixed;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    left: 16px;
+    z-index: 9999;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+    padding: 0 16px 0 10px;
+    border-radius: var(--r-full);
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-2);
+    font-family: var(--font-ui);
+    font-weight: 800;
+    font-size: 0.875rem;
+    color: var(--wii-blue-deep);
+    text-decoration: none;
+    transition: transform var(--t-fast) ease, box-shadow var(--t-fast) ease;
+}
+#channel-menu-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-3); }
+#channel-menu-btn .cm-icon {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--wii-blue); color: #fff; font-size: 12px; line-height: 1;
+}
+#lang-switcher { height: 36px; box-sizing: border-box; }
+/* La coque vit en bas, comme la barre de la Wii : rien ne chevauche les en-têtes */
+body.has-shell #lang-switcher { top: auto; bottom: calc(16px + env(safe-area-inset-bottom)); }
+body.has-shell { padding-bottom: calc(68px + env(safe-area-inset-bottom)); }
+
+html.shell-dark #channel-menu-btn,
+html.shell-dark #lang-switcher {
+    background: rgba(15, 18, 30, 0.9);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--wii-blue);
+}
+
+/* Anciens boutons retour propres à chaque page : remplacés par la coque */
+body.has-shell .back-btn,
+body.has-shell .alt-back,
+body.has-shell nav > a[href="../index.html"]:first-child,
+body.has-shell nav > a[href="../index.html"]:first-child + span { display: none !important; }
+
+/* Téléphone : la coque descend en barre du bas, comme la Wii */
+@media (max-width: 600px) {
+    #channel-menu-btn { bottom: calc(14px + env(safe-area-inset-bottom)); left: 12px; height: 34px; }
+    #lang-switcher, body.has-shell #lang-switcher { height: 34px; bottom: calc(14px + env(safe-area-inset-bottom)); }
+}
+
+/* =========================================
+   SOCLE ACCESSIBILITÉ (toutes les chaînes)
+   ========================================= */
+:focus-visible {
+    outline: 3px solid var(--wii-blue);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+.lang-btn:focus-visible { outline-offset: 1px; border-radius: 50%; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }

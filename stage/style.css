@@ -10,7 +10,7 @@
     --bg3:       #141c2e;
     --border:    rgba(255,255,255,0.06);
     --text:      #e2e8f0;
-    --muted:     #64748b;
+    --muted:     #94a3b8;
     --cyan:      #22d3ee;
     --green:     #4ade80;
     --orange:    #fb923c;
@@ -478,3 +478,11 @@ body > * {
     box-shadow: 0 6px 16px rgba(0,145,213,0.3);
     transform: translateY(-2px);
 }
+
+/* Orbitron réservé aux titres et gros chiffres : lisibilité des petits textes */
+.section-title, .progress-pct, .source-name {
+    font-family: 'Roboto', sans-serif;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+}
+.section-title { font-weight: 700; font-size: 0.95rem; }

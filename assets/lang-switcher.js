@@ -26,6 +26,32 @@
         updateButtons(getLang());
     }
 
+    // Coque de chaîne : bouton « Menu Wii » commun + thème clair/sombre auto
+    function injectShell() {
+        if (document.getElementById('channel-menu-btn')) return;
+        var a = document.createElement('a');
+        a.id = 'channel-menu-btn';
+        a.href = A.replace('assets/', '') + 'index.html';
+        a.innerHTML = '<span class="cm-icon" aria-hidden="true">◀</span><span class="cm-label"></span>';
+        document.body.appendChild(a);
+        document.body.classList.add('has-shell');
+        setShellLabel(getLang());
+        if (isDarkPage()) document.documentElement.classList.add('shell-dark');
+    }
+    function setShellLabel(lang) {
+        var l = document.querySelector('#channel-menu-btn .cm-label');
+        if (l) l.textContent = lang === 'en' ? 'Wii Menu' : 'Menu Wii';
+    }
+    function isDarkPage() {
+        var els = [document.body, document.documentElement];
+        for (var i = 0; i < els.length; i++) {
+            var m = getComputedStyle(els[i]).backgroundColor.match(/[\d.]+/g);
+            if (!m || (m.length === 4 && +m[3] === 0)) continue;
+            return (0.299 * m[0] + 0.587 * m[1] + 0.114 * m[2]) < 110;
+        }
+        return false;
+    }
+
     // Met à jour l'état actif des boutons
     function updateButtons(lang) {
         document.querySelectorAll('#lang-switcher .lang-btn').forEach(function (btn) {
@@ -45,6 +71,7 @@
         // Titre de la page
         if (tr[lang]['page.title']) document.title = tr[lang]['page.title'];
         updateButtons(lang);
+        setShellLabel(lang);
     }
 
     // Exposé globalement
@@ -58,6 +85,7 @@
     // Init
     document.addEventListener('DOMContentLoaded', function () {
         injectSwitcher();
+        injectShell();
         applyTranslations(getLang());
     });
 })();

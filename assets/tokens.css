@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap');
+/* =========================================
+   TOKENS DU PORTFOLIO
+   Base commune à toutes les chaînes. Chaque chaîne garde son univers
+   (son accent, sa police d'affichage) mais sur cette grammaire.
+   ========================================= */
+:root {
+    /* Couleurs Wii (coque) */
+    --wii-blue:      #4ac0e0;
+    --wii-blue-deep: #0091d5;
+    --wii-bg:        #e8e8e8;
+    --wii-white:     #ffffff;
+    --ink:           #2c3e50;
+    --ink-soft:      #5b6b7a;
+    --line:          rgba(0, 0, 0, 0.08);
+
+    /* Sombre (chaînes néon) */
+    --night:         #0e1018;
+    --night-2:       #1e2130;
+    --on-night:      #e2e8f0;
+    --on-night-soft: #94a3b8;   /* minimum lisible sur fond nuit (≈7:1) */
+
+    /* Sémantique */
+    --ok:    #27ae60;
+    --warn:  #e67e22;
+    --gold:  #f1c40f;
+    --error: #e74c3c;
+
+    /* Typo : Nunito = interface, une police d'affichage max par chaîne, une mono */
+    --font-ui:      'Nunito', 'Roboto', system-ui, sans-serif;
+    --font-text:    'Roboto', system-ui, sans-serif;
+    --font-mono:    ui-monospace, 'IBM Plex Mono', Consolas, monospace;
+    --fs-xs:   0.75rem;   /* plancher : rien de plus petit */
+    --fs-sm:   0.875rem;
+    --fs-md:   1rem;
+    --fs-lg:   1.25rem;
+    --fs-xl:   1.5rem;
+    --fs-2xl:  2rem;
+    --fs-3xl:  2.5rem;
+    --fs-hero: clamp(2rem, 5vw, 3.25rem);
+
+    /* Rayons */
+    --r-xs: 4px;  --r-sm: 8px;  --r-md: 12px;  --r-lg: 20px;  --r-full: 999px;
+
+    /* Espacements */
+    --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px;
+
+    /* Ombres */
+    --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.10);
+    --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.14);
+    --shadow-3: 0 12px 32px rgba(0, 0, 0, 0.22);
+
+    /* Mouvement */
+    --t-fast: 150ms;  --t-base: 250ms;  --t-slow: 600ms;
+    --ease:   cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    /* Breakpoints de référence (à utiliser dans les @media) : 600px, 900px, 1200px */
+}

@@ -242,6 +242,52 @@ const WII_SCENES = {
             <rect x="256" y="36" width="26" height="109" rx="4" fill="#1a7f9c"/>
         </g>
         <polyline class="wii-write" points="69,92 109,68 149,82 189,48 229,62 269,28" fill="none" stroke="#f2a516" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`,
+
+    // Casino : tapis vert, roulette, jetons et deux cartes
+    casino: () => `
+        <rect width="320" height="180" fill="#1d6b45"/>
+        <ellipse cx="160" cy="200" rx="230" ry="110" fill="#24804f"/>
+        <path d="M0 150Q160 120 320 150" stroke="#e8c76a" stroke-width="2" fill="none" opacity=".5"/>
+        <g transform="translate(92 80)">
+            <circle r="46" fill="#7a3b1c"/><circle r="38" fill="#1f1f1f"/>
+            <g class="wii-spin" style="transform-box:fill-box;transform-origin:center;animation-duration:7s">
+                <path d="M0 0L0-38A38 38 0 0 1 22-31Z" fill="#c8312b"/><path d="M0 0L22-31A38 38 0 0 1 36-12Z" fill="#1f1f1f"/>
+                <path d="M0 0L36-12A38 38 0 0 1 36 12Z" fill="#c8312b"/><path d="M0 0L36 12A38 38 0 0 1 22 31Z" fill="#1f1f1f"/>
+                <path d="M0 0L22 31A38 38 0 0 1 0 38Z" fill="#c8312b"/><path d="M0 0L0 38A38 38 0 0 1-22 31Z" fill="#1f1f1f"/>
+                <path d="M0 0L-22 31A38 38 0 0 1-36 12Z" fill="#c8312b"/><path d="M0 0L-36 12A38 38 0 0 1-36-12Z" fill="#1f1f1f"/>
+                <path d="M0 0L-36-12A38 38 0 0 1-22-31Z" fill="#c8312b"/><path d="M0 0L-22-31A38 38 0 0 1 0-38Z" fill="#2f9e5b"/>
+            </g>
+            <circle r="16" fill="#c9a24a"/><circle r="6" fill="#7a3b1c"/>
+        </g>
+        <g transform="rotate(-10 196 92)"><rect x="168" y="48" width="56" height="80" rx="7" fill="#fff"/>
+            <text x="180" y="72" font-family="Georgia,serif" font-weight="700" font-size="18" fill="#c8312b">A</text>
+            <path d="M196 98c-8-10-14-14-14-20a7 7 0 0 1 14-2 7 7 0 0 1 14 2c0 6-6 10-14 20Z" fill="#c8312b"/></g>
+        <g transform="rotate(12 248 96)"><rect x="220" y="54" width="56" height="80" rx="7" fill="#fff"/>
+            <text x="232" y="78" font-family="Georgia,serif" font-weight="700" font-size="18" fill="#1f1f1f">K</text>
+            <path d="M248 88c-10 8-14 12-14 18a6 6 0 0 0 11 3l-3 9h12l-3-9a6 6 0 0 0 11-3c0-6-4-10-14-18Z" fill="#1f1f1f"/></g>
+        <g class="wii-float">
+            <ellipse cx="158" cy="152" rx="20" ry="7" fill="#1a4f9c"/><rect x="138" y="140" width="40" height="12" fill="#1a4f9c"/><ellipse cx="158" cy="140" rx="20" ry="7" fill="#3a78d6"/>
+            <ellipse cx="158" cy="134" rx="20" ry="7" fill="#b02a24"/><rect x="138" y="126" width="40" height="8" fill="#b02a24"/><ellipse cx="158" cy="126" rx="20" ry="7" fill="#e0453c"/>
+            <ellipse cx="158" cy="126" rx="11" ry="3.5" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 4"/>
+        </g>`,
+
+    // IHM : tablette qui pilote un Roomba en Bluetooth
+    ihm: () => `
+        <rect width="320" height="180" fill="#0d1b2e"/>
+        <g stroke="#173352" stroke-width="1"><path d="M0 30h320M0 60h320M0 90h320M0 120h320M0 150h320M40 0v180M80 0v180M120 0v180M160 0v180M200 0v180M240 0v180M280 0v180"/></g>
+        <rect x="40" y="34" width="132" height="104" rx="12" fill="#1f2a3a"/>
+        <rect x="50" y="44" width="112" height="84" rx="4" fill="#0b2233"/>
+        <rect x="58" y="54" width="44" height="30" rx="5" fill="#00b3d6"/><rect x="110" y="54" width="44" height="30" rx="5" fill="#00b3d6"/>
+        <path d="M80 62v14M74 70l6 6 6-6M132 62v14M126 70l6 6 6-6" stroke="#0b2233" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <g fill="#1c5a74"><rect x="58" y="96" width="14" height="22" rx="2"/><rect x="76" y="102" width="14" height="16" rx="2"/><rect x="94" y="96" width="14" height="22" rx="2" fill="#00d4ff"/><rect x="112" y="108" width="14" height="10" rx="2"/><rect x="130" y="100" width="14" height="18" rx="2"/></g>
+        <g fill="none" stroke="#00d4ff" stroke-width="3" stroke-linecap="round" class="wii-blink">
+            <path d="M186 74a16 16 0 0 1 0 24"/><path d="M196 66a28 28 0 0 1 0 40"/>
+        </g>
+        <g class="wii-float">
+            <circle cx="252" cy="110" r="38" fill="#2b2f36"/><circle cx="252" cy="110" r="30" fill="#3a404a"/>
+            <circle cx="252" cy="96" r="7" fill="#7be36b"/><path d="M226 120h52" stroke="#23272d" stroke-width="3"/>
+            <ellipse cx="252" cy="150" rx="34" ry="5" fill="#000" opacity=".3"/>
+        </g>`,
 };
 
 // Config des chaînes redessinées, clé = title FR
@@ -258,6 +304,8 @@ const WII_CARDS = {
     'Écri+':            { scene: 'ecrip' },
     'Météo':            { scene: 'meteo', extra: '<div class="wii-temp" id="meteo-card-sub">--°C</div>' },
     'Statistiques':     { scene: 'stats' },
+    'Casino':           { scene: 'casino' },
+    'Projets IHM':      { scene: 'ihm' },
 };
 
 function wiiCardShell(data, extraClass) {

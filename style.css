@@ -29,12 +29,12 @@ body {
     user-select: none;
 
     /* Curseur Wii personnalisé */
-    cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), auto !important;
+    cursor: auto !important;
 }
 
 /* Appliquer le curseur sur tous les éléments interactifs */
 button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
-    cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), auto !important;
+    cursor: auto !important;
 }
 
 /* =========================================
@@ -183,8 +183,8 @@ button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
 }
 
 .channel:not(.empty):hover {
-    border-color: #4ac0e0;
-    box-shadow: 0 0 15px #4ac0e0;
+    border-color: var(--wii-blue);
+    box-shadow: 0 0 15px var(--wii-blue);
     transform: scale(1.02);
     z-index: 10;
 }
@@ -371,7 +371,7 @@ button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
 
 .glass-btn:hover {
     transform: scale(1.05);
-    border-color: #4ac0e0;
+    border-color: var(--wii-blue);
 }
 
 .glass-btn::after {
@@ -407,7 +407,7 @@ button, a, .channel, .pill-btn, .glass-btn, .side-arrow {
     text-transform: uppercase;
     letter-spacing: 1px;
     padding-bottom: 5px;
-    border-bottom: 3px solid #4ac0e0;
+    border-bottom: 3px solid var(--wii-blue);
     margin-bottom: 15px;
     width: 120%;
 }
@@ -535,14 +535,14 @@ body.dark-mode .visitor-count { color: #4a5568; }
         45deg,
         #f1c40f,
         #f1c40f 20px,
-        #2c3e50 20px,
-        #2c3e50 40px
+        var(--ink) 20px,
+        var(--ink) 40px
     );
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #2c3e50;
+    color: var(--ink);
     font-weight: bold;
     font-size: 1.5rem;
     letter-spacing: 5px;
@@ -707,7 +707,7 @@ body.dark-mode .visitor-count { color: #4a5568; }
     height: 150px;
     border-radius: 50%;
     padding: 4px;
-    background: linear-gradient(135deg, #4ac0e0, #a855f7);
+    background: linear-gradient(135deg, var(--wii-blue), #a855f7);
     box-shadow: 0 0 30px rgba(74, 192, 224, 0.4);
     margin-bottom: 16px;
 }
@@ -730,7 +730,7 @@ body.dark-mode .visitor-count { color: #4a5568; }
 
 .moi-role {
     font-size: 0.95rem;
-    color: #4ac0e0;
+    color: var(--wii-blue);
     margin-top: 6px;
     font-style: italic;
 }
@@ -798,7 +798,7 @@ body.dark-mode .visitor-count { color: #4a5568; }
 .skill-pill {
     background: rgba(74, 192, 224, 0.2);
     border: 1px solid rgba(74, 192, 224, 0.5);
-    color: #4ac0e0;
+    color: var(--wii-blue);
     padding: 3px 12px;
     border-radius: 20px;
     font-size: 0.85rem;
@@ -828,7 +828,7 @@ body.dark-mode .visitor-count { color: #4a5568; }
 .moi-social-btn:hover {
     background: rgba(74,192,224,0.2);
     border-color: rgba(74,192,224,0.5);
-    color: #4ac0e0;
+    color: var(--wii-blue);
 }
 
 .moi-cta {
@@ -869,7 +869,7 @@ body.dark-mode .visitor-count { color: #4a5568; }
     line-height: 1;
 }
 
-.ttt-x { color: #4ac0e0; text-shadow: 0 0 8px #4ac0e0; }
+.ttt-x { color: var(--wii-blue); text-shadow: 0 0 8px var(--wii-blue); }
 .ttt-o { color: #e06060; text-shadow: 0 0 8px #e06060; }
 .ttt-win { background: rgba(74,192,224,0.25); }
 
@@ -909,7 +909,7 @@ body.dark-mode .visitor-count { color: #4a5568; }
 
 .moi-card-tag {
     font-size: 0.72rem;
-    color: #4ac0e0;
+    color: var(--wii-blue);
     margin-top: 3px;
     text-shadow: 0 1px 4px rgba(0,0,0,0.8);
 }
@@ -987,7 +987,7 @@ body.dark-mode .visitor-count { color: #4a5568; }
     height: 52px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #4ac0e0;
+    border: 2px solid var(--wii-blue);
     flex-shrink: 0;
 }
 
@@ -999,7 +999,7 @@ body.dark-mode .visitor-count { color: #4a5568; }
 
 .contact-role {
     font-size: 0.78rem;
-    color: #4ac0e0;
+    color: var(--wii-blue);
     margin-top: 3px;
 }
 
@@ -1043,7 +1043,7 @@ body.dark-mode .visitor-count { color: #4a5568; }
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), auto !important;
+    cursor: auto !important;
     color: #888;
     transition: transform 0.1s, box-shadow 0.2s, color 0.2s;
     z-index: 101;
@@ -1056,7 +1056,7 @@ body.dark-mode .visitor-count { color: #4a5568; }
 
 .music-btn:hover {
     transform: scale(1.08);
-    color: #4ac0e0;
+    color: var(--wii-blue);
     box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2), 0 0 10px rgba(74,192,224,0.4);
 }
 
@@ -1071,7 +1071,7 @@ body.dark-mode .music-btn {
     color: #555;
 }
 
-body.dark-mode .music-btn:hover { color: #4ac0e0; }
+body.dark-mode .music-btn:hover { color: var(--wii-blue); }
 body.dark-mode .music-btn.music-muted { color: #333; }
 
 /* =========================================
@@ -1099,8 +1099,8 @@ body.dark-mode .channel {
 }
 
 body.dark-mode .channel:not(.empty):hover {
-    border-color: #4ac0e0;
-    box-shadow: 0 0 15px #4ac0e0;
+    border-color: var(--wii-blue);
+    box-shadow: 0 0 15px var(--wii-blue);
 }
 
 body.dark-mode .channel.empty {
@@ -1129,7 +1129,7 @@ body.dark-mode .pill-btn {
 }
 
 body.dark-mode .pill-btn:hover {
-    border-color: #4ac0e0;
+    border-color: var(--wii-blue);
     color: white;
 }
 
@@ -1157,7 +1157,7 @@ body.dark-mode .glass-btn {
     border-color: #2e3350;
 }
 
-body.dark-mode .glass-btn:hover { border-color: #4ac0e0; }
+body.dark-mode .glass-btn:hover { border-color: var(--wii-blue); }
 
 body.dark-mode .glass-btn::after {
     background: linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
@@ -1166,7 +1166,7 @@ body.dark-mode .glass-btn::after {
 body.dark-mode .btn-text { color: #555; }
 body.dark-mode .btn-icon { fill: #555; }
 
-body.dark-mode .portfolio-title { color: #4ac0e0; border-bottom-color: #2e6080; }
+body.dark-mode .portfolio-title { color: var(--wii-blue); border-bottom-color: #2e6080; }
 body.dark-mode .digital-time { color: #4a5568; text-shadow: none; }
 body.dark-mode .date-text { color: #4a5568; }
 
@@ -1182,11 +1182,11 @@ body.dark-mode .footer-bg {
 /* --- Bouton Wii (toggle) actif en dark mode --- */
 body.dark-mode .left-btn .glass-btn {
     background: radial-gradient(circle at 35% 35%, #1e3a4a 0%, #0f2535 60%, #071520 100%);
-    border-color: #4ac0e0;
+    border-color: var(--wii-blue);
     box-shadow: 0 0 12px rgba(74,192,224,0.4);
 }
 
-body.dark-mode .left-btn .btn-text { color: #4ac0e0; }
+body.dark-mode .left-btn .btn-text { color: var(--wii-blue); }
 
 /* --- ch-label sur cartes (sans fond image) --- */
 body.dark-mode .ch-label { color: #ddd; text-shadow: 0 0 8px rgba(0,0,0,0.8); }
@@ -1203,7 +1203,7 @@ body.dark-mode #contact-modal { background: rgba(0,0,0,0.75); }
     transform: translateY(-50%);
     width: 44px;
     height: 72px;
-    cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), pointer;
+    cursor: pointer;
     z-index: 50;
     transition: opacity 0.4s ease;
     opacity: 0;
@@ -1220,10 +1220,10 @@ body.dark-mode #contact-modal { background: rgba(0,0,0,0.75); }
     transition: fill 0.2s, stroke 0.2s;
 }
 
-.page-arrow:hover polygon { fill: #4ac0e0; stroke: #3ea0e0; }
+.page-arrow:hover polygon { fill: var(--wii-blue); stroke: #3ea0e0; }
 
 body.dark-mode .page-arrow polygon        { fill: #3a3d55; stroke: #4a4e70; }
-body.dark-mode .page-arrow:hover polygon  { fill: #4ac0e0; stroke: #3ea0e0; }
+body.dark-mode .page-arrow:hover polygon  { fill: var(--wii-blue); stroke: #3ea0e0; }
 
 /* Cachées quand l'overlay est ouvert */
 body.overlay-open .page-arrow { opacity: 0 !important; pointer-events: none !important; }
@@ -1471,7 +1471,7 @@ body.overlay-open .page-arrow { opacity: 0 !important; pointer-events: none !imp
     border-radius: 50%;
     border: none;
     background: transparent;
-    cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), auto !important;
+    cursor: auto !important;
     transition: transform 0.18s ease;
     outline: none;
 }
@@ -1491,7 +1491,7 @@ body.overlay-open .page-arrow { opacity: 0 !important; pointer-events: none !imp
 }
 .lang-btn.lang-active .flag-img {
     filter: grayscale(0%) opacity(1);
-    box-shadow: 0 0 0 2px #4ac0e0;
+    box-shadow: 0 0 0 2px var(--wii-blue);
 }
 .lang-btn:hover .flag-img { filter: grayscale(0%) opacity(0.9); }
 
@@ -1524,7 +1524,7 @@ body.overlay-open #lang-switcher {
     position: fixed;
     bottom: 155px;
     left: 22px;
-    background: linear-gradient(135deg, #4ac0e0, #6c5ce7);
+    background: linear-gradient(135deg, var(--wii-blue), #6c5ce7);
     color: white;
     padding: 7px 13px;
     border-radius: 16px;
@@ -1712,7 +1712,7 @@ body.overlay-open #lang-switcher {
     box-shadow: 0 0 0 0 rgba(241,196,15,0.1);
     animation: heroCardPulse 4s ease-in-out infinite;
     transition: transform 0.25s ease, border-color 0.25s ease;
-    cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), pointer !important;
+    cursor: pointer !important;
     z-index: 1;
     flex-shrink: 0;
 }
@@ -1845,7 +1845,7 @@ body.overlay-open #lang-switcher {
     border: 1px solid rgba(255,255,255,0.06);
     background: #0c0a02;
     transition: transform 0.25s ease, border-color 0.25s ease;
-    cursor: url('http://www.rw-designer.com/cursor-extern.php?id=40779'), pointer !important;
+    cursor: pointer !important;
 }
 .award-small-card:not(.award-no-link):hover {
     transform: translateY(-4px);
@@ -2157,7 +2157,7 @@ body.overlay-open #lang-switcher {
 [role="button"]:focus-visible,
 .lang-btn:focus-visible,
 .contact-close:focus-visible {
-    outline: 3px solid #0091d5;
+    outline: 3px solid var(--wii-blue-deep);
     outline-offset: 3px;
 }
 
@@ -2336,9 +2336,9 @@ body.phone .page-dot {
     pointer-events: auto;
     transition: width .25s, background .25s;
 }
-body.phone .page-dot.on { width: 22px; border-radius: 5px; background: #4ac0e0; }
+body.phone .page-dot.on { width: 22px; border-radius: 5px; background: var(--wii-blue); }
 body.phone.dark-mode .page-dot { background: #3a4058; }
-body.phone.dark-mode .page-dot.on { background: #4ac0e0; }
+body.phone.dark-mode .page-dot.on { background: var(--wii-blue); }
 
 /* Langue : plus compact */
 body.phone #lang-switcher { top: 10px; right: 10px; padding: 3px 5px; }
