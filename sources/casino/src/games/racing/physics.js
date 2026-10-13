@@ -1,7 +1,7 @@
 // Physique : Rapier (corps rigides) + contrôleur de véhicule à rayons (4 roues à suspensions).
 // Pas fixe de 1/100 s : 1 pas = 10 ms de chrono. Tout tourne hors de React.
 import RAPIER from "@dimforge/rapier3d-compat";
-import { BLOCKS, param, sampleBlock, sectionPoints, toWorld } from "./blocks.js";
+import { BLOCKS, TILE, param, sampleBlock, sectionPoints, toWorld } from "./blocks.js";
 
 export const DT = 1 / 100;
 const GHOST_TAG = -2;
@@ -117,12 +117,20 @@ export function rotate(q, v) {
   return [ix * q.w + iw * -q.x + iy * -q.z - iz * -q.y, iy * q.w + iw * -q.y + iz * -q.x - ix * -q.z, iz * q.w + iw * -q.z + ix * -q.y - iy * -q.x];
 }
 
+// Repère monde d'un bloc posé, au milieu de son axe : { p, t (avant), r (droite), u (haut) }
+function tileFrame(tile) {
+  const S = sampleBlock(tile.type);
+  const f = S[Math.floor((S.length - 1) / 2)];
+  return { p: toWorld(tile, f.p), t: toWorld(tile, f.t, true), r: toWorld(tile, f.r, true), u: toWorld(tile, f.u, true) };
+}
+
 // --------- Monde ---------
 export function createWorld(track) {
   const world = new RAPIER.World({ x: 0, y: -GRAVITY, z: 0 });
   world.timestep = DT;
   const surfaceOf = new Map();
   const tileOf = new Map(); // collider -> tuile (réglages tile.p lus par driveCar)
+  const winds = [];
   // sol (herbe)
   const [w, h] = track.size;
   const ground = world.createCollider(
@@ -134,8 +142,9 @@ export function createWorld(track) {
     const c = world.createCollider(RAPIER.ColliderDesc.trimesh(verts, idx).setFriction(1));
     surfaceOf.set(c.handle, BLOCKS[t.type].surface || "road");
     tileOf.set(c.handle, t);
+    if (BLOCKS[t.type].wind) winds.push({ ...tileFrame(t), force: param(t, "force") ?? 0 });
   }
-  return { world, surfaceOf, tileOf };
+  return { world, surfaceOf, tileOf, winds };
 }
 
 export function createCar(phys, spawn) {
@@ -265,6 +274,17 @@ export function driveCar(phys, car, world, input) {
   } else {
     car.airTime += DT;
   }
+  // vent : force latérale constante (vers la droite du bloc si positive) tant que la voiture est dans la zone
+  if (phys.winds.length) {
+    const bp = body.translation();
+    for (const w of phys.winds) {
+      const d = [bp.x - w.p[0], bp.y - w.p[1], bp.z - w.p[2]];
+      if (Math.abs(dot(d, w.t)) <= TILE / 2 && Math.abs(dot(d, w.r)) <= 18 && dot(d, w.u) > -4 && dot(d, w.u) < 20) {
+        const a = CAR.mass * w.force;
+        f[0] += w.r[0] * a; f[1] += w.r[1] * a; f[2] += w.r[2] * a;
+      }
+    }
+  }
   body.resetForces(true);
   body.addForce({ x: f[0], y: f[1], z: f[2] }, true);
 
@@ -298,7 +318,21 @@ export function placeCar(car, spawn) {
 
 // --------- Une tentative ---------
 export function createRun(track) {
-  return { flipped: 0, steps: 0, cps: new Set(), splits: [], finished: false, finishMs: null, ghost: [GHOST_TAG], events: [], lastSpawn: track.spawn(), missingCool: 0 };
+  return { flipped: 0, steps: 0, cps: new Set(), splits: [], finished: false, finishMs: null, ghost: [GHOST_TAG], events: [], lastSpawn: track.spawn(), missingCool: 0, flags: {}, tpCool: 0 };
+}
+
+// Téléporteur : la voiture ressort à 4 m du plan de sortie, vitesse conservée, réorientée selon la sortie
+function teleportCar(car, g, out) {
+  const v = car.body.linvel();
+  const vel = [v.x, v.y, v.z];
+  const vt = dot(vel, g.t), vr = dot(vel, g.r), vu = dot(vel, g.u);
+  const nv = [0, 1, 2].map((i) => out.t[i] * vt + out.r[i] * vr + out.u[i] * vu);
+  const pos = [0, 1, 2].map((i) => out.p[i] + out.t[i] * 4 + out.u[i] * 0.5);
+  car.body.setTranslation({ x: pos[0], y: pos[1], z: pos[2] }, true);
+  car.body.setRotation(quatFromBasis(out.t, out.u), true);
+  car.body.setLinvel({ x: nv[0], y: nv[1], z: nv[2] }, true);
+  car.body.setAngvel({ x: 0, y: 0, z: 0 }, true);
+  car.steer = 0;
 }
 
 // Passage d'un portique : la voiture traverse le plan du portique, près de son axe
@@ -320,8 +354,22 @@ export function stepRun(run, track, phys, car, world, input) {
   const cur = [p1.x, p1.y, p1.z];
   if (car.boost > car.boostMax - 0.01) run.events.push("boost");
 
+  if (run.tpCool > 0) run.tpCool--;
   for (const g of track.gates) {
     if (!gateHit(g, prev, cur)) continue;
+    if (g.kind === "teleport") {
+      // entrée (role 0) franchie dans le sens de la marche : sortie de la même paire
+      if (run.tpCool > 0 || (param(g.tile, "role") ?? 0) !== 0 || dot(sub(cur, prev), g.t) <= 0) continue;
+      const pair = param(g.tile, "pair");
+      const out = track.gates.find((o) => o.kind === "teleport" && o !== g && param(o.tile, "pair") === pair && param(o.tile, "role") === 1);
+      if (!out) continue;
+      teleportCar(car, g, out);
+      const tp = car.body.translation();
+      cur[0] = tp.x; cur[1] = tp.y; cur[2] = tp.z;
+      run.tpCool = 50;
+      run.events.push("teleport");
+      break;
+    }
     // checkpoint conditionnel : sous la vitesse minimale (km/h), il ne se passe rien
     if (BLOCKS[g.tile.type].fast && car.speed * 3.6 < (param(g.tile, "minSpeed") ?? 100)) continue;
     const id = `${g.tile.x},${g.tile.z},${g.tile.level}`;

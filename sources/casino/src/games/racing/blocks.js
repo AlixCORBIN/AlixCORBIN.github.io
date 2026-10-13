@@ -158,10 +158,10 @@ Object.assign(BLOCKS, {
   },
   cpfast: { label: "Checkpoint rapide", path: straight, n: 2, gate: "cp", fast: true, ...S2, params: { minSpeed: P("Vitesse min (km/h)", 40, 250, 100, 10) } },
   teleport: {
-    label: "Téléporteur", path: straight, n: 2, gate: "teleport", ...OFF,
+    label: "Téléporteur", path: straight, n: 2, gate: "teleport", ...S2,
     params: { pair: P("Paire n°", 1, 9, 1), role: P("0 = entrée, 1 = sortie", 0, 1, 0) },
   },
-  wind: { label: "Vent", path: straight, n: 2, wind: true, ...OFF, params: { force: P("Force latérale (m/s², signe = sens)", -15, 15, 6) } },
+  wind: { label: "Vent", path: straight, n: 2, wind: true, ...OFF, params: { force: P("Force latérale (m/s², signe = sens)", -30, 30, 12) } },
   // blocs lourds
   gate: {
     label: "Barrière", path: straight, n: 2, mech: "gate", ...OFF,
