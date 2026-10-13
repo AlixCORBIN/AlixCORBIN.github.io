@@ -227,6 +227,12 @@ export function driveCar(phys, car, world, input) {
     else engine = -CAR.engine * 0.55 * input.brake;
   }
   if (!input.throttle && !input.brake) brake = 4; // frein moteur
+  if (surface === "brake") {
+    // zone de freinage : coupe le turbo, freine fort et réduit la poussée
+    car.boost = 0;
+    brake = Math.max(brake, 70 * (param(surfTile.brake, "power") ?? 1));
+    engine *= 0.3;
+  }
   for (let i = 0; i < 4; i++) {
     vc.setWheelEngineForce(i, -engine * sf.slip);
     vc.setWheelBrake(i, brake);

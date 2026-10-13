@@ -145,7 +145,7 @@ const railPath = (s) => ({ p: [9 * Math.sin(2 * Math.PI * s) * Math.sin(Math.PI 
 
 Object.assign(BLOCKS, {
   boost2: { label: "Turbo réglable", path: straight, n: 2, surface: "boost2", dir: true, ...S2, params: { level: P("Niveau", 1, 3, 2) } },
-  brake: { label: "Frein", path: straight, n: 2, surface: "brake", ...OFF, params: { power: P("Force", 1, 3, 1) } },
+  brake: { label: "Frein", path: straight, n: 2, surface: "brake", ...S2, params: { power: P("Force", 1, 3, 1) } },
   glue: { label: "Colle", path: straight, n: 2, surface: "glue", ...OFF, params: { drag: P("Traînée", 2, 8, 4) } },
   oil: { label: "Huile", path: straight, n: 2, surface: "oil", ...OFF },
   kicker2: {
