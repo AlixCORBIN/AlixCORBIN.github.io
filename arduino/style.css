@@ -103,7 +103,7 @@ p {
 /* Badge "Terminé" */
 .badge.success {
     display: inline-block;
-    background-color: #27ae60;
+    background-color: var(--ok, #27ae60);
     color: white;
     padding: 5px 12px;
     border-radius: 20px;
@@ -134,7 +134,7 @@ p {
     padding: 25px;
     border-radius: 10px;
     border: 1px solid #ddd;
-    border-left: 5px solid #e67e22; /* Bordure Orange pour signaler "En cours" */
+    border-left: 5px solid var(--warn, #e67e22); /* Bordure Orange pour signaler "En cours" */
     transition: transform 0.2s, box-shadow 0.2s;
     display: flex;
     flex-direction: column;
@@ -153,7 +153,7 @@ p {
 .card-wip h3 {
     margin-top: 0;
     margin-bottom: 10px;
-    color: #2c3e50;
+    color: var(--ink, #2c3e50);
 }
 
 /* Barre de progression */
@@ -168,7 +168,7 @@ p {
 
 .progress-bar div {
     height: 100%;
-    background: #e67e22;
+    background: var(--warn, #e67e22);
 }
 
 /* =========================================
