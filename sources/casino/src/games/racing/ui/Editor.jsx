@@ -4,6 +4,7 @@ import { OFFICIAL } from "../maps.js";
 import { WORLDS, formatTime } from "../physics.js";
 import { BLOCKS, BLOCK_KEYS, TILE, blockKeysForSeason, defaultParams, occupancy, resolveType, sampleBlock, sectionPoints, toWorld } from "../blocks.js";
 import { GRID, MAX_LEVEL, Track, mapData } from "../track.js";
+import { trackMeta } from "../meta.js";
 import { TrackPreview } from "../three/RaceScene.jsx";
 
 const CATS = [...new Set(BLOCK_KEYS.map((k) => BLOCKS[k].cat))];
@@ -249,9 +250,10 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
     if (!name || !Number.isInteger(ord) || ord < 1) { setMsg("Nom et ordre (entier ≥ 1) requis."); return; }
     setBusy(true);
     try {
+      const data = mapData(doc.world, doc.tiles);
       await adminCampaignUpsert({
         mapId: `s2-${String(ord).padStart(2, "0")}`, seasonId: "s2", ord, name,
-        data: mapData(doc.world, doc.tiles), authorMs: doc.authorTime,
+        data, authorMs: doc.authorTime, meta: trackMeta(data),
       });
       setMsg(`Map « ${name} » envoyée dans la campagne S2 (position ${ord}).`);
       setS2Form(null);

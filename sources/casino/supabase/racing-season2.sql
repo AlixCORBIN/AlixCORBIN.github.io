@@ -49,7 +49,7 @@ returns void language plpgsql security definer set search_path = '' as $$
 begin
   if not public.is_admin() then raise exception 'interdit'; end if;
   if p_map_id is null or length(p_map_id) not between 1 and 40 then raise exception 'map_id invalide'; end if;
-  if p_data is null or jsonb_typeof(p_data -> 'tiles') <> 'array' or pg_column_size(p_data) > 200000 then
+  if p_data is null or coalesce(jsonb_typeof(p_data -> 'tiles'), '') <> 'array' or pg_column_size(p_data) > 200000 then
     raise exception 'données de map invalides';
   end if;
   insert into public.racing_campaign (map_id, season_id, ord, name, data, author_ms, starts_at)

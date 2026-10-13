@@ -118,10 +118,11 @@ export async function seasonLive(id) {
   } catch { return false; }
 }
 
-// Admin : envoie une map dans la campagne (refusé côté serveur si le compte n'est pas admin)
-export async function adminCampaignUpsert({ mapId, seasonId, ord, name, data, authorMs, startsAt = null }) {
+// Admin : envoie une map dans la campagne (refusé côté serveur si le compte n'est pas admin).
+// meta = repères anti-triche de la map (trackMeta de meta.js), lus par racing_ghost_problem.
+export async function adminCampaignUpsert({ mapId, seasonId, ord, name, data, authorMs, startsAt = null, meta }) {
   const { error } = await supabase.rpc("admin_campaign_upsert", {
-    p_map_id: mapId, p_season_id: seasonId, p_ord: ord, p_name: name, p_data: data, p_author_ms: authorMs, p_starts_at: startsAt,
+    p_map_id: mapId, p_season_id: seasonId, p_ord: ord, p_name: name, p_data: data, p_author_ms: authorMs, p_starts_at: startsAt, p_meta: meta,
   });
   if (error) throw error;
 }
