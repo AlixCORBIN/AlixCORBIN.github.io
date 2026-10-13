@@ -2582,3 +2582,72 @@ body.dark-mode .wii-photo-band { background: none; border: 0; color: #fff; text-
 body.phone .digital-time { font-size: 1.6rem; }
 body.phone .date-text { font-size: .95rem; margin-top: 3px; }
 body.dark-mode .footer-bg svg path { stroke: var(--wii-cyan); }
+
+/* =========================================
+   GRILLE PLEINE LARGEUR (comme sur la Wii) : marges réduites, cases plus grandes
+   Hauteur dispo = écran − barre du bas ; la page fait ~90 % de la largeur,
+   l'écart entre pages = écart entre tuiles, la colonne suivante dépasse à droite.
+   ========================================= */
+body:not(.phone) .grid-wrapper {
+    height: calc(100dvh - 172px);
+    margin-bottom: 140px;
+    padding: 0;
+}
+body:not(.phone) .grid-track {
+    --g: 1vw;
+    --gh: calc(100dvh - 196px);
+    --pw: min(90vw, calc((var(--gh) - 2 * var(--g)) / 3 * 16 / 9 * 4 + 3 * var(--g)));
+    gap: max(var(--g), calc(50vw - var(--pw) / 2 - 4vw));
+}
+body:not(.phone) .grid-page { gap: var(--g); }
+body:not(.phone) .wii-photo-band { font-size: clamp(0.9rem, 1.35vw, 1.4rem); }
+body:not(.phone) .page-arrow { top: calc((100dvh - 140px) / 2); width: 34px; height: 64px; }
+body:not(.phone) .page-arrow--right { right: 0.6vw; }
+body:not(.phone) .page-arrow--left  { left: 0.6vw; }
+
+/* =========================================
+   RELIEF DES TUILES + BORDS GRIS
+   Cadre gris biseauté, rebord blanc bombé, image enfoncée, reflet vitré.
+   ========================================= */
+.channel {
+    border: 3px solid #a4a8ac;
+    padding: 5px;
+    background: linear-gradient(180deg, #ffffff 0%, #eceef0 50%, #d3d6d9 100%);
+    box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.95),
+        inset 0 -2px 0 rgba(0,0,0,.10),
+        0 2px 0 #b8bbbf,
+        0 6px 14px rgba(0,0,0,.16);
+}
+.channel-inner::after,
+.wii-card-inner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 3;
+    background: linear-gradient(180deg, rgba(255,255,255,.30) 0%, rgba(255,255,255,.06) 38%, rgba(255,255,255,0) 52%);
+    box-shadow: inset 0 3px 6px rgba(0,0,0,.28), inset 0 0 0 1px rgba(0,0,0,.22), inset 0 -1px 0 rgba(255,255,255,.35);
+}
+.channel-inner, .wii-card-inner { border-radius: calc(var(--rx) - 5px) / 50%; }
+.channel:not(.empty):hover {
+    border-color: var(--wii-cyan);
+    box-shadow:
+        0 0 0 2px var(--wii-cyan),
+        0 0 20px rgba(52,190,237,.65),
+        inset 0 2px 0 rgba(255,255,255,.95),
+        0 8px 18px rgba(0,0,0,.18);
+}
+.channel.empty {
+    border-color: #b9bcc0;
+    box-shadow: inset 0 2px 0 rgba(255,255,255,.7), inset 0 -2px 0 rgba(0,0,0,.06), 0 2px 0 #c6c9cc, 0 4px 10px rgba(0,0,0,.08);
+}
+body.dark-mode .channel {
+    border-color: #4a5070;
+    background: linear-gradient(180deg, #2c3148 0%, #20243a 55%, #171a29 100%);
+    box-shadow: inset 0 2px 0 rgba(255,255,255,.10), 0 2px 0 #0d0f18, 0 6px 14px rgba(0,0,0,.45);
+}
+body.dark-mode .channel.empty { border-color: #2e3350; }
+body.phone .channel { border-width: 2px; padding: 3px; }
+body.phone .channel-inner, body.phone .wii-card-inner { border-radius: calc(var(--rx) - 3px) / 50%; }
