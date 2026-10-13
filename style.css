@@ -2581,7 +2581,6 @@ body.dark-mode .wii-photo-band { background: none; border: 0; color: #fff; text-
 .seg path.off, body.dark-mode .seg path.off { fill: none; stroke: none; }
 body.phone .digital-time { font-size: 1.6rem; }
 body.phone .date-text { font-size: .95rem; margin-top: 3px; }
-body.dark-mode .footer-bg svg path { stroke: var(--wii-cyan); }
 
 /* =========================================
    GRILLE PLEINE LARGEUR (comme sur la Wii) : marges réduites, cases plus grandes
@@ -2651,3 +2650,47 @@ body.dark-mode .channel {
 body.dark-mode .channel.empty { border-color: #2e3350; }
 body.phone .channel { border-width: 2px; padding: 3px; }
 body.phone .channel-inner, body.phone .wii-card-inner { border-radius: calc(var(--rx) - 3px) / 50%; }
+
+/* =========================================
+   CORRECTIF : espace entre la grille et la barre du bas, cadre 100 % gris
+   ========================================= */
+body:not(.phone) .grid-wrapper {
+    height: calc(100dvh - 140px - 11vh);
+    margin-top: 0;
+    margin-bottom: calc(140px + 4vh);
+}
+body:not(.phone) .grid-track {
+    --gh: calc(100dvh - 140px - 11vh - 26px);
+}
+
+/* cadre gris uniquement : plus de rebord blanc */
+.channel {
+    border: 2px solid #8f9398;
+    padding: 5px;
+    background: linear-gradient(180deg, #d9dcdf 0%, #c3c7cb 50%, #aeb2b7 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.55),
+        inset 0 -1px 0 rgba(0,0,0,.12),
+        0 2px 0 #9ea2a6,
+        0 6px 14px rgba(0,0,0,.16);
+}
+.channel.empty {
+    border-color: #b4b8bc;
+    background-color: #d8dadc;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 2px 0 #c2c5c8, 0 4px 10px rgba(0,0,0,.07);
+}
+.channel:not(.empty):hover {
+    box-shadow: 0 0 0 2px var(--wii-cyan), 0 0 20px rgba(52,190,237,.65), inset 0 1px 0 rgba(255,255,255,.55), 0 8px 18px rgba(0,0,0,.18);
+}
+
+/* barre du bas : seul le filet du haut est cyan, horloge sous la courbe */
+.footer-bg svg path { stroke: none; }
+.footer-bg svg path.footer-line, body.dark-mode .footer-bg svg path.footer-line { stroke: var(--wii-cyan); stroke-width: 3px; fill: none; }
+body:not(.phone) .digital-time { font-size: 2.6rem; }
+body:not(.phone) .clock-area { margin-bottom: 10px; }
+body:not(.phone) .date-text { font-size: 1.4rem; margin-top: 4px; }
+body.dark-mode .footer-container .footer-bg path:not(.footer-line) { stroke: none; }
+.footer-bg svg path.footer-line { stroke: var(--wii-cyan) !important; }
+body.dark-mode .footer-bg { filter: none; }
+body.phone .digital-time { font-size: 1.35rem; }
+body.phone .clock-area { margin-bottom: 8px; }
