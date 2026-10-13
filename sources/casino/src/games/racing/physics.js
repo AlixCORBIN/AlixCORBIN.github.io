@@ -323,7 +323,7 @@ export function stepRun(run, track, phys, car, world, input) {
   for (const g of track.gates) {
     if (!gateHit(g, prev, cur)) continue;
     // checkpoint conditionnel : sous la vitesse minimale (km/h), il ne se passe rien
-    if (g.tile.fast && car.speed * 3.6 < (param(g.tile, "minSpeed") ?? 100)) continue;
+    if (BLOCKS[g.tile.type].fast && car.speed * 3.6 < (param(g.tile, "minSpeed") ?? 100)) continue;
     const id = `${g.tile.x},${g.tile.z},${g.tile.level}`;
     if (g.kind === "cp" && !run.cps.has(id)) {
       run.cps.add(id);

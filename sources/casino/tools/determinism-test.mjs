@@ -18,7 +18,7 @@ const CASES = {
   glue: [R, R, ["glue"], ["glue"], R, R],
   oil: [R, R, ["oil"], ["oil"], R, R],
   kicker2: [R, R, ["boost2", { level: 3 }], ["kicker2", { angle: 25, len: 2 }], "_", "_", "_", "_", ["road"], R, R],
-  cpfast: [R, R, ["cpfast", { minSpeed: 60 }], R, ["cpfast", { minSpeed: 250 }], R, R],
+  cpfast: [R, ["cpfast", { minSpeed: 250 }], R, ["cpfast", { minSpeed: 60 }], R, R],
   teleport: [R, ["teleport", { pair: 1, role: 0 }], R, "_", "_", ["teleport", { pair: 1, role: 1 }], R, R],
   wind: [R, R, ["wind", { force: 8 }], ["wind", { force: -8 }], R, R],
   gate: [R, R, ["gate", { period: 120, closed: 60, offset: 20 }], R, R, R],
