@@ -170,7 +170,7 @@ Object.assign(BLOCKS, {
   lift: { label: "Plateforme mobile", path: straight, n: 2, mech: "lift", ...S2, params: { dist: P("Course (cases)", 1, 4, 2), period: P("Période (pas)", 100, 1500, 500, 10) } },
   switch: { label: "Interrupteur", path: straight, n: 2, gate: "switch", ...S2, params: { id: P("Identifiant", 1, 5, 1) } },
   door: { label: "Porte", path: straight, n: 2, mech: "door", ...S2, params: { id: P("Identifiant", 1, 5, 1) } },
-  crate: { label: "Caisse", path: straight, n: 2, mech: "crate", ...OFF, params: { minSpeed: P("Vitesse min (km/h)", 40, 250, 90, 10) } },
+  crate: { label: "Caisse", path: straight, n: 2, mech: "crate", ...S2, params: { minSpeed: P("Vitesse min (km/h)", 40, 250, 90, 10) } },
   gravity: { label: "Gravité de piste", path: loopPath(16, 11), n: 110, gravity: true, ...OFF },
   rail: { label: "Rail", path: railPath, n: 14, mech: "rail", ...OFF },
 });
