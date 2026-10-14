@@ -1,6 +1,6 @@
 // Construit la piste en three.js pur (un Group), à partir d'un Track. Matériaux partagés par monde.
 import * as THREE from "three";
-import { BLOCKS, TILE, occupancy, param, sampleBlock, sectionPoints, toWorld } from "../blocks.js";
+import { BLOCKS, TILE, occupancy, param, sampleBlock, sectionPoints, tileSurface, toWorld } from "../blocks.js";
 import { crateKey, gateClosed, liftPhase, switchKey } from "../physics.js";
 
 const DECK = 1.2; // épaisseur visuelle de la chaussée
@@ -120,6 +120,13 @@ function materials(world) {
     crate: new THREE.MeshStandardMaterial({ color: "#a8743a", roughness: 0.9 }),
     rail: new THREE.MeshStandardMaterial({ color: "#d8dde4", metalness: 0.8, roughness: 0.25 }),
     door: ["#d4262c", "#1f6fe0", "#1fa84a", "#d9a800", "#8a3fd0"].map((c) => new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 0.3 })),
+    // lot 2
+    water: new THREE.MeshStandardMaterial({ color: "#1f7fd1", emissive: "#0a3a7a", emissiveIntensity: 0.35, roughness: 0.05, metalness: 0.3, transparent: true, opacity: 0.88, side: THREE.DoubleSide }),
+    rev: new THREE.MeshBasicMaterial({ map: boostTex("#ff2f4f"), transparent: true, depthWrite: false }),
+    jet: new THREE.MeshStandardMaterial({ color: "#2b2f36", emissive: "#29e0ff", emissiveIntensity: 0.9 }),
+    jetCol: new THREE.MeshBasicMaterial({ color: "#7df9ff", transparent: true, opacity: 0.18, depthWrite: false, side: THREE.DoubleSide }),
+    hazard: new THREE.MeshBasicMaterial({ map: canvasTex(128, 32, (g, w, h) => { for (let x = -h; x < w; x += 16) { g.fillStyle = (x / 16) % 2 ? "#111" : "#ffd23f"; g.beginPath(); g.moveTo(x, h); g.lineTo(x + 16, h); g.lineTo(x + 16 + h, 0); g.lineTo(x + h, 0); g.fill(); } }) }),
+    ring: new THREE.MeshStandardMaterial({ color: world.night ? "#2a2250" : "#c9ccd2", emissive: world.accent, emissiveIntensity: 0.35, metalness: 0.4, roughness: 0.4 }),
   };
   const post = new THREE.MeshStandardMaterial({ color: "#2b2f36", roughness: 0.5, metalness: 0.3 });
   const m = { road, dirt, ice, side, plain, kerb, pillar, boost, gates, post, s2 };
@@ -244,6 +251,32 @@ function decorS2(t, def, mats, root, anim) {
     return o;
   };
   if (def.surface === "boost2") flat(m.boost[Math.max(1, Math.min(3, Math.round(param(t, "level") ?? 2))) - 1], 12, 24);
+  if (def.surface === "revboost") flat(m.rev, 12, 24, 0.07, Math.PI);
+  if (def.cutEdge) {
+    // bandes jaunes et noires au bord de la coupure (bout de sortie du bloc)
+    const p = new THREE.Mesh(new THREE.PlaneGeometry(20, 3), m.hazard);
+    p.matrixAutoUpdate = false;
+    p.matrix.copy(basis(frameOf(t, 0.92))).multiply(new THREE.Matrix4().makeTranslation(0, 0.08, 0)).multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+    root.add(p);
+  }
+  if (def.jet) {
+    solid(new THREE.CylinderGeometry(7, 7, 0.4, 24), m.jet, [0, 0.1, 0]);
+    solid(new THREE.CylinderGeometry(7, 9, 24, 24, 1, true), m.jetCol, [0, 12, 0]);
+  }
+  if (def.tube) {
+    // arceaux autour de l'axe du tube (axe = point de la chaussée + normale × rayon)
+    const S = sampleBlock(t.type);
+    const geo = new THREE.TorusGeometry(13.5, 0.45, 6, 32);
+    for (let i = 2; i < S.length - 2; i += Math.max(2, Math.round(S.length / 9))) {
+      const f2 = S[i];
+      const c = toWorld(t, f2.p.map((v, j) => v + f2.u[j] * 12));
+      const tt = new THREE.Vector3(...toWorld(t, f2.t, true));
+      const o = new THREE.Mesh(geo, m.ring);
+      o.position.set(...c);
+      o.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), tt);
+      root.add(o);
+    }
+  }
   if (def.base === "kicker2") flat(m.kick, 10, 14, 0.07);
   if (def.wind) flat(m.windR, 14, 28, 0.9, (param(t, "force") ?? 0) >= 0 ? -Math.PI / 2 : Math.PI / 2);
   if (def.mech === "gate") {
@@ -285,10 +318,11 @@ export function buildTrackGroup(track, world) {
   const pillars = [];
   for (const t of track.tiles) {
     const def = BLOCKS[t.type];
-    if (def.season === 2 || def.base) decorS2(t, def, mats, root, anim);
+    if (def.season || def.base) decorS2(t, def, mats, root, anim);
     if (def.mech === "lift") continue; // pas de route fixe : la plateforme est animée
-    const s2top = { brake: mats.s2.brake, glue: mats.s2.glue, oil: mats.s2.oil }[def.surface] || (def.gravity ? mats.s2.grav : null);
-    const top = s2top || (def.surface === "dirt" ? mats.dirt : def.surface === "ice" ? mats.ice : t.type === "platform" ? mats.plain : mats.road);
+    const surf = tileSurface(t);
+    const s2top = { brake: mats.s2.brake, glue: mats.s2.glue, oil: mats.s2.oil, water: mats.s2.water }[surf] || (def.gravity ? mats.s2.grav : null);
+    const top = s2top || (surf === "dirt" ? mats.dirt : surf === "ice" ? mats.ice : t.type === "platform" || def.bare ? mats.plain : mats.road);
     root.add(new THREE.Mesh(sweptGeometry(t), [top, mats.side]));
     if (def.surface === "boost") {
       const p = new THREE.Mesh(new THREE.PlaneGeometry(12, 24), mats.boost);
@@ -298,7 +332,7 @@ export function buildTrackGroup(track, world) {
     }
     if (def.gate) root.add(gate(def.fast ? "cpfast" : def.gate, mats, frameOf(t, 0.5), def.gate === "start"));
     // piliers sous les parties à peu près horizontales et en hauteur
-    if (t.type !== "loop" && t.type !== "wall") {
+    if (t.type !== "loop" && t.type !== "wall" && !world.void) {
       const S = sampleBlock(t.type);
       const step = Math.max(1, Math.round(S.length / 3));
       for (let i = Math.floor(step / 2); i < S.length; i += step) {
@@ -319,8 +353,68 @@ export function buildTrackGroup(track, world) {
   return root;
 }
 
+// Mondes suspendus de la saison 2 : rien de praticable sous la piste, seulement un décor lointain bien plus bas
+export const VOID_DEPTH = 320;
+function buildVoidDecor(track, world, seed) {
+  const [w, h] = track.size;
+  let s = seed * 7919 + 104729;
+  const rnd = () => ((s = (s * 9301 + 49297) % 233280) / 233280);
+  const group = new THREE.Group();
+  const cx = (w * TILE) / 2, cz = (h * TILE) / 2;
+  const y0 = -VOID_DEPTH;
+  // fond : mer de nuages, lave, océan… très loin sous la piste
+  const sea = new THREE.Mesh(new THREE.PlaneGeometry(9000, 9000), new THREE.MeshStandardMaterial({
+    color: world.ground, roughness: 1, emissive: world.id === "s2dirt" ? "#ff4a1a" : world.id === "s2air" ? "#2a1a6a" : "#000", emissiveIntensity: world.id === "s2dirt" ? 0.25 : 0.5,
+  }));
+  sea.rotation.x = -Math.PI / 2;
+  sea.position.set(cx, y0, cz);
+  group.add(sea);
+  const kind = world.id;
+  const spots = [];
+  for (let i = 0; i < 140; i++) {
+    const a = rnd() * Math.PI * 2, r = 120 + rnd() * 1400;
+    spots.push([cx + Math.cos(a) * r, cz + Math.sin(a) * r, 0.6 + rnd() * 0.8, rnd() * 6.28, rnd()]);
+  }
+  let geo, mat, y = y0;
+  if (kind === "s2tech") {
+    geo = new THREE.BoxGeometry(40, 120, 40); geo.translate(0, 60, 0);
+    mat = new THREE.MeshStandardMaterial({ color: "#5b6573", roughness: 0.8, emissive: "#ff9f1c", emissiveIntensity: 0.05 });
+  } else if (kind === "s2speed") {
+    geo = new THREE.SphereGeometry(30, 10, 8); geo.scale(2.2, 0.6, 1.4);
+    mat = new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 1, emissive: "#ffffff", emissiveIntensity: 0.25 });
+    y = y0 + 120;
+  } else if (kind === "s2dirt") {
+    geo = new THREE.CylinderGeometry(36, 48, 140, 7); geo.translate(0, 70, 0);
+    mat = new THREE.MeshStandardMaterial({ color: "#b4532a", flatShading: true, roughness: 1 });
+  } else if (kind === "s2ice") {
+    geo = new THREE.ConeGeometry(40, 120, 6); geo.translate(0, 40, 0);
+    mat = new THREE.MeshStandardMaterial({ color: "#e9f7ff", flatShading: true, roughness: 0.3 });
+  } else {
+    geo = new THREE.ConeGeometry(40, 90, 7); geo.rotateX(Math.PI); geo.translate(0, -45, 0);
+    mat = new THREE.MeshStandardMaterial({ color: "#4a3b2a", flatShading: true });
+    y = y0 + 180;
+  }
+  const inst = new THREE.InstancedMesh(geo, mat, spots.length);
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), sc = new THREE.Vector3(), p = new THREE.Vector3();
+  spots.forEach(([x, z, k, r, j], i) => {
+    q.setFromEuler(e.set(0, r, 0));
+    m4.compose(p.set(x, y + (kind === "s2air" || kind === "s2speed" ? j * 60 : 0), z), q, sc.set(k, k, k));
+    inst.setMatrixAt(i, m4);
+  });
+  group.add(inst);
+  if (kind === "s2air") {
+    // îles flottantes : herbe sur le dessus des cônes renversés
+    const top = new THREE.CylinderGeometry(40, 40, 6, 7);
+    const tops = new THREE.InstancedMesh(top, new THREE.MeshStandardMaterial({ color: "#3d8a4a", flatShading: true }), spots.length);
+    spots.forEach(([x, z, k, r, j], i) => { q.setFromEuler(e.set(0, r, 0)); m4.compose(p.set(x, y + j * 60 + 3 * k, z), q, sc.set(k, k, k)); tops.setMatrixAt(i, m4); });
+    group.add(tops);
+  }
+  return group;
+}
+
 // Décor dispersé autour de la piste (arbres, rochers, néons…), en instances
 export function buildDecor(track, world, seed = 1) {
+  if (world.void) return buildVoidDecor(track, world, seed);
   const [w, h] = track.size;
   let s = seed * 9301 + 49297;
   const rnd = () => ((s = (s * 9301 + 49297) % 233280) / 233280);

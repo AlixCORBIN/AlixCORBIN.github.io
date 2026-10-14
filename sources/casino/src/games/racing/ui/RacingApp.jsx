@@ -1,7 +1,7 @@
 import React from "react";
 import { campaignList, getMap, listMaps, loadPBs, playerRecords, worldRecords } from "../api.js";
 import { MEDALS, OFFICIAL, medalFor } from "../maps.js";
-import { WORLDS, formatTime } from "../physics.js";
+import { WORLDS, formatTime, worldsForSeason } from "../physics.js";
 import { Board } from "./Board.jsx";
 import { Settings } from "./Settings.jsx";
 import { Pilots } from "./Pilots.jsx";
@@ -27,7 +27,8 @@ function Campaign({ pbs, wrs, onPlay, onBoard }) {
   return (
     <>
       <div className="rc-worlds">
-        {WORLDS.map((w, i) => {
+        {worldsForSeason(1).map((w) => {
+          const i = w.index;
           const got = OFFICIAL.filter((m) => m.world === i && medalFor(pbs[m.id]?.ms, m.author_time)).length;
           return (
             <button key={w.id} className={`rc-world ${i === world ? "on" : ""}`} style={{ "--sky": w.sky, "--acc": w.accent, "--gr": w.ground }} onClick={() => pick(i)}>
@@ -62,35 +63,56 @@ function Campaign({ pbs, wrs, onPlay, onBoard }) {
   );
 }
 
-// Campagne de la saison 2 : lue côté serveur, la RLS ne renvoie que les maps ouvertes (tout pour un admin)
-function Season2({ onPlay, onBoard, pbs }) {
-  const [maps, setMaps] = React.useState(null);
-  const [err, setErr] = React.useState(null);
-  React.useEffect(() => {
-    campaignList("s2").then(setMaps).catch((e) => { setErr(e.message); setMaps([]); });
-  }, []);
+// Campagne de la saison 2 : lue côté serveur, la RLS ne renvoie que les maps ouvertes (tout pour un admin).
+// Sélection monde / map comme la saison 1, avec les couleurs et le ciel de chaque monde S2.
+export const s2Map = (m) => ({ id: m.map_id, name: m.name, author_time: m.author_ms, world: m.data?.world ?? 0, data: m.data, season: 2 });
+function Season2({ maps, err, onPlay, onBoard, pbs, wrs }) {
+  const worlds = worldsForSeason(2);
+  const [world, setWorld] = React.useState(() => {
+    try { const w = +localStorage.getItem("racing-world-s2"); return worlds.some((x) => x.index === w) ? w : worlds[0].index; } catch { return worlds[0].index; }
+  });
+  const pick = (i) => { setWorld(i); try { localStorage.setItem("racing-world-s2", String(i)); } catch {} };
   if (!maps) return <p className="hint">Chargement…</p>;
   if (!maps.length) return <p className="hint">{err ? `Saison 2 : ${err}` : "Bientôt disponible"}</p>;
+  const list = maps.map(s2Map);
+  const shown = list.filter((m) => m.world === world);
   return (
-    <div className="rc-maps">
-      {maps.map((m, i) => {
-        const map = { id: m.map_id, name: m.name, author_time: m.author_ms, world: m.data?.world ?? 0, data: m.data };
-        const pb = pbs[m.map_id]?.ms;
-        return (
-          <div key={m.map_id} className="rc-map" style={{ "--acc": WORLDS[map.world]?.accent }}>
-            <div className="rc-map-num">{m.ord ?? i + 1}</div>
-            <div className="rc-map-main">
-              <b>{m.name}</b>
-              <small><MedalDot medal={medalFor(pb, m.author_ms)} /> {pb ? formatTime(pb) : "pas encore de temps"}</small>
+    <>
+      <div className="rc-worlds">
+        {worlds.map((w) => {
+          const mine = list.filter((m) => m.world === w.index);
+          const got = mine.filter((m) => medalFor(pbs[m.id]?.ms, m.author_time)).length;
+          return (
+            <button key={w.id} className={`rc-world ${w.index === world ? "on" : ""}`} style={{ "--sky": w.sky, "--acc": w.accent, "--gr": w.ground }} onClick={() => pick(w.index)} disabled={!mine.length}>
+              <em className="rc-world-style">{w.style}</em>
+              <b>{w.name}</b>
+              <small>{mine.length ? `${got}/${mine.length} médailles` : "verrouillé"}</small>
+            </button>
+          );
+        })}
+      </div>
+      <div className="rc-maps">
+        {shown.map((m, i) => {
+          const pb = pbs[m.id]?.ms;
+          const wr = wrs[m.id];
+          return (
+            <div key={m.id} className="rc-map" style={{ "--acc": WORLDS[m.world]?.accent }}>
+              <div className="rc-map-num">{i + 1}</div>
+              <div className="rc-map-main">
+                <b>{m.name}</b>
+                <small><MedalDot medal={medalFor(pb, m.author_time)} /> {pb ? formatTime(pb) : "pas encore de temps"}</small>
+                <small className="rc-wr">🏆 {wr ? `${formatTime(wr.time_ms)} · ${wr.pseudo}` : "aucun record"}</small>
+              </div>
+              <div className="rc-map-btns">
+                <button className="btn primary" onClick={() => onPlay(m)}>Jouer</button>
+                <button className="btn ghost" onClick={() => onBoard(m)} title="Classement">🏆</button>
+              </div>
             </div>
-            <div className="rc-map-btns">
-              <button className="btn primary" onClick={() => onPlay(map)}>Jouer</button>
-              <button className="btn ghost" onClick={() => onBoard(map)} title="Classement">🏆</button>
-            </div>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+        {!shown.length && <p className="hint">Ce monde n'est pas encore ouvert.</p>}
+      </div>
+    </>
   );
 }
 
@@ -139,6 +161,11 @@ export function RacingApp({ pseudo, onQuit }) {
   const [wrs, setWrs] = React.useState({});
   const [color, setColor] = React.useState(loadCarColor);
   const [loading, setLoading] = React.useState(false);
+  const [s2, setS2] = React.useState({ maps: null, err: null });
+  React.useEffect(() => {
+    if (tab !== "season2" || s2.maps) return;
+    campaignList("s2").then((maps) => setS2({ maps, err: null })).catch((e) => setS2({ maps: [], err: e.message }));
+  }, [tab]);
 
   const pad = useGamepad();
   const [padToast, setPadToast] = React.useState(null);
@@ -180,8 +207,8 @@ export function RacingApp({ pseudo, onQuit }) {
         setPbs(next);
       }).catch(() => {});
     }
-    worldRecords(OFFICIAL.map((m) => m.id)).then(setWrs);
-  }, [race]);
+    worldRecords([...OFFICIAL.map((m) => m.id), ...(s2.maps || []).map((m) => m.map_id)]).then(setWrs);
+  }, [race, s2.maps]);
 
   const play = async (map) => {
     if (map.data) return setRace({ map, mode: "play" });
@@ -196,8 +223,10 @@ export function RacingApp({ pseudo, onQuit }) {
 
   if (race) {
     const { map, mode } = race;
-    const idx = OFFICIAL.findIndex((m) => m.id === map.id);
-    const next = idx >= 0 && idx < OFFICIAL.length - 1 ? OFFICIAL[idx + 1] : null;
+    // map suivante : dans la campagne de la même saison
+    const pool = map.season === 2 ? (s2.maps || []).map(s2Map) : OFFICIAL;
+    const idx = pool.findIndex((m) => m.id === map.id);
+    const next = idx >= 0 && idx < pool.length - 1 ? pool[idx + 1] : null;
     return (
       <>
       {toast}
@@ -262,7 +291,7 @@ export function RacingApp({ pseudo, onQuit }) {
         {tab === "records" ? (
           <Records pseudo={pseudo} alerts={rec.alerts} history={rec.history} onPlay={play} onBoard={setBoard} />
         ) : tab === "season2" ? (
-          <Season2 pbs={pbs} onPlay={play} onBoard={setBoard} />
+          <Season2 maps={s2.maps} err={s2.err} pbs={pbs} wrs={wrs} onPlay={play} onBoard={setBoard} />
         ) : tab === "community" ? (
           <Community pbs={pbs} onPlay={play} onBoard={setBoard} />
         ) : (

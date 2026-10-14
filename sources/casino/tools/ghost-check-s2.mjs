@@ -1,9 +1,10 @@
 // Reproduit en JS les contrôles de racing_ghost_problem (version en base + ajouts saison 2 de
 // supabase/racing-season2-anticheat.sql) sur des fantômes produits par le bot de référence,
-// pour les brouillons tools/s2-maps/*.json et quelques pistes de test (téléporteur, turbo niveau 3…).
+// pour les maps de la campagne tools/s2-maps/s2-NN.json (ligne principale et chaque raccourci, comme le pilote auto de
+// build.mjs) et quelques pistes de test (téléporteur, turbo niveau 3…).
 // Affiche, pour chaque map : temps, durée et coût CPU du rejeu, vitesse max entre deux points,
 // distance max à l'axe, et ce que la base refuserait.
-//   node tools/ghost-check-s2.mjs
+//   node tools/ghost-check-s2.mjs [--map s2-03] [--neg]
 import { readFileSync, readdirSync } from "node:fs";
 import { placeFrom } from "../src/games/racing/blocks.js";
 import { trackMeta } from "../src/games/racing/meta.js";
@@ -75,7 +76,7 @@ function chain(items, world) {
   for (const it of items) {
     if (it === "_") { st = { ...st, x: st.x + DX[st.d], z: st.z + DZ[st.d] }; continue; }
     const [type, p] = it;
-    const r = placeFrom(type, st.x, st.z, st.d, st.l);
+    const r = placeFrom(type, st.x, st.z, st.d, st.l, false, p);
     const t = [r.tile.x, r.tile.z, r.tile.type, r.tile.rot, r.tile.level];
     if (p) t.push(p);
     tiles.push(t);
@@ -91,30 +92,37 @@ const EXTRA = [
   { id: "t-kicker35", name: "Tremplin 35° × 2", data: chain([R, R, ["boost2", { level: 3 }], R, ["kicker2", { angle: 35, len: 2 }], "_", "_", "_", "_", "_", R, R, ["cp"], R, ["finish"], R], 0) },
 ];
 
-await P.initPhysics();
-const dir = new URL("./s2-maps/", import.meta.url);
-const drafts = readdirSync(dir).filter((f) => f.endsWith(".json")).sort().map((f) => JSON.parse(readFileSync(new URL(f, dir), "utf8")));
-let refused = 0;
-for (const m of [...drafts, ...EXTRA]) {
-  const track = new Track(m.data);
-  const world = P.WORLDS[m.data.world ?? 0];
-  const meta = trackMeta(m.data);
-  const bot = await botRun(track, world, { maxSteps: 15000 });
-  if (!bot.finished) { console.log(`${m.id.padEnd(11)} bot : pas fini`); continue; }
-  const t0 = performance.now();
-  const r = replay(track, world, bot.log, 15000);
-  const cpu = performance.now() - t0;
-  const why = ghostProblem(meta, r.ms, r.ghost);
-  const s = stats(meta, r.ghost);
-  if (why) refused++;
-  console.log(`${m.id.padEnd(11)} ${(r.ms / 1000).toFixed(2).padStart(6)} s course, rejeu ${cpu.toFixed(0).padStart(4)} ms CPU, saut max ${s.jump.toFixed(2)} u/50 ms (${(s.jump * 20).toFixed(0)} u/s), écart axe max ${s.off.toFixed(1)} u, téléporteurs ${meta.teleports?.length ?? 0} -> ${why ? "REFUSÉ : " + why : "accepté"}`);
+if (import.meta.url === `file://${process.argv[1]}`) {
+  await P.initPhysics();
+  const dir = new URL("./s2-maps/", import.meta.url);
+  const only = process.argv.includes("--map") ? process.argv[process.argv.indexOf("--map") + 1] : null;
+  const drafts = readdirSync(dir).filter((f) => /^s2-\d+\.json$/.test(f)).sort().map((f) => JSON.parse(readFileSync(new URL(f, dir), "utf8")))
+    .filter((m) => !only || m.id === only);
+  // une entrée par ligne de pilote : principale, puis chaque raccourci
+  const runs = drafts.flatMap((m) => [{ ...m, hints: { order: m.hints?.main, slow: m.hints?.slow } },
+    ...Object.entries(m.hints?.alts || {}).map(([g, order]) => ({ ...m, id: `${m.id}/${g}`, hints: { order, slow: m.hints?.altSlow?.[g] ?? m.hints?.slow } }))]);
+  let refused = 0;
+  for (const m of [...runs, ...(only ? [] : EXTRA)]) {
+    const track = new Track(m.data);
+    const world = P.WORLDS[m.data.world ?? 0];
+    const meta = trackMeta(m.data);
+    const bot = await botRun(track, world, { maxSteps: 15000, hints: m.hints || {} });
+    if (!bot.finished) { console.log(`${m.id.padEnd(11)} bot : pas fini`); refused++; continue; }
+    const t0 = performance.now();
+    const r = replay(track, world, bot.log, 15000);
+    const cpu = performance.now() - t0;
+    const why = ghostProblem(meta, r.ms, r.ghost);
+    const s = stats(meta, r.ghost);
+    if (why) refused++;
+    console.log(`${m.id.padEnd(11)} ${(r.ms / 1000).toFixed(2).padStart(6)} s course, rejeu ${cpu.toFixed(0).padStart(4)} ms CPU, saut max ${s.jump.toFixed(2)} u/50 ms (${(s.jump * 20).toFixed(0)} u/s), écart axe max ${s.off.toFixed(1)} u, téléporteurs ${meta.teleports?.length ?? 0} -> ${why ? "REFUSÉ : " + why : "accepté"}`);
+  }
+  if (process.argv.includes("--neg")) {
+    // contre-épreuve : sans la liste des sorties de téléporteur, le saut doit être refusé
+    const m = EXTRA[0], track = new Track(m.data), world = P.WORLDS[0], meta = trackMeta(m.data);
+    const bot = await botRun(track, world, { maxSteps: 15000 });
+    const r = replay(track, world, bot.log, 15000);
+    console.log("sans teleports :", ghostProblem({ ...meta, teleports: [] }, r.ms, r.ghost) || "accepté (ANORMAL)");
+    console.log("comme saison 1 :", ghostProblem({ ...meta, v: undefined }, r.ms, r.ghost) || "accepté (ANORMAL)");
+  }
+  process.exitCode = refused ? 1 : 0;
 }
-if (process.argv.includes("--neg")) {
-  // contre-épreuve : sans la liste des sorties de téléporteur, le saut doit être refusé
-  const m = EXTRA[0], track = new Track(m.data), world = P.WORLDS[0], meta = trackMeta(m.data);
-  const bot = await botRun(track, world, { maxSteps: 15000 });
-  const r = replay(track, world, bot.log, 15000);
-  console.log("sans teleports :", ghostProblem({ ...meta, teleports: [] }, r.ms, r.ghost) || "accepté (ANORMAL)");
-  console.log("comme saison 1 :", ghostProblem({ ...meta, v: undefined }, r.ms, r.ghost) || "accepté (ANORMAL)");
-}
-process.exitCode = refused ? 1 : 0;

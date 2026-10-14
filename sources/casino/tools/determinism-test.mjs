@@ -37,7 +37,7 @@ function build(spec) {
   let st = cur.next;
   const DX = [0, 1, 0, -1], DZ = [-1, 0, 1, 0];
   const add = (type, p) => {
-    const r = placeFrom(type, st.x, st.z, st.d, st.l);
+    const r = placeFrom(type, st.x, st.z, st.d, st.l, false, p);
     const t = [r.tile.x, r.tile.z, r.tile.type, r.tile.rot, r.tile.level];
     if (p) t.push(p);
     tiles.push(t);

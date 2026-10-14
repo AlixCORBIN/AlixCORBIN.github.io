@@ -20,6 +20,8 @@
 .rc-world b{font:italic 900 18px system-ui;text-transform:uppercase}
 .rc-world small{font-size:11px;opacity:.9}
 .rc-world.on{opacity:1;border-color:var(--acc);transform:translateY(-2px);box-shadow:0 8px 24px #0008}
+.rc-world:disabled{opacity:.35;cursor:default}
+.rc-world-style{font:700 10px system-ui;letter-spacing:1px;text-transform:uppercase;color:var(--acc);margin-bottom:auto;align-self:flex-start;padding:2px 7px;border-radius:999px;background:#0006}
 .rc-maps{display:flex;flex-direction:column;gap:8px}
 .rc-map{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;background:#ffffff0b;border:1px solid #ffffff18;border-left:4px solid var(--acc,#ffd23f)}
 .rc-map-num{font:italic 900 30px system-ui;color:var(--acc);width:30px;text-align:center}

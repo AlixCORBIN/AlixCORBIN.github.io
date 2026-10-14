@@ -2,17 +2,18 @@ import React from "react";
 import { adminCampaignUpsert, amIAdmin, deleteDraft, loadDrafts, publishMap, saveDraft, seasonLive } from "../api.js";
 import { OFFICIAL } from "../maps.js";
 import { WORLDS, formatTime } from "../physics.js";
-import { BLOCKS, BLOCK_KEYS, TILE, blockKeysForSeason, defaultParams, occupancy, resolveType, sampleBlock, sectionPoints, toWorld } from "../blocks.js";
+import { BLOCKS, BLOCK_KEYS, TILE, blockKeysForSeason, defaultParams, occupancy, resolveType, sampleBlock, sectionPoints, tileSurface, toWorld } from "../blocks.js";
 import { GRID, MAX_LEVEL, Track, mapData } from "../track.js";
 import { trackMeta } from "../meta.js";
 import { TrackPreview } from "../three/RaceScene.jsx";
 
 const CATS = [...new Set(BLOCK_KEYS.map((k) => BLOCKS[k].cat))];
 const HOTKEYS = ["road", "turn", "bank", "bigturn", "slope", "steep", "loop", "wall", "cp"];
-const FILL = { road: "#4a4e57", dirt: "#7a5634", ice: "#9fd6ee", boost: "#4a4e57", boost2: "#4a4e57", brake: "#8a1f24", glue: "#6b2fa0", oil: "#0a0a0f" };
+const FILL = { road: "#4a4e57", dirt: "#7a5634", ice: "#9fd6ee", boost: "#4a4e57", boost2: "#4a4e57", brake: "#8a1f24", glue: "#6b2fa0", oil: "#0a0a0f", water: "#1f7fd1", revboost: "#4a4e57" };
 const GATE = { start: "#18a04a", cp: "#1f6fe0", finish: "#f2f2f2", teleport: "#7a2fd0", switch: "#c9a100" };
 // Couleur d'un bloc de la saison 2 sans surface propre (pastille dessinée au centre)
-const S2_DOT = { gate: "#e0262c", door: "#d4262c", crate: "#a8743a", lift: "#c9ccd2", wind: "#6fe3ff", gravity: "#6a4cff", rail: "#d8dde4", kicker2: "#ffd23f" };
+const S2_DOT = { gate: "#e0262c", door: "#d4262c", crate: "#a8743a", lift: "#c9ccd2", wind: "#6fe3ff", gravity: "#6a4cff", rail: "#d8dde4", kicker2: "#ffd23f",
+  revboost: "#ff2f4f", jet: "#29e0ff", tunnel: "#ff9f1c", halftube: "#ff9f1c", hloop: "#ff3fd8", loopx: "#ff3fd8", pipe: "#3fd3ff", wallin: "#a6ff4d", wallrun: "#a6ff4d", wallout: "#a6ff4d", cut: "#ffd23f", bump: "#ffd23f" };
 
 export const newDoc = () => ({ id: crypto.randomUUID(), name: "", world: 0, tiles: [], authorTime: null });
 
@@ -30,6 +31,7 @@ function drawTile(g, t, s, alpha) {
   const tile = asTile(t);
   tile.type = resolveType(tile.type, tile.p);
   const def = BLOCKS[tile.type];
+  const surf = tileSurface(tile);
   const S = sampleBlock(tile.type);
   const k = s / TILE;
   const P = (lp) => { const w = toWorld(tile, lp); return [w[0] * k, w[2] * k, w[1]]; };
@@ -40,9 +42,8 @@ function drawTile(g, t, s, alpha) {
     const a0 = P(A[0]), a1 = P(A[A.length - 1]), b0 = P(B[0]), b1 = P(B[B.length - 1]);
     const h = (a0[2] + a1[2]) / 2;
     const light = Math.min(40, h * 1.2);
-    g.fillStyle = h > 0.5 ? `hsl(220 8% ${30 + light}%)` : FILL[def.surface] || "#4a4e57";
-    if (def.surface === "dirt") g.fillStyle = "#7a5634";
-    if (def.surface === "ice") g.fillStyle = "#9fd6ee";
+    g.fillStyle = h > 0.5 ? `hsl(220 8% ${30 + light}%)` : FILL[surf] || "#4a4e57";
+    if (surf === "dirt" || surf === "ice" || surf === "water") g.fillStyle = FILL[surf];
     g.beginPath();
     g.moveTo(a0[0], a0[1]); g.lineTo(a1[0], a1[1]); g.lineTo(b1[0], b1[1]); g.lineTo(b0[0], b0[1]);
     g.closePath();
@@ -72,7 +73,7 @@ function drawTile(g, t, s, alpha) {
     g.restore();
   }
   // blocs de la saison 2 : pastille de couleur et réglage principal
-  if (def.season === 2) {
+  if (def.season) {
     const base = def.base || tile.type;
     const c = S2_DOT[base] || (def.surface && FILL[def.surface]) || GATE[def.gate];
     if (c) { g.fillStyle = c; g.beginPath(); g.arc(tile.x * s + s / 2, tile.z * s + s / 2, s * 0.16, 0, 7); g.fill(); }
@@ -171,7 +172,7 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
     c.style.width = c.style.height = `${GRID * s}px`;
     const g = c.getContext("2d");
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    g.fillStyle = WORLDS[doc.world].id === "neon" ? "#120b26" : "#2c5a2a";
+    g.fillStyle = WORLDS[doc.world].void ? "#0d1220" : WORLDS[doc.world].id === "neon" ? "#120b26" : "#2c5a2a";
     g.fillRect(0, 0, GRID * s, GRID * s);
     g.strokeStyle = "rgba(255,255,255,.08)";
     for (let i = 0; i <= GRID; i++) {
@@ -276,7 +277,7 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
         <label>Nom<input value={doc.name} maxLength={32} placeholder="Ma super piste" onChange={(e) => setDoc({ ...doc, name: e.target.value })} /></label>
         <label>Monde
           <select value={doc.world} onChange={(e) => setDoc({ ...doc, world: +e.target.value, authorTime: null })}>
-            {WORLDS.map((w, i) => <option key={w.id} value={i}>{w.name}</option>)}
+            {WORLDS.map((w, i) => ((w.season ?? 1) === 1 || admin || s2Live || i === doc.world) && <option key={w.id} value={i}>{w.name}{w.season === 2 ? ` · saison 2 (${w.style}, sans sol)` : ""}</option>)}
           </select>
         </label>
         <div className="rc-palette">

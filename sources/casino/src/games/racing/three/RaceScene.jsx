@@ -13,7 +13,7 @@ function Environment({ track, world, fog = true, session = null }) {
   const [w, h] = track.size;
   React.useEffect(() => {
     scene.background = new THREE.Color(world.sky);
-    scene.fog = fog ? new THREE.Fog(world.fog, 120, world.night ? 520 : 760) : null;
+    scene.fog = fog ? new THREE.Fog(world.fog, world.void ? 160 : 120, world.void ? 1100 : world.night ? 520 : 760) : null;
     return () => { scene.fog = null; };
   }, [world, scene, fog]);
   const trackObj = React.useMemo(() => buildTrackGroup(track, world), [track, world]);
@@ -30,14 +30,16 @@ function Environment({ track, world, fog = true, session = null }) {
     <>
       <hemisphereLight args={[world.night ? "#6a5cff" : "#ffffff", world.ground, world.night ? 0.7 : 1.1]} />
       <directionalLight position={[cx + 200, 320, cz + 120]} intensity={world.night ? 0.5 : 1.6} />
-      <mesh rotation-x={-Math.PI / 2} position={[cx, -0.3, cz]}>
-        <planeGeometry args={[4000, 4000]} />
-        <meshStandardMaterial color={world.ground} roughness={1} />
-      </mesh>
+      {!world.void && (
+        <mesh rotation-x={-Math.PI / 2} position={[cx, -0.3, cz]}>
+          <planeGeometry args={[4000, 4000]} />
+          <meshStandardMaterial color={world.ground} roughness={1} />
+        </mesh>
+      )}
       {world.id === "stadium" && (
         <gridHelper args={[w * TILE + 12 * TILE, w + 12, "#5fae4a", "#5fae4a"]} position={[cx, -0.26, cz]} />
       )}
-      {world.night && (
+      {world.night && !world.void && (
         <gridHelper args={[3000, 90, world.accent, "#3a1f7a"]} position={[cx, -0.25, cz]} />
       )}
       <primitive object={trackObj} />
