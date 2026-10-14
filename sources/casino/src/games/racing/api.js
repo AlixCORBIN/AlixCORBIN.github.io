@@ -157,9 +157,9 @@ export async function lostRecords(pseudo, since) {
   return data || [];
 }
 
-// Classement des pilotes : 1res places, puis 2es, puis 3es
-export async function podium(limit = 50) {
-  const { data, error } = await supabase.rpc("racing_podium", { p_limit: limit });
+// Classement des pilotes : 1res places, puis 2es, puis 3es. scope : "s1", "s2" ou "all" (maps de la communauté jamais comptées)
+export async function podium(limit = 50, scope = "all") {
+  const { data, error } = await supabase.rpc("racing_podium", { p_limit: limit, p_scope: scope });
   if (error) throw error;
   return data || [];
 }
