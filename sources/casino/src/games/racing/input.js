@@ -1,5 +1,6 @@
 // Entrées : clavier (flèches / ZQSD / WASD), manette (n'importe laquelle, branchée à chaud), boutons tactiles.
 import { BTN, edgeWatcher, getPad, stick } from "./gamepad.js";
+import { getSettings } from "./settings.js";
 
 const keys = new Set();
 export const touch = { up: false, down: false, left: false, right: false, drift: false };
@@ -46,15 +47,28 @@ export function bindKeys({ onRestart, onRespawn, onEscape }) {
   };
 }
 
+let kbSteer = 0, kbLast = 0;
+
 export function readInput() {
   let throttle = keys.has("up") || touch.up ? 1 : 0;
   let brake = keys.has("down") || touch.down ? 1 : 0;
-  let steer = (keys.has("right") || touch.right ? 1 : 0) - (keys.has("left") || touch.left ? 1 : 0);
+  const st = getSettings();
+  // clavier : la direction monte progressivement vers la butée ; la sensibilité règle la vitesse de montée
+  const now = performance.now();
+  const dt = Math.min(0.1, (now - (kbLast || now)) / 1000);
+  kbLast = now;
+  const target = (keys.has("right") || touch.right ? 1 : 0) - (keys.has("left") || touch.left ? 1 : 0);
+  const rate = 4 * st.kbSens; // butée atteinte en 1/(4×sensi) s ; sensi max = instantané
+  if (st.kbSens >= 3 || !target) kbSteer = target;
+  else if (Math.sign(kbSteer) !== Math.sign(target)) kbSteer = Math.sign(target) * Math.min(1, rate * dt);
+  else kbSteer = Math.sign(target) * Math.min(1, Math.abs(kbSteer) + rate * dt);
+  let steer = kbSteer;
   let drift = keys.has("drift") || touch.drift;
   const p = getPad();
   if (p) {
     const b = (i) => p.buttons[i] || { pressed: false, value: 0 };
-    const pad = stick(p.axes[0] || 0) + (b(BTN.RIGHT).pressed ? 1 : 0) - (b(BTN.LEFT).pressed ? 1 : 0);
+    // manette : zone morte et multiplicateur réglables
+    const pad = Math.max(-1, Math.min(1, stick(p.axes[0] || 0, st.padDead) * st.padSens)) + (b(BTN.RIGHT).pressed ? 1 : 0) - (b(BTN.LEFT).pressed ? 1 : 0);
     if (pad) steer = Math.max(-1, Math.min(1, steer + pad));
     // gâchettes analogiques (RT / LT), A et croix haut/bas en tout-ou-rien
     const rt = b(BTN.RT).value || (b(BTN.RT).pressed ? 1 : 0);

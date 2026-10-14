@@ -167,3 +167,10 @@
 
 .rc-s2form{display:grid;gap:6px;margin-top:8px}
 .rc-s2form .rc-actions .btn:first-child,.rc-s2form .rc-actions .btn:last-child{grid-column:auto}
+.rc-settings{width:min(480px,100%);text-align:left;max-height:90vh;overflow:auto}
+.rc-settings h3{margin:14px 0 6px;font-size:13px;text-transform:uppercase;opacity:.75}
+.rc-set{display:block;margin:0 0 10px}
+.rc-set span{display:flex;justify-content:space-between;font-size:14px}
+.rc-set em{font-style:normal;color:#ffd23f;font-weight:800}
+.rc-set input{width:100%;padding:0;margin:6px 0 2px;accent-color:#ffd23f;background:none;border:0}
+.rc-set small{font-size:12px;opacity:.65}

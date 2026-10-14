@@ -9,6 +9,7 @@ import { RaceSession } from "../session.js";
 import { Track } from "../track.js";
 import { RaceScene } from "../three/RaceScene.jsx";
 import { Board } from "./Board.jsx";
+import { Settings } from "./Settings.jsx";
 
 import { AdminName } from "../../../lib/admins.js";
 const CAR_KEY = "racing-car";
@@ -89,6 +90,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
   const pbRef = React.useRef(pb);
   pbRef.current = pb;
   const isTouch = React.useMemo(() => matchMedia("(pointer: coarse)").matches, []);
+  const [showSettings, setShowSettings] = React.useState(false);
   const pad = useGamepad();
   const L = padLabels(pad?.kind);
   const resultRef = React.useRef();
@@ -185,6 +187,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
           <div className="rc-title"><b>{map.name}</b><small>{mode === "test" ? "Test de la map" : map.official ? world.name : `par ${map.author}`}</small></div>
           <div className="grow" />
           <EngineVolume />
+          <button className="pill" onClick={() => setShowSettings(true)} title="Paramètres">⚙</button>
           {mode === "play" && (
             <>
               <button className={`pill ${showGhosts ? "on" : ""}`} onClick={() => setShowGhosts((v) => !v)}>👻 {showGhosts ? allGhosts.length : "off"}</button>
@@ -245,6 +248,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
           </div>
         </div>
       )}
+      {showSettings && <Settings onClose={() => setShowSettings(false)} />}
       {board && <Board map={map} pseudo={pseudo} onClose={() => setBoard(false)} />}
     </div>
   );

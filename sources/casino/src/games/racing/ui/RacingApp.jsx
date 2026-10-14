@@ -3,6 +3,7 @@ import { campaignList, getMap, listMaps, loadPBs, playerRecords, worldRecords } 
 import { MEDALS, OFFICIAL, medalFor } from "../maps.js";
 import { WORLDS, formatTime } from "../physics.js";
 import { Board } from "./Board.jsx";
+import { Settings } from "./Settings.jsx";
 import { Pilots } from "./Pilots.jsx";
 import { AlertToasts, Records, useRecordAlerts } from "./Records.jsx";
 import { padLabels, useGamepad, useGamepadNav } from "../gamepad.js";
@@ -164,6 +165,7 @@ export function RacingApp({ pseudo, onQuit }) {
   React.useEffect(() => { if (tab === "records" && !race) { const t = setTimeout(rec.markRead, 1500); return () => clearTimeout(t); } }, [tab, race, rec.history.length]);
   const alertsUi = <AlertToasts toasts={rec.toasts} dismiss={rec.dismiss} onOpen={() => { setRace(null); pickTab("records"); }} />;
 
+  const [showSettings, setShowSettings] = React.useState(false);
   const pickTab = (t) => { setTab(t); try { localStorage.setItem(TAB_KEY, t); } catch {} };
   React.useEffect(() => {
     if (race) return;
@@ -233,6 +235,7 @@ export function RacingApp({ pseudo, onQuit }) {
         <button className="icon" onClick={onQuit} title="Retour au Casino">←</button>
         <h1>Track<em>Merdia</em></h1>
         <div className="grow" />
+        <button className="pill" onClick={() => setShowSettings(true)} title="Paramètres">⚙ Paramètres</button>
         <div className="rc-medals" title="Médailles de la campagne">
           {MEDALS.map((m) => <i key={m.id} className="rc-dot" style={{ background: m.color }} />)}
           <b>{medals}/{OFFICIAL.length}</b>
@@ -272,6 +275,7 @@ export function RacingApp({ pseudo, onQuit }) {
       </aside>
       </div>
       {loading && <div className="modal soft"><div className="spinner" /></div>}
+      {showSettings && <Settings onClose={() => setShowSettings(false)} />}
       {toast}
       {alertsUi}
       {pad && <p className="rc-padhint">🎮 croix ou stick : se déplacer · {padLabels(pad.kind).A} : valider · {padLabels(pad.kind).B} : retour</p>}
