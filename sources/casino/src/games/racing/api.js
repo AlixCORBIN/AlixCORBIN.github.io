@@ -1,6 +1,6 @@
 // Records et maps de la communauté (RPC Supabase, voir supabase/racing.sql)
 import { supabase } from "../../lib/supabase.js";
-import { callFunction } from "../../lib/identity.js";
+import { callFunction, rpc } from "../../lib/identity.js";
 
 const PB_KEY = "racing-pb";
 
@@ -97,16 +97,14 @@ export async function publishMap(name, author, data, authorTime) {
 // ---------- Campagne par saison (voir supabase/racing-season2.sql) ----------
 // Maps visibles de la saison (la RLS cache celles qui ne sont pas encore ouvertes, sauf aux admins)
 export async function campaignList(season) {
-  const { data, error } = await supabase.rpc("racing_campaign_list", { p_season: season });
-  if (error) throw error;
-  return data || [];
+  // client authentifié : sinon la RLS ne sait pas que le joueur est admin
+  return (await rpc("racing_campaign_list", { p_season: season })) || [];
 }
 
 // Le compte connecté est-il admin ? (vérifié par le serveur ; false si la fonction n'existe pas)
 export async function amIAdmin() {
   try {
-    const { data, error } = await supabase.rpc("is_admin");
-    return !error && data === true;
+    return (await rpc("is_admin")) === true;
   } catch { return false; }
 }
 
@@ -121,10 +119,9 @@ export async function seasonLive(id) {
 // Admin : envoie une map dans la campagne (refusé côté serveur si le compte n'est pas admin).
 // meta = repères anti-triche de la map (trackMeta de meta.js), lus par racing_ghost_problem.
 export async function adminCampaignUpsert({ mapId, seasonId, ord, name, data, authorMs, startsAt = null, meta }) {
-  const { error } = await supabase.rpc("admin_campaign_upsert", {
+  await rpc("admin_campaign_upsert", {
     p_map_id: mapId, p_season_id: seasonId, p_ord: ord, p_name: name, p_data: data, p_author_ms: authorMs, p_starts_at: startsAt, p_meta: meta,
   });
-  if (error) throw error;
 }
 
 // Brouillons de l'éditeur (local)
