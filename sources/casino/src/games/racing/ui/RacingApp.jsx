@@ -241,8 +241,8 @@ export function RacingApp({ pseudo, onQuit }) {
       <div className="rc-menu-layout">
       <div className="rc-menu-body">
         <nav className="rc-tabs">
-          <button className={tab === "campaign" ? "on" : ""} onClick={() => pickTab("campaign")}>Campagne</button>
-          <button className={tab === "season2" ? "on" : ""} onClick={() => pickTab("season2")}>Saison 2</button>
+          <button className={tab === "campaign" ? "on" : ""} onClick={() => pickTab("campaign")}>Campagne saison 1</button>
+          <button className={tab === "season2" ? "on" : ""} onClick={() => pickTab("season2")}>Campagne saison 2</button>
           <button className={tab === "community" ? "on" : ""} onClick={() => pickTab("community")}>Communauté</button>
           <button className={tab === "records" ? "on" : ""} onClick={() => pickTab("records")}>
             Records{rec.alerts.length > 0 && <span className="rc-badge">{rec.alerts.length}</span>}
