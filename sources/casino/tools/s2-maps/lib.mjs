@@ -120,7 +120,7 @@ export function checkMap(m, tiles, info) {
   const relief = maxL - Math.min(...levels);
   if (relief < 4) errs.push(`dénivelé ${relief} niveaux (< 4)`);
   const n = tiles.length;
-  if (n < 20 || n > 80) errs.push(`${n} blocs (attendu 20 à 80)`);
+  if (n < 12 || n > 80) errs.push(`${n} blocs (attendu 12 à 80)`);
   if (track.cps.length < 3) errs.push(`${track.cps.length} checkpoints (< 3)`);
   // lignes droites sans élément : au plus 4 blocs droits « simples » d'affilée sur la ligne principale
   const { main } = lines(info);

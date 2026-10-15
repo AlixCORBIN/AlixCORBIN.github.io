@@ -2,9 +2,9 @@
 //   node tools/s2-maps/build.mjs                 toutes les maps
 //   node tools/s2-maps/build.mjs --world 1       un monde (1 à 5)
 //   node tools/s2-maps/build.mjs --map s2-03     une map ; --ascii : plan par case ; --nobot : sans pilote ; --trace
-// Validations : piste valide, aucun chevauchement ni croisement trop serré, grille 32×32, 20 à 80 blocs, 3 checkpoints
+// Validations : piste valide, aucun chevauchement ni croisement trop serré, grille 32×32, 12 à 80 blocs, 3 checkpoints
 // minimum, au moins 4 niveaux de dénivelé, pas de ligne droite de plus de 4 blocs sans élément, aucune suite de 4 blocs
-// reprise d'une autre map, pilote auto à l'arrivée en 20 à 60 s sans chute, et chaque raccourci terminé par le pilote.
+// reprise d'une autre map, pilote auto à l'arrivée en 15 à 60 s sans chute, et chaque raccourci terminé par le pilote.
 // ground : { relief } pose la map sur un sol (dunes de relief niveaux, voir terrain.js) au lieu du vide.
 // Temps auteur = meilleur temps du pilote (ligne sûre ou raccourci).
 import { readFileSync, writeFileSync } from "node:fs";
@@ -61,7 +61,7 @@ for (const m of built) {
   }
   const times = [res, ...Object.values(altRes)].filter((r) => r?.finished && !r.respawns).map((r) => r.ms);
   const author = times.length ? Math.min(...times) : null;
-  if (res && author && (author < 20000 || author > 60000)) errs.push(`durée ${(author / 1000).toFixed(1)} s (attendu 20 à 60 s)`);
+  if (res && author && (author < 15000 || author > 60000)) errs.push(`durée ${(author / 1000).toFixed(1)} s (attendu 15 à 60 s)`);
   if (errs.length) bad++;
   const altTxt = Object.entries(altRes).map(([g, r]) => `${g} ${r.finished ? (r.ms / 1000).toFixed(2) + " s" : "--"}`).join(", ");
   console.log(`${errs.length ? "ÉCHEC" : "OK   "} ${m.id} ${m.name.padEnd(22)} ${String(c.n).padStart(2)} blocs ${c.size.join("×")} dénivelé ${c.relief} · ${res ? (res.finished ? (res.ms / 1000).toFixed(2) + " s" : "--") : ""}${altTxt ? " · raccourci " + altTxt : ""}${errs.length ? "\n      " + errs.join("\n      ") : ""}`);

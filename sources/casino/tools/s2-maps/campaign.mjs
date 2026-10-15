@@ -121,4 +121,40 @@ export const MAPS = [
       B:level=2 kicker2:angle=16,len=2 _ _ _ Y Y Y !slopeg/d Sn/d !slopeg/d C !turnw:r=2/d bump:h=5/d Sb/d
       <A !turnw:r=2/d Sb/d bankx:r=2/d bankx:r=2/d Sb/d !turnw:r=2/d A> camber:angle=20/d C chicane/d F S`,
   },
+  // ---------- Monde 4 · Banquise (ice) ----------
+  {
+    name: "Patinoire", figure: "Serpentin de glace",
+    ground: { relief: 1 }, start: { x: 0, z: 0, d: 0, l: 0 },
+    slow: { P: 15, M: 15 }, altSlow: { A: { P: 40, M: 40 } },
+    path: `S B C #P X @f <A >L Sb/i turnw:r=2/i Sb/i turnw:r=2/i Sb/i A> #M X >L W C slopeg/i cliff C F S
+      =f {A Sn/i Sn/i bump:h=5/i _ Sn/i }`,
+  },
+  {
+    name: "Fjord", figure: "Descente verglacée et gué",
+    slow: { P: 15, M: 15 }, altSlow: { A: { P: 30, M: 30 } },
+    path: `S B Sn C slopeg/i slopeg/i bankx:r=2 Sb C revboost hairpin/i !slopeg/i !slopeg/i W W W C
+      turnw:r=2/i #P X @f <A >L Sb/i turn Sb/i Sb/i turn Sb/i A> #M X >L
+      Sb/i B:level=3 kicker2:angle=14 _ Y Y Sb/i turnw:r=3/i C Sn F S
+      =f {A Sn/i Sn/i }`,
+  },
+  {
+    name: "Glacier", figure: "Montée en lacets verglacés",
+    ground: { relief: 3 }, start: { x: 0, z: 0, d: 0, l: 0 },
+    path: `S B Sb/i C slopeg/i hairpin/i slopeg/i !hairpin/i cliff C Sb/i B:level=2 kicker2:angle=16,len=2 _ _ _ Y Y Y !slopeg/i
+      W W Sn C <A turnw:r=2/i Sb turnw:r=2/i Sb/i !turnw:r=2/i A> revboost !turnw:r=2/i Sb/i C bump:h=3/i F S`,
+  },
+  {
+    name: "Iceberg", figure: "Épingle de glace après le booster inversé",
+    slow: { P: 15, M: 15 }, altSlow: { A: { P: 50, M: 25 } },
+    path: `S B C revboost hairpin/i W !steep/i C #P X @f <A >L Sb/i turn !cliff Sn/i turn Sb/i A> #M X >L
+      cliff C F S
+      =f {A Sn/i !cliff/i }`,
+  },
+  {
+    name: "Blizzard", figure: "Épingles de glace et grand saut au-dessus du lac",
+    ground: { relief: 4 }, start: { x: 0, z: 0, d: 0, l: 0 },
+    path: `S B Sn C slopeg/i hairpin/i Sb/i slopeg/i hairpin/i Sb cliff C turnw:r=2/i
+      B:level=3 kicker2:angle=14,len=2 _ _ Y Y Y !slopeg/i W Sb W C
+      <A turnw:r=2/i Sn/i !turnw:r=2/i !turnw:r=2/i Sn/i turnw:r=2/i A> revboost camber:angle=20,side=1/i !hairpin/i bump:h=3/i C Sn F S`,
+  },
 ];
