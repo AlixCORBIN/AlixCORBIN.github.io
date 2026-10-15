@@ -1,7 +1,8 @@
 // Campagne de la saison 2 : 5 mondes × 5 maps (notation : voir lib.mjs). L'ordre de la liste donne s2-01 … s2-25 ;
 // le monde vient de la position (5 maps par monde, mondes S2 de physics.js : Atelier, Stratosphère, Mesa rouge, Banquise, Archipel).
 // figure = figure signature ; slow = { étiquette : vitesse max du pilote auto (m/s) } ; altSlow = idem pour un raccourci ;
-// ground = { relief } : map posée sur un sol (dunes de relief niveaux, 0 = plat) au lieu du vide.
+// ground = { relief } : map posée sur un sol (dunes de relief niveaux, 0 = plat) au lieu du vide ;
+// gates = true : le pilote auto règle sa vitesse sur les barrières cycliques (sinon il fonce dedans, comme en monde 1).
 export const MAPS = [
   // ---------- Monde 1 · Atelier (tech) ----------
   {
@@ -156,5 +157,40 @@ export const MAPS = [
     path: `S B Sn C slopeg/i hairpin/i Sb/i slopeg/i hairpin/i Sb cliff C turnw:r=2/i
       B:level=3 kicker2:angle=14,len=2 _ _ Y Y Y !slopeg/i W Sb W C
       <A turnw:r=2/i Sn/i !turnw:r=2/i !turnw:r=2/i Sn/i turnw:r=2/i A> revboost camber:angle=20,side=1/i !hairpin/i bump:h=3/i C Sn F S`,
+  },
+  // ---------- Monde 5 · Archipel (mixte aérien) : maps courtes, une mécanique par map ----------
+  {
+    name: "Passeur", figure: "Deux bacs mobiles au-dessus du vide", start: { x: 2, z: 16, d: 0, l: 6 },
+    slow: { P: 14, M: 14, H: 12, H2: 12 }, altSlow: { A: { P: 70, M: 25 } },
+    path: `S B C #P X @f <A >R #H Sn lift:dist=1,period=400 _ Sb !turn #H2 Sn lift:dist=2,period=500 _ _ A> #M X >R Sb C
+      rail Sn !cliff B:level=2 kicker2:angle=12 _ Y C Sn F S
+      =f {A B:level=3 K:angle=14 _ Sb Sn turn S Sb S S turn }`,
+  },
+  {
+    name: "Aiguillage", figure: "Interrupteur caché et téléporteur de retour", start: { x: 2, z: 14, d: 0, l: 7 }, gates: true,
+    slow: { P: 13 }, altSlow: { A: { P: 70 } },
+    path: `S B Sn C #P X @f <A >R switch:id=1 Sb !cliff/i hairpin B Sb teleport:pair=1,role=0 A>
+      =f {A K:angle=26 } teleport:pair=1,role=1 door:id=1 Sb C turn B crate:minSpeed=110 Sn !bankx:r=2 gate:period=240,closed=80 Sb
+      turnw:r=2 slopeg Cf:minSpeed=120 F S`,
+  },
+  {
+    name: "Distorsion", figure: "Téléporteurs qui gardent la vitesse", start: { x: 4, z: 20, d: 0, l: 8 },
+    path: `S B C !cliff Sb C teleport:pair=1,role=0
+      ~10,6,2,3 teleport:pair=1,role=1 K:angle=14 _ Y <A Sb !turn B Sn teleport:pair=2,role=0 A>
+      ~17,12,3,9 teleport:pair=2,role=1 Sb !cliff turnw:r=2 Cf:minSpeed=130 B !slopeg F S
+      ~10,11,2,1 {A teleport:pair=3,role=0 ~18,12,3,9 teleport:pair=3,role=1 }`,
+  },
+  {
+    name: "Funambule", figure: "Rails en zigzag au-dessus du vide", start: { x: 2, z: 16, d: 0, l: 7 },
+    slow: { T: 14 }, altSlow: { A: { T: 14 } },
+    path: `S B Sn C rail turn rail !turn B:level=3 rail crate:minSpeed=120 Sb C
+      <A turn #T !cliff Sn !turn !cliff/i !turn Sb Sb turn A> Sb !slopeg B:level=2 Cf:minSpeed=110 F S`,
+  },
+  {
+    name: "Apesanteur", figure: "Boucle à gravité de piste", start: { x: 4, z: 18, d: 0, l: 6 },
+    slow: { P: 14, M: 14 }, altSlow: { A: { P: 80, M: 30 } },
+    path: `S B C gravity Sb !turn halftube:side=1 Sn C #P X @f <A >R teleport:pair=1,role=0
+      ~-9,6,2,9 teleport:pair=1,role=1 rail Sb !cliff/i !cliff A> #M X !slopeg Cf:minSpeed=120 F S
+      =f {A B:level=3 crate:minSpeed=190 Sb B !cliff Sn }`,
   },
 ];

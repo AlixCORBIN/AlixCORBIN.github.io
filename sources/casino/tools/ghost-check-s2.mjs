@@ -92,8 +92,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const drafts = readdirSync(dir).filter((f) => /^s2-\d+\.json$/.test(f)).sort().map((f) => JSON.parse(readFileSync(new URL(f, dir), "utf8")))
     .filter((m) => !only || m.id === only);
   // une entrée par ligne de pilote : principale, puis chaque raccourci
-  const runs = drafts.flatMap((m) => [{ ...m, hints: { order: m.hints?.main, slow: m.hints?.slow } },
-    ...Object.entries(m.hints?.alts || {}).map(([g, order]) => ({ ...m, id: `${m.id}/${g}`, hints: { order, slow: m.hints?.altSlow?.[g] ?? m.hints?.slow } }))]);
+  const runs = drafts.flatMap((m) => [{ ...m, hints: { order: m.hints?.main, slow: m.hints?.slow, gates: m.hints?.gates } },
+    ...Object.entries(m.hints?.alts || {}).map(([g, order]) => ({ ...m, id: `${m.id}/${g}`, hints: { order, slow: m.hints?.altSlow?.[g] ?? m.hints?.slow, gates: m.hints?.gates } }))]);
   let refused = 0;
   for (const m of [...runs, ...(only ? [] : EXTRA)]) {
     const track = new Track(m.data);

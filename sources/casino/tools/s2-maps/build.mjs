@@ -49,11 +49,11 @@ for (const m of built) {
   let res = null, altRes = {};
   if (!args.includes("--nobot")) {
     const world = P.WORLDS[m.world];
-    res = await botRun(c.track, world, { maxSteps: 100 * 90, hints: { order: main, slow }, trace: args.includes("--trace") });
+    res = await botRun(c.track, world, { maxSteps: 100 * 90, hints: { order: main, slow, gates: m.gates }, trace: args.includes("--trace") });
     if (!res.finished) errs.push(`pilote pas arrivé (ligne ${res.idx}/${res.len}, ${res.respawns} chutes)`);
     else if (res.respawns) errs.push(`pilote : ${res.respawns} chute(s)`);
     for (const [g, order] of Object.entries(alts)) {
-      const r = await botRun(c.track, world, { maxSteps: 100 * 90, hints: { order, slow: { ...slow, ...lab(m.altSlow?.[g]) } }, trace: args.includes("--trace-alt") });
+      const r = await botRun(c.track, world, { maxSteps: 100 * 90, hints: { order, slow: { ...slow, ...lab(m.altSlow?.[g]) }, gates: m.gates }, trace: args.includes("--trace-alt") });
       altRes[g] = r;
       if (!r.finished || r.respawns) errs.push(`raccourci ${g} : ${r.finished ? r.respawns + " chute(s)" : `pas arrivé (ligne ${r.idx}/${r.len})`}`);
     }
@@ -69,7 +69,7 @@ for (const m of built) {
   if (!args.includes("--nobot")) {
     const file = new URL(`./${m.id}.json`, import.meta.url);
     const altSlow = Object.fromEntries(Object.keys(alts).map((g) => [g, { ...slow, ...lab(m.altSlow?.[g]) }]));
-    const out = { id: m.id, name: m.name, world: m.world, figure: m.figure, author_ms: author, data: c.data, hints: { main, alts, slow, altSlow } };
+    const out = { id: m.id, name: m.name, world: m.world, figure: m.figure, author_ms: author, data: c.data, hints: { main, alts, slow, altSlow, ...(m.gates ? { gates: true } : {}) } };
     writeFileSync(file, JSON.stringify(out));
   }
 }

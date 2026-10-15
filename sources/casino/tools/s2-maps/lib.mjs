@@ -11,6 +11,7 @@
 //   {A … }   blocs du raccourci A (ignorés par le pilote principal, suivis par le pilote « raccourci »)
 //   >R / >L  sort de la dernière plateforme posée par son côté droit / gauche
 //   #nom     étiquette du bloc suivant (pour les consignes de vitesse du pilote : slow: { nom: m/s })
+//   ~x,z,d,l  place la suite ailleurs (case x,z, direction d, niveau l) : sortie de téléporteur
 import { BLOCKS, LEVEL_H, TILE, occupancy, placeFrom, resolveType, sampleBlock, sectionPoints, toWorld } from "../../src/games/racing/blocks.js";
 import { Track, normalizeTiles, overlaps } from "../../src/games/racing/track.js";
 
@@ -59,6 +60,7 @@ export function build(src, { start = { x: 0, z: 0, d: 0, l: 4 } } = {}) {
     if (/^\{[A-Z]$/.test(tok)) { alt = tok[1]; continue; }
     if (tok === "}") { alt = null; continue; }
     if (tok.startsWith("#")) { pending.push(tok.slice(1)); continue; }
+    if (tok.startsWith("~")) { const [x, z, d, l] = tok.slice(1).split(",").map(Number); st = { x, z, d, l }; continue; }
     if (tok === ">R" || tok === ">L") {
       // sortie latérale d'une plateforme : la case voisine à droite / à gauche, dans cette direction
       const d = (last.d + (tok === ">R" ? 1 : 3)) & 3;
