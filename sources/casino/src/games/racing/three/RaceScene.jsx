@@ -66,12 +66,13 @@ function Ghost({ data, color, session }) {
 
 const tmpV = new THREE.Vector3();
 const tmpUp = new THREE.Vector3();
+const tmpV2 = new THREE.Vector3();
 const WHEEL_Y = -0.05;
 
 function PlayerCar({ session, color, hudRef }) {
   const car = React.useMemo(() => buildCar(color), [color]);
   const { camera } = useThree();
-  const cam = React.useRef({ init: false, dir: new THREE.Vector3(0, 0, -1), up: new THREE.Vector3(0, 1, 0), pos: new THREE.Vector3(), look: new THREE.Vector3() });
+  const cam = React.useRef({ init: false, dir: new THREE.Vector3(0, 0, -1), up: new THREE.Vector3(0, 1, 0), pos: new THREE.Vector3(), look: new THREE.Vector3(), last: new THREE.Vector3() });
   useFrame((_s, dt) => {
     session.update(dt, readInput());
     const c = session.car;
@@ -93,7 +94,10 @@ function PlayerCar({ session, color, hudRef }) {
     // la caméra suit le haut de la voiture dans les loopings et sur les murs, sinon garde le ciel en haut
     const steep = c.contacts > 0 && fr.up[1] < 0.8;
     tmpUp.set(...(steep ? fr.up : [0, 1, 0]));
-    if (!k.init || session.phase === "countdown") {
+    // saut de position (téléporteur, réapparition) : caméra replacée d'un coup derrière la voiture
+    const jump = k.init && k.last.distanceToSquared(tmpV2.set(t.x, t.y, t.z)) > 20 * 20;
+    k.last.set(t.x, t.y, t.z);
+    if (!k.init || jump || session.phase === "countdown") {
       k.dir.copy(fwd); k.up.set(0, 1, 0); k.init = true;
     } else {
       k.dir.lerp(fwd, Math.min(1, dt * 6)).normalize();
@@ -102,7 +106,7 @@ function PlayerCar({ session, color, hudRef }) {
     const sp = c.speed;
     const back = 9 + Math.min(sp, 100) * 0.04, upOff = 3.6 + Math.min(sp, 100) * 0.01;
     const target = new THREE.Vector3(t.x, t.y, t.z).addScaledVector(k.dir, -back).addScaledVector(k.up, upOff);
-    if (session.phase === "countdown" || k.pos.distanceTo(target) > 60) k.pos.copy(target);
+    if (jump || session.phase === "countdown" || k.pos.distanceTo(target) > 60) k.pos.copy(target);
     else k.pos.lerp(target, Math.min(1, dt * 10));
     camera.position.copy(k.pos);
     camera.up.copy(k.up);
