@@ -57,6 +57,8 @@ export function createAccount(createClient) {
         signIn: (email, password) => wrap(sb.auth.signInWithPassword({ email, password })),
         signUp: (email, password) => wrap(sb.auth.signUp({ email, password, options: { emailRedirectTo: here() } })),
         google: () => wrap(sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: here() } })),
+        // Rattache Discord au compte en cours (compte anonyme du Casino compris), sans en créer un autre
+        linkDiscord: () => wrap(sb.auth.linkIdentity({ provider: 'discord', options: { redirectTo: here() } })),
         resetPassword: (email) => wrap(sb.auth.resetPasswordForEmail(email, { redirectTo: here() })),
         updatePassword: async (password) => { const d = await wrap(sb.auth.updateUser({ password })); recovering = false; return d; },
         signOut: () => wrap(sb.auth.signOut()),

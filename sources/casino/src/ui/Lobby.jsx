@@ -5,6 +5,7 @@ import { GAME_INFO, watchRooms } from "../net/rooms.js";
 import { loadPlayMii } from "../lib/mii.js";
 import { setCanApply } from "../lib/cloudSave.js";
 import { MiiPicker } from "./MiiPicker.jsx";
+import { TournoiBox } from "./TournoiBox.jsx";
 import "../styles/rooms.css";
 import "../styles/lobby.css";
 
@@ -258,6 +259,7 @@ export function Lobby({ onStart }) {
               <button className="btn primary" disabled={code.trim().length < 5 || busy} onClick={() => start(null, "join")}>Rejoindre</button>
             </div>
           </div>
+          <TournoiBox />
           <div id="gchat-dock" className="c-box gchat-dock" />
           <div className="c-box pubbar">
             <button className={`switch ${isPublic ? "on" : ""}`} onClick={togglePub} aria-pressed={isPublic} aria-label="Salle publique"><i /></button>
