@@ -123,7 +123,8 @@ export const BLOCKS = {
   steep: { label: "Pente raide", path: slope(2, 1), n: 14, cat: "Relief" },
   hill: { label: "Montée longue", path: slope(3, 2), n: 20, cat: "Relief" },
   kicker: { label: "Tremplin", path: kicker, n: 10, dir: true, cat: "Relief" },
-  loop: { label: "Looping", path: loopPath(), n: 110, cat: "Figures" },
+  // noCcd : ne joue que sur les pistes suspendues de la saison 2 (voir stepRun), la saison 1 est inchangée
+  loop: { label: "Looping", path: loopPath(), n: 110, noCcd: true, cat: "Figures" },
   wall: { label: "Wallride", path: wallPath(), n: 48, cat: "Figures" },
   platform: { label: "Plateforme", path: straight, n: 2, width: TILE, cat: "Routes" },
 };

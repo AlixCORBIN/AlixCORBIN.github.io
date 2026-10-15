@@ -44,4 +44,46 @@ export const MAPS = [
       S hloop S Sn C turn Sb !cliff chicane S !bankx:angle=70,r=2 Sn slopeg whoops C !turn S !steep Sb F S
       =f {A Sb #K kicker2:angle=15 _ Y }`,
   },
+  // ---------- Monde 2 · Stratosphère (fullspeed) ----------
+  {
+    name: "Décollage", figure: "Long saut au turbo",
+    slow: { P: 16, M: 16 }, altSlow: { A: { P: 70 } },
+    path: `S B S turnw:r=2 slopeg C bankx:r=2 slopeg B:level=3 kicker2:angle=16,len=2 _ _ _ Y Y S C
+      !turnw:r=3 slopeg B slopeg #P X @f <A >L !cliff turnw:r=2 turn S Sb S A> #M X >L
+      B Sn bankx:r=2 !slopeg C S turnw:r=2 chicane B:level=1 Sb turnw:r=3 slopeg Sn bankx:r=1 S F S
+      =f {A cut }`,
+  },
+  {
+    name: "Jet-stream", figure: "Spirale relevée à 70°",
+    slow: { P: 18, M: 16 }, altSlow: { A: { P: 70 } },
+    path: `S B Sn slopeg C bankx:angle=70,r=2 slopeg bankx:angle=70,r=2 slopeg bankx:angle=70,r=2 slopeg bankx:angle=70,r=2
+      Sn C B:level=1 kicker2:angle=12 _ Y Sb S B:level=2 bump:h=3 Sn !turnw:r=2 #P X @f <A >R !bankx:r=1 !bankx:r=1 A> #M X >R
+      B Sn !slopeg C S Sb B:level=3 kicker2:angle=14 _ _ Y Y bare turnw:r=2 Sb F S
+      =f {A bump:h=6 _ }`,
+  },
+  {
+    name: "Cumulus", figure: "Loopings enchaînés au turbo",
+    slow: { P: 18, M: 16 }, altSlow: { A: { P: 70, J: 40 } },
+    path: `S B S loop B loop C Sb turnw:r=2 B jet:power=34 _ ^ ^ S C
+      bankx:r=2 slopeg #P X @f <A >L Sb turn steep Sn turn S A> #M X >L
+      B chicane !slopeg C bankx:angle=70,r=2 Sn B kicker2:angle=12,len=2 _ _ _ Y Y Y !slopeg !turnw:r=3 B:level=1 slopeg Sn bump:h=3 Sb F S
+      =f {A #J jet:power=38 _ }`,
+  },
+  {
+    name: "Tropopause", figure: "Escalier de réacteurs",
+    slow: { P: 16, M: 16 }, altSlow: { A: { P: 34, M: 30 } },
+    path: `S B Sn jet:power=34 _ ^ ^ Sb jet:power=34 _ ^ ^ C turnw:r=2 B:level=1 jet:power=34 _ ^ ^ S C
+      bump:h=2 #P X @f <A >R S !turn !steep Sb !turn S A> #M X >R
+      B Sn bankx:angle=70,r=3 B:level=3 kicker2:angle=13,len=2 _ _ _ Y Y Y !slopeg Sn chicane:side=1
+      bankx:angle=70,r=2 Sb !cliff C B cpfast:minSpeed=140 jet:power=30 _ ^ Sn !turnw:r=3 Sb F S
+      =f {A Sn !steep }`,
+  },
+  {
+    name: "Mur du son", figure: "Triple looping au turbo",
+    slow: { P: 16, M: 16 }, altSlow: { A: { P: 60 } },
+    path: `S B Sn loop B:level=1 loop B:level=1 loop C bankx:angle=70,r=2 B jet:power=40 _ ^ ^ ^ Sn C
+      bankx:angle=70,r=2 slopeg Sb #P X @f <A >R S !turn S !slopeg !turn S A> #M X >R
+      B cpfast:minSpeed=150 Sn B:level=3 kicker2:angle=16,len=2 _ _ _ Y Y !slopeg C bankx:angle=70,r=2 chicane Sn F S
+      =f {A Sn bump:h=5 _ Y }`,
+  },
 ];
