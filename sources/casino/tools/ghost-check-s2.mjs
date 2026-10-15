@@ -14,7 +14,7 @@ import { replay } from "../src/server/replay.js";
 import { botRun } from "./bot-run.mjs";
 
 // Seuils de la saison 1 (identiques à la base) et ajustements saison 2 (meta.v = 2) : voir la migration
-export const S1 = { jump: 4.6, near: 12, offD2: 3600, offPct: 0.15, start: 25, finish: 30, cp: 22 };
+export const S1 = { jump: 4.6, near: 12, start: 25, finish: 30, cp: 22 };
 // Saison 2 : vitesse terminale mesurée avec des turbos niveau 3 en série = 5,6 u / 50 ms (112 u/s), y compris après
 // un tremplin 35° × 2 ou une chute de 12 niveaux -> seuil 6,0 u (120 u/s). Les autres seuils sont inchangés.
 export const S2 = { ...S1, jump: 6.0 };
@@ -38,14 +38,7 @@ export function ghostProblem(meta, time, g) {
     }
   }
   if (!meta) return null;
-  let off = 0, checked = 0;
-  for (let i = 0; i < n; i += 3) {
-    let best = Infinity;
-    for (const l of meta.line) best = Math.min(best, (G[i][0] - l[0]) ** 2 + (G[i][1] - l[1]) ** 2 + (G[i][2] - l[2]) ** 2);
-    checked++;
-    if (best > T.offD2) off++;
-  }
-  if (off > checked * T.offPct) return `hors piste (${off}/${checked})`;
+  // hors-piste permis (supabase/racing-hors-piste.sql) : seules les fausses données sont refusées
   if (d3(G[0], meta.start) > T.start) return "mauvais départ";
   if (!meta.finish.some((f) => d3(G[n - 1], f) < T.finish)) return "arrivée non atteinte";
   for (const c of meta.cps) if (!G.some((p) => d3(p, c) < T.cp)) return "checkpoint manqué";
