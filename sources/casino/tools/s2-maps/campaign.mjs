@@ -163,7 +163,7 @@ export const MAPS = [
     name: "Passeur", figure: "Deux bacs mobiles au-dessus du vide", start: { x: 2, z: 16, d: 0, l: 6 },
     slow: { P: 14, M: 14, H: 12, H2: 12 }, altSlow: { A: { P: 70, M: 25 } },
     path: `S B C #P X @f <A >R #H Sn lift:dist=1,period=400 _ Sb !turn #H2 Sn lift:dist=2,period=500 _ _ A> #M X >R Sb C
-      rail Sn !cliff B:level=2 kicker2:angle=12 _ Y C Sn F S
+      Sn/i Sn !cliff B:level=2 kicker2:angle=12 _ Y C Sn F S
       =f {A B:level=3 K:angle=14 _ Sb Sn turn S Sb S S turn }`,
   },
   {
@@ -181,16 +181,16 @@ export const MAPS = [
       ~10,11,2,1 {A teleport:pair=3,role=0 ~18,12,3,9 teleport:pair=3,role=1 }`,
   },
   {
-    name: "Funambule", figure: "Rails en zigzag au-dessus du vide", start: { x: 2, z: 16, d: 0, l: 7 },
+    name: "Funambule", figure: "Planches de glace en zigzag au-dessus du vide", start: { x: 2, z: 16, d: 0, l: 7 },
     slow: { T: 14 }, altSlow: { A: { T: 14 } },
-    path: `S B Sn C rail turn rail !turn B:level=3 rail crate:minSpeed=120 Sb C
+    path: `S B Sn C Sn/i turn Sn/i !turn B:level=3 Sn/i crate:minSpeed=120 Sb C
       <A turn #T !cliff Sn !turn !cliff/i !turn Sb Sb turn A> Sb !slopeg B:level=2 Cf:minSpeed=110 F S`,
   },
   {
     name: "Apesanteur", figure: "Boucle à gravité de piste", start: { x: 4, z: 18, d: 0, l: 6 },
     slow: { P: 14, M: 14 }, altSlow: { A: { P: 80, M: 30 } },
     path: `S B C gravity Sb !turn halftube:side=1 Sn C #P X @f <A >R teleport:pair=1,role=0
-      ~-9,6,2,9 teleport:pair=1,role=1 rail Sb !cliff/i !cliff A> #M X !slopeg Cf:minSpeed=120 F S
+      ~-9,6,2,9 teleport:pair=1,role=1 Sn/i Sb !cliff/i !cliff A> #M X !slopeg Cf:minSpeed=120 F S
       =f {A B:level=3 crate:minSpeed=190 Sb B !cliff Sn }`,
   },
 ];
