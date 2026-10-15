@@ -1,7 +1,8 @@
 // Construit la piste en three.js pur (un Group), à partir d'un Track. Matériaux partagés par monde.
 import * as THREE from "three";
 import { BLOCKS, TILE, occupancy, param, sampleBlock, sectionPoints, tileSurface, toWorld } from "../blocks.js";
-import { crateKey, gateClosed, liftPhase, switchKey } from "../physics.js";
+import { crateKey, gateClosed, liftPhase, skirtTriangles, switchKey } from "../physics.js";
+import { terrainOf } from "../terrain.js";
 
 const DECK = 1.2; // épaisseur visuelle de la chaussée
 
@@ -316,6 +317,8 @@ export function buildTrackGroup(track, world) {
   const anim = [];
   root.userData.anim = anim;
   const pillars = [];
+  const terrain = world.season === 2 ? terrainOf(track) : null;
+  const floorAt = (x, z) => (terrain ? terrain.at(x, z) : -0.3);
   for (const t of track.tiles) {
     const def = BLOCKS[t.type];
     if (def.season || def.base) decorS2(t, def, mats, root, anim);
@@ -332,13 +335,14 @@ export function buildTrackGroup(track, world) {
     }
     if (def.gate) root.add(gate(def.fast ? "cpfast" : def.gate, mats, frameOf(t, 0.5), def.gate === "start"));
     // piliers sous les parties à peu près horizontales et en hauteur
-    if (t.type !== "loop" && t.type !== "wall" && !world.void) {
+    if (t.type !== "loop" && t.type !== "wall" && (!world.void || terrain)) {
       const S = sampleBlock(t.type);
       const step = Math.max(1, Math.round(S.length / 3));
       for (let i = Math.floor(step / 2); i < S.length; i += step) {
         const f = S[i];
         const p = toWorld(t, f.p);
-        if (p[1] > 2 && f.u[1] > 0.85) pillars.push([p[0], p[1] - DECK, p[2]]);
+        const y0 = floorAt(p[0], p[2]);
+        if (p[1] - y0 > 2 && f.u[1] > 0.85) pillars.push([p[0], p[1] - DECK, p[2], y0]);
       }
     }
   }
@@ -347,10 +351,64 @@ export function buildTrackGroup(track, world) {
     geo.translate(0, 0.5, 0);
     const inst = new THREE.InstancedMesh(geo, mats.pillar, pillars.length);
     const m4 = new THREE.Matrix4();
-    pillars.forEach(([x, y, z], i) => inst.setMatrixAt(i, m4.makeScale(1, y + 0.3, 1).setPosition(x, -0.3, z)));
+    pillars.forEach(([x, y, z, y0], i) => inst.setMatrixAt(i, m4.makeScale(1, y - y0, 1).setPosition(x, y0, z)));
     root.add(inst);
   }
   return root;
+}
+
+// Sol des maps de la saison 2 (terrain.js) : relief en dunes, couleurs du monde, et plaine tout autour
+const GROUND_COLORS = {
+  s2tech: ["#59616c", "#7d8794"], s2speed: ["#c9d8ee", "#f4f8ff"], s2dirt: ["#b9612f", "#eaa25c"],
+  s2ice: ["#cfe3f2", "#ffffff"], s2air: ["#2b5f34", "#5aa45e"],
+};
+export function buildTerrain(track, world) {
+  const T = terrainOf(track);
+  if (!T) return null;
+  const [lo, hi] = (GROUND_COLORS[world.id] || ["#4f9a3c", "#6fbf55"]).map((c) => new THREE.Color(c));
+  const D = T.nz + 1, n = (T.nx + 1) * D;
+  const pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+  const top = Math.max(8, T.relief * 8), c = new THREE.Color();
+  for (let i = 0; i <= T.nx; i++) {
+    for (let j = 0; j <= T.nz; j++) {
+      const k = i * D + j, y = T.heights[k];
+      pos.set([T.x0 + i * T.step, y, T.z0 + j * T.step], k * 3);
+      const grain = ((Math.sin(i * 12.9898 + j * 78.233) * 43758.5453) % 1 + 1) % 1;
+      c.copy(lo).lerp(hi, Math.max(0, Math.min(1, y / top * 0.85 + grain * 0.15)));
+      col.set([c.r, c.g, c.b], k * 3);
+    }
+  }
+  const idx = [];
+  for (let i = 0; i < T.nx; i++) {
+    for (let j = 0; j < T.nz; j++) {
+      const a = i * D + j, b = a + D;
+      idx.push(a, a + 1, b, b, a + 1, b + 1);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  const group = new THREE.Group();
+  group.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, flatShading: world.id === "s2dirt" || world.id === "s2ice" })));
+  // accotements (talus le long des routes posées au sol), les mêmes que dans la physique
+  const skirtMat = new THREE.MeshStandardMaterial({ color: lo.clone().lerp(hi, 0.35), roughness: 1, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
+  for (const t of track.tiles) {
+    if (BLOCKS[t.type].mech === "lift" || BLOCKS[t.type].figure) continue;
+    const sk = skirtTriangles(t, T);
+    if (!sk) continue;
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(sk.verts, 3));
+    g.setIndex(Array.from(sk.idx).filter((_, i) => i % 12 < 6)); // une seule face par quad (la physique a les deux)
+    g.computeVertexNormals();
+    group.add(new THREE.Mesh(g, skirtMat));
+  }
+  const plain = new THREE.Mesh(new THREE.PlaneGeometry(6000, 6000), new THREE.MeshStandardMaterial({ color: lo, roughness: 1 }));
+  plain.rotation.x = -Math.PI / 2;
+  plain.position.set(T.x0 + (T.nx * T.step) / 2, -0.4, T.z0 + (T.nz * T.step) / 2);
+  group.add(plain);
+  return group;
 }
 
 // Mondes suspendus de la saison 2 : rien de praticable sous la piste, seulement un décor lointain bien plus bas
@@ -414,7 +472,8 @@ function buildVoidDecor(track, world, seed) {
 
 // Décor dispersé autour de la piste (arbres, rochers, néons…), en instances
 export function buildDecor(track, world, seed = 1) {
-  if (world.void) return buildVoidDecor(track, world, seed);
+  const terrain = world.season === 2 ? terrainOf(track) : null;
+  if (world.void && !terrain) return buildVoidDecor(track, world, seed);
   const [w, h] = track.size;
   let s = seed * 9301 + 49297;
   const rnd = () => ((s = (s * 9301 + 49297) % 233280) / 233280);
@@ -431,7 +490,8 @@ export function buildDecor(track, world, seed = 1) {
     if (!near) spots.push([x, z, 0.7 + rnd() * 0.8, rnd() * 6.28]);
   }
   const group = new THREE.Group();
-  const kind = world.id;
+  // maps au sol de la saison 2 : décor du monde de la saison 1 le plus proche, posé sur le relief
+  const kind = terrain ? { s2dirt: "desert", s2ice: "snow", s2air: "forest", s2tech: "s2tech", s2speed: "s2speed" }[world.id] : world.id;
   let geo, mat, trunk = null;
   if (kind === "forest" || kind === "snow") {
     geo = new THREE.ConeGeometry(4, 14, 7);
@@ -457,11 +517,25 @@ export function buildDecor(track, world, seed = 1) {
   const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), sc = new THREE.Vector3(), p = new THREE.Vector3();
   spots.forEach(([x, z, k, r], i) => {
     q.setFromEuler(e.set(0, r, 0));
-    m4.compose(p.set(x, 0, z), q, sc.set(k, k, k));
+    m4.compose(p.set(x, terrain ? terrain.at(x, z) - 0.5 : 0, z), q, sc.set(k, k, k));
     inst.setMatrixAt(i, m4);
     trunks?.setMatrixAt(i, m4);
   });
   group.add(inst);
   if (trunks) group.add(trunks);
+  if (terrain && world.id === "s2dirt") {
+    // buttes rouges à l'horizon (Mesa)
+    const mesa = new THREE.CylinderGeometry(70, 95, 110, 8);
+    mesa.translate(0, 55, 0);
+    const n = 18, far = new THREE.InstancedMesh(mesa, new THREE.MeshStandardMaterial({ color: "#a8492a", flatShading: true, roughness: 1 }), n);
+    const cx = (w * TILE) / 2, cz = (h * TILE) / 2;
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + rnd() * 0.3, r = Math.max(w, h) * TILE * 0.5 + 420 + rnd() * 500;
+      q.setFromEuler(e.set(0, rnd() * 6.28, 0));
+      m4.compose(p.set(cx + Math.cos(a) * r, -1, cz + Math.sin(a) * r), q, sc.set(0.7 + rnd(), 0.6 + rnd() * 1.2, 0.7 + rnd()));
+      far.setMatrixAt(i, m4);
+    }
+    group.add(far);
+  }
   return group;
 }

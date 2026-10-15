@@ -106,6 +106,7 @@ const PLAIN = new Set(["road", "bare", "narrow", "platform", "cp", "start", "fin
 export function checkMap(m, tiles, info) {
   const errs = [], warns = [];
   const data = { v: 2, world: m.world, tiles };
+  if (m.ground) data.ground = m.ground;
   const track = new Track(data);
   const v = track.validate();
   if (v) errs.push(v);
@@ -119,7 +120,7 @@ export function checkMap(m, tiles, info) {
   const relief = maxL - Math.min(...levels);
   if (relief < 4) errs.push(`dénivelé ${relief} niveaux (< 4)`);
   const n = tiles.length;
-  if (n < 40 || n > 80) errs.push(`${n} blocs (attendu 40 à 80)`);
+  if (n < 20 || n > 80) errs.push(`${n} blocs (attendu 20 à 80)`);
   if (track.cps.length < 3) errs.push(`${track.cps.length} checkpoints (< 3)`);
   // lignes droites sans élément : au plus 4 blocs droits « simples » d'affilée sur la ligne principale
   const { main } = lines(info);

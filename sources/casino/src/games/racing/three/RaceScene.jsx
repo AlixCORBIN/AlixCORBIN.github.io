@@ -6,16 +6,19 @@ import { TILE } from "../track.js";
 import { carFrame, ghostPose } from "../physics.js";
 import { readInput } from "../input.js";
 import { buildCar } from "./CarModel.js";
-import { buildDecor, buildTrackGroup } from "./buildTrack.js";
+import { buildDecor, buildTerrain, buildTrackGroup } from "./buildTrack.js";
 
 function Environment({ track, world, fog = true, session = null }) {
   const { scene } = useThree();
   const [w, h] = track.size;
+  // maps de la saison 2 posées sur un sol (terrain.js) : relief au lieu du vide
+  const terrain = React.useMemo(() => (world.season === 2 ? buildTerrain(track, world) : null), [track, world]);
+  const open = world.void && !terrain;
   React.useEffect(() => {
     scene.background = new THREE.Color(world.sky);
-    scene.fog = fog ? new THREE.Fog(world.fog, world.void ? 160 : 120, world.void ? 1100 : world.night ? 520 : 760) : null;
+    scene.fog = fog ? new THREE.Fog(world.fog, open ? 160 : 120, open ? 1100 : world.night ? 520 : 760) : null;
     return () => { scene.fog = null; };
-  }, [world, scene, fog]);
+  }, [world, scene, fog, open]);
   const trackObj = React.useMemo(() => buildTrackGroup(track, world), [track, world]);
   const decor = React.useMemo(() => buildDecor(track, world, track.tiles.length), [track, world]);
   // éléments mobiles de la saison 2 (plateformes, barrières, portes, caisses) : fonction du pas de la course
@@ -30,6 +33,7 @@ function Environment({ track, world, fog = true, session = null }) {
     <>
       <hemisphereLight args={[world.night ? "#6a5cff" : "#ffffff", world.ground, world.night ? 0.7 : 1.1]} />
       <directionalLight position={[cx + 200, 320, cz + 120]} intensity={world.night ? 0.5 : 1.6} />
+      {terrain && <primitive object={terrain} />}
       {!world.void && (
         <mesh rotation-x={-Math.PI / 2} position={[cx, -0.3, cz]}>
           <planeGeometry args={[4000, 4000]} />

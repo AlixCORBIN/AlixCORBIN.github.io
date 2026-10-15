@@ -2,6 +2,7 @@
 // Pas fixe de 1/100 s : 1 pas = 10 ms de chrono. Tout tourne hors de React.
 import RAPIER from "@dimforge/rapier3d-compat";
 import { BLOCKS, TILE, param, sampleBlock, sectionPoints, tileSurface, toWorld } from "./blocks.js";
+import { groundSurface, terrainOf } from "./terrain.js";
 
 export const DT = 1 / 100;
 const GHOST_TAG = -2;
@@ -39,6 +40,8 @@ const SURF = {
   oil: { side: 0.07, slip: 0.1 },
   water: { side: 0.75, slip: 0.8 },
   revboost: { side: 1, slip: 1 },
+  sand: { side: 0.5, slip: 0.55 }, // sol des maps de la saison 2 (terrain.js)
+  snow: { side: 0.4, slip: 0.45 },
 };
 // Eau : freinage proportionnel à la vitesse au-delà de WATER_V (m/s) : ralentit fortement, n'arrête jamais
 const WATER_V = 15, WATER_K = 0.6;
@@ -104,6 +107,32 @@ export function roadTriangles(tile, thickness = 0.6) {
     }
   }
   return { verts: new Float32Array([...top, ...bot]), idx: new Uint32Array(idx), top: n };
+}
+
+// Accotement d'une route posée au sol : talus qui descend de chaque bord jusqu'au terrain (pente 1/2, 3 u de large au
+// minimum), là où la chaussée est à peu près à plat et à moins de 6 u au-dessus du terrain (maps de la saison 2 avec sol,
+// voir terrain.js) : on remonte sur la piste depuis le sable, même sur une bosse
+export function skirtTriangles(tile, terrain) {
+  const S = sampleBlock(tile.type);
+  const verts = [], idx = [];
+  for (const side of [0, 1]) {
+    const row = S.map((f) => {
+      const sec = sectionPoints(tile.type, f);
+      const a = toWorld(tile, sec[side ? sec.length - 1 : 0]);
+      const r = toWorld(tile, f.r, true), l = Math.hypot(r[0], r[2]) || 1, k = side ? 1 : -1;
+      const drop = a[1] - terrain.at(a[0], a[2]);
+      const w = 3 + 2 * Math.max(0, drop);
+      const bx = a[0] + (r[0] / l) * w * k, bz = a[2] + (r[2] / l) * w * k;
+      return { a, b: [bx, Math.min(a[1] - 0.6, terrain.at(bx, bz) - 0.3), bz], ok: f.u[1] > 0.9 && drop < 6 };
+    });
+    for (let i = 0; i < row.length - 1; i++) {
+      if (!row[i].ok || !row[i + 1].ok) continue;
+      const n = verts.length / 3;
+      verts.push(...row[i].a, ...row[i].b, ...row[i + 1].a, ...row[i + 1].b);
+      idx.push(n, n + 1, n + 2, n + 1, n + 3, n + 2, n, n + 2, n + 1, n + 1, n + 2, n + 3);
+    }
+  }
+  return idx.length ? { verts: new Float32Array(verts), idx: new Uint32Array(idx) } : null;
 }
 
 const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
@@ -235,10 +264,30 @@ export function createWorld(track) {
   const gravs = [];
   const jets = [];
   const assist = new Map(); // figures de la saison 2 (murs, looping horizontal) : la voiture est tenue sur la ligne
-  // sol (herbe) ; mondes de la saison 2 : pas de sol, la piste est suspendue au-dessus du vide
+  // sol (herbe) ; mondes de la saison 2 : piste suspendue au-dessus du vide, sauf les maps avec un sol (terrain.js)
   const [w, h] = track.size;
-  const voidWorld = !!WORLDS[track.data?.world]?.void;
-  if (!voidWorld) {
+  const wd = WORLDS[track.data?.world];
+  const s2 = wd?.season === 2;
+  const terrain = s2 ? terrainOf(track) : null;
+  const voidWorld = !!wd?.void && !terrain;
+  if (terrain) {
+    // grille de hauteurs (colonnes en x, rangées en z, stockage colonne par colonne), centrée sur la translation
+    const sx = terrain.nx * terrain.step, sz = terrain.nz * terrain.step;
+    const hf = world.createCollider(
+      RAPIER.ColliderDesc.heightfield(terrain.nz, terrain.nx, terrain.heights, { x: sx, y: 1, z: sz })
+        .setTranslation(terrain.x0 + sx / 2, 0, terrain.z0 + sz / 2).setFriction(0.8),
+    );
+    surfaceOf.set(hf.handle, groundSurface(wd));
+    // accotements : talus roulable de part et d'autre de la route quand elle est au niveau du sol (on remonte depuis le sable)
+    for (const t of track.tiles) {
+      if (BLOCKS[t.type].mech === "lift" || BLOCKS[t.type].figure) continue;
+      const sk = skirtTriangles(t, terrain);
+      if (!sk) continue;
+      const c = world.createCollider(RAPIER.ColliderDesc.trimesh(sk.verts, sk.idx).setFriction(1));
+      surfaceOf.set(c.handle, tileSurface(t));
+      tileOf.set(c.handle, t);
+    }
+  } else if (!voidWorld) {
     const ground = world.createCollider(
       RAPIER.ColliderDesc.cuboid(w * 16 + 2000, 1, h * 16 + 2000).setTranslation(w * 16, GRASS_Y - 1, h * 16).setFriction(0.8),
     );
@@ -284,7 +333,7 @@ export function createWorld(track) {
     }
     if (def.gravity) gravs.push({ pts: sampleBlock(t.type).map((s) => ({ p: toWorld(t, s.p), u: toWorld(t, s.u, true) })) });
   }
-  return { world, surfaceOf, tileOf, winds, mech, rails, gravs, jets, assist, fall: voidWorld ? fallMap(track) : null };
+  return { world, surfaceOf, tileOf, winds, mech, rails, gravs, jets, assist, s2, fall: voidWorld ? fallMap(track) : null };
 }
 
 // Vide (saison 2) : hauteur sous laquelle la voiture réapparaît au dernier checkpoint, par case.
@@ -594,7 +643,7 @@ export function stepRun(run, track, phys, car, world, input) {
   // Figures lourdes de la saison 2 (tubes, looping horizontal) : pas de détection continue des collisions tant que la
   // voiture roule dessus (elle y coûtait trop de calcul au rejeu serveur) ; partout ailleurs, et en l'air, elle reste
   // active comme en saison 1. Fonction de l'état de la voiture : rejeu identique.
-  if (phys.fall) {
+  if (phys.s2) {
     const ccd = !(car.contacts > 0 && car.groundTile && BLOCKS[car.groundTile.type].noCcd);
     if (ccd !== car.ccd) { car.body.enableCcd(ccd); car.ccd = ccd; }
   }

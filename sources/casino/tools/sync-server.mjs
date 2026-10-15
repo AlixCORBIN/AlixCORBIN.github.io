@@ -30,6 +30,7 @@ const TARGETS = {
     "server/replay.js",
     "games/racing/physics.js",
     "games/racing/blocks.js",
+    "games/racing/terrain.js",
     "games/racing/track.js",
     "games/racing/maps.js",
     "games/racing/author-times.js",

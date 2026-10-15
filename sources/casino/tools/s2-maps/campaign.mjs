@@ -1,6 +1,7 @@
 // Campagne de la saison 2 : 5 mondes × 5 maps (notation : voir lib.mjs). L'ordre de la liste donne s2-01 … s2-25 ;
 // le monde vient de la position (5 maps par monde, mondes S2 de physics.js : Atelier, Stratosphère, Mesa rouge, Banquise, Archipel).
-// figure = figure signature ; slow = { étiquette : vitesse max du pilote auto (m/s) } ; altSlow = idem pour un raccourci.
+// figure = figure signature ; slow = { étiquette : vitesse max du pilote auto (m/s) } ; altSlow = idem pour un raccourci ;
+// ground = { relief } : map posée sur un sol (dunes de relief niveaux, 0 = plat) au lieu du vide.
 export const MAPS = [
   // ---------- Monde 1 · Atelier (tech) ----------
   {
@@ -85,5 +86,39 @@ export const MAPS = [
       bankx:angle=70,r=2 slopeg Sb #P X @f <A >R S !turn S !slopeg !turn S A> #M X >R
       B cpfast:minSpeed=150 Sn B:level=3 kicker2:angle=16,len=2 _ _ _ Y Y !slopeg C bankx:angle=70,r=2 chicane Sn F S
       =f {A Sn bump:h=5 _ Y }`,
+  },
+  // ---------- Monde 3 · Mesa rouge (dirt) ----------
+  {
+    name: "Piste rouge", figure: "Bosses de terre",
+    ground: { relief: 1 }, start: { x: 0, z: 0, d: 0, l: 0 },
+    path: `S B Sb/d whoops/d C turnw:r=2/d Sb/d <A !turnw:r=2/d slopeg/d hairpin/d !slopeg/d !turnw:r=2/d A> Sb/d camber:angle=20,side=1/d C
+      slopeg/d bump:h=4/d slopeg/d cliff/d Sb/d C hairpin/d !cliff/d Sn/d !slopeg/d !slopeg/d F S`,
+  },
+  {
+    name: "Lacets", figure: "Lacets d'épingles en terre",
+    ground: { relief: 2 }, start: { x: 0, z: 0, d: 0, l: 0 },
+    path: `S B Sb/d C slopeg/d hairpin/d slopeg/d !hairpin/d slopeg/d hairpin/d cliff/d C
+      !turnw:r=2/d Sn/d camber:angle=20/d !cliff/d Sb/d !slopeg/d !slopeg/d C <A !turnw:r=2/d turnw:r=2/d Sb/d turnw:r=2/d !turnw:r=2/d A> bump:h=4/d Sb/d F S`,
+  },
+  {
+    name: "Dunes", figure: "Saut par-dessus la dune",
+    ground: { relief: 4 }, start: { x: 0, z: 0, d: 0, l: 0 },
+    slow: { T: 16 }, altSlow: { A: { T: 60 } },
+    path: `S B Sn/d C turnw:r=2/d slopeg/d slopeg/d B:level=2 kicker2:angle=18,len=2 _ _ _ Y Y !slopeg/d Sb/d C
+      !turnw:r=2/d cliff/d Sb/d slopeg/d Sb/d #T cut/d <A !turn !cliff/d turn turn Sb/d !turn A> Sb/d whoops/d C turnw:r=3/d bump:h=3/d Sb/d F S`,
+  },
+  {
+    name: "Corniche", figure: "Dévers en terre au-dessus du vide",
+    slow: { P: 15, M: 15 }, altSlow: { A: { P: 22, M: 22 } },
+    path: `S B Sn/d C turnw:r=2/d camber:angle=20/d Sb/d camber:angle=20,side=1/d slopeg/d #P X @f <A >R Sb/d !turn whoops/d !turn Sb/d A> #M X >R
+      Sb/d C !hairpin/d slopeg/d slopeg/d camber:angle=30/d B:level=1 !cliff/d C turnw:r=2/d whoops/d !slopeg/d F S
+      =f {A camber:angle=30/d }`,
+  },
+  {
+    name: "Grand rallye", figure: "Épingle, saut et dévers enchaînés",
+    ground: { relief: 3 }, start: { x: 0, z: 0, d: 0, l: 0 },
+    path: `S B Sb/d whoops/d C turnw:r=2/d slopeg/d Sb/d slopeg/d cliff/d C hairpin/d Sn/d camber:angle=25,side=1/d
+      B:level=2 kicker2:angle=16,len=2 _ _ _ Y Y Y !slopeg/d Sn/d !slopeg/d C !turnw:r=2/d bump:h=5/d Sb/d
+      <A !turnw:r=2/d Sb/d bankx:r=2/d bankx:r=2/d Sb/d !turnw:r=2/d A> camber:angle=20/d C chicane/d F S`,
   },
 ];
