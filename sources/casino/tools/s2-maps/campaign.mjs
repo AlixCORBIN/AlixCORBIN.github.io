@@ -124,11 +124,9 @@ export const MAPS = [
   },
   // ---------- Monde 4 · Banquise (ice) ----------
   {
-    name: "Patinoire", figure: "Serpentin de glace",
+    name: "Patinoire", figure: "Spirale de virages verglacés",
     ground: { relief: 1 }, start: { x: 0, z: 0, d: 0, l: 0 },
-    slow: { P: 15, M: 15 }, altSlow: { A: { P: 40, M: 40 } },
-    path: `S B C #P X @f <A >L Sb/i turnw:r=2/i Sb/i turnw:r=2/i Sb/i A> #M X >L W C slopeg/i cliff C F S
-      =f {A Sn/i Sn/i bump:h=5/i _ Sn/i }`,
+    path: `S B C turn/i !turn/i <A chicane:side=1/i W A> !turn/i slopeg cliff C turn/i camber:angle=20,side=1/i turn/i revboost !cliff/i C F S`,
   },
   {
     name: "Fjord", figure: "Descente verglacée et gué",
