@@ -4,7 +4,7 @@ import { START_BANKROLL, borrow as borrowServer, claimPseudo, loadWallet, refres
 import { GAME_INFO, watchRooms } from "../net/rooms.js";
 import { loadPlayMii } from "../lib/mii.js";
 import { setCanApply } from "../lib/cloudSave.js";
-import { MiiPicker } from "./MiiPicker.jsx";
+import { AccountMenu, ensureGuestPseudo } from "./AccountMenu.jsx";
 import { TournoiBox } from "./TournoiBox.jsx";
 import "../styles/rooms.css";
 import "../styles/lobby.css";
@@ -171,7 +171,10 @@ export function Lobby({ onStart }) {
       setName((n) => n || w.name || "");
     };
     window.addEventListener("casino-save", reload);
-    refreshWallet().catch((e) => setErr(e.message));
+    refreshWallet()
+      .then((w) => ensureGuestPseudo(w.name))
+      .then((n) => n && setName((cur) => cur || n))
+      .catch((e) => setErr(e.message));
     return () => window.removeEventListener("casino-save", reload);
   }, []);
   const borrow = () => borrowServer().catch((e) => setErr(e.message));
@@ -189,11 +192,7 @@ export function Lobby({ onStart }) {
         <a className="c-back" href="../index.html">← Portfolio</a>
         <div className="c-brand"><span>♠</span><h1>{"Casino "}<em>3D</em></h1></div>
         <div className="c-me">
-          <MiiPicker value={mii} onChange={setMii} />
-          <label className="c-name">
-            <small>Pseudo</small>
-            <input value={name} maxLength={16} placeholder={mii?.name || "Joueur"} onChange={(ev) => setName(ev.target.value)} />
-          </label>
+          <AccountMenu mii={mii} onMii={setMii} name={name} onName={(n) => { setName(n); saveWallet({ name: n }); }} />
           <div className="c-wallet" title="Jetons virtuels, aucun argent réel. Solde partagé entre les jeux de casino.">
             <small>Solde</small>
             <b>{bankroll === null ? "…" : Math.round(bankroll).toLocaleString("fr-FR")}</b>

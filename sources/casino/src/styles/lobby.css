@@ -226,3 +226,22 @@
 .tournoi .t-linked img { border-radius: 50%; }
 .tournoi .t-msg { color: var(--gold-l); }
 .tournoi .btn { align-self: flex-start; }
+
+/* ---------- Bouton Compte (Mii + pseudo + connexion) ---------- */
+.acc { position: relative; }
+.acc-btn { display: flex; align-items: center; gap: 8px; padding: 3px 14px 3px 3px; border-radius: 999px; border: 1px solid var(--hair-2); background: rgba(255, 255, 255, .04); color: inherit; text-align: left; }
+.acc-btn img, .acc-btn .mii-empty { width: 36px; height: 36px; border-radius: 50%; }
+.acc-btn span { display: flex; flex-direction: column; line-height: 1.15; }
+.acc-btn b { font-size: 14px; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.acc-btn small { font-size: 11px; color: var(--ink-3); }
+.acc-pop { right: 0; left: auto; display: flex; flex-direction: column; gap: 8px; }
+.acc-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.acc-head img, .acc-head .mii-empty { width: 56px; height: 56px; }
+.acc-head div { display: flex; flex-direction: column; }
+.acc-head small, .acc-note { font-size: 12px; color: var(--ink-3); margin: 0; }
+.acc-form, .acc-form form { display: flex; flex-direction: column; gap: 8px; }
+.acc-form label { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+.acc-form small { font-size: 11px; color: var(--ink-3); }
+.acc-form input { margin: 0; height: 36px; padding: 0 10px; }
+.acc-msg { font-size: 13px; margin: 0; color: var(--gold-l); }
+@media (max-width: 640px) { .acc-btn b { max-width: 80px; } .acc-pop { right: -60px; } }

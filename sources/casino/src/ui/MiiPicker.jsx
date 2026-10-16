@@ -32,6 +32,38 @@ function Portrait({ mii, size = 120 }) {
   return url ? <img src={url} alt="" draggable="false" /> : <span className="mii-empty mii-wait" />;
 }
 
+// Grille de choix du Mii (utilisée par le menu Compte du hub)
+export function MiiChooser({ value, onPick }) {
+  const [list, setList] = React.useState(listSync);
+  React.useEffect(() => miiStore.subscribe(() => setList(listSync())), []);
+  return (
+    <>
+      {list.length > 0 && <h4 className="mii-sec">Tes Mii</h4>}
+      {list.length > 0 && (
+        <div className="mii-grid">
+          {list.map((m) => (
+            <button key={m.id} className={"mii-opt" + (m.id === value?.id ? " on" : "")} onClick={() => onPick(m)}>
+              <Portrait mii={m} size={96} />
+              <span>{m.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
+      <h4 className="mii-sec">Mii invités</h4>
+      <div className="mii-grid">
+        {GUEST_MIIS.map((m) => (
+          <button key={m.id} className={"mii-opt" + (m.id === value?.id ? " on" : "")} onClick={() => onPick(m)}>
+            <Portrait mii={m} size={96} />
+            <span>{m.name}</span>
+          </button>
+        ))}
+      </div>
+      <a className="btn" href={MII_URL}>Créer ton propre Mii dans la chaîne Mii</a>
+    </>
+  );
+}
+export { Portrait as MiiPortrait };
+
 // Carte « Ton Mii » du hub : choisir avec quel Mii jouer + état du compte (facultatif)
 export function MiiPicker({ value, onChange }) {
   const [open, setOpen] = React.useState(false);
