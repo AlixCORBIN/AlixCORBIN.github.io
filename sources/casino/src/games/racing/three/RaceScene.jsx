@@ -1,5 +1,5 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { Html, OrbitControls } from "@react-three/drei";
 import React from "react";
 import * as THREE from "three";
 import { TILE } from "../track.js";
@@ -64,20 +64,45 @@ function Ghost({ data, color, session }) {
   return <primitive object={car.group} />;
 }
 
+// Voiture d'un joueur en direct (pose interpolée par LiveRoom), pseudo au-dessus
+function LiveCar({ live, id, color, pseudo }) {
+  const car = React.useMemo(() => buildCar(color, { ghost: true }), [color]);
+  useFrame(() => {
+    const p = live.pose(id);
+    car.group.visible = !!p;
+    if (!p) return;
+    car.group.position.set(p.x, p.y, p.z);
+    car.group.quaternion.set(p.q[0], p.q[1], p.q[2], p.q[3]);
+  });
+  return (
+    <primitive object={car.group}>
+      <Html position={[0, 2.6, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: "none" }}>
+        <div className="rc-live-tag" style={{ "--c": color }}>{pseudo}</div>
+      </Html>
+    </primitive>
+  );
+}
+
+const tmpQ = new THREE.Quaternion();
 const tmpV = new THREE.Vector3();
 const tmpUp = new THREE.Vector3();
 const tmpV2 = new THREE.Vector3();
 const WHEEL_Y = -0.05;
 
-function PlayerCar({ session, color, hudRef }) {
+const NEUTRAL = { throttle: 0, brake: 0, steer: 0, drift: false };
+
+function PlayerCar({ session, color, hudRef, live, specRef }) {
   const car = React.useMemo(() => buildCar(color), [color]);
   const { camera } = useThree();
   const cam = React.useRef({ init: false, dir: new THREE.Vector3(0, 0, -1), up: new THREE.Vector3(0, 1, 0), pos: new THREE.Vector3(), look: new THREE.Vector3(), last: new THREE.Vector3() });
   useFrame((_s, dt) => {
-    session.update(dt, readInput());
+    // mode spectateur : ma voiture reste à l'arrêt, la caméra suit le joueur choisi
+    const sp0 = specRef?.current && live ? live.pose(specRef.current) : null;
+    const input = readInput();
+    session.update(dt, sp0 ? NEUTRAL : input);
     const c = session.car;
-    const t = c.body.translation(), q = c.body.rotation();
-    car.group.position.set(t.x, t.y, t.z);
+    const t0 = c.body.translation(), q = c.body.rotation();
+    car.group.position.set(t0.x, t0.y, t0.z);
     car.group.quaternion.set(q.x, q.y, q.z, q.w);
     // roues : suspension, rotation, braquage
     const vc = c.vc;
@@ -88,25 +113,37 @@ function PlayerCar({ session, color, hudRef }) {
       car.wheels[i].rotation.x = -(vc.wheelRotation(i) || 0);
     });
 
-    const fr = carFrame(c);
+    car.group.position.set(t0.x, t0.y, t0.z);
+    let t = t0, fwd, sp;
     const k = cam.current;
-    const fwd = tmpV.set(...fr.fwd);
-    // la caméra suit le haut de la voiture dans les loopings et sur les murs, sinon garde le ciel en haut
-    const steep = c.contacts > 0 && fr.up[1] < 0.8;
-    tmpUp.set(...(steep ? fr.up : [0, 1, 0]));
+    if (sp0) {
+      t = sp0;
+      tmpQ.set(sp0.q[0], sp0.q[1], sp0.q[2], sp0.q[3]);
+      fwd = tmpV.set(0, 0, -1).applyQuaternion(tmpQ);
+      const up = tmpV2.set(0, 1, 0).applyQuaternion(tmpQ);
+      tmpUp.copy(up.y < 0.8 ? up : tmpV2.set(0, 1, 0));
+      sp = 40;
+    } else {
+      const fr = carFrame(c);
+      fwd = tmpV.set(...fr.fwd);
+      // la caméra suit le haut de la voiture dans les loopings et sur les murs, sinon garde le ciel en haut
+      const steep = c.contacts > 0 && fr.up[1] < 0.8;
+      tmpUp.set(...(steep ? fr.up : [0, 1, 0]));
+      sp = c.speed;
+    }
     // saut de position (téléporteur, réapparition) : caméra replacée d'un coup derrière la voiture
     const jump = k.init && k.last.distanceToSquared(tmpV2.set(t.x, t.y, t.z)) > 20 * 20;
+    if (k.spec !== (sp0 ? specRef.current : null)) { k.spec = sp0 ? specRef.current : null; k.init = false; }
     k.last.set(t.x, t.y, t.z);
-    if (!k.init || jump || session.phase === "countdown") {
+    if (!k.init || jump || (!sp0 && session.phase === "countdown")) {
       k.dir.copy(fwd); k.up.set(0, 1, 0); k.init = true;
     } else {
       k.dir.lerp(fwd, Math.min(1, dt * 6)).normalize();
       k.up.lerp(tmpUp, Math.min(1, dt * 3)).normalize();
     }
-    const sp = c.speed;
     const back = 9 + Math.min(sp, 100) * 0.04, upOff = 3.6 + Math.min(sp, 100) * 0.01;
     const target = new THREE.Vector3(t.x, t.y, t.z).addScaledVector(k.dir, -back).addScaledVector(k.up, upOff);
-    if (jump || session.phase === "countdown" || k.pos.distanceTo(target) > 60) k.pos.copy(target);
+    if (jump || (!sp0 && session.phase === "countdown") || k.pos.distanceTo(target) > 60) k.pos.copy(target);
     else k.pos.lerp(target, Math.min(1, dt * 10));
     camera.position.copy(k.pos);
     camera.up.copy(k.up);
@@ -119,12 +156,13 @@ function PlayerCar({ session, color, hudRef }) {
   return <primitive object={car.group} />;
 }
 
-export function RaceScene({ session, ghosts = [], color, hudRef }) {
+export function RaceScene({ session, ghosts = [], color, hudRef, live = null, liveList = [], specRef = null }) {
   return (
     <Canvas camera={{ fov: 70, near: 0.5, far: 3000 }} dpr={[1, 1.75]} gl={{ antialias: true }}>
       <Environment track={session.track} world={session.world} session={session} />
       {ghosts.map((g) => <Ghost key={g.key} data={g.data} color={g.color} session={session} />)}
-      <PlayerCar session={session} color={color} hudRef={hudRef} />
+      {live && liveList.map((p) => <LiveCar key={p.id} live={live} id={p.id} color={p.color} pseudo={p.pseudo} />)}
+      <PlayerCar session={session} color={color} hudRef={hudRef} live={live} specRef={specRef} />
     </Canvas>
   );
 }

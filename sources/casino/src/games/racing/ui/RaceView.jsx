@@ -6,6 +6,8 @@ import { padLabels, rumble, useGamepad, useGamepadNav } from "../gamepad.js";
 import { medalFor } from "../maps.js";
 import { WORLDS, formatTime, initPhysics } from "../physics.js";
 import { RaceSession } from "../session.js";
+import { LiveRoom } from "../live.js";
+import { getSettings, setSettings } from "../settings.js";
 import { Track } from "../track.js";
 import { RaceScene } from "../three/RaceScene.jsx";
 import { Board } from "./Board.jsx";
@@ -99,12 +101,57 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
     if (result) setTimeout(() => resultRef.current?.querySelector("button")?.focus(), 50);
   }, [!!result]);
 
+  // Joueurs en direct sur la même map (P2P)
+  const [liveOn, setLiveOn] = React.useState(() => mode === "play" && getSettings().live !== false);
+  const [live, setLive] = React.useState(null);
+  const [liveList, setLiveList] = React.useState([]);
+  const [liveFull, setLiveFull] = React.useState(false);
+  const [spec, setSpec] = React.useState(null);
+  const specRef = React.useRef(null);
+  specRef.current = spec;
+  const liveRef = React.useRef(null);
+  const onLiveFinish = React.useRef(null);
+  React.useEffect(() => {
+    if (!liveOn || mode !== "play" || typeof RTCPeerConnection === "undefined") return;
+    const room = new LiveRoom(map.id, { pseudo, color }, (list, full) => { setLiveList(list); setLiveFull(full); });
+    room.onFinish = (name, ms) => onLiveFinish.current?.(name, ms);
+    liveRef.current = room;
+    setLive(room);
+    return () => { room.close(); liveRef.current = null; setLive(null); setLiveList([]); setSpec(null); };
+  }, [liveOn, map.id, mode]);
+  const toggleLive = () => { const v = !liveOn; setLiveOn(v); setSettings({ live: v }); };
+  // le joueur suivi est parti : retour à ma voiture
+  React.useEffect(() => { if (spec && !liveList.some((p) => p.id === spec)) setSpec(null); }, [liveList, spec]);
+  const cycleSpec = (d) => {
+    const ids = liveList.filter((p) => p.live).map((p) => p.id);
+    if (!ids.length) return setSpec(null);
+    const i = ids.indexOf(specRef.current);
+    setSpec(ids[(i + d + ids.length) % ids.length]);
+  };
+  // en spectateur, ←/→ changent de joueur et Échap / Espace reviennent à la course (avant les touches de conduite)
+  React.useEffect(() => {
+    if (!spec) return;
+    const onKey = (e) => {
+      const k = e.key;
+      if (k === "ArrowLeft" || k === "q" || k === "a") cycleSpec(-1);
+      else if (k === "ArrowRight" || k === "d") cycleSpec(1);
+      else if (k === "Escape" || k === " ") setSpec(null);
+      else return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    };
+    addEventListener("keydown", onKey, true);
+    return () => removeEventListener("keydown", onKey, true);
+  }, [spec, liveList]);
+  const specName = spec ? liveList.find((p) => p.id === spec)?.pseudo : null;
+
   const flashMsg = React.useRef(0);
   const showFlash = (f) => {
     setFlash(f);
     const id = ++flashMsg.current;
     setTimeout(() => flashMsg.current === id && setFlash(null), 2200);
   };
+  onLiveFinish.current = (name, ms) => showFlash({ text: `🏁 ${name}`, sub: formatTime(ms) });
 
   const session = React.useMemo(() => {
     const s = new RaceSession(track, world, {
@@ -128,6 +175,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
       onFinish: (ms, ghost, splits, log) => {
         sfx.finish();
         rumble(0.8, 0.8, 350);
+        liveRef.current?.finish(ms);
         const prev = pbRef.current;
         const r = { ms, prev: prev?.ms ?? null, medal: medalFor(ms, map.author_time), saving: mode === "play", rank: null, pbNew: !prev || ms < prev.ms };
         setResult(r);
@@ -171,6 +219,11 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
   // HUD mis à jour à chaque image sans passer par React
   const timeEl = React.useRef(), speedEl = React.useRef(), cpEl = React.useRef(), boostEl = React.useRef();
   const hudRef = React.useRef((s, car) => {
+    const room = liveRef.current;
+    if (room) {
+      const t = car.body.translation(), q = car.body.rotation();
+      room.send({ t: s.phase === "countdown" ? 0 : s.timeMs, phase: s.phase, cps: s.run.cps.size, x: t.x, y: t.y, z: t.z, q: [q.x, q.y, q.z, q.w] });
+    }
     if (timeEl.current) timeEl.current.textContent = formatTime(s.phase === "countdown" ? 0 : s.timeMs);
     if (speedEl.current) speedEl.current.textContent = String(car.kmh);
     if (cpEl.current) cpEl.current.textContent = `${s.run.cps.size}/${s.track.cps.length}`;
@@ -180,7 +233,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
 
   return (
     <div className="rc-race">
-      <RaceScene session={session} ghosts={showGhosts ? allGhosts : []} color={color} hudRef={hudRef} />
+      <RaceScene session={session} ghosts={showGhosts ? allGhosts : []} color={color} hudRef={hudRef} live={live} liveList={liveList} specRef={specRef} />
       <div className="rc-hud">
         <div className="rc-top">
           <button className="icon" onClick={onExit} title="Menu (Échap)">✕</button>
@@ -190,6 +243,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
           <button className="pill" onClick={() => setShowSettings(true)} title="Paramètres">⚙</button>
           {mode === "play" && (
             <>
+              <button className={`pill ${liveOn ? "on" : ""}`} onClick={toggleLive} title="Joueurs en direct sur cette map">🟢 {liveOn ? liveList.length : "off"}</button>
               <button className={`pill ${showGhosts ? "on" : ""}`} onClick={() => setShowGhosts((v) => !v)}>👻 {showGhosts ? allGhosts.length : "off"}</button>
               <button className="pill" onClick={() => setBoard(true)}>🏆 Classement</button>
             </>
@@ -209,6 +263,27 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
               <div className="rc-row me"><span className="rk">{myRow.rank}</span><small><AdminName name={myRow.pseudo} /></small><b>{formatTime(myRow.time_ms)}</b></div>
             )}
             {pb && !myRow && <div className="rc-row me"><span className="rk">·</span><small>Ton record</small><b>{formatTime(pb.ms)}</b></div>}
+          </div>
+        )}
+        {live && (liveList.length > 0 || liveFull) && (
+          <div className="rc-live">
+            <div className="rc-side-title">🟢 En direct</div>
+            {liveFull && <small className="rc-row">Salle pleine (8 max)</small>}
+            {liveList.map((p) => (
+              <button key={p.id} className={`rc-row ${spec === p.id ? "me" : ""}`} onClick={() => setSpec(spec === p.id ? null : p.id)} title="Suivre ce joueur">
+                <i style={{ background: p.color }} /><small>{p.pseudo}</small>
+                <b>{p.fin ? `🏁 ${formatTime(p.fin)}` : p.phase === "countdown" ? "départ" : `CP ${p.cps}/${track.cps.length}`}</b>
+              </button>
+            ))}
+            <small className="rc-live-hint">Clique un nom pour le suivre</small>
+          </div>
+        )}
+        {specName && (
+          <div className="rc-spec">
+            <button className="pill" onClick={() => cycleSpec(-1)}>◀</button>
+            <span>👁 {specName}</span>
+            <button className="pill" onClick={() => cycleSpec(1)}>▶</button>
+            <button className="pill" onClick={() => setSpec(null)}>Retour</button>
           </div>
         )}
         {count > 0 && !result && <div className="rc-count" key={count}>{count}</div>}

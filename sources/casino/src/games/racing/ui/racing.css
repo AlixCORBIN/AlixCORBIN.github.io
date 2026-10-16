@@ -176,3 +176,13 @@
 .rc-set em{font-style:normal;color:#ffd23f;font-weight:800}
 .rc-set input{width:100%;padding:0;margin:6px 0 2px;accent-color:#ffd23f;background:none;border:0}
 .rc-set small{font-size:12px;opacity:.65}
+
+/* joueurs en direct */
+.rc-live{position:absolute;left:12px;top:70px;display:flex;flex-direction:column;gap:3px;padding:8px 10px;border-radius:12px;background:#0008;font-size:12px;min-width:190px;pointer-events:auto}
+.rc-live .rc-row{background:none;border:0;color:inherit;font:inherit;padding:2px 4px;border-radius:6px;cursor:pointer;text-align:left}
+.rc-live .rc-row:hover{background:#ffffff18}
+.rc-live .rc-row.me{background:#ffd23f33}
+.rc-live-hint{opacity:.5;font-size:10px}
+.rc-live-tag{padding:2px 7px;border-radius:999px;background:#000a;border:1px solid var(--c);color:#fff;font:700 12px system-ui;white-space:nowrap}
+.rc-spec{position:absolute;left:50%;top:70px;transform:translate(-50%);display:flex;gap:8px;align-items:center;padding:6px 10px;border-radius:999px;background:#000b;font-weight:800;pointer-events:auto}
+@media (max-width:760px){.rc-live{display:none}}
