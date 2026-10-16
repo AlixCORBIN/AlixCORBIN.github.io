@@ -12,9 +12,9 @@ const HEARTBEAT_MS = 5000;
 const PEER_TIMEOUT_MS = 20000;
 // Un joueur silencieux n'est retiré de la partie qu'après ce délai : s'il revient avant
 // (coupure réseau, page rechargée, téléphone en veille), il retrouve sa place.
-const GRACE_MS = 180000;
+const GRACE_MS = 60000;
 // Côté client : durée pendant laquelle on retente de rejoindre l'hôte avant d'abandonner
-const RECONNECT_MS = 180000;
+const RECONNECT_MS = 60000;
 
 // Sauvegarde locale de la salle de l'hôte (pour la rouvrir après un rechargement)
 const HOST_SAVE = "casino-host-room";

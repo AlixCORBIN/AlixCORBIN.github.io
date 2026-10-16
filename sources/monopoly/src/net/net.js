@@ -116,7 +116,7 @@ export function joinRoom(code, { onOpen, onData, onClose, onError, onLost }) {
       if (Date.now() - lastHost > HOST_TIMEOUT) {
         // on garde le canal (en recréer un du même nom le perturbe) et on continue de frapper à la porte
         if (!lostAt) { lostAt = Date.now(); onLost?.() }
-        if (Date.now() - lostAt > 180000) { alive = false; clearInterval(ping); onClose?.(); return }
+        if (Date.now() - lostAt > 60000) { alive = false; clearInterval(ping); onClose?.(); return }
       }
       sendRaw({ type: 'ping' })
     }, HB_MS)
