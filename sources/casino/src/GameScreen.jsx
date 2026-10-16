@@ -98,6 +98,7 @@ export function GameScreen({ ctrl, onQuit }) {
     </div>
   ) : (
     <>
+      {ctrl.status === "reconnecting" && <div className="net-banner"><span className="spinner sm" />Connexion perdue, reconnexion en cours… ta place est gardée</div>}
       {spectator ? <div className="spect-badge">👁 Mode observateur</div> : <PublicToggle ctrl={ctrl} />}
       {watchers > 0 && (
         <div className="watch-count" title={`${watchers} personne${watchers > 1 ? "s" : ""} regarde${watchers > 1 ? "nt" : ""} la partie`}>

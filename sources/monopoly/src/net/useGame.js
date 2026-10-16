@@ -192,6 +192,7 @@ export function useGame() {
           else if (d.type === 'error') notify(d.msg)
           else if (d.type === 'chat') seeChat(d.from, d.msg)
         },
+        onLost: () => setStatus('Connexion perdue, reconnexion en cours… ta place est gardée'),
         onClose: () => fail('Connexion perdue avec l’hôte.'),
         onError: (e) => fail(e.type === 'peer-unavailable' ? 'Salle introuvable.' : 'Erreur réseau : ' + (e.type || e.message)),
       })

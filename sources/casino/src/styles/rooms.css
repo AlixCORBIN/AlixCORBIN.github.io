@@ -27,3 +27,13 @@
 .pubtoggle.on i{background:#6be28f;box-shadow:0 0 8px #6be28f}
 .pubtoggle.off{opacity:.8;pointer-events:none}
 @media (max-width:1100px){.lobby.with-rooms{flex-direction:column;justify-content:flex-start;padding-top:64px}.rooms{width:min(760px,100%);max-height:none;margin:0;flex:none}.lobby.with-rooms .hub-card{max-height:none;flex:none}}
+
+.net-banner{position:fixed;z-index:400;top:calc(60px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:8px 16px;border-radius:999px;background:#3d3214e6;border:1px solid var(--gold);font-size:13px;font-weight:600;pointer-events:none}
+.spinner.sm{width:16px;height:16px;margin:0;border-width:2px}
+.c-resume{display:flex;flex-direction:column;gap:8px;margin:0 0 14px}
+.c-resume-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;border:1px solid var(--gold);background:#e8c4681a}
+.c-resume-row>span{font-size:24px;color:var(--gold)}
+.c-resume-row>div{flex:1;display:flex;flex-direction:column;text-align:left}
+.c-resume-row small{opacity:.7;font-size:12px}
+.c-resume-row .btn{padding:9px 16px;font-size:14px}
+.c-x{background:none;border:0;color:var(--ink);opacity:.6;font-size:16px}

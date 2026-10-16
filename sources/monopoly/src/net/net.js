@@ -91,15 +91,16 @@ export function hostRoom(code, { onOpen, onConn, onData, onClose, onError }) {
 }
 
 // ---------- Client ----------
-export function joinRoom(code, { onOpen, onData, onClose, onError }) {
+export function joinRoom(code, { onOpen, onData, onClose, onError, onLost }) {
   const me = 'c-' + rid()
-  let alive = true, host = null, lastHost = 0, ping = null, hello = null, watchdog = null
+  let alive = true, host = null, lastHost = 0, ping = null, hello = null, watchdog = null, lostAt = 0
   const link = openChannel(code, (p) => {
     if (!alive) return
     if (p.t === 'closed') { if (host) { alive = false; onClose?.() } ; return }
     if (p.t === 'hb' || p.t === 'all' || (p.t === 'msg' && p.to === me)) {
       lastHost = Date.now()
       if (!host) { host = p.from; clearInterval(hello); onOpen?.() }
+      else if (lostAt) { lostAt = 0; onOpen?.() } // l'hôte répond de nouveau : on se représente (même joueur)
       if (p.m) onData?.(p.m)
     }
   })
@@ -112,7 +113,11 @@ export function joinRoom(code, { onOpen, onData, onClose, onError }) {
     watchdog = setTimeout(() => { if (!host && alive) onError?.({ type: 'peer-unavailable' }) }, 10000)
     ping = setInterval(() => {
       if (!host) return
-      if (Date.now() - lastHost > HOST_TIMEOUT) { alive = false; clearInterval(ping); onClose?.(); return }
+      if (Date.now() - lastHost > HOST_TIMEOUT) {
+        // on garde le canal (en recréer un du même nom le perturbe) et on continue de frapper à la porte
+        if (!lostAt) { lostAt = Date.now(); onLost?.() }
+        if (Date.now() - lostAt > 180000) { alive = false; clearInterval(ping); onClose?.(); return }
+      }
       sendRaw({ type: 'ping' })
     }, HB_MS)
   }).catch(() => onError?.({ type: 'network' }))

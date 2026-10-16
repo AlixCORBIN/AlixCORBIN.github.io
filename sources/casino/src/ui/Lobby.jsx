@@ -2,6 +2,7 @@ import React from "react";
 import { Leaderboard } from "../games/blackjack/ui/Leaderboard.jsx";
 import { START_BANKROLL, borrow as borrowServer, claimPseudo, loadWallet, refreshWallet, saveWallet } from "../lib/wallet.js";
 import { GAME_INFO, watchRooms } from "../net/rooms.js";
+import { loadHostRoom, clearHostRoom, loadLastRoom, clearLastRoom } from "../net/controller.js";
 import { loadPlayMii } from "../lib/mii.js";
 import { setCanApply } from "../lib/cloudSave.js";
 import { AccountMenu, ensureGuestPseudo } from "./AccountMenu.jsx";
@@ -40,6 +41,34 @@ const norm = (t) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCa
 
 const PUB_KEY = "casino-public";
 const loadPub = () => { try { return localStorage.getItem(PUB_KEY) !== "0"; } catch { return true; } };
+
+// Retour rapide dans la dernière salle (coupure, page rechargée) ou réouverture de sa propre salle
+function ResumeBox({ onRejoin, onReopen }) {
+  const [last, setLast] = React.useState(loadLastRoom);
+  const [host, setHost] = React.useState(loadHostRoom);
+  if (!last && !host) return null;
+  const info = (g) => GAME_INFO[g] || { title: g, icon: "🎲" };
+  return (
+    <div className="c-resume">
+      {host && (
+        <div className="c-resume-row">
+          <span>{info(host.game).icon}</span>
+          <div><b>Ta salle {host.code}</b><small>{info(host.game).title} · rouvre-la, les joueurs reviennent tout seuls</small></div>
+          <button className="btn primary" onClick={() => onReopen(host)}>Rouvrir</button>
+          <button className="c-x" title="Oublier" onClick={() => { clearHostRoom(); setHost(null); }}>✕</button>
+        </div>
+      )}
+      {last && (
+        <div className="c-resume-row">
+          <span>↩</span>
+          <div><b>Salle {last.code}</b><small>Tu as été déconnecté : reprends ta place</small></div>
+          <button className="btn primary" onClick={() => onRejoin(last)}>Revenir</button>
+          <button className="c-x" title="Oublier" onClick={() => { clearLastRoom(); setLast(null); }}>✕</button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function RoomsPanel({ onJoin, onWatch, broke }) {
   const [rooms, setRooms] = React.useState(null);
@@ -207,6 +236,7 @@ export function Lobby({ onStart }) {
             <h2>Choisis ta <em>table</em></h2>
             <p>Jetons virtuels, parties en ligne entre amis ou contre des bots, classements en direct. Aucun argent réel.</p>
           </div>
+          <ResumeBox onRejoin={(r) => start(null, r.spectate ? "watch" : "join", r.code)} onReopen={(h) => start(h.game, "resume")} />
           {err && <div className="c-alert"><span>{err}</span></div>}
           {banned && <div className="c-alert"><span>Ce compte est banni des jeux de casino pour triche.</span></div>}
           {broke && !banned && bankroll !== null && (

@@ -1,4 +1,4 @@
-import { RoomChannel, makeRoomCode } from "./channel.js";
+import { RoomChannel, makeRoomCode, clientKey } from "./channel.js";
 import { announceRoom, withdrawRoom } from "./rooms.js";
 import { miiForId, sanitizeMii, sanitizeOwnMii, setRoomMiis } from "../lib/mii.js";
 import { myBadge, setRoomAdmins, verifyBadge } from "../lib/admins.js";
@@ -10,6 +10,37 @@ export const AFK_MS = 60000;
 const HEARTBEAT_MS = 5000;
 
 const PEER_TIMEOUT_MS = 20000;
+// Un joueur silencieux n'est retiré de la partie qu'après ce délai : s'il revient avant
+// (coupure réseau, page rechargée, téléphone en veille), il retrouve sa place.
+const GRACE_MS = 180000;
+// Côté client : durée pendant laquelle on retente de rejoindre l'hôte avant d'abandonner
+const RECONNECT_MS = 180000;
+
+// Sauvegarde locale de la salle de l'hôte (pour la rouvrir après un rechargement)
+const HOST_SAVE = "casino-host-room";
+export function loadHostRoom() {
+  try {
+    const x = JSON.parse(localStorage.getItem(HOST_SAVE));
+    return x && Date.now() - x.at < 6 * 3600e3 ? x : null;
+  } catch {
+    return null;
+  }
+}
+export function clearHostRoom() {
+  try { localStorage.removeItem(HOST_SAVE); } catch {}
+}
+const LAST_ROOM = "casino-last-room";
+export function loadLastRoom() {
+  try {
+    const x = JSON.parse(localStorage.getItem(LAST_ROOM));
+    return x && Date.now() - x.at < 3 * 3600e3 ? x : null;
+  } catch {
+    return null;
+  }
+}
+export function clearLastRoom() {
+  try { localStorage.removeItem(LAST_ROOM); } catch {}
+}
 
 class Store {
   constructor() {
@@ -35,8 +66,12 @@ class Store {
 }
 
 export class HostController extends Store {
-  constructor(name, { online = false, bankroll = 1000, isPublic = false, game = "", mii = null } = {}) {
+  constructor(name, { online = false, bankroll = 1000, isPublic = false, game = "", mii = null, restore = null } = {}) {
     super();
+    this.restoreData = restore && restore.game === game ? restore : null;
+    // clé stable du navigateur -> identifiant de joueur (pour rendre sa place à qui revient)
+    this.keyToId = { ...(this.restoreData?.keys || {}) };
+    this.away = new Map();
     this.myMii = mii ? sanitizeOwnMii(mii) : null;
     this.peerMiis = {};
     this.peerRaw = {};
@@ -76,7 +111,7 @@ export class HostController extends Store {
     }
   }
   openPeer(attempt = 0) {
-    this.code = makeRoomCode();
+    this.code = attempt === 0 && this.restoreData ? this.restoreData.code : makeRoomCode();
     const link = new RoomChannel(
       this.code,
       (msg, from) => this.onMsg(msg, from),
@@ -98,8 +133,24 @@ export class HostController extends Store {
               link.close();
               return this.openPeer(attempt + 1);
             }
-            this.me = "host-" + link.id;
-            this.addPlayer(this.me, this.name, this.bankroll);
+            const r = this.restoreData;
+            let restored = false;
+            if (r && !taken && r.code === this.code) {
+              // réouverture de la salle après un rechargement : même code, même partie
+              try {
+                this.g = r.g;
+                this.me = r.me;
+                for (const p of this.g.players || []) if (!p.bot && p.id !== this.me) this.away.set(p.id, Date.now());
+                restored = true;
+              } catch {
+                this.g = this.makeGame();
+              }
+            }
+            if (!restored) {
+              this.keyToId = {};
+              this.me = "host-" + link.id;
+              this.addPlayer(this.me, this.name, this.bankroll);
+            }
             myBadge(`${this.code}:${this.me}`).then((t) => {
               if (!t || this.status === "closed") return;
               this.badgeOf[this.me] = t;
@@ -136,9 +187,19 @@ export class HostController extends Store {
     }
     for (const [id, lastSeen] of this.seen) {
       if (now - lastSeen > PEER_TIMEOUT_MS) {
+        // silence : on garde sa place un moment, il peut revenir
+        this.seen.delete(id);
+        this.away.set(id, lastSeen);
+      }
+    }
+    for (const [id, since] of this.away) {
+      if (now - since > GRACE_MS) {
+        this.away.delete(id);
+        this.seen.set(id, 0);
         this.drop(id);
       }
     }
+    this.saveRoom();
     this.sendWatchers();
   }
   onMsg(msg, from) {
@@ -184,6 +245,21 @@ export class HostController extends Store {
       return;
     }
     if (msg.t === "hello") {
+      // retour d'un joueur connu (même navigateur) : il reprend son identifiant et sa place
+      const key = typeof msg.key === "string" ? msg.key.slice(0, 64) : null;
+      const known = key && this.keyToId[key];
+      if (known && (this.g?.players || []).some((p) => p.id === known)) {
+        this.away.delete(known);
+        this.seen.set(known, Date.now());
+        this.lastAct[known] = Date.now();
+        if (peer !== known) this.link.send(peer, { t: "welcome", id: known });
+        this.link.send(known, { t: "welcome", id: known });
+        this.publish();
+        this.link.send(known, this.miisMsg());
+        return;
+      }
+      if (key) this.keyToId[key] = peer;
+      this.away.delete(peer);
       if (msg.mii && typeof msg.mii === "object") {
         this.peerRaw[peer] = msg.mii;
         this.peerMiis[peer] = sanitizeMii(msg.mii, { admin: this.adminIds.has(peer) });
@@ -216,6 +292,11 @@ export class HostController extends Store {
       this.publish();
       this.link.send(peer, this.miisMsg());
     } else {
+      if (!this.seen.has(peer) && this.away.has(peer) && msg.t !== "bye") {
+        // il était marqué absent mais il parle de nouveau : il est de retour
+        this.away.delete(peer);
+        this.seen.set(peer, Date.now());
+      }
       if (this.seen.has(peer)) {
         this.seen.set(peer, Date.now());
         if (msg.t === "act") {
@@ -231,7 +312,8 @@ export class HostController extends Store {
     }
   }
   drop(id) {
-    if (this.seen.has(id)) {
+    if (this.seen.has(id) || this.away.has(id)) {
+      this.away.delete(id);
       this.seen.delete(id);
       delete this.lastAct[id];
       delete this.peerMiis[id];
@@ -292,8 +374,23 @@ export class HostController extends Store {
       status: this.g?.phase === "lobby" ? "lobby" : "playing",
     });
   }
+  // Sauvegarde locale (au plus toutes les 2 s) pour pouvoir rouvrir la salle après un rechargement
+  saveRoom(force = false) {
+    if (!this.online || this.status !== "ready" || !this.code) return;
+    const now = Date.now();
+    if (!force && now - (this.savedAt || 0) < 2000) return;
+    this.savedAt = now;
+    try {
+      localStorage.setItem(HOST_SAVE, JSON.stringify({ at: now, game: this.gameId, code: this.code, me: this.me, name: this.name, isPublic: this.isPublic, keys: this.keyToId, g: this.g }));
+    } catch {}
+  }
+  // joueurs momentanément absents (affichage éventuel par les jeux)
+  awayIds() {
+    return [...this.away.keys()];
+  }
   publish() {
     this.announce();
+    this.saveRoom();
     this.ensureKeys();
     this.schedule();
     this.state = this.viewOf();
@@ -360,6 +457,7 @@ export class HostController extends Store {
     this.timers = {};
   }
   destroy() {
+    clearHostRoom();
     setActiveHost(null);
     withdrawRoom();
     this.clearTimers();
@@ -389,72 +487,111 @@ export class ClientController extends Store {
     this.attempt();
   }
   async attempt() {
-    const { name, bankroll } = this;
     const uid = await myUid();
-    const link = new RoomChannel(this.code, (msg) => this.onMsg(msg));
-    this.link = link;
-    this.lastHost = Date.now();
-    const fail = (reason) => {
-      if (!(this.status === "ready" || this.status === "closed")) {
+    this.uid = uid;
+    this.key = clientKey();
+    this.joinedAt = 0;
+    this.failTimer = setTimeout(() => {
+      if (!this.me) this.fail("Salle introuvable : vérifie le code, et que l'hôte a bien créé la salle et garde sa page ouverte.");
+    }, 20000);
+    this.connect();
+    this.fail = (reason) => {
+      if (!(this.status === "ready" || this.status === "closed" || this.status === "reconnecting")) {
         this.status = "error";
         this.error = reason;
         this.emit();
       }
     };
-    this.failTimer = setTimeout(
-      () =>
-        fail(
-          "Salle introuvable : verifie le code, et que l hote a bien cree la salle et garde sa page ouverte.",
-        ),
-      15000,
-    );
+  }
+  // (re)connexion au canal de la salle ; un joueur déjà accepté garde son identifiant
+  connect() {
+    clearInterval(this.helloTimer);
+    clearInterval(this.pingTimer);
+    this.link?.close();
+    const link = new RoomChannel(this.code, (msg) => this.onMsg(msg), false, {
+      id: this.me || null,
+      onStatus: (st) => {
+        if (st === "down" && this.status === "ready") {
+          this.status = "reconnecting";
+          this.lostAt = this.lostAt || Date.now();
+          this.emit();
+        }
+        if (st === "up") this.sayHello();
+      },
+    });
+    this.link = link;
+    this.lastHost = Date.now();
+    this.welcomed = false;
     link.ready
       .then(() => {
-        const hello = () => {
-          if (!this.me && this.status === "connecting") {
-            link.send("host", {
-              t: "hello",
-              name,
-              bankroll,
-              uid,
-              mii: this.mii,
-              spectate: this.spectator || undefined,
-            });
-          }
-        };
-        hello();
-        this.helloTimer = setInterval(hello, 1500);
-        this.pingTimer = setInterval(() => {
-          if (
-            this.status === "ready" &&
-            Date.now() - this.lastHost > PEER_TIMEOUT_MS
-          ) {
-            this.status = "error";
-            this.error = "Connexion a l hote perdue";
-            this.emit();
-            return;
-          }
-          if (this.me) {
-            link.send("host", {
-              t: "ping",
-            });
-          }
-        }, HEARTBEAT_MS);
+        this.sayHello();
+        this.helloTimer = setInterval(() => !this.welcomed && this.sayHello(), 1500);
+        this.pingTimer = setInterval(() => this.tick(), HEARTBEAT_MS);
       })
-      .catch(() => fail("Serveur de jeu injoignable (reseau bloque ?)"));
-    this.fail = fail;
+      .catch(() => {
+        if (this.me) return setTimeout(() => this.status !== "closed" && this.connect(), 3000);
+        this.fail("Serveur de jeu injoignable (réseau bloqué ?)");
+      });
+  }
+  sayHello() {
+    if (!this.link || this.status === "closed") return;
+    this.link.send("host", {
+      t: "hello",
+      key: this.key,
+      name: this.name,
+      bankroll: this.bankroll,
+      uid: this.uid,
+      mii: this.mii,
+      spectate: this.spectator || undefined,
+    });
+  }
+  tick() {
+    if (this.status === "closed") return;
+    const silent = Date.now() - this.lastHost;
+    if (this.me && silent > PEER_TIMEOUT_MS) {
+      // plus de nouvelles de l'hôte : on se reconnecte (même identifiant, même place)
+      if (this.status !== "reconnecting") {
+        this.status = "reconnecting";
+        this.lostAt = Date.now();
+        this.emit();
+      }
+      if (Date.now() - this.lostAt > RECONNECT_MS) {
+        this.status = "error";
+        this.error = "Connexion à l'hôte perdue (l'hôte a peut-être fermé la salle).";
+        this.emit();
+        return;
+      }
+      // on ne recrée pas le canal (deux canaux du même nom se gênent) : il se rouvre seul s'il tombe ;
+      // on se représente simplement à l'hôte jusqu'à ce qu'il réponde
+      if (!this.link.joined && Date.now() - (this.reopenAt || 0) > 15000) {
+        this.reopenAt = Date.now();
+        this.link.open();
+      }
+      this.sayHello();
+      return;
+    }
+    if (this.me) this.link.send("host", { t: "ping" });
   }
   onMsg(msg) {
     if (!(!msg || typeof msg != "object")) {
       this.lastHost = Date.now();
       if (msg.t === "welcome") {
         this.me = msg.id;
+        this.welcomed = true;
+        if (this.link && this.link.id !== msg.id) this.link.id = msg.id;
+        if (this.status === "reconnecting") {
+          this.status = this.state ? "ready" : "connecting";
+          this.lostAt = 0;
+          this.emit();
+        }
+        try { localStorage.setItem("casino-last-room", JSON.stringify({ at: Date.now(), code: this.code, spectate: this.spectator })); } catch {}
         if (!this.spectator) myBadge(`${this.code}:${msg.id}`).then((t) => t && this.link?.send("host", { t: "badge", token: t }), () => {});
         clearTimeout(this.failTimer);
         clearInterval(this.helloTimer);
       } else if (msg.t === "state" && this.me) {
         this.state = msg.s;
         this.status = "ready";
+        this.lostAt = 0;
         this.emit();
       } else if (msg.t === "miis" && msg.m && typeof msg.m === "object") {
         // chapeau admin et pseudo rouge seulement si le serveur valide le badge de ce joueur dans cette salle
@@ -485,6 +622,7 @@ export class ClientController extends Store {
         this.error = "Deconnecte pour inactivite (1 minute sans action).";
         this.emit();
       } else if (msg.t === "closed") {
+        clearLastRoom();
         if (this.status !== "closed") {
           this.status = "error";
           this.error = "L hote a ferme la salle";
@@ -509,6 +647,7 @@ export class ClientController extends Store {
     clearInterval(this.helloTimer);
     clearInterval(this.pingTimer);
     this.status = "closed";
+    clearLastRoom();
     setRoomMiis({});
     setRoomAdmins([]);
     if (this.me) {

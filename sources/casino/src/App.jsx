@@ -9,7 +9,7 @@ import { Connect4Host } from "./games/connect4/host.js";
 import { HorsesHost } from "./games/horses/host.js";
 import { WerewolfHost } from "./games/werewolf/host.js";
 import { GameScreen } from "./GameScreen.jsx";
-import { ClientController } from "./net/controller.js";
+import { ClientController, loadHostRoom } from "./net/controller.js";
 import { ServerTable } from "./net/serverTable.js";
 import { db } from "./lib/identity.js";
 import { Lobby } from "./ui/Lobby.jsx";
@@ -58,15 +58,17 @@ export function App() {
               : game === "horses"
                 ? HorsesHost
                 : BlackjackHost;
+    const restore = mode === "resume" ? loadHostRoom() : null;
     setCtrl(
       mode === "join"
         ? new ClientController(name, code, bankroll, opts.mii, { spectate: watch })
-        : new Host(name, {
+        : new Host(restore?.name || name, {
             online: true,
             bankroll,
             game,
-            isPublic: !!opts.isPublic,
+            isPublic: restore ? !!restore.isPublic : !!opts.isPublic,
             mii: opts.mii,
+            restore,
           }),
     );
   };

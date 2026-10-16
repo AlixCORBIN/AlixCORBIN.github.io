@@ -8,6 +8,8 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
     persistSession: false,
   },
+  // le client Realtime jette les envois au-delà de cette limite : la valeur par défaut (10/s) était trop basse
+  realtime: { params: { eventsPerSecond: 40 } },
 });
 
 export const SUPABASE_ANON_JWT =
