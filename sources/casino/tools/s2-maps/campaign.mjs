@@ -172,17 +172,18 @@ export const MAPS = [
       turnw:r=2 slopeg Cf:minSpeed=120 F S`,
   },
   {
-    name: "Distorsion", figure: "Téléporteurs qui gardent la vitesse", start: { x: 4, z: 20, d: 0, l: 8 },
-    path: `S B C !cliff Sb C teleport:pair=1,role=0
-      ~10,6,2,3 teleport:pair=1,role=1 K:angle=14 _ Y <A Sb !turn B Sn teleport:pair=2,role=0 A>
-      ~17,12,3,9 teleport:pair=2,role=1 Sb !cliff turnw:r=2 Cf:minSpeed=130 B !slopeg F S
-      ~10,11,2,1 {A teleport:pair=3,role=0 ~18,12,3,9 teleport:pair=3,role=1 }`,
+    name: "Distorsion", figure: "Trois îles reliées par des téléporteurs qui gardent la vitesse", start: { x: 4, z: 20, d: 0, l: 8 },
+    path: `S B C turn !turn chicane:side=1 B teleport:pair=1,role=0
+      ~14,16,3,4 teleport:pair=1,role=1 K:angle=14 _ Y Sb !bankx:r=1 Sn C <A !turn turn B teleport:pair=2,role=0
+      ~4,6,1,10 teleport:pair=2,role=1 Sb !cliff turn bankx:r=1 A> teleport:pair=3,role=1 B:level=3 Cf:minSpeed=120 !cliff Sn F S
+      ~9,21,2,2 {A teleport:pair=3,role=0 }`,
   },
   {
-    name: "Funambule", figure: "Planches de glace en zigzag au-dessus du vide", start: { x: 2, z: 16, d: 0, l: 7 },
-    slow: { T: 14 }, altSlow: { A: { T: 14 } },
-    path: `S B Sn C Sn/i turn Sn/i !turn B:level=3 Sn/i crate:minSpeed=120 Sb C
-      <A turn #T !cliff Sn !turn !cliff/i !turn Sb Sb turn A> Sb !slopeg B:level=2 Cf:minSpeed=110 F S`,
+    name: "Funambule", figure: "Passages étroits, dévers et bosses au-dessus du vide", start: { x: 6, z: 18, d: 0, l: 9 },
+    slow: { P: 14, M: 14, W: 20 }, altSlow: { A: { P: 40, M: 30 } },
+    path: `S B C turn chicane:side=1 !turn B:level=2 K:angle=12 _ Y Sn !bankx:r=1 camber:angle=25 #W whoops C
+      #P X @f <A >R B:level=2 crate:minSpeed=120 K:angle=14 _ Y Y Sn !turn camber:angle=25,side=1 Sn !turn !slopeg chicane Sn/i A> #M X >R C F S
+      =f {A Sn/i Sn/i !cliff/i }`,
   },
   {
     name: "Apesanteur", figure: "Boucle à gravité de piste", start: { x: 4, z: 18, d: 0, l: 6 },
