@@ -61,7 +61,7 @@ function Ring({ color, dir }) {
   const mat = React.useRef();
   const target = React.useMemo(() => new Color(color), [color]);
   useFrame((_s, dt) => {
-    if (spin.current) spin.current.rotation.y += dir * dt * 0.55;
+    if (spin.current) spin.current.rotation.y -= dir * dt * 0.55;
     if (mat.current) {
       mat.current.color.lerp(target, 1 - Math.exp(-6 * dt));
       mat.current.emissive.lerp(target, 1 - Math.exp(-6 * dt));
@@ -76,7 +76,7 @@ function Ring({ color, dir }) {
       <group ref={spin}>
         {[0, 1, 2].map((i) => (
           <group key={i} rotation={[0, (i * Math.PI * 2) / 3, 0]}>
-            <mesh position={[3.62, 0.02, 0]} rotation={[0, dir > 0 ? Math.PI : 0, -Math.PI / 2]}>
+            <mesh position={[3.62, 0.02, 0]} rotation={[dir > 0 ? Math.PI / 2 : -Math.PI / 2, 0, 0]}>
               <coneGeometry args={[0.28, 0.6, 3]} />
               <meshStandardMaterial color="#f4efe2" emissive="#f4efe2" emissiveIntensity={0.5} />
             </mesh>
