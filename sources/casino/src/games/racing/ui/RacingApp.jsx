@@ -1,4 +1,7 @@
 import React from "react";
+import { AccountMenu } from "../../../ui/AccountMenu.jsx";
+import { loadPlayMii } from "../../../lib/mii.js";
+import { saveWallet } from "../../../lib/wallet.js";
 import { campaignList, getMap, listMaps, loadPBs, playerRecords, worldRecords } from "../api.js";
 import { MEDALS, OFFICIAL, medalFor } from "../maps.js";
 import { WORLDS, formatTime, worldsForSeason } from "../physics.js";
@@ -152,7 +155,10 @@ function Community({ onPlay, onBoard, pbs }) {
   );
 }
 
-export function RacingApp({ pseudo, onQuit }) {
+export function RacingApp({ pseudo: pseudo0, onQuit }) {
+  // même bouton Compte que le Casino (Mii, pseudo, connexion) : le pseudo modifié sert aux temps envoyés
+  const [pseudo, setPseudo] = React.useState(pseudo0);
+  const [mii, setMii] = React.useState(loadPlayMii);
   const [tab, setTab] = React.useState(() => { try { return localStorage.getItem(TAB_KEY) || "campaign"; } catch { return "campaign"; } });
   const [race, setRace] = React.useState(null); // { map, mode }
   const [board, setBoard] = React.useState(null);
@@ -265,6 +271,9 @@ export function RacingApp({ pseudo, onQuit }) {
         <h1>Track<em>Merdia</em></h1>
         <div className="grow" />
         <button className="pill" onClick={() => setShowSettings(true)} title="Paramètres">⚙ Paramètres</button>
+        <div className="c-me">
+          <AccountMenu mii={mii} onMii={setMii} name={pseudo} onName={(n) => { setPseudo(n); saveWallet({ name: n }); }} />
+        </div>
         <div className="rc-medals" title="Médailles de la campagne">
           {MEDALS.map((m) => <i key={m.id} className="rc-dot" style={{ background: m.color }} />)}
           <b>{medals}/{OFFICIAL.length}</b>
