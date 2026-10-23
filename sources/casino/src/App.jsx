@@ -13,6 +13,7 @@ import { ClientController, loadHostRoom } from "./net/controller.js";
 import { ServerTable } from "./net/serverTable.js";
 import { db } from "./lib/identity.js";
 import { Lobby } from "./ui/Lobby.jsx";
+import { GameGuard } from "./ui/GameGuard.jsx";
 import { GAME_INFO } from "./net/rooms.js";
 
 // TrackMerdia (et son moteur physique WebAssembly) n'est chargé que quand on lance le jeu
@@ -79,12 +80,16 @@ export function App() {
   };
   if (racing)
     return (
-      <React.Suspense fallback={<div className="center-screen"><div className="panel"><div className="spinner" /><p>Chargement…</p></div></div>}>
-        <RacingApp pseudo={racing.pseudo} onQuit={() => setRacing(null)} />
-      </React.Suspense>
+      <GameGuard onQuit={() => setRacing(null)}>
+        <React.Suspense fallback={<div className="center-screen"><div className="panel"><div className="spinner" /><p>Chargement…</p></div></div>}>
+          <RacingApp pseudo={racing.pseudo} onQuit={() => setRacing(null)} />
+        </React.Suspense>
+      </GameGuard>
     );
   return ctrl ? (
-    <GameScreen ctrl={ctrl} onQuit={quit} />
+    <GameGuard onQuit={quit} need3d>
+      <GameScreen ctrl={ctrl} onQuit={quit} />
+    </GameGuard>
   ) : (
     <Lobby onStart={start} />
   );
