@@ -160,7 +160,7 @@
 .rc-side-rank .hint{margin:0 0 8px!important;font-size:12px}
 .rc-side-rank .rc-podium{font-size:14px;margin:0}
 .rc-side-rank .rc-podium td{padding:6px 4px}
-@media (max-width:1000px){.rc-menu-layout{grid-template-columns:1fr;overflow:auto}.rc-menu-layout .rc-menu-body{overflow:visible}.rc-side-rank{max-height:none}}
+@media (max-width:1000px){.rc-menu-layout{grid-template-columns:1fr;grid-auto-rows:max-content;overflow:auto}.rc-menu-layout .rc-menu-body{overflow:visible;min-height:auto}.rc-side-rank{max-height:none;min-height:auto}}
 .rc-side-title{font:italic 900 13px system-ui;text-transform:uppercase;margin-bottom:4px;color:#ffd23f}
 .rc-side .rc-row .rk{min-width:22px;text-align:center;font-weight:800}
 .rc-side .rc-row.me{background:#ffd23f33;border-radius:6px;padding:0 4px;margin:0 -4px}
