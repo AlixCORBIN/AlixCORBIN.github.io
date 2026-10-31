@@ -232,12 +232,11 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
     if (!doc.authorTime) return;
     const name = doc.name.trim();
     if (!name) { setMsg("Donne un nom à ta map."); return; }
-    if (!pseudo || pseudo === "Joueur") { setMsg("Choisis un pseudo dans le Casino avant de publier."); return; }
     setBusy(true);
     try {
-      const id = await publishMap(name, pseudo, mapData(doc.world, doc.tiles), doc.authorTime);
+      const { id, author } = await publishMap(name, mapData(doc.world, doc.tiles), doc.authorTime);
       deleteDraft(doc.id);
-      onPlayPublished({ id, name, author: pseudo, author_time: doc.authorTime, world: doc.world, data: mapData(doc.world, doc.tiles) });
+      onPlayPublished({ id, name, author, author_time: doc.authorTime, world: doc.world, data: mapData(doc.world, doc.tiles) });
     } catch (e) {
       setMsg(e.message);
     } finally {

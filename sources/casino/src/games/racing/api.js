@@ -1,6 +1,7 @@
 // Records et maps de la communauté (RPC Supabase, voir supabase/racing.sql)
 import { supabase } from "../../lib/supabase.js";
-import { callFunction, rpc } from "../../lib/identity.js";
+import { callFunction, db, rpc } from "../../lib/identity.js";
+import { account } from "../../lib/mii.js";
 
 const PB_KEY = "racing-pb";
 
@@ -87,11 +88,22 @@ export async function getMap(id) {
   return data?.[0] || null;
 }
 
-export async function publishMap(name, author, data, authorTime) {
-  const { data: id, error } = await supabase.rpc("racing_publish_map", { p_name: name, p_author: author, p_data: data, p_author_time: authorTime });
-  if (error) throw error;
-  if (!id) throw new Error("Map refusée (nom, taille ou temps invalide).");
-  return id;
+const PUBLISH_ERRORS = {
+  "non connecte": "Connecte-toi avec un compte pour publier une map.",
+  "compte anonyme": "Connecte-toi avec un compte pour publier une map.",
+  "compte banni": "Ce compte ne peut pas publier de map.",
+  "pseudo requis": "Choisis un pseudo dans le Casino avant de publier.",
+  "trop de publications": "Trop de publications : réessaie plus tard.",
+};
+
+// Pas de helper rpc() ici : il créerait une identité anonyme que le serveur refuserait.
+export async function publishMap(name, data, authorTime) {
+  await account?.ready;
+  if (!account?.user) throw new Error(PUBLISH_ERRORS["non connecte"]);
+  const { data: map, error } = await db().rpc("racing_publish_map", { p_name: name, p_data: data, p_author_time: authorTime });
+  if (error) throw new Error(PUBLISH_ERRORS[error.message] || error.message);
+  if (!map?.id) throw new Error("Map refusée (nom, taille ou temps invalide).");
+  return map;
 }
 
 // ---------- Campagne par saison (voir supabase/racing-season2.sql) ----------

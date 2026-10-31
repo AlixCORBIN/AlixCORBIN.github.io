@@ -82,6 +82,50 @@ begin
   return id;
 end $$;
 
+-- À FAIRE après test de l'éditeur connecté : supprimer l'ancienne racing_publish_map(text, text, jsonb, integer)
+-- ci-dessus et sa mention dans le grant plus bas. Tant qu'elle existe, anon peut encore publier sans contrôle.
+-- Publication réservée aux vrais comptes : l'auteur vient du compte, jamais du navigateur.
+alter table public.racing_maps add column if not exists user_id uuid references auth.users(id) on delete set null;
+create index if not exists racing_maps_user_recent on public.racing_maps (user_id, created_at desc);
+
+create or replace function public.racing_publish_map(p_name text, p_data jsonb, p_author_time integer)
+returns jsonb language plpgsql security definer set search_path to 'public' as $$
+declare
+  uid uuid := auth.uid();
+  anonyme boolean;
+  w wallets;
+  nm text;
+  new_id uuid;
+begin
+  if uid is null then raise exception 'non connecte'; end if;
+  select u.is_anonymous into anonyme from auth.users u where u.id = uid;
+  if anonyme is distinct from false then raise exception 'compte anonyme'; end if;
+  if p_name is null or p_data is null or p_author_time is null then raise exception 'parametres manquants'; end if;
+
+  p_name := btrim(p_name);
+  if char_length(p_name) not between 1 and 32
+     or p_author_time not between 2000 and 3600000
+     or jsonb_typeof(p_data -> 'tiles') is distinct from 'array'
+     or pg_column_size(p_data) > 200000 then return null; end if;
+  if jsonb_array_length(p_data -> 'tiles') not between 3 and 1500 then return null; end if;
+
+  select * into w from wallets where user_id = uid;
+  if w.banned or player_banned(w.pseudo) then raise exception 'compte banni'; end if;
+  nm := w.pseudo;
+  if nm is null then raise exception 'pseudo requis'; end if;
+
+  -- Limite de fréquence : 5 maps par heure et 20 par jour pour un même compte.
+  perform pg_advisory_xact_lock(hashtextextended('racing_publish:' || uid::text, 0));
+  if (select count(*) from racing_maps m where m.user_id = uid and m.created_at > now() - interval '1 hour') >= 5
+     or (select count(*) from racing_maps m where m.user_id = uid and m.created_at > now() - interval '1 day') >= 20 then
+    raise exception 'trop de publications';
+  end if;
+
+  insert into racing_maps (name, author, data, author_time, user_id) values (p_name, nm, p_data, p_author_time, uid)
+  returning map_id into new_id;
+  return jsonb_build_object('id', new_id, 'author', nm);
+end $$;
+
 create or replace function public.racing_list_maps(p_search text default '', p_limit integer default 60)
 returns table(map_id uuid, name text, author text, author_time integer, created_at timestamptz, players bigint)
 language sql stable security definer set search_path to 'public' as $$
@@ -99,7 +143,10 @@ language sql stable security definer set search_path to 'public' as $$
 $$;
 
 grant execute on function public.racing_submit, public.racing_leaderboard, public.racing_ghost, public.racing_wrs,
-  public.racing_publish_map, public.racing_list_maps, public.racing_get_map to anon, authenticated;
+  public.racing_publish_map(text, text, jsonb, integer), public.racing_list_maps, public.racing_get_map to anon, authenticated;
+
+revoke execute on function public.racing_publish_map(text, jsonb, integer) from public, anon;
+grant execute on function public.racing_publish_map(text, jsonb, integer) to authenticated;
 
 -- ---------- Records perdus (notifications) et records d'un pilote ----------
 create table if not exists public.racing_events (
