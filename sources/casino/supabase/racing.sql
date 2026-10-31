@@ -67,23 +67,6 @@ language sql stable security definer set search_path to 'public' as $$
   order by r.map_id, r.time_ms, r.updated_at;
 $$;
 
-create or replace function public.racing_publish_map(p_name text, p_author text, p_data jsonb, p_author_time integer)
-returns uuid language plpgsql security definer set search_path to 'public' as $$
-declare id uuid;
-begin
-  p_name := btrim(p_name); p_author := btrim(p_author);
-  if length(p_name) not between 1 and 32 or length(p_author) not between 1 and 16
-     or p_author_time not between 2000 and 3600000
-     or jsonb_typeof(p_data -> 'tiles') <> 'array'
-     or jsonb_array_length(p_data -> 'tiles') not between 3 and 1500
-     or pg_column_size(p_data) > 200000 then return null; end if;
-  insert into racing_maps (name, author, data, author_time) values (p_name, p_author, p_data, p_author_time)
-  returning map_id into id;
-  return id;
-end $$;
-
--- À FAIRE après test de l'éditeur connecté : supprimer l'ancienne racing_publish_map(text, text, jsonb, integer)
--- ci-dessus et sa mention dans le grant plus bas. Tant qu'elle existe, anon peut encore publier sans contrôle.
 -- Publication réservée aux vrais comptes : l'auteur vient du compte, jamais du navigateur.
 alter table public.racing_maps add column if not exists user_id uuid references auth.users(id) on delete set null;
 create index if not exists racing_maps_user_recent on public.racing_maps (user_id, created_at desc);
@@ -143,7 +126,7 @@ language sql stable security definer set search_path to 'public' as $$
 $$;
 
 grant execute on function public.racing_submit, public.racing_leaderboard, public.racing_ghost, public.racing_wrs,
-  public.racing_publish_map(text, text, jsonb, integer), public.racing_list_maps, public.racing_get_map to anon, authenticated;
+  public.racing_list_maps, public.racing_get_map to anon, authenticated;
 
 revoke execute on function public.racing_publish_map(text, jsonb, integer) from public, anon;
 grant execute on function public.racing_publish_map(text, jsonb, integer) to authenticated;
