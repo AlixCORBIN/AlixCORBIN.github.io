@@ -5,8 +5,8 @@
   if (window.__gchat) return
   window.__gchat = true
 
-  var URL_ = 'https://njkbhgmwylletmdmsmyl.supabase.co'
-  var KEY = 'sb_publishable_VYQeM9TBjjoqs4CeAT06mQ_1AJ4uf7p'
+  var URL_ = 'https://api.alixcorbin.com'
+  var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw'
   var LIB = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'
   var MAX = 300
   var OPEN_KEY = 'gchat-open'

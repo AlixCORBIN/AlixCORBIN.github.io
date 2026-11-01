@@ -4,8 +4,8 @@
 // entre au moins deux humains, et le pseudo affiché est celui réservé par le compte.
 import { createClient } from '@supabase/supabase-js'
 
-const SUPABASE_URL = 'https://njkbhgmwylletmdmsmyl.supabase.co'
-const SUPABASE_KEY = 'sb_publishable_VYQeM9TBjjoqs4CeAT06mQ_1AJ4uf7p'
+const SUPABASE_URL = 'https://api.alixcorbin.com'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw'
 // même stockage que la session du portfolio / du Casino (compte ou identité anonyme)
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'portfolio-auth' } })
 

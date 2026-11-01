@@ -6,8 +6,8 @@
    donc une connexion sur la chaîne Mii vaut aussi pour le Casino.
    ========================================================= */
 
-export const SUPABASE_URL = 'https://njkbhgmwylletmdmsmyl.supabase.co';
-export const SUPABASE_KEY = 'sb_publishable_VYQeM9TBjjoqs4CeAT06mQ_1AJ4uf7p';
+export const SUPABASE_URL = 'https://api.alixcorbin.com';
+export const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw';
 const STORAGE_KEY = 'portfolio-auth';
 
 const ERRORS_FR = {

@@ -3,7 +3,7 @@
    La clé "anon" est publique par conception : la sécurité repose sur
    le RLS et les fonctions SECURITY DEFINER côté base.
    ============================================ */
-const SUPABASE_URL = 'https://njkbhgmwylletmdmsmyl.supabase.co';
+const SUPABASE_URL = 'https://api.alixcorbin.com';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw';
 
 // Requête vers l'API REST (POST par défaut). `path` relatif à /rest/v1/

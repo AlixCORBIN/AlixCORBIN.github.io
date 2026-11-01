@@ -4,7 +4,7 @@ import { SQUARES } from '../game/data.js'
 import { fmt } from '../game/engine.js'
 import { persona } from '../game/bot.js'
 
-const URL = 'https://njkbhgmwylletmdmsmyl.supabase.co/functions/v1/monopoly-ai'
+const URL = 'https://api.alixcorbin.com/functions/v1/monopoly-ai'
 const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw'
 const MAX_CALLS = 30 // par partie, pour rester large dans le quota gratuit
 const used = new Map()
