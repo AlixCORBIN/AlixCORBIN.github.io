@@ -7,6 +7,8 @@ export const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdX
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
     persistSession: false,
+    // client sans session : le lien email est lu par le client de compte (mii/lib/account.js)
+    detectSessionInUrl: false,
   },
   // le client Realtime jette les envois au-delà de cette limite : la valeur par défaut (10/s) était trop basse
   realtime: { params: { eventsPerSecond: 40 } },

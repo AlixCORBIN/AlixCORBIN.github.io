@@ -5,9 +5,6 @@
   if (window.__gchat) return
   window.__gchat = true
 
-  var URL_ = 'https://api.alixcorbin.com'
-  var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw'
-  var LIB = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'
   var MAX = 300
   var OPEN_KEY = 'gchat-open'
 
@@ -193,8 +190,8 @@
   }
 
   function start() {
-    // même session que le Casino et le Monopoly (compte ou identité anonyme automatique)
-    client = window.supabase.createClient(URL_, KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'portfolio-auth' } })
+    // même client que le Casino et le Monopoly (compte ou identité anonyme automatique)
+    client = window.PortfolioAccount.sb
 
     client.from('global_chat').select('id,name,msg,game,created_at').order('id', { ascending: false }).limit(60).then(function (r) {
       ;(r.data || []).reverse().forEach(function (row) { add({ key: 'db' + row.id, id: row.id, name: row.name, game: row.game, msg: row.msg, at: row.created_at }, true) })
@@ -242,12 +239,11 @@
       var hasDock = !!document.getElementById('gchat-dock')
       if (hasDock !== docked || (hasDock && !document.getElementById('gchat-dock').contains(panel))) layout()
     }).observe(document.body, { childList: true, subtree: true })
-    if (window.supabase && window.supabase.createClient) return start()
-    var s = document.createElement('script')
-    s.src = LIB
-    s.onload = start
-    s.onerror = function () { online.lastChild.textContent = 'hors ligne'; sendBtn.disabled = true }
-    document.head.appendChild(s)
+    if (window.PortfolioAccount) return start()
+    window.addEventListener('portfolio-account', start, { once: true })
+    setTimeout(function () {
+      if (!client) { online.lastChild.textContent = 'hors ligne'; sendBtn.disabled = true }
+    }, 15000)
   }
   if (document.body) boot()
   else document.addEventListener('DOMContentLoaded', boot)

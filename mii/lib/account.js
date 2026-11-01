@@ -4,6 +4,8 @@
    le Casino utilise celui de son bundle.
    La session est gardée sous la même clé sur tout le portfolio,
    donc une connexion sur la chaîne Mii vaut aussi pour le Casino.
+   Un seul client par page : window.PortfolioAccount, annoncé par
+   l'événement « portfolio-account ».
    ========================================================= */
 
 export const SUPABASE_URL = 'https://api.alixcorbin.com';
@@ -18,19 +20,29 @@ const ERRORS_FR = {
 };
 
 export function createAccount(createClient) {
+    if (window.PortfolioAccount) return window.PortfolioAccount;
     const sb = createClient(SUPABASE_URL, SUPABASE_KEY, {
         auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce', storageKey: STORAGE_KEY },
     });
     let user = null;
+    let session = null;
     // Session anonyme automatique (Casino) : invisible pour l'UI, ce n'est pas un vrai compte
     const real = (u) => (u && !u.is_anonymous ? u : null);
     let recovering = false;
     const listeners = new Set();
     const emit = (event) => listeners.forEach((fn) => { try { fn(user, event); } catch { /* ignore */ } });
 
-    const ready = sb.auth.getSession().then(({ data }) => { user = real(data.session?.user); emit('INIT'); return user; }).catch(() => null);
-    sb.auth.onAuthStateChange((event, session) => {
-        const next = real(session?.user);
+    // Lien à jeton direct (#access_token) : le flux PKCE de ce client ne le lit pas tout seul.
+    const hash = new URLSearchParams(location.hash.slice(1));
+    const access_token = hash.get('access_token');
+    const refresh_token = hash.get('refresh_token');
+    const fromLink = access_token && refresh_token
+        ? sb.auth.setSession({ access_token, refresh_token }).then(() => history.replaceState(null, '', location.pathname + location.search)).catch(() => null)
+        : Promise.resolve();
+    const ready = fromLink.then(() => sb.auth.getSession()).then(({ data }) => { session = data.session; user = real(session?.user); emit('INIT'); return user; }).catch(() => null);
+    sb.auth.onAuthStateChange((event, next_session) => {
+        session = next_session;
+        const next = real(next_session?.user);
         if (event === 'PASSWORD_RECOVERY') recovering = true;
         if (next?.id === user?.id && event !== 'PASSWORD_RECOVERY' && event !== 'USER_UPDATED') return;
         user = next;
@@ -44,10 +56,12 @@ export function createAccount(createClient) {
         return data;
     };
 
-    return {
+    const api = {
         sb,
         ready,
         get user() { return user; },
+        get session() { return session; },
+        get status() { return !session ? 'déconnecté' : session.user?.is_anonymous ? 'invité' : 'connecté'; },
         get recovering() { return recovering; },
         displayName() {
             if (!user) return '';
@@ -63,4 +77,7 @@ export function createAccount(createClient) {
         updatePassword: async (password) => { const d = await wrap(sb.auth.updateUser({ password })); recovering = false; return d; },
         signOut: () => wrap(sb.auth.signOut()),
     };
+    window.PortfolioAccount = api;
+    window.dispatchEvent(new Event('portfolio-account'));
+    return api;
 }
