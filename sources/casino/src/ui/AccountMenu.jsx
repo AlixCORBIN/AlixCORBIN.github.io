@@ -56,7 +56,7 @@ export function AccountMenu({ mii, onMii, name, onName }) {
   // Créer un compte = rattacher le compte actuel (anonyme) : la progression est gardée
   const createEmail = () => run(async () => {
     await session();
-    const { error } = await account.sb.auth.updateUser({ email: email.trim() });
+    const { error } = await account.sb.auth.updateUser({ email: email.trim() }, { emailRedirectTo: location.href });
     if (error) throw new Error(/already/i.test(error.message) ? "Un compte existe déjà avec cette adresse : utilise « Se connecter »." : error.message);
     setMsg("Lien envoyé : clique dessus dans ton mail pour valider le compte, puis choisis un mot de passe ici.");
   });
