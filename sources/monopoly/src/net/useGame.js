@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { hostRoom, joinRoom, newCode, getClientId } from './net.js'
 import { createLobby, lobbyAdd, lobbyRemove, startGame, backToLobby, applyAction, auctionTimeout } from '../game/engine.js'
-import { botDecide, markTried } from '../game/bot.js'
+import { botDecide, botFallback, markTried } from '../game/bot.js'
 import { aiPickTrade, aiReply, aiChat } from './ai.js'
 import { mentionedIds } from '../ui/mentions.js'
 import { sfx } from '../ui/sfx.js'
@@ -242,6 +242,9 @@ export function useGame() {
   }, [game])
 
   const busyBot = useRef(false)
+  // relance la boucle des bots quand elle n'a pas fait changer l'état (attente IA, action refusée)
+  const [botKick, setBotKick] = useState(0)
+  const kick = () => setTimeout(() => setBotKick((n) => n + 1), 300)
   const botSay = useCallback((from, msg) => {
     net.current?.broadcast?.({ type: 'chat', from, msg })
     seeChat(from, msg)
@@ -278,17 +281,24 @@ export function useGame() {
             busyBot.current = true
             const pick = await aiPickTrade(g0, p.id, a.candidates).catch(() => ({ index: 0 }))
             busyBot.current = false
-            if (gameRef.current.rev !== g0.rev) return
+            if (gameRef.current.rev !== g0.rev) return kick()
             const c = a.candidates[pick.index].t
             a.candidates.forEach((x) => markTried(g0, x.t))
             act = { type: 'PROPOSE_TRADE', to: c.to, give: c.give, get: c.get }
             const err = hostApply(p.id, act)
             if (!err && pick.message) botSay(p.name, pick.message)
-            if (err) console.warn('bot', p.name, act, err)
+            if (err) { console.warn('bot', p.name, act, err); kick() }
             return
           }
           const err = hostApply(p.id, act)
-          if (err) console.warn('bot', p.name, act, err)
+          if (err) {
+            // action refusée : on joue l'action de secours pour ne pas bloquer la partie
+            console.warn('bot', p.name, act, err)
+            const fb = botFallback(gameRef.current, p.id)
+            const err2 = fb && fb.type !== act.type ? hostApply(p.id, fb) : 'aucune action de secours'
+            if (err2) { console.warn('bot (secours)', p.name, fb, err2); kick() }
+            return
+          }
           if (!err && a.type === 'COUNTER_TRADE' && g0.trade) {
             const from = g0.players.find((x) => x.id === g0.trade.from)
             const plus = (a.get.money - g0.trade.give.money) + (g0.trade.get.money - a.give.money)
@@ -303,7 +313,7 @@ export function useGame() {
         return () => clearTimeout(t)
       }
     }
-  }, [game, role, hostApply, botSay])
+  }, [game, botKick, role, hostApply, botSay])
 
   // Fin d'enchère au chrono (hôte)
   useEffect(() => {

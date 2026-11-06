@@ -535,10 +535,16 @@ export function applyAction(s0, actorId, a) {
       if (!pr || pr.owner !== me.id || !pr.houses) throw new Error('Rien à vendre')
       const mem = groupMembers(sq.group)
       if (pr.houses < Math.max(...mem.map((k) => s.props[k].houses))) throw new Error('Vendez de façon uniforme')
-      if (pr.houses === 5) {
-        if (s.houses < 4) throw new Error('Pas assez de maisons en banque pour remplacer l’hôtel')
-        s.houses -= 4; s.hotels++
-      } else s.houses++
+      if (pr.houses === 5 && s.houses < 4) {
+        // pénurie de maisons : on garde seulement les maisons que la banque peut fournir
+        const keep = s.houses, gain = (5 - keep) * GROUPS[sq.group].house / 2
+        s.houses -= keep; s.hotels++
+        pr.houses = keep
+        me.money += gain
+        log(s, `${me.name} revend l’hôtel de ${sq.name} faute de maisons en banque (+${fmt(gain)}).`)
+        break
+      }
+      if (pr.houses === 5) { s.houses -= 4; s.hotels++ } else s.houses++
       pr.houses--
       me.money += GROUPS[sq.group].house / 2
       log(s, `${me.name} vend un bâtiment sur ${sq.name} (+${fmt(GROUPS[sq.group].house / 2)}).`)

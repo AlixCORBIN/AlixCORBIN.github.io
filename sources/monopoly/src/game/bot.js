@@ -220,6 +220,23 @@ function bestBuild(s, me, budget) {
   return best
 }
 
+// Action de secours quand le choix du bot est refusé par le moteur : toujours faire avancer la partie
+export function botFallback(s, id) {
+  const me = s.players.find((p) => p.id === id)
+  if (!me || me.bankrupt || s.phase !== 'playing') return null
+  if (s.trade?.to === id) return { type: 'REJECT_TRADE' }
+  if (s.debts.some((x) => x.player === id)) {
+    const k = mine(s, id).find((i) => !s.props[i].mortgaged && !(SQUARES[i].group && groupMembers(SQUARES[i].group).some((j) => s.props[j]?.houses)))
+    return k !== undefined ? { type: 'MORTGAGE', square: k } : { type: 'BANKRUPT' }
+  }
+  if (s.auction) return s.auction.passed.includes(id) || s.auction.leader === id ? null : { type: 'PASS_AUCTION' }
+  if (s.debts.length || cur(s).id !== id) return null
+  if (s.pending?.type === 'buy') return { type: 'DECLINE' }
+  if (s.turnPhase === 'roll') return { type: 'ROLL' }
+  if (s.turnPhase === 'end') return { type: 'END_TURN' }
+  return null
+}
+
 // ---------- Décision ----------
 export function botDecide(s, id) {
   const me = s.players.find((p) => p.id === id)
