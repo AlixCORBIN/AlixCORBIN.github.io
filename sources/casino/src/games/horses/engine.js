@@ -219,7 +219,7 @@ export function settleRoll(g) {
   const p = current(g);
   const v = g.die.v;
   if (g.sixes >= 3) {
-    note(g, `${p.name} fait trois 6 de suite : tour perdu !`, "bad");
+    note(g, `${p.name} fait trois 6 de suite : tour perdu`, "bad");
     g.choices = [];
     g.stage = "pass";
     return;
@@ -253,7 +253,7 @@ export function move(g, id, h) {
   g.stage = "moving";
   g.choices = [];
   if (from < 0) note(g, `${p.name} sort un cheval de l'écurie.`);
-  else if (t.to === FINISH) note(g, `🏁 Un cheval ${COLOR_NAME[p.color].toLowerCase()} arrive au centre !`, "good");
+  else if (t.to === FINISH) note(g, `🏁 Un cheval ${COLOR_NAME[p.color].toLowerCase()} arrive au centre`, "good");
   else if (t.to > ENTRY) note(g, `${p.name} monte sur la marche ${t.to - ENTRY}.`);
   return ok();
 }
@@ -269,7 +269,7 @@ export function endMove(g) {
       victim.horses[cap.horse] = -1;
       p.captures++;
       g.stats.captures++;
-      note(g, `💥 ${p.name} renvoie un cheval de ${victim.name} à l'écurie !`, "bad");
+      note(g, `💥 ${p.name} renvoie un cheval de ${victim.name} à l'écurie`, "bad");
       g.anim = { ...g.anim, seq: ++g.seq, kicked: { id: victim.id, horse: cap.horse }, capture: null, path: [] };
     }
   }
@@ -281,7 +281,7 @@ export function endMove(g) {
       .map((q) => ({ id: q.id, score: q.horses.reduce((s, x) => s + Math.max(0, x + 1), 0) }))
       .sort((a, b) => b.score - a.score)
       .map((r) => r.id);
-    note(g, `🏆 ${p.name} gagne la partie !`, "good");
+    note(g, `🏆 ${p.name} gagne la partie`, "good");
     return;
   }
   const replay = g.die?.v === 6 && g.sixes < 3 && g.stage === "moving";

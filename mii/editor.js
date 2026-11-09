@@ -14,6 +14,7 @@ import { createAccount } from './lib/account.js';
 const kit = createMiiKit(THREE);
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const svgNode = (html) => { const t = document.createElement('template'); t.innerHTML = html; return t.content.firstChild; };
 const el = (tag, attrs = {}, ...kids) => {
     const e = document.createElement(tag);
     for (const [k, v] of Object.entries(attrs)) {
@@ -50,7 +51,7 @@ const T = {
         shareTitle: 'Partager ce Mii', shareSub: 'Copie ce code et colle-le dans « Importer » sur un autre appareil.', copy: 'Copier le code', copied: 'Code copié',
         importTitle: 'Importer un Mii', importSub: 'Colle un code Mii (il commence par MII1.).', importBtn: 'Importer', badCode: 'Code invalide',
         saved: 'Mii enregistré', mainSet: (n) => `${n} est maintenant ton Mii`, full: 'Limite de 100 Mii atteinte', storageErr: "Impossible d'enregistrer sur cet appareil",
-        months: ['—', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+        months: ['-', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
         none: 'Aucun', copyOf: (n) => n.slice(0, 8) + ' 2',
         account: 'Compte', accTitle: 'Compte (facultatif)', accSub: 'Connecte-toi pour retrouver tes Mii sur tous tes appareils. Sans compte, tout reste enregistré sur cet appareil.',
         signIn: 'Connexion', signUp: 'Inscription', email: 'Adresse e-mail', password: 'Mot de passe', google: 'Continuer avec Google', or: 'ou',
@@ -79,7 +80,7 @@ const T = {
         shareTitle: 'Share this Mii', shareSub: 'Copy this code and paste it in “Import” on another device.', copy: 'Copy code', copied: 'Code copied',
         importTitle: 'Import a Mii', importSub: 'Paste a Mii code (it starts with MII1.).', importBtn: 'Import', badCode: 'Invalid code',
         saved: 'Mii saved', mainSet: (n) => `${n} is now your Mii`, full: '100 Mii limit reached', storageErr: 'Could not save on this device',
-        months: ['—', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        months: ['-', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
         none: 'None', copyOf: (n) => n.slice(0, 8) + ' 2',
         account: 'Account', accTitle: 'Account (optional)', accSub: 'Sign in to get your Mii on all your devices. Without an account, everything stays on this device.',
         signIn: 'Sign in', signUp: 'Sign up', email: 'Email address', password: 'Password', google: 'Continue with Google', or: 'or',
@@ -513,7 +514,7 @@ const TABS = {
         creator.addEventListener('input', () => change('creator', creator.value, { history: false }));
         creator.addEventListener('change', commit);
         const seg = el('div', { class: 'seg' }, ...['m', 'f'].map((g) => el('button', { 'data-path': 'gender', 'data-val': g, onclick: () => { sfx('pop'); change('gender', g); } }, t(g === 'm' ? 'male' : 'female'))));
-        const day = el('select', { class: 'select', 'aria-label': t('day') }, ...Array.from({ length: 32 }, (_, i) => el('option', { value: i }, i ? String(i) : '—')));
+        const day = el('select', { class: 'select', 'aria-label': t('day') }, ...Array.from({ length: 32 }, (_, i) => el('option', { value: i }, i ? String(i) : '-')));
         day.value = ed.cur.birthday.d; day.addEventListener('change', () => change('birthday.d', +day.value));
         const month = el('select', { class: 'select', 'aria-label': t('month') }, ...t('months').map((n, i) => el('option', { value: i }, n)));
         month.value = ed.cur.birthday.m; month.addEventListener('change', () => change('birthday.m', +month.value));
@@ -646,8 +647,8 @@ const app = {
                 onclick: () => { sfx('pop'); this.selectMii(m.id); }, ondblclick: () => this.edit(m.id),
                 onkeydown: (e) => { if (e.key === 'Enter') this.edit(m.id); } },
                 img, el('span', {}, m.name),
-                m.id === this.mainId ? el('b', { class: 'badge badge--main', title: t('setMain') }, '★') : null,
-                m.favorite ? el('b', { class: 'badge badge--fav' }, '♥') : null);
+                m.id === this.mainId ? el('b', { class: 'badge badge--main', title: t('setMain') }, svgNode('<span class="ic"><svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.82032 8.83999L6.25654 14.0434L12 17.68L17.7435 14.0434L16.1797 8.83999H7.82032Z" fill="currentColor"/><path d="M12 17.68C14.7225 20.2309 16.0837 21.5063 17.0809 21.3186C17.4986 21.2399 17.8805 21.0302 18.171 20.7198C18.8643 19.979 18.5182 18.146 17.8259 14.48L17.7435 14.0434L12 17.68Z" fill="currentColor"/><path d="M16.1797 8.83999L17.7435 14.0434C20.0495 12.9774 21.2026 12.4444 21.5049 12.0426C22.2419 11.0633 21.9327 9.65753 20.8528 9.07784C20.4098 8.83999 19.1395 8.83999 16.599 8.83999H16.1797Z" fill="currentColor"/><path d="M7.82032 8.83999H16.1797L15.6162 7.64815C14.0498 4.33535 13.2667 2.67896 12 2.67896C10.7333 2.67896 9.95018 4.33535 8.38384 7.64815L7.82032 8.83999Z" fill="currentColor"/><path d="M6.1741 14.48C5.48181 18.146 5.13567 19.979 5.829 20.7198C6.11951 21.0302 6.50136 21.2399 6.91915 21.3186C7.91626 21.5063 9.27751 20.2309 12 17.68L6.25654 14.0434L6.1741 14.48Z" fill="currentColor"/><path d="M6.25654 14.0434L7.82032 8.83999H7.40101C4.86049 8.83999 3.59024 8.83999 3.14716 9.07784C2.0673 9.65753 1.7581 11.0633 2.49508 12.0426C2.79746 12.4444 3.95049 12.9774 6.25654 14.0434Z" fill="currentColor"/></svg></span>')) : null,
+                m.favorite ? el('b', { class: 'badge badge--fav' }, svgNode('<span class="ic"><svg aria-hidden="true" focusable="false" width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.68373 15.8572C2.40265 12.2774 2.76209 10.005 3.8686 7.96229C5.35549 5.21814 9.8925 4.64373 11.7907 9.38167C11.8626 9.56122 12.1373 9.56122 12.2093 9.38167C14.1075 4.64373 18.6445 5.21814 20.1314 7.96229C21.2379 10.005 21.5973 12.2774 19.3163 15.8572C18.4463 17.2225 16.8057 18.6142 15.2982 19.713C13.3231 21.1527 10.6769 21.1527 8.70175 19.713C7.1943 18.6142 5.55374 17.2225 4.68373 15.8572Z" fill="currentColor"/></svg></span>')) : null);
             ul.append(li);
         }
         this.syncTools();

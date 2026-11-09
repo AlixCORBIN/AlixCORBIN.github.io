@@ -4,6 +4,7 @@ import { myUid, session } from "../lib/identity.js";
 import { claimPseudo } from "../lib/wallet.js";
 import { MiiChooser, MiiPortrait } from "./MiiPicker.jsx";
 import "../styles/mii.css";
+import Icon from "./Icon";
 
 // Pseudo par défaut d'un compte qui n'en a pas encore : « Invité » + 4 caractères de son identifiant
 export const guestName = (uid) => "Invité " + String(uid || "").replace(/-/g, "").slice(0, 4).toUpperCase();
@@ -77,7 +78,7 @@ export function AccountMenu({ mii, onMii, name, onName }) {
     <div className="acc" ref={box}>
       <button className="acc-btn" onClick={() => { setOpen(!open); go("main"); }} title="Compte">
         <MiiPortrait mii={mii} size={64} />
-        <span><b>{name || "…"}</b><small>{user ? "☁ " + (who || "Connecté") : "Compte invité"}</small></span>
+        <span><b>{name || "…"}</b><small>{user ? <><Icon name="user" /> {who || "Connecté"}</> : "Compte invité"}</small></span>
       </button>
       {open && (
         <div className="acc-pop mii-pop" role="dialog">

@@ -199,7 +199,7 @@ export function dealRound(g) {
   g.turn = (g.dealer + 1) % n;
   g.phase = "playing";
   g.phaseStart = Date.now();
-  note(g, `Manche ${g.round} : c'est parti !`, "info");
+  note(g, `Manche ${g.round} : c'est parti`, "info");
   // Effet de la carte de départ.
   if (start.v === "skip") {
     note(g, `${g.players[g.turn].name} passe son tour (carte de départ).`, "info");
@@ -277,7 +277,7 @@ export function play(g, id, cardId, color, uno = false) {
   if (p.hand.length === 1) {
     if (uno || p.uno) {
       p.uno = true;
-      note(g, `${p.name} : UNO !`, "uno");
+      note(g, `${p.name} : UNO`, "uno");
     } else {
       g.unoRisk = { id };
     }
@@ -425,7 +425,7 @@ export function challenge(g, id) {
   g.stats.challenges++;
   if (c.bluff) {
     drawCards(g, from, 4);
-    note(g, `Défi réussi ! ${from.name} bluffait et pioche 4 cartes.`, "uno");
+    note(g, `Défi réussi ${from.name} bluffait et pioche 4 cartes.`, "uno");
     g.turnStartedAt = Date.now();
   } else {
     drawCards(g, target, 6);
@@ -457,7 +457,7 @@ export function sayUno(g, id) {
     if (g.unoRisk?.id === id) g.unoRisk = null;
     if (!p.uno) {
       p.uno = true;
-      note(g, `${p.name} : UNO !`, "uno");
+      note(g, `${p.name} : UNO`, "uno");
     }
     return ok();
   }
@@ -478,7 +478,7 @@ export function catchUno(g, id, targetId) {
   g.unoRisk = null;
   drawCards(g, target, 2);
   g.stats.catches++;
-  note(g, `${catcher.name} a surpris ${target.name} sans UNO : +2 cartes !`, "uno");
+  note(g, `${catcher.name} a surpris ${target.name} sans UNO : +2 cartes`, "uno");
   return ok();
 }
 

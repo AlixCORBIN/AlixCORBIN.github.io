@@ -15,6 +15,7 @@ import { PublicToggle } from "./ui/PublicToggle.jsx";
 import { setCanApply } from "./lib/cloudSave.js";
 import { useWatchers } from "./lib/watchers.js";
 import "./styles/spectator.css";
+import Icon from "./ui/Icon";
 
 // Siège fictif d'un observateur : les écrans attendent un « me », il ne joue jamais
 const SPECTATOR_ME = {
@@ -99,10 +100,10 @@ export function GameScreen({ ctrl, onQuit }) {
   ) : (
     <>
       {ctrl.status === "reconnecting" && <div className="net-banner"><span className="spinner sm" />Connexion perdue, reconnexion en cours… ta place est gardée</div>}
-      {spectator ? <div className="spect-badge">👁 Mode observateur</div> : <PublicToggle ctrl={ctrl} />}
+      {spectator ? <div className="spect-badge"><Icon name="search" /> Mode observateur</div> : <PublicToggle ctrl={ctrl} />}
       {watchers > 0 && (
         <div className="watch-count" title={`${watchers} personne${watchers > 1 ? "s" : ""} regarde${watchers > 1 ? "nt" : ""} la partie`}>
-          👁 {watchers}
+          <Icon name="search" /> {watchers}
         </div>
       )}
       {state.game === "buckshot" ? (

@@ -2,6 +2,7 @@ import React from "react";
 import { sound } from "../lib/sound.js";
 import { Balance } from "./Balance.jsx";
 import { RngModal } from "./RngModal.jsx";
+import Icon from "./Icon";
 
 export function TopBar({ ctrl, state, me, game, title, onQuit, extra }) {
   const [showRng, setShowRng] = React.useState(false);
@@ -21,7 +22,6 @@ export function TopBar({ ctrl, state, me, game, title, onQuit, extra }) {
     <>
       <header className="topbar">
         <div className="brand">
-          {"♠ "}
           {title}
         </div>
         {ctrl.code && (
@@ -33,7 +33,7 @@ export function TopBar({ ctrl, state, me, game, title, onQuit, extra }) {
             {"Salle "}
             <b>{ctrl.code}</b>
             {" · "}
-            {copied ? "copie !" : "copier le lien"}
+            {copied ? "copie" : "copier le lien"}
           </button>
         )}
         <div className="grow" />
@@ -60,10 +60,10 @@ export function TopBar({ ctrl, state, me, game, title, onQuit, extra }) {
           onClick={() => setMuted(sound.toggle())}
           title="Son"
         >
-          {muted ? "🔇" : "🔊"}
+          <Icon name={muted ? "volume-no" : "volume"} />
         </button>
         <button className="icon" onClick={onQuit} title="Quitter">
-          ✕
+          <Icon name="cross" />
         </button>
       </header>
       {showRng && (

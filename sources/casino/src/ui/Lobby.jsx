@@ -11,23 +11,24 @@ import "../styles/rooms.css";
 import "../styles/lobby.css";
 
 import { ADMIN_RED } from "../lib/admins.js";
+import Icon from "./Icon";
 const GAMES = [
-  { id: "blackjack", cat: "casino", title: "Blackjack", players: "1 à 5", desc: "Assurance, Perfect Pairs, 21+3, double, split.", icon: "♠", hue: "#14804a" },
-  { id: "roulette", cat: "casino", title: "Roulette Européenne", players: "Table partagée", desc: "Roue 3D, une seule bille, tous les types de mises.", icon: "◉", hue: "#a31a2a" },
-  { id: "uno", cat: "board", title: "UNO 3D", players: "2 à 10", bots: true, desc: "Règles officielles complètes : +2, +4 avec défi, UNO! et manches.", icon: "🃏", hue: "#b3202a", free: true },
-  { id: "monopoly", cat: "board", title: "Monopoly 3D", players: "2 à 8", bots: true, desc: "Plateau Paris en 3D, enchères, échanges, maisons, hôtels.", icon: "🎩", hue: "#1f6b3a", free: true, external: "../monopoly/index.html" },
-  { id: "werewolf", cat: "board", title: "Loup-Garou", players: "5 à 16", bots: true, desc: "Village 3D jour/nuit, rôles secrets, chat de salle et de meute.", icon: "🐺", hue: "#2a3a8a", free: true },
-  { id: "milleborne", cat: "board", title: "Mille Bornes 3D", players: "2 à 6", bots: true, desc: "Attaques, parades, bottes et coups fourrés, en équipes à 4 et 6.", icon: "🚗", hue: "#c76a12", free: true },
-  { id: "horses", cat: "board", title: "Petits Chevaux", players: "2 à 4", bots: true, desc: "Sors tes 4 chevaux et rentre-les à l’écurie avant les autres.", icon: "🐴", hue: "#8a5a1f", free: true },
-  { id: "naval", cat: "board", title: "Bataille navale 3D", players: "1 contre 1", bots: true, desc: "Place ta flotte, tirs animés : missiles, explosions, naufrages.", icon: "⚓", hue: "#1f5f8a", free: true },
-  { id: "connect4", cat: "board", title: "Puissance 4", players: "1 contre 1", bots: true, desc: "Grille 3D, jetons qui tombent pour de vrai, manches et bot jusqu’au niveau expert.", icon: "🔴", hue: "#1d4fc4", free: true },
-  { id: "buckshot", cat: "arcade", title: "Buckshot", players: "1 à 4", bots: true, desc: "Roulette au fusil à pompe : réelles ou à blanc, objets, 3 manches.", icon: "☠", hue: "#8a1030", free: true },
-  { id: "racing", cat: "arcade", title: "TrackMerdia", players: "Solo", desc: "Course 3D à vraie physique : loopings, wallrides, sauts, 50 pistes, éditeur et records en ligne.", icon: "🏁", hue: "#1f4fa8", free: true, solo: true },
+  { id: "blackjack", cat: "casino", title: "Blackjack", players: "1 à 5", desc: "Assurance, Perfect Pairs, 21+3, double, split.", icon: "card", hue: "#14804a" },
+  { id: "roulette", cat: "casino", title: "Roulette Européenne", players: "Table partagée", desc: "Roue 3D, une seule bille, tous les types de mises.", icon: "pie", hue: "#a31a2a" },
+  { id: "uno", cat: "board", title: "UNO 3D", players: "2 à 10", bots: true, desc: "Règles officielles complètes : +2, +4 avec défi, UNO et manches.", icon: "card", hue: "#b3202a", free: true },
+  { id: "monopoly", cat: "board", title: "Monopoly 3D", players: "2 à 8", bots: true, desc: "Plateau Paris en 3D, enchères, échanges, maisons, hôtels.", icon: "crown", hue: "#1f6b3a", free: true, external: "../monopoly/index.html" },
+  { id: "werewolf", cat: "board", title: "Loup-Garou", players: "5 à 16", bots: true, desc: "Village 3D jour/nuit, rôles secrets, chat de salle et de meute.", icon: "ghost", hue: "#2a3a8a", free: true },
+  { id: "milleborne", cat: "board", title: "Mille Bornes 3D", players: "2 à 6", bots: true, desc: "Attaques, parades, bottes et coups fourrés, en équipes à 4 et 6.", icon: "car", hue: "#c76a12", free: true },
+  { id: "horses", cat: "board", title: "Petits Chevaux", players: "2 à 4", bots: true, desc: "Sors tes 4 chevaux et rentre-les à l’écurie avant les autres.", icon: "walk", hue: "#8a5a1f", free: true },
+  { id: "naval", cat: "board", title: "Bataille navale 3D", players: "1 contre 1", bots: true, desc: "Place ta flotte, tirs animés : missiles, explosions, naufrages.", icon: "map-pin", hue: "#1f5f8a", free: true },
+  { id: "connect4", cat: "board", title: "Puissance 4", players: "1 contre 1", bots: true, desc: "Grille 3D, jetons qui tombent pour de vrai, manches et bot jusqu’au niveau expert.", icon: "grid", hue: "#1d4fc4", free: true },
+  { id: "buckshot", cat: "arcade", title: "Buckshot", players: "1 à 4", bots: true, desc: "Roulette au fusil à pompe : réelles ou à blanc, objets, 3 manches.", icon: "ghost", hue: "#8a1030", free: true },
+  { id: "racing", cat: "arcade", title: "TrackMerdia", players: "Solo", desc: "Course 3D à vraie physique : loopings, wallrides, sauts, 50 pistes, éditeur et records en ligne.", icon: "check", hue: "#1f4fa8", free: true, solo: true },
 ];
 
 const FRIENDS = [
-  { title: "Jeton", author: "Antoine Rioul", url: "https://www.antlabs.fr/jeton", icon: "🪙", hue: "#7a5a14", desc: "Clone de Stake jouable avec de faux jetons, aucun argent réel." },
-  { title: "RNG World", author: "Alexandre Tricot", url: "https://rngworld.github.io/", icon: "🌍", hue: "#1f4f7a", desc: "Chaque jour, drop une ville aléatoire. Plus elle est rare, plus elle rapporte." },
+  { title: "Jeton", author: "Antoine Rioul", url: "https://www.antlabs.fr/jeton", icon: "piggy-bank", hue: "#7a5a14", desc: "Clone de Stake jouable avec de faux jetons, aucun argent réel." },
+  { title: "RNG World", author: "Alexandre Tricot", url: "https://rngworld.github.io/", icon: "globe", hue: "#1f4f7a", desc: "Chaque jour, drop une ville aléatoire. Plus elle est rare, plus elle rapporte." },
 ];
 
 const CATS = [
@@ -47,15 +48,15 @@ function ResumeBox({ onRejoin, onReopen }) {
   const [last, setLast] = React.useState(loadLastRoom);
   const [host, setHost] = React.useState(loadHostRoom);
   if (!last && !host) return null;
-  const info = (g) => GAME_INFO[g] || { title: g, icon: "🎲" };
+  const info = (g) => GAME_INFO[g] || { title: g, icon: "grid" };
   return (
     <div className="c-resume">
       {host && (
         <div className="c-resume-row">
-          <span>{info(host.game).icon}</span>
+          <span><Icon name={info(host.game).icon} /></span>
           <div><b>Ta salle {host.code}</b><small>{info(host.game).title} · rouvre-la, les joueurs reviennent tout seuls</small></div>
           <button className="btn primary" onClick={() => onReopen(host)}>Rouvrir</button>
-          <button className="c-x" title="Oublier" onClick={() => { clearHostRoom(); setHost(null); }}>✕</button>
+          <button className="c-x" title="Oublier" onClick={() => { clearHostRoom(); setHost(null); }}><Icon name="cross" /></button>
         </div>
       )}
       {last && (
@@ -63,7 +64,7 @@ function ResumeBox({ onRejoin, onReopen }) {
           <span>↩</span>
           <div><b>Salle {last.code}</b><small>Tu as été déconnecté : reprends ta place</small></div>
           <button className="btn primary" onClick={() => onRejoin(last)}>Revenir</button>
-          <button className="c-x" title="Oublier" onClick={() => { clearLastRoom(); setLast(null); }}>✕</button>
+          <button className="c-x" title="Oublier" onClick={() => { clearLastRoom(); setLast(null); }}><Icon name="cross" /></button>
         </div>
       )}
     </div>
@@ -79,15 +80,15 @@ function RoomsPanel({ onJoin, onWatch, broke }) {
         <h2>Salles en cours</h2>
         <span className={`live ${rooms ? "ok" : ""}`}><i />{rooms ? "en direct" : "connexion…"}</span>
       </div>
-      {rooms && !rooms.length && <p className="rooms-empty">Aucune salle publique pour l’instant. Crée la tienne !</p>}
+      {rooms && !rooms.length && <p className="rooms-empty">Aucune salle publique pour l’instant. Crée la tienne</p>}
       <div className="rooms-list">
         {(rooms || []).map((r) => {
-          const info = GAME_INFO[r.game] || { title: r.game, icon: "🎲" };
+          const info = GAME_INFO[r.game] || { title: r.game, icon: "grid" };
           const full = info.max && r.players >= info.max;
           const blocked = broke && (r.game === "blackjack" || r.game === "roulette");
           return (
             <div key={r.game + r.code} className="room">
-              <span className="room-icon">{info.icon}</span>
+              <span className="room-icon"><Icon name={info.icon} /></span>
               <div className="room-main">
                 <b>{info.title}</b>
                 <small>
@@ -97,7 +98,7 @@ function RoomsPanel({ onJoin, onWatch, broke }) {
               </div>
               <span className={`room-status ${r.status === "lobby" ? "waiting" : r.status}`}>{r.status === "lobby" ? "En attente" : "En jeu"}</span>
               {r.status === "playing" && r.game !== "monopoly" ? (
-                <button className="btn watch" onClick={() => onWatch(r)}>👁 Observer</button>
+                <button className="btn watch" onClick={() => onWatch(r)}><Icon name="search" /> Observer</button>
               ) : (
                 <button className="btn" disabled={full || blocked} onClick={() => onJoin(r)}>{full ? "Plein" : "Rejoindre"}</button>
               )}
@@ -120,7 +121,7 @@ function GameTile({ game, broke, isPublic, onPlay }) {
       <span className="tile-body">
         <b>{game.title}</b>
         <span className="tile-meta">
-          <span>👥 {game.players}</span>
+          <span><Icon name="user" /> {game.players}</span>
           {game.bots && <span>Bots</span>}
           {!game.free && <span className="chip-gold">Jetons</span>}
         </span>
@@ -134,7 +135,7 @@ function GameTile({ game, broke, isPublic, onPlay }) {
 function FriendTile({ game }) {
   return (
     <a className="tile friend" style={{ "--hue": game.hue }} href={game.url} target="_blank" rel="noopener">
-      <span className="tile-icon">{game.icon}</span>
+      <span className="tile-icon"><Icon name={game.icon} /></span>
       <span className="tile-body">
         <b>{game.title}</b>
         <span className="tile-meta"><span>par {game.author}</span></span>
@@ -219,7 +220,7 @@ export function Lobby({ onStart }) {
     <div className="casino">
       <header className="c-top">
         <a className="c-back" href="../index.html">← Portfolio</a>
-        <div className="c-brand"><span>♠</span><h1>{"Casino "}<em>3D</em></h1></div>
+        <div className="c-brand"><span><Icon name="card" /></span><h1>{"Casino "}<em>3D</em></h1></div>
         <div className="c-me">
           <AccountMenu mii={mii} onMii={setMii} name={name} onName={(n) => { setName(n); saveWallet({ name: n }); }} />
           <div className="c-wallet" title="Jetons virtuels, aucun argent réel. Solde partagé entre les jeux de casino.">
@@ -301,7 +302,7 @@ export function Lobby({ onStart }) {
             </div>
           </div>
           <RoomsPanel broke={broke} onJoin={(r) => start(r.game, "join", r.code)} onWatch={(r) => start(r.game, "watch", r.code)} />
-          <button className="link c-board" onClick={() => setShowBoard(true)}>🏆 Classement général des jetons</button>
+          <button className="link c-board" onClick={() => setShowBoard(true)}><Icon name="star" /> Classement général des jetons</button>
         </aside>
       </div>
       {showBoard && <Leaderboard onClose={() => setShowBoard(false)} />}

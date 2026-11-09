@@ -1,5 +1,6 @@
 import React from "react";
 import { cloudSave, summarize } from "../lib/cloudSave.js";
+import Icon from "./Icon";
 
 const fmt = (n) => Math.round(n).toLocaleString("fr-FR");
 const when = (iso) =>
@@ -33,7 +34,7 @@ export function SaveChooser() {
                 <span className="save-stats">
                   <span>● {fmt(s.bankroll)} jetons</span>
                   {s.debt > 0 && <span>dette {fmt(s.debt)}</span>}
-                  {s.records > 0 && <span>🏁 {s.records} record{s.records > 1 ? "s" : ""}</span>}
+                  {s.records > 0 && <span><Icon name="check" /> {s.records} record{s.records > 1 ? "s" : ""}</span>}
                   {s.name && <span>« {s.name} »</span>}
                 </span>
               </button>

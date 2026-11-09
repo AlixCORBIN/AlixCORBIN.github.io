@@ -18,7 +18,7 @@
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--font-text);
     margin: 0;
     padding: 40px 20px;
     background-color: #f0f2f5;
@@ -98,7 +98,7 @@ tr:hover {
 .date {
     color: var(--warn, #e67e22); /* Une touche de couleur pour la date */
     font-weight: 500;
-    font-family: monospace;
+    font-family: var(--font-data);
     font-size: 1.1rem;
 }
 

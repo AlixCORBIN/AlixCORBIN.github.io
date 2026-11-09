@@ -14,6 +14,7 @@ import { Editor, newDoc } from "./Editor.jsx";
 import { mapData } from "../track.js";
 import { CAR_COLORS, RaceView, loadCarColor, saveCarColor } from "./RaceView.jsx";
 import "./racing.css";
+import Icon from "../../../ui/Icon";
 
 const TAB_KEY = "racing-tab";
 
@@ -52,11 +53,11 @@ function Campaign({ pbs, wrs, onPlay, onBoard }) {
               <div className="rc-map-main">
                 <b>{m.name.split(" · ")[1]}</b>
                 <small><MedalDot medal={medal} /> {pb ? formatTime(pb) : "pas encore de temps"}{pbs[m.id]?.synced === false && <em className="rc-unsynced" title="Ce temps n'a pas été validé par le serveur : refais une course pour entrer au classement"> · non classé</em>}</small>
-                <small className="rc-wr">🏆 {wr ? `${formatTime(wr.time_ms)} · ${wr.pseudo}` : "aucun record"}{wr ? ` · ${wr.players} pilote${wr.players > 1 ? "s" : ""}` : ""}</small>
+                <small className="rc-wr"><Icon name="star" /> {wr ? `${formatTime(wr.time_ms)} · ${wr.pseudo}` : "aucun record"}{wr ? ` · ${wr.players} pilote${wr.players > 1 ? "s" : ""}` : ""}</small>
               </div>
               <div className="rc-map-btns">
                 <button className="btn primary" onClick={() => onPlay(m)}>Jouer</button>
-                <button className="btn ghost" onClick={() => onBoard(m)} title="Classement">🏆</button>
+                <button className="btn ghost" onClick={() => onBoard(m)} title="Classement"><Icon name="star" /></button>
               </div>
             </div>
           );
@@ -104,11 +105,11 @@ function Season2({ maps, err, onPlay, onBoard, pbs, wrs }) {
               <div className="rc-map-main">
                 <b>{m.name}</b>
                 <small><MedalDot medal={medalFor(pb, m.author_time)} /> {pb ? formatTime(pb) : "pas encore de temps"}</small>
-                <small className="rc-wr">🏆 {wr ? `${formatTime(wr.time_ms)} · ${wr.pseudo}` : "aucun record"}</small>
+                <small className="rc-wr"><Icon name="star" /> {wr ? `${formatTime(wr.time_ms)} · ${wr.pseudo}` : "aucun record"}</small>
               </div>
               <div className="rc-map-btns">
                 <button className="btn primary" onClick={() => onPlay(m)}>Jouer</button>
-                <button className="btn ghost" onClick={() => onBoard(m)} title="Classement">🏆</button>
+                <button className="btn ghost" onClick={() => onBoard(m)} title="Classement"><Icon name="star" /></button>
               </div>
             </div>
           );
@@ -145,7 +146,7 @@ function Community({ onPlay, onBoard, pbs }) {
               </div>
               <div className="rc-map-btns">
                 <button className="btn primary" onClick={() => onPlay(map)}>Jouer</button>
-                <button className="btn ghost" onClick={() => onBoard(map)} title="Classement">🏆</button>
+                <button className="btn ghost" onClick={() => onBoard(map)} title="Classement"><Icon name="star" /></button>
               </div>
             </div>
           );
@@ -186,7 +187,7 @@ export function RacingApp({ pseudo: pseudo0, onQuit }) {
   }, [pad?.id]);
   const toast = padToast && (
     <div className={`rc-padtoast ${padToast.on ? "" : "off"}`}>
-      🎮 {padToast.on ? `Manette ${{ xbox: "Xbox", playstation: "PlayStation", switch: "Switch", generic: "" }[padToast.kind]} connectée` : "Manette déconnectée"}
+      <Icon name="play" /> {padToast.on ? `Manette ${{ xbox: "Xbox", playstation: "PlayStation", switch: "Switch", generic: "" }[padToast.kind]} connectée` : "Manette déconnectée"}
     </div>
   );
   // navigation au pad dans le menu (pas pendant la course ni dans l'éditeur)
@@ -270,7 +271,7 @@ export function RacingApp({ pseudo: pseudo0, onQuit }) {
         <button className="icon" onClick={onQuit} title="Retour au Casino">←</button>
         <h1>Track<em>Merdia</em></h1>
         <div className="grow" />
-        <button className="pill" onClick={() => setShowSettings(true)} title="Paramètres">⚙ Paramètres</button>
+        <button className="pill" onClick={() => setShowSettings(true)} title="Paramètres"><Icon name="gears" /> Paramètres</button>
         <div className="c-me">
           <AccountMenu mii={mii} onMii={setMii} name={pseudo} onName={(n) => { setPseudo(n); saveWallet({ name: n }); }} />
         </div>
@@ -308,7 +309,7 @@ export function RacingApp({ pseudo: pseudo0, onQuit }) {
         )}
       </div>
       <aside className="rc-side-rank">
-        <h3>🏆 Classement des pilotes</h3>
+        <h3><Icon name="star" /> Classement des pilotes</h3>
         <Pilots pseudo={pseudo} compact />
       </aside>
       </div>
@@ -316,7 +317,7 @@ export function RacingApp({ pseudo: pseudo0, onQuit }) {
       {showSettings && <Settings onClose={() => setShowSettings(false)} />}
       {toast}
       {alertsUi}
-      {pad && <p className="rc-padhint">🎮 croix ou stick : se déplacer · {padLabels(pad.kind).A} : valider · {padLabels(pad.kind).B} : retour</p>}
+      {pad && <p className="rc-padhint"><Icon name="play" /> croix ou stick : se déplacer · {padLabels(pad.kind).A} : valider · {padLabels(pad.kind).B} : retour</p>}
       {board && <Board map={board} pseudo={pseudo} onClose={() => setBoard(null)} />}
     </div>
   );

@@ -302,7 +302,7 @@ export function useGame() {
           if (!err && a.type === 'COUNTER_TRADE' && g0.trade) {
             const from = g0.players.find((x) => x.id === g0.trade.from)
             const plus = (a.get.money - g0.trade.give.money) + (g0.trade.get.money - a.give.money)
-            if (from && !from.isBot) botSay(p.name, `@${from.name} Presque ! Avec ${plus} € de mieux pour moi, c'est d'accord. Je te renvoie l'offre.`)
+            if (from && !from.isBot) botSay(p.name, `@${from.name} Presque. Avec ${plus} € de mieux pour moi, c'est d'accord. Je te renvoie l'offre.`)
           }
           // réplique à un échange proposé par un humain
           if (!err && (a.type === 'ACCEPT_TRADE' || a.type === 'REJECT_TRADE') && g0.trade) {

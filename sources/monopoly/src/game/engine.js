@@ -103,7 +103,7 @@ export function startGame(s) {
     startedAt: Date.now(),
     stats: { buys: 0, hotels: 0, trades: 0, bankruptcies: 0 },
   })
-  log(s, `La partie commence ! ${s.players[0].name} joue en premier.`)
+  log(s, `La partie commence ${s.players[0].name} joue en premier.`)
   s.rev++
   return s
 }
@@ -337,7 +337,7 @@ function endGame(s, why) {
   s.endReason = why
   s.winner = ranking[0]?.id
   s.ranking = ranking.map((p) => ({ id: p.id, worth: netWorth(s, p) }))
-  log(s, `${why}. ${ranking[0]?.name} remporte la partie !`)
+  log(s, `${why}. ${ranking[0]?.name} remporte la partie`)
 }
 
 function groupHasHouses(s, g) {
@@ -426,7 +426,7 @@ export function applyAction(s0, actorId, a) {
       s.dice = [d1, d2]
       s.diceRev++
       s.steps = []
-      log(s, `${me.name} lance ${d1} + ${d2}${dbl ? ' (double !)' : ''}.`)
+      log(s, `${me.name} lance ${d1} + ${d2}${dbl ? ' (double)' : ''}.`)
       if (me.inJail) {
         if (dbl) {
           me.inJail = false
@@ -448,7 +448,7 @@ export function applyAction(s0, actorId, a) {
         if (dbl) {
           s.doublesCount++
           if (s.doublesCount >= 3) {
-            log(s, 'Trois doubles de suite !')
+            log(s, 'Trois doubles de suite')
             sendToJail(s, ai)
             s.turnPhase = 'end'
             break

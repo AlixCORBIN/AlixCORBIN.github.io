@@ -129,7 +129,7 @@
 .tile-cta i { font-style: normal; display: inline-block; transition: transform .2s var(--ease); }
 .tile:hover .tile-cta i { transform: translateX(4px); }
 .tile.friend { border-style: dashed; }
-.tile.friend .tile-icon { background: linear-gradient(160deg, color-mix(in srgb, var(--hue) 55%, #0a120e), #0a120e); }
+.tile.friend .tile-icon { background: color-mix(in srgb, var(--hue) 55%, #0a120e); }
 .c-empty { color: var(--ink-3); text-align: center; margin: 48px 0; }
 
 /* ---------- colonne de droite ---------- */

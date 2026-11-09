@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IHM Roomba — Alix CORBIN</title>
+    <title>IHM Roomba · Alix CORBIN</title>
     <meta name="description" content="Interface Processing (Java) pour piloter un Roomba en Bluetooth : projet IHM d&#x27;Alix Corbin.">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Portfolio Alix Corbin">
-    <meta property="og:title" content="IHM Roomba — Alix CORBIN">
+    <meta property="og:title" content="IHM Roomba · Alix CORBIN">
     <meta property="og:description" content="Interface Processing (Java) pour piloter un Roomba en Bluetooth : projet IHM d&#x27;Alix Corbin.">
     <meta property="og:url" content="https://alixcorbin.github.io/ihm/">
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/lang-switcher.css">
     <style>
         :root {
@@ -29,7 +28,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-text);
             background-color: var(--bg);
             color: var(--text);
             min-height: 100vh;
@@ -79,7 +78,7 @@
             align-items: center;
             gap: 12px;
             padding: 24px 0 40px;
-            font-family: 'IBM Plex Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.75rem;
             color: var(--muted);
         }
@@ -101,7 +100,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-family: 'IBM Plex Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.7rem;
             color: var(--green);
             text-transform: uppercase;
@@ -116,7 +115,7 @@
         }
 
         h1 {
-            font-family: 'Rajdhani', sans-serif;
+            font-family: var(--font-text);
             font-size: clamp(2.4rem, 6vw, 4rem);
             font-weight: 700;
             color: white;
@@ -130,7 +129,7 @@
         }
 
         .subtitle {
-            font-family: 'Rajdhani', sans-serif;
+            font-family: var(--font-text);
             font-size: 1.2rem;
             font-weight: 500;
             color: var(--muted);
@@ -156,7 +155,7 @@
             padding: 4px 14px;
             border: 1px solid var(--border);
             border-radius: 3px;
-            font-family: 'IBM Plex Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.72rem;
             color: var(--cyan);
             background: rgba(0,212,255,0.05);
@@ -172,7 +171,7 @@
             padding: 10px 20px;
             border: 1px solid var(--cyan2);
             border-radius: 4px;
-            font-family: 'IBM Plex Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.78rem;
             color: var(--cyan);
             text-decoration: none;
@@ -198,7 +197,7 @@
         }
         .divider-line { flex: 1; height: 1px; background: var(--border); }
         .divider-label {
-            font-family: 'IBM Plex Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.65rem;
             color: var(--cyan);
             text-transform: uppercase;
@@ -207,7 +206,7 @@
 
         /* ── SCREENSHOTS ── */
         .screens-title {
-            font-family: 'Rajdhani', sans-serif;
+            font-family: var(--font-text);
             font-size: 1.4rem;
             font-weight: 600;
             color: white;
@@ -250,7 +249,7 @@
             gap: 8px;
             padding: 10px 14px;
             border-bottom: 1px solid var(--border);
-            font-family: 'IBM Plex Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.7rem;
             color: var(--muted);
         }
@@ -278,7 +277,7 @@
             padding: 14px 16px;
         }
         .screen-footer h3 {
-            font-family: 'Rajdhani', sans-serif;
+            font-family: var(--font-text);
             font-size: 1.05rem;
             font-weight: 600;
             color: white;
@@ -321,7 +320,7 @@
             font-size: 1.8rem;
             color: var(--muted);
             cursor: pointer;
-            font-family: 'IBM Plex Mono', monospace;
+            font-family: var(--font-data);
             transition: color 0.2s;
         }
         .lightbox-close:hover { color: white; }
@@ -342,7 +341,7 @@
             padding: 24px;
         }
         .info-panel-title {
-            font-family: 'IBM Plex Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.65rem;
             color: var(--cyan);
             text-transform: uppercase;
@@ -382,7 +381,7 @@
             color: var(--cyan);
             text-decoration: none;
             border-radius: 6px;
-            font-family: 'IBM Plex Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.8rem;
             transition: background 0.2s, border-color 0.2s, transform 0.15s;
         }
@@ -409,6 +408,7 @@
             .screen-card.featured { grid-column: 1; }
         }
     </style>
+    <link rel="stylesheet" href="../assets/da.css">
 </head>
 <body>
 
@@ -427,7 +427,7 @@
     <div class="hero">
         <div class="status-row">
             <div class="status-dot"></div>
-            <span data-i18n="ihm.status">Projet Lycée — Interface Homme-Machine</span>
+            <span data-i18n="ihm.status">Projet Lycée · Interface Homme-Machine</span>
         </div>
 
         <h1 data-i18n="ihm.h1">Contrôle <span>Roomba</span><br>par tablette</h1>
@@ -474,11 +474,11 @@
                 ihm_home.screen
             </div>
             <div class="screen-img-wrap">
-                <img src="../assets/IHMHome.png" alt="IHM — Écran d'accueil">
+                <img src="../assets/IHMHome.png" alt="IHM · Écran d'accueil">
             </div>
             <div class="screen-footer">
                 <h3 data-i18n="ihm.screen1.title">Écran d'accueil</h3>
-                <p data-i18n="ihm.screen1.desc">Page principale de l'interface — accès rapide aux commandes de navigation et état du robot.</p>
+                <p data-i18n="ihm.screen1.desc">Page principale de l'interface · accès rapide aux commandes de navigation et état du robot.</p>
             </div>
         </div>
 
@@ -489,7 +489,7 @@
                 ihm_droitier.screen
             </div>
             <div class="screen-img-wrap">
-                <img src="../assets/IHMDroitier.png" alt="IHM — Mode Droitier">
+                <img src="../assets/IHMDroitier.png" alt="IHM · Mode Droitier">
             </div>
             <div class="screen-footer">
                 <h3 data-i18n="ihm.screen2.title">Mode Droitier</h3>
@@ -504,11 +504,11 @@
                 ihm_gaucher.screen
             </div>
             <div class="screen-img-wrap">
-                <img src="../assets/IHMGaucher.png" alt="IHM — Mode Gaucher">
+                <img src="../assets/IHMGaucher.png" alt="IHM · Mode Gaucher">
             </div>
             <div class="screen-footer">
                 <h3 data-i18n="ihm.screen3.title">Mode Gaucher</h3>
-                <p data-i18n="ihm.screen3.desc">Miroir adaptatif de l'interface — les commandes sont inversées pour les utilisateurs gauchers.</p>
+                <p data-i18n="ihm.screen3.desc">Miroir adaptatif de l'interface · les commandes sont inversées pour les utilisateurs gauchers.</p>
             </div>
         </div>
 
@@ -519,7 +519,7 @@
         <div class="info-panel">
             <div class="info-panel-title" data-i18n="ihm.panel1.title">// Fonctionnalités</div>
             <ul>
-                <li data-i18n="ihm.panel1.li1">Boutons de commande directionnelle — chaque bouton envoie un signal distinct</li>
+                <li data-i18n="ihm.panel1.li1">Boutons de commande directionnelle · chaque bouton envoie un signal distinct</li>
                 <li data-i18n="ihm.panel1.li2">5 niveaux de vitesse moteur sélectionnables via 5 rectangles au centre de l'interface</li>
                 <li data-i18n="ihm.panel1.li3">Mode Droitier / Gaucher avec disposition miroir des boutons</li>
                 <li data-i18n="ihm.panel1.li4">Chaque action utilisateur déclenche l'envoi d'un signal Bluetooth vers l'Arduino</li>
@@ -542,7 +542,7 @@
 
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <span class="lightbox-close" title="Fermer">✕</span>
+    <span class="lightbox-close" title="Fermer"><span class="ic"><svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.958 3.95801C18.4881 3.95763 19.0166 4.18846 19.4141 4.58594C19.8115 4.98342 20.0424 5.51194 20.042 6.04199C20.0423 6.57267 19.8115 7.06147 19.4141 7.41406C19.3082 7.50811 19.2025 7.60225 19.0967 7.69629C17.4824 9.13092 15.8673 10.5653 14.2529 12C15.8673 13.4347 17.4824 14.8691 19.0967 16.3037C19.2025 16.3978 19.3082 16.4919 19.4141 16.5859C19.8115 16.9385 20.0423 17.4273 20.042 17.958C20.0424 18.4881 19.8115 19.0166 19.4141 19.4141C19.0166 19.8115 18.4881 20.0424 17.958 20.042C17.4273 20.0423 16.9385 19.8115 16.5859 19.4141C16.4919 19.3082 16.3978 19.2025 16.3037 19.0967C14.8691 17.4824 13.4347 15.8673 12 14.2529C10.5653 15.8673 9.13092 17.4824 7.69629 19.0967C7.60225 19.2025 7.50811 19.3082 7.41406 19.4141C7.06147 19.8115 6.57267 20.0423 6.04199 20.042C5.51194 20.0424 4.98342 19.8115 4.58594 19.4141C4.18846 19.0166 3.95763 18.4881 3.95801 17.958C3.95773 17.4273 4.18854 16.9385 4.58594 16.5859C4.69176 16.4919 4.7975 16.3978 4.90332 16.3037C6.51743 14.8692 8.13186 13.4345 9.74609 12C8.13186 10.5655 6.51743 9.13076 4.90332 7.69629C4.7975 7.60225 4.69176 7.50811 4.58594 7.41406C4.18854 7.06147 3.95773 6.57267 3.95801 6.04199C3.95763 5.51194 4.18846 4.98342 4.58594 4.58594C4.98342 4.18846 5.51194 3.95763 6.04199 3.95801C6.57267 3.95773 7.06147 4.18854 7.41406 4.58594C7.50811 4.69176 7.60225 4.7975 7.69629 4.90332C9.13076 6.51743 10.5655 8.13186 12 9.74609C13.4345 8.13186 14.8692 6.51743 16.3037 4.90332C16.3978 4.7975 16.4919 4.69176 16.5859 4.58594C16.9385 4.18854 17.4273 3.95773 17.958 3.95801Z" fill="currentColor"/></svg></span></span>
     <img id="lightbox-img" src="" alt="Aperçu">
 </div>
 
@@ -562,10 +562,10 @@
 <script>
 window.PAGE_TRANSLATIONS = {
     fr: {
-        'page.title': 'IHM Roomba — Alix CORBIN',
+        'page.title': 'IHM Roomba · Alix CORBIN',
         'ihm.nav.portfolio': '← Portfolio',
         'ihm.nav.title': 'IHM Roomba',
-        'ihm.status': 'Projet Lycée — Interface Homme-Machine',
+        'ihm.status': 'Projet Lycée · Interface Homme-Machine',
         'ihm.h1': 'Contrôle <span>Roomba</span><br>par tablette',
         'ihm.subtitle': 'Application de télécommande IHM',
         'ihm.desc': 'Conception d\'une interface graphique en <strong style="color:var(--cyan)">Processing (Java)</strong> pour piloter un Roomba modifié. Chaque bouton de l\'interface envoie un signal distinct à la carte Arduino via <strong style="color:var(--cyan)">Bluetooth</strong>, qui transmet ensuite les ordres au Roomba. La vitesse des moteurs est réglable sur 5 niveaux via des rectangles au centre de l\'interface. Deux dispositions sont proposées pour les droitiers et gauchers.',
@@ -574,13 +574,13 @@ window.PAGE_TRANSLATIONS = {
         'ihm.link.arduino': '→ Voir le projet hardware Arduino associé',
         'ihm.screens.title': 'Écrans de l\'<span>interface</span>',
         'ihm.screen1.title': 'Écran d\'accueil',
-        'ihm.screen1.desc': 'Page principale de l\'interface — accès rapide aux commandes de navigation et état du robot.',
+        'ihm.screen1.desc': 'Page principale de l\'interface · accès rapide aux commandes de navigation et état du robot.',
         'ihm.screen2.title': 'Mode Droitier',
         'ihm.screen2.desc': 'Disposition ergonomique avec les contrôles principaux à droite pour une prise en main naturelle.',
         'ihm.screen3.title': 'Mode Gaucher',
-        'ihm.screen3.desc': 'Miroir adaptatif de l\'interface — les commandes sont inversées pour les utilisateurs gauchers.',
+        'ihm.screen3.desc': 'Miroir adaptatif de l\'interface · les commandes sont inversées pour les utilisateurs gauchers.',
         'ihm.panel1.title': '// Fonctionnalités',
-        'ihm.panel1.li1': 'Boutons de commande directionnelle — chaque bouton envoie un signal distinct',
+        'ihm.panel1.li1': 'Boutons de commande directionnelle · chaque bouton envoie un signal distinct',
         'ihm.panel1.li2': '5 niveaux de vitesse moteur sélectionnables via 5 rectangles au centre de l\'interface',
         'ihm.panel1.li3': 'Mode Droitier / Gaucher avec disposition miroir des boutons',
         'ihm.panel1.li4': 'Chaque action utilisateur déclenche l\'envoi d\'un signal Bluetooth vers l\'Arduino',
@@ -593,10 +593,10 @@ window.PAGE_TRANSLATIONS = {
         'ihm.panel2.li5': 'Couplé au projet hardware Arduino → voir le labo'
     },
     en: {
-        'page.title': 'Roomba HMI — Alix CORBIN',
+        'page.title': 'Roomba HMI · Alix CORBIN',
         'ihm.nav.portfolio': '← Portfolio',
         'ihm.nav.title': 'Roomba HMI',
-        'ihm.status': 'High School Project — Human-Machine Interface',
+        'ihm.status': 'High School Project · Human-Machine Interface',
         'ihm.h1': '<span>Roomba</span> Control<br>via Tablet',
         'ihm.subtitle': 'HMI Remote Control Application',
         'ihm.desc': 'Design of a graphical interface in <strong style="color:var(--cyan)">Processing (Java)</strong> to control a modified Roomba. Each button sends a distinct signal to the Arduino board via <strong style="color:var(--cyan)">Bluetooth</strong>, which then relays commands to the Roomba. Motor speed is adjustable across 5 levels using rectangles at the center of the interface. Two layouts are available for right-handed and left-handed users.',
@@ -605,13 +605,13 @@ window.PAGE_TRANSLATIONS = {
         'ihm.link.arduino': '→ See the associated Arduino hardware project',
         'ihm.screens.title': '<span>Interface</span> Screenshots',
         'ihm.screen1.title': 'Home Screen',
-        'ihm.screen1.desc': 'Main interface screen — quick access to navigation controls and robot status.',
+        'ihm.screen1.desc': 'Main interface screen · quick access to navigation controls and robot status.',
         'ihm.screen2.title': 'Right-Handed Mode',
         'ihm.screen2.desc': 'Ergonomic layout with main controls on the right for a natural grip.',
         'ihm.screen3.title': 'Left-Handed Mode',
-        'ihm.screen3.desc': 'Adaptive mirror of the interface — controls are flipped for left-handed users.',
+        'ihm.screen3.desc': 'Adaptive mirror of the interface · controls are flipped for left-handed users.',
         'ihm.panel1.title': '// Features',
-        'ihm.panel1.li1': 'Directional control buttons — each button sends a distinct signal',
+        'ihm.panel1.li1': 'Directional control buttons · each button sends a distinct signal',
         'ihm.panel1.li2': '5 motor speed levels selectable via 5 rectangles at the center of the interface',
         'ihm.panel1.li3': 'Right/Left-handed mode with mirrored button layout',
         'ihm.panel1.li4': 'Each user action triggers a Bluetooth signal sent to the Arduino',

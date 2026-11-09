@@ -6,6 +6,7 @@ import { sound } from "../../../lib/sound.js";
 import "./naval.css";
 
 import { AdminName } from "../../../lib/admins.js";
+import Icon, { rich } from "../../../ui/Icon";
 const shipName = (k) => FLEET.find((f) => f.k === k)?.name || k;
 
 function useCountdown(deadline) {
@@ -38,10 +39,10 @@ function Header({ ctrl, state, onQuit, left }) {
   };
   return (
     <header className="topbar">
-      <div className="brand">⚓ Bataille navale</div>
+      <div className="brand"><Icon name="map-pin" /> Bataille navale</div>
       {ctrl.code && (
         <button className="pill" onClick={copy} title="Copier le lien d'invitation">
-          Salle <b>{ctrl.code}</b> · {copied ? "copié !" : "copier le lien"}
+          Salle <b>{ctrl.code}</b> · {copied ? "copié" : "copier le lien"}
         </button>
       )}
       <div className="grow" />
@@ -51,10 +52,10 @@ function Header({ ctrl, state, onQuit, left }) {
         </div>
       )}
       <button className="icon" onClick={toggle} title="Son">
-        {muted ? "🔇" : "🔊"}
+        <Icon name={muted ? "volume-no" : "volume"} />
       </button>
       <button className="icon" onClick={onQuit} title="Quitter">
-        ✕
+        <Icon name="cross" />
       </button>
     </header>
   );
@@ -67,7 +68,7 @@ function Lobby({ ctrl, state, me }) {
   const n = state.players.length;
   return (
     <div className="nv-panel panel">
-      <h2>⚓ Bataille navale</h2>
+      <h2><Icon name="map-pin" /> Bataille navale</h2>
       <p className="sub">
         Duel 1 contre 1 · seul, tu affrontes un bot
         {ctrl.code ? " · partage le code de salle pour défier un ami" : ""}
@@ -76,7 +77,7 @@ function Lobby({ ctrl, state, me }) {
         {state.players.map((p) => (
           <div key={p.id} className={"nv-pl" + (p.id === me.id ? " me" : "")}>
             <span>
-              {p.id === state.hostId ? "👑 " : ""}
+              {p.id === state.hostId ? <><Icon name="crown" />{" "}</> : ""}
               <AdminName name={p.name} id={p.id} />
             </span>
             <em>{p.bot ? "bot" : "prêt"}</em>
@@ -241,7 +242,7 @@ function PlacementDock({ pl, state, me, ctrl }) {
     return (
       <div className="dock nv-dock">
         <p>
-          Flotte déployée ✔ {waiting.length ? `En attente de ${waiting.map((p) => p.name).join(", ")}…` : ""}
+          Flotte déployée <Icon name="check" /> {waiting.length ? `En attente de ${waiting.map((p) => p.name).join(", ")}…` : ""}
         </p>
         <button className="btn ghost" onClick={() => ctrl.act({ t: "unready" })}>
           Modifier
@@ -270,7 +271,7 @@ function PlacementDock({ pl, state, me, ctrl }) {
           ⟳ {pl.dir === "h" ? "Horizontal" : "Vertical"}
         </button>
         <button className="btn ghost" onClick={pl.random}>
-          🎲 Aléatoire
+          <Icon name="grid" /> Aléatoire
         </button>
         <button className="btn ghost" onClick={pl.clear} disabled={!pl.ships.length}>
           Effacer
@@ -316,7 +317,7 @@ function Banner({ state, me }) {
   const shooter = state.players.find((p) => p.id === (shot?.by || state.turn));
   if (state.step === "impact" && shot) {
     const cls = shot.sunk ? "sunk" : shot.hit ? "hit" : "miss";
-    const txt = shot.sunk ? `☠ Coulé ! ${shipName(shot.sunk)}` : shot.hit ? "💥 Touché !" : "🌊 À l'eau…";
+    const txt = rich(shot.sunk ? `☠ Coulé : ${shipName(shot.sunk)}` : shot.hit ? "💥 Touché" : "🌊 À l'eau…");
     return (
       <div key={"i" + shot.seq} className={"nv-impact " + cls}>
         {txt}
@@ -329,17 +330,17 @@ function Banner({ state, me }) {
   if (state.step === "flying" && shot) {
     return (
       <div key={"f" + shot.seq} className="nv-banner">
-        🚀 {shot.by === me.id ? "Missile lancé" : `${shooter?.name} tire`} sur {cellName(shot.x, shot.y)}…
+        <Icon name="arrow-right-up" /> {shot.by === me.id ? "Missile lancé" : `${shooter?.name} tire`} sur {cellName(shot.x, shot.y)}…
       </div>
     );
   }
   return state.turn === me.id && !me.spectator ? (
     <div key={"a" + state.turn + (shot?.seq || 0)} className="nv-banner mine">
-      🎯 À toi de tirer ! Vise une case de la grille ennemie
+      <Icon name="star" /> À toi de tirer. Vise une case de la grille ennemie
     </div>
   ) : (
     <div key={"w" + state.turn + (shot?.seq || 0)} className="nv-banner">
-      🔭 {shooter?.name} vise {me.spectator ? `la flotte de ${state.players.find((p) => p.id !== state.turn)?.name || "l'adversaire"}` : "ta flotte"}…
+      <Icon name="search" /> {shooter?.name} vise {me.spectator ? `la flotte de ${state.players.find((p) => p.id !== state.turn)?.name || "l'adversaire"}` : "ta flotte"}…
     </div>
   );
 }
@@ -361,13 +362,13 @@ function EndPanel({ ctrl, state, me }) {
   const winner = state.players.find((p) => p.id === state.winner);
   return (
     <div className="nv-panel panel nv-end">
-      <h2>{won ? "🏆 Victoire !" : `⚓ ${winner?.name} gagne la bataille`}</h2>
+      <h2>{rich(won ? "🏆 Victoire" : `⚓ ${winner?.name} gagne la bataille`)}</h2>
       {!me.spectator && <p className="sub">{won ? "Toute la flotte ennemie repose au fond de l'océan." : "Ta flotte a sombré… revanche ?"}</p>}
       <div className="nv-endstats">
         {state.players.map((p) => (
           <div key={p.id} className={p.id === state.winner ? "won" : ""}>
             <b>
-              {p.bot ? "🤖 " : ""}
+              {p.bot ? <><Icon name="gears" />{" "}</> : ""}
               <AdminName name={p.name} id={p.id} />
             </b>
             <span>
@@ -458,7 +459,7 @@ export function NavalScreen({ ctrl, state, me, onQuit }) {
       {state.phase === "lobby" && <Lobby ctrl={ctrl} state={state} me={me} />}
       {placing && (
         <>
-          <div className="nv-banner mine">⚓ Déploie ta flotte</div>
+          <div className="nv-banner mine"><Icon name="map-pin" /> Déploie ta flotte</div>
           <div className="nv-bottom">
             {(pl.err || err) && <div className="toast">{pl.err || err}</div>}
             <PlacementDock pl={pl} state={state} me={me} ctrl={ctrl} />

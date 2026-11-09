@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veille Technologique — Alix CORBIN</title>
+    <title>Veille Technologique · Alix CORBIN</title>
     <meta name="description" content="Veille technologique d&#x27;Alix Corbin, étudiant en BUT Informatique.">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Portfolio Alix Corbin">
-    <meta property="og:title" content="Veille Technologique — Alix CORBIN">
+    <meta property="og:title" content="Veille Technologique · Alix CORBIN">
     <meta property="og:description" content="Veille technologique d&#x27;Alix Corbin, étudiant en BUT Informatique.">
     <meta property="og:url" content="https://alixcorbin.github.io/culture/veille.html">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/lang-switcher.css">
     <style>
         :root {
@@ -29,7 +28,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'DM Sans', sans-serif;
+            font-family: var(--font-text);
             background-color: var(--bg);
             color: var(--ink);
             min-height: 100vh;
@@ -40,7 +39,7 @@
             align-items: center;
             gap: 10px;
             padding: 28px 48px;
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.72rem;
             color: var(--muted);
             border-bottom: 1px solid var(--border);
@@ -63,7 +62,7 @@
         }
 
         .kicker {
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.68rem;
             letter-spacing: 3px;
             text-transform: uppercase;
@@ -72,7 +71,7 @@
         }
 
         h1 {
-            font-family: 'Playfair Display', serif;
+            font-family: var(--font-text);
             font-size: clamp(2.2rem, 5vw, 3.4rem);
             font-weight: 900;
             line-height: 1.08;
@@ -111,7 +110,7 @@
         .articles { margin-bottom: 64px; }
 
         .section-label {
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.65rem;
             letter-spacing: 3px;
             text-transform: uppercase;
@@ -133,7 +132,7 @@
         }
 
         .article-date {
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.65rem;
             letter-spacing: 2px;
             text-transform: uppercase;
@@ -141,7 +140,7 @@
         }
 
         .article-tag {
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.6rem;
             letter-spacing: 1px;
             text-transform: uppercase;
@@ -155,7 +154,7 @@
         .article-tag.secu { background: #e8f0e6; color: #276121; }
 
         .article h2 {
-            font-family: 'Playfair Display', serif;
+            font-family: var(--font-text);
             font-size: 1.45rem;
             font-weight: 700;
             line-height: 1.25;
@@ -177,8 +176,8 @@
         .article-source {
             margin-top: 18px;
             padding: 12px 16px;
-            border-left: 3px solid var(--border);
-            font-family: 'DM Mono', monospace;
+            border: 1px solid var(--border);
+            font-family: var(--font-data);
             font-size: 0.68rem;
             color: var(--muted);
             line-height: 1.6;
@@ -198,7 +197,7 @@
             margin-bottom: 48px;
         }
         .bilan-kicker {
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.65rem;
             letter-spacing: 3px;
             color: var(--gold);
@@ -206,7 +205,7 @@
             margin-bottom: 16px;
         }
         .bilan h2 {
-            font-family: 'Playfair Display', serif;
+            font-family: var(--font-text);
             font-size: 1.6rem;
             margin-bottom: 16px;
         }
@@ -223,7 +222,7 @@
             flex-wrap: wrap;
         }
         .stat-num {
-            font-family: 'Playfair Display', serif;
+            font-family: var(--font-text);
             font-size: 2.4rem;
             font-weight: 900;
             color: var(--gold);
@@ -267,6 +266,7 @@
             .bilan { padding: 28px 24px; }
         }
     </style>
+    <link rel="stylesheet" href="../assets/da.css">
 </head>
 <body>
 
@@ -286,24 +286,24 @@
         <p class="kicker">Veille Technologique · Semestre 4 · 2026</p>
         <h1>Ce qui se passe<br><em>en ce moment</em></h1>
         <p class="hero-lead">
-            Quatre sujets que j'ai suivis ce semestre — pas des introductions générales,
+            Quatre sujets que j'ai suivis ce semestre · pas des introductions générales,
             mais des actualités en cours, des ruptures récentes, des choses qui bougent vraiment
             dans le monde de la tech en 2025-2026. Pour chacune, j'essaie de comprendre
             ce que ça change concrètement.
         </p>
 
         <div class="method-box">
-            <div class="method-icon">📰</div>
+            <div class="method-icon"><span class="ic"><svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.95996 4.79896C6.34982 4.3725 7.02326 4.37816 7.40527 4.81166L9.33301 7.00013L10.5215 5.67494C11.2219 4.89377 11.5725 4.50308 12.0215 4.50502C12.4703 4.50723 12.8173 4.90068 13.5107 5.68763L14.667 7.00013L16.6318 4.80775C17.0189 4.37639 17.6946 4.37663 18.082 4.80775C19.3668 6.23734 20.2053 8.01318 20.4463 9.92006C20.7065 11.9791 21 14.6091 21 16.0001C21 16.6288 20.9403 17.1944 20.8506 17.6886C20.7087 18.4699 20.6372 18.861 19.9609 19.5275C19.2848 20.1938 18.7378 20.2856 17.6436 20.4679C16.0815 20.7282 13.9761 21.0001 12 21.0001C10.0239 21.0001 7.91847 20.7282 6.35645 20.4679C5.2622 20.2856 4.71517 20.1938 4.03906 19.5275C3.36282 18.861 3.29127 18.4699 3.14941 17.6886C3.0597 17.1944 3.00002 16.6288 3 16.0001C3 14.6168 3.2897 12.0081 3.54883 9.95424C3.79212 8.0261 4.64872 6.23338 5.95996 4.79896ZM7.59961 10.0001C7.48645 10.0001 7.30124 9.9977 7.1377 10.0197C6.94511 10.0456 6.64151 10.1203 6.38086 10.381C6.12034 10.6416 6.04543 10.9453 6.01953 11.1378C5.99761 11.3013 5.99999 11.4867 6 11.5997V14.4005C5.99999 14.5137 5.99759 14.6991 6.01953 14.8624C6.04547 15.055 6.12039 15.3588 6.38086 15.6193C6.64148 15.8798 6.94516 15.9547 7.1377 15.9806C7.30123 16.0026 7.48647 16.0001 7.59961 16.0001H10.4004C10.5135 16.0001 10.6988 16.0026 10.8623 15.9806C11.0548 15.9547 11.3585 15.8798 11.6191 15.6193C11.8797 15.3587 11.9545 15.055 11.9805 14.8624C12.0024 14.6991 12 14.5137 12 14.4005V11.5997C12 11.4867 12.0024 11.3013 11.9805 11.1378C11.9546 10.9453 11.8796 10.6416 11.6191 10.381C11.3585 10.1204 11.0549 10.0456 10.8623 10.0197C10.6987 9.9977 10.5135 10.0001 10.4004 10.0001H7.59961ZM15 14.0001C14.4478 14.0002 14 14.4479 14 15.0001C14.0002 15.5522 14.4479 16.0001 15 16.0001H17C17.5522 16.0001 17.9998 15.5522 18 15.0001C18 14.4479 17.5523 14.0001 17 14.0001H15ZM15 10.0001C14.4478 10.0002 14 10.4479 14 11.0001C14.0002 11.5522 14.4479 12.0001 15 12.0001H17C17.5522 12.0001 17.9998 11.5522 18 11.0001C18 10.4479 17.5523 10.0001 17 10.0001H15Z" fill="currentColor"/></svg></span></div>
             <div class="method-text">
                 <strong>Sources suivies régulièrement</strong><br>
                 The Verge, Ars Technica, MIT Technology Review, Hacker News,
-                Le Monde Informatique — lectures hebdomadaires depuis février 2026.
+                Le Monde Informatique · lectures hebdomadaires depuis février 2026.
             </div>
         </div>
     </div>
 
     <div class="articles">
-        <p class="section-label">4 sujets · Février — Juin 2026</p>
+        <p class="section-label">4 sujets · Février · Juin 2026</p>
 
         <!-- ARTICLE 1 -->
         <div class="article">
@@ -316,7 +316,7 @@
                 Pendant longtemps, les grands modèles de langage étaient des systèmes de question-réponse.
                 On écrit, ils répondent. Ce paradigme est en train de changer radicalement.
                 Depuis 2025, la tendance dominante dans l'industrie n'est plus le chatbot :
-                c'est l'<strong>agent autonome</strong> — un système capable de planifier une tâche,
+                c'est l'<strong>agent autonome</strong> · un système capable de planifier une tâche,
                 l'exécuter en plusieurs étapes, corriger ses erreurs, et livrer un résultat
                 sans intervention humaine à chaque étape.
             </p>
@@ -325,27 +325,27 @@
                 reformule. Un agent échoue, et il se reformule lui-même. C'est cette capacité d'itération
                 autonome qui crée une vraie rupture. Des outils comme Claude Code, Devin ou les assistants
                 de type "computer use" commencent à prouver que des tâches de développement
-                entières peuvent être déléguées — pas juste l'autocomplétion d'une ligne.
+                entières peuvent être déléguées · pas juste l'autocomplétion d'une ligne.
             </p>
             <p>
                 La question qui m'intéresse est moins "est-ce que l'IA va remplacer les développeurs"
                 (débat rebattu) que : <strong>à partir de quand déléguer à un agent est-il un risque ?</strong>
                 Quand la tâche est claire et bornée, c'est un gain de temps évident. Quand elle touche
                 à une architecture, à un choix de design, à quelque chose qu'on ne peut pas vérifier
-                facilement après coup — la délégation devient aveugle. Cette limite-là,
+                facilement après coup · la délégation devient aveugle. Cette limite-là,
                 je commence à la percevoir concrètement.
             </p>
             <div class="article-source">
-                Sources consultées : Anthropic Blog — "Building effective agents" (déc. 2024) ·
-                MIT Technology Review — "The agentic AI era has arrived" (jan. 2025) ·
-                Ars Technica — "Claude Code and the rise of AI coding agents" (mars 2025)
+                Sources consultées : Anthropic Blog · "Building effective agents" (déc. 2024) ·
+                MIT Technology Review · "The agentic AI era has arrived" (jan. 2025) ·
+                Ars Technica · "Claude Code and the rise of AI coding agents" (mars 2025)
             </div>
         </div>
 
         <!-- ARTICLE 2 -->
         <div class="article">
             <div class="article-meta">
-                <span class="article-date">Janvier — Mars 2026</span>
+                <span class="article-date">Janvier · Mars 2026</span>
                 <span class="article-tag geo">Géopolitique</span>
             </div>
             <h2>DeepSeek et la guerre des puces : l'IA comme enjeu d'État</h2>
@@ -361,34 +361,34 @@
                 du modèle. C'est ce qu'il révèle sur les hypothèses tacites de l'industrie américaine :
                 que la supériorité en IA était garantie par l'accès au matériel haut de gamme.
                 DeepSeek a montré qu'on peut contourner cette dépendance matérielle par
-                <strong>l'innovation algorithmique</strong> — notamment via une architecture
+                <strong>l'innovation algorithmique</strong> · notamment via une architecture
                 "mixture of experts" qui n'active qu'une partie du réseau à chaque inférence.
             </p>
             <p>
                 En parallèle, les États-Unis ont renforcé leurs contrôles à l'export sur les puces
                 NVIDIA H100 et H800 vers la Chine. La réponse de NVIDIA a été de concevoir des puces
-                dégradées spécifiquement pour le marché chinois — qui ont elles-mêmes fini par être
+                dégradées spécifiquement pour le marché chinois · qui ont elles-mêmes fini par être
                 interdites. Ce jeu du chat et de la souris illustre quelque chose d'important :
                 <strong>l'IA est devenue un sujet de politique étrangère</strong>, au même titre que
                 l'armement ou l'énergie nucléaire dans le siècle précédent.
             </p>
             <div class="article-source">
-                Sources : The Verge — "DeepSeek's R1 shocked the AI world" (jan. 2025) ·
-                Reuters — "US tightens chip export controls to China" (oct. 2024) ·
-                Financial Times — "The semiconductor war" (fév. 2025)
+                Sources : The Verge · "DeepSeek's R1 shocked the AI world" (jan. 2025) ·
+                Reuters · "US tightens chip export controls to China" (oct. 2024) ·
+                Financial Times · "The semiconductor war" (fév. 2025)
             </div>
         </div>
 
         <!-- ARTICLE 3 -->
         <div class="article">
             <div class="article-meta">
-                <span class="article-date">Mars — Avril 2026</span>
+                <span class="article-date">Mars · Avril 2026</span>
                 <span class="article-tag energie">Énergie</span>
             </div>
             <h2>L'IA consomme comme un pays. Le nucléaire revient par la fenêtre</h2>
             <p>
                 En septembre 2024, Microsoft a annoncé la relance de Three Mile Island —
-                une centrale nucléaire américaine à l'arrêt depuis 2019 — pour alimenter
+                une centrale nucléaire américaine à l'arrêt depuis 2019 · pour alimenter
                 exclusivement ses data centers d'IA. Ce n'est pas une anecdote :
                 c'est le signe que la croissance de la consommation énergétique liée à l'IA
                 a atteint un seuil que les sources renouvelables intermittentes ne peuvent
@@ -404,16 +404,16 @@
             </p>
             <p>
                 Ce qui me frappe dans ce sujet, c'est la contradiction que l'industrie tech
-                peine à assumer. On se présente souvent comme un secteur propre — immatériel,
+                peine à assumer. On se présente souvent comme un secteur propre · immatériel,
                 dématérialisé. L'IA rend cette image difficile à tenir. Entraîner GPT-4
                 aurait émis autant de CO₂ qu'environ 500 vols transatlantiques.
-                La question n'est pas de savoir si l'IA est "utile" — elle l'est manifestement —
+                La question n'est pas de savoir si l'IA est "utile" · elle l'est manifestement —
                 mais d'avoir une comptabilité honnête de ce qu'elle coûte physiquement.
             </p>
             <div class="article-source">
-                Sources : The Guardian — "Microsoft restarts Three Mile Island" (sept. 2024) ·
-                AIE — "Electricity 2025" report · MIT Technology Review — "The carbon footprint of GPT-4" ·
-                Le Monde — "La sobriété numérique face à l'essor de l'IA" (mars 2025)
+                Sources : The Guardian · "Microsoft restarts Three Mile Island" (sept. 2024) ·
+                AIE · "Electricity 2025" report · MIT Technology Review · "The carbon footprint of GPT-4" ·
+                Le Monde · "La sobriété numérique face à l'essor de l'IA" (mars 2025)
             </div>
         </div>
 
@@ -428,7 +428,7 @@
                 En août 2024, le NIST (l'institut américain des standards) a finalisé les trois
                 premiers algorithmes cryptographiques post-quantiques officiels : CRYSTALS-Kyber,
                 CRYSTALS-Dilithium et SPHINCS+. Ce sont les successeurs désignés de RSA et
-                de la cryptographie à courbe elliptique — deux systèmes sur lesquels repose
+                de la cryptographie à courbe elliptique · deux systèmes sur lesquels repose
                 la quasi-totalité du chiffrement actuel sur Internet.
             </p>
             <p>
@@ -441,7 +441,7 @@
                 dont la confidentialité doit tenir sur le long terme, ce scénario est réaliste.
             </p>
             <p>
-                Ce sujet me semble important à connaître en tant que développeur — pas parce
+                Ce sujet me semble important à connaître en tant que développeur · pas parce
                 qu'on va devoir réécrire nos applications demain, mais parce que les bibliothèques
                 et les protocoles vont changer. TLS 1.4, SSH, les certificats HTTPS :
                 tout ça va progressivement intégrer des primitives post-quantiques.
@@ -449,9 +449,9 @@
                 arbitraire, mais à les anticiper comme une évolution logique.
             </p>
             <div class="article-source">
-                Sources : NIST — "Post-Quantum Cryptography Standardization" (août 2024) ·
-                Ars Technica — "NIST finalizes its post-quantum encryption standards" ·
-                ANSSI — "Migration vers la cryptographie post-quantique" (guide 2024)
+                Sources : NIST · "Post-Quantum Cryptography Standardization" (août 2024) ·
+                Ars Technica · "NIST finalizes its post-quantum encryption standards" ·
+                ANSSI · "Migration vers la cryptographie post-quantique" (guide 2024)
             </div>
         </div>
 
@@ -464,18 +464,18 @@
         <p>
             Ce qui m'a le plus frappé en suivant ces quatre sujets, c'est à quel point
             les questions techniques et les questions politiques, économiques ou environnementales
-            sont intriquées. DeepSeek n'est pas qu'un modèle de langage — c'est un événement
+            sont intriquées. DeepSeek n'est pas qu'un modèle de langage · c'est un événement
             géopolitique. L'énergie des data centers n'est pas qu'un problème d'infrastructure —
             c'est un choix de société. La cryptographie post-quantique n'est pas qu'un standard
-            technique — c'est une réponse à une menace d'État. Suivre la tech en 2026,
+            technique · c'est une réponse à une menace d'État. Suivre la tech en 2026,
             c'est suivre bien autre chose que la tech.
         </p>
         <p style="margin-top: 18px; font-size: 0.92rem; line-height: 1.85; color: #c8bfb5; max-width: 580px;">
             Une note personnelle sur les agents IA : ce portfolio a été développé en partie
-            avec Claude Code — un agent de code autonome. C'est précisément ce dont parle
+            avec Claude Code · un agent de code autonome. C'est précisément ce dont parle
             le premier article de cette veille. Utiliser cet outil m'a confronté à ses limites
             autant qu'à ses capacités : il faut savoir formuler ce qu'on veut, vérifier ce qu'il
-            produit, reprendre la main quand il dérive. Cette posture — déléguer avec lucidité —
+            produit, reprendre la main quand il dérive. Cette posture · déléguer avec lucidité —
             me semble être la compétence réelle que demande l'ère des agents, bien plus que
             de savoir taper le bon prompt.
         </p>
@@ -501,8 +501,8 @@
 
 <script>
 window.PAGE_TRANSLATIONS = {
-    fr: { 'page.title': 'Veille Technologique — Alix CORBIN' },
-    en: { 'page.title': 'Tech Watch — Alix CORBIN' }
+    fr: { 'page.title': 'Veille Technologique · Alix CORBIN' },
+    en: { 'page.title': 'Tech Watch · Alix CORBIN' }
 };
 </script>
 <script src="../assets/lang-switcher.js"></script>

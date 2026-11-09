@@ -6,6 +6,7 @@ import { BLOCKS, BLOCK_KEYS, TILE, blockKeysForSeason, defaultParams, occupancy,
 import { GRID, MAX_LEVEL, Track, mapData } from "../track.js";
 import { trackMeta } from "../meta.js";
 import { TrackPreview } from "../three/RaceScene.jsx";
+import Icon from "../../../ui/Icon";
 
 const CATS = [...new Set(BLOCK_KEYS.map((k) => BLOCKS[k].cat))];
 const HOTKEYS = ["road", "turn", "bank", "bigturn", "slope", "steep", "loop", "wall", "cp"];
@@ -270,7 +271,7 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
     <div className="rc-editor">
       <aside className="rc-tools">
         <div className="rc-tools-head">
-          <button className="icon" onClick={onExit} title="Menu">✕</button>
+          <button className="icon" onClick={onExit} title="Menu"><Icon name="cross" /></button>
           <b>Éditeur</b>
         </div>
         <label>Nom<input value={doc.name} maxLength={32} placeholder="Ma super piste" onChange={(e) => setDoc({ ...doc, name: e.target.value })} /></label>
@@ -326,7 +327,7 @@ export function Editor({ doc, setDoc, pseudo, onTest, onExit, onPlayPublished })
           <button className="btn" onClick={() => setPreview((v) => !v)}>{preview ? "Vue de dessus" : "Aperçu 3D"}</button>
           <button className="btn" onClick={save}>Sauvegarder</button>
           <button className="btn" onClick={() => setOpen(true)}>Ouvrir…</button>
-          <button className="btn primary" disabled={!doc.authorTime || busy || !!err} onClick={publish}>{busy ? "Publication…" : "🌐 Publier"}</button>
+          <button className="btn primary" disabled={!doc.authorTime || busy || !!err} onClick={publish}>{busy ? "Publication…" : <><Icon name="globe" /> Publier</>}</button>
           {admin && <button className="btn" disabled={!doc.authorTime || busy || !!err} onClick={() => setS2Form({ name: doc.name || "", ord: "1" })}>Envoyer dans la campagne S2</button>}
         </div>
         {admin && s2Form && (
@@ -372,7 +373,7 @@ function OpenDialog({ onClose, onOpen }) {
         {drafts.map((d) => (
           <div key={d.id} className="rc-open-row">
             <button className="link" onClick={() => onOpen({ ...d, authorTime: d.authorTime || null })}>{d.name || "Sans nom"} <small>{d.tiles.length} blocs · {WORLDS[d.world].name}</small></button>
-            <button className="icon" title="Supprimer" onClick={() => { deleteDraft(d.id); setDrafts(loadDrafts()); }}>🗑</button>
+            <button className="icon" title="Supprimer" onClick={() => { deleteDraft(d.id); setDrafts(loadDrafts()); }}><Icon name="trash" /></button>
           </div>
         ))}
         <h3>Partir d’une map officielle</h3>

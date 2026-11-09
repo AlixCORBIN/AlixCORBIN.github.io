@@ -18,7 +18,7 @@
     d.setAttribute('data-monopoly', '')
     d.style.setProperty('--hue', '#1f6b3a')
     d.innerHTML =
-      '<div class="gicon">🎩</div><h3>Monopoly 3D</h3><small>2 à 8 joueurs · bots</small>' +
+      '<div class="gicon"><span class="ic"><svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><pathd="M17.635 18.143c.754 0 1.365.61 1.365 1.364 0 .658-.469 1.218-1.122 1.3-1.175.145-3.219.336-5.878.336-2.659 0-4.704-.19-5.879-.337-.652-.08-1.12-.64-1.12-1.299 0-.753.61-1.364 1.364-1.364h11.27zM11.126 3.717a1 1 0 011.748 0l3.335 6.002a1 1 0 001.702.075l1.551-2.295c.6-.888 1.987-.34 1.817.718l-1.008 6.245a2 2 0 01-1.974 1.681H5.703a2 2 0 01-1.974-1.681L2.722 8.217C2.552 7.16 3.938 6.611 4.537 7.5l1.551 2.295a1 1 0 001.703-.075l3.335-6.002z"fill="currentColor" /></svg></span></div><h3>Monopoly 3D</h3><small>2 à 8 joueurs · bots</small>' +
       '<p>Plateau Paris en 3D, enchères, échanges, maisons, hôtels.</p>' +
       '<div class="row"><button class="btn primary">Solo</button><button class="btn">Créer une salle</button></div>'
     var b = d.querySelectorAll('button')

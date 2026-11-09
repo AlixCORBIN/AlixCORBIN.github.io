@@ -269,7 +269,7 @@ function endCheck(g) {
     g.winner = (top.length === 1 ? top[0] : w).id;
     g.phase = "end";
     g.endedAt = Date.now();
-    note(g, `${find(g, g.winner).name} gagne la partie !`, "win");
+    note(g, `${find(g, g.winner).name} gagne la partie`, "win");
   } else {
     g.phase = "roundEnd";
   }

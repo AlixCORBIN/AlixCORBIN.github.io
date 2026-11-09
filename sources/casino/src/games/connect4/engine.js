@@ -219,7 +219,7 @@ export function afterDrop( g )
 		g.roundWinner = p.id;
 		p.roundWins++;
 		g.step = "won";
-		note( g, `${p.name} aligne 4 jetons !`, "win" );
+		note( g, `${p.name} aligne 4 jetons`, "win" );
 		return;
 	}
 	if ( validCols( g.grid ).length === 0 )
@@ -247,7 +247,7 @@ export function afterResult( g )
 		g.phase = "end";
 		g.endedAt = Date.now();
 		const w = find( g, g.winner );
-		note( g, w ? `${w.name} remporte la partie !` : "Égalité parfaite !", "big" );
+		note( g, w ? `${w.name} remporte la partie` : "Égalité parfaite", "big" );
 		return;
 	}
 	g.step = "release";

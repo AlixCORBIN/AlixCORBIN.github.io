@@ -6,6 +6,7 @@ import { sound } from "../../../lib/sound.js";
 import "./uno.css";
 
 import { AdminName } from "../../../lib/admins.js";
+import Icon from "../../../ui/Icon";
 function useCountdown(deadline) {
   const [left, setLeft] = React.useState(null);
   React.useEffect(() => {
@@ -34,7 +35,7 @@ function Header({ ctrl, state, onQuit, left }) {
       <div className="brand">🃏 UNO</div>
       {ctrl.code && (
         <button className="pill" onClick={copy} title="Copier le lien d'invitation">
-          Salle <b>{ctrl.code}</b> · {copied ? "copié !" : "copier le lien"}
+          Salle <b>{ctrl.code}</b> · {copied ? "copié" : "copier le lien"}
         </button>
       )}
       <div className="grow" />
@@ -46,10 +47,10 @@ function Header({ ctrl, state, onQuit, left }) {
         </div>
       )}
       <button className="icon" onClick={() => setMuted(sound.toggle())} title="Son">
-        {muted ? "🔇" : "🔊"}
+        <Icon name={muted ? "volume-no" : "volume"} />
       </button>
       <button className="icon" onClick={onQuit} title="Quitter">
-        ✕
+        <Icon name="cross" />
       </button>
     </header>
   );
@@ -71,7 +72,7 @@ function Lobby({ ctrl, state, me }) {
         {state.players.map((p) => (
           <div key={p.id} className={"un-pl" + (p.id === me.id ? " me" : "")}>
             <span>
-              {p.id === state.hostId ? "👑 " : ""}
+              {p.id === state.hostId ? <><Icon name="crown" />{" "}</> : ""}
               <AdminName name={p.name} id={p.id} />
             </span>
             <em>{p.bot ? "bot" : "prêt"}</em>
@@ -156,7 +157,7 @@ function Scoreboard({ ctrl, state, me }) {
   const target = state.settings.target;
   return (
     <div className="un-panel panel un-end">
-      <h2>{state.phase === "end" ? `🏆 ${winner?.name} gagne la partie !` : `${winner?.name} gagne la manche`}</h2>
+      <h2>{state.phase === "end" ? <><Icon name="star" /> {winner?.name} gagne la partie</> : `${winner?.name} gagne la manche`}</h2>
       <p className="sub">
         {state.phase === "end" && target === 0
           ? `Il marque ${state.roundPts} points avec les cartes restantes des autres.`
@@ -167,7 +168,7 @@ function Scoreboard({ ctrl, state, me }) {
         {players.map((p) => (
           <div key={p.id} className={"un-sc" + (p.id === winner?.id ? " won" : "") + (p.id === me.id ? " me" : "")}>
             <span>
-              {p.bot ? "🤖 " : ""}
+              {p.bot ? <><Icon name="gears" />{" "}</> : ""}
               <AdminName name={p.name} id={p.id} />
             </span>
             <small>{p.count} carte{p.count > 1 ? "s" : ""}</small>
@@ -218,7 +219,7 @@ function effectText(state) {
   const idx = state.players.findIndex((p) => p.id === e.by);
   const by = state.players[idx];
   const next = state.players[(((idx + state.dir) % n) + n) % n];
-  if (e.last) return `${by.name} pose sa dernière carte !`;
+  if (e.last) return `${by.name} pose sa dernière carte`;
   switch (e.v) {
     case "skip":
       return `⊘ ${next.name} passe son tour`;
@@ -284,7 +285,7 @@ function ActionBar({ ctrl, state, me }) {
           {stack
             ? `Cumul de ${state.pending} : joue un ${VALUE_LABEL[state.pendingType]} ou pioche.`
             : state.playable.length
-              ? "À toi de jouer !"
+              ? "À toi de jouer"
               : "Aucune carte jouable : pioche."}
         </p>
         <button className="btn act hit" onClick={() => act({ t: "draw" })}>
@@ -373,7 +374,7 @@ export function UnoScreen({ ctrl, state, me, onQuit }) {
           </div>
           {(showUno || me.uno) && (
             <button className={"un-uno" + (me.uno ? " done" : "")} disabled={me.uno} onClick={() => ctrl.act({ t: "uno" })}>
-              UNO !
+              UNO
             </button>
           )}
         </>

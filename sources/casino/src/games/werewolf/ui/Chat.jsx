@@ -1,4 +1,5 @@
 import React from "react";
+import Icon, { rich } from "../../../ui/Icon";
 
 const NAME_COLORS = ["#ff9f8a", "#8ab8ff", "#9be39f", "#ffd27a", "#c7a2ff", "#7fe0e0", "#ff9fcf", "#e0c08a"];
 
@@ -40,7 +41,7 @@ export function Chat({ state, me, ctrl, open, onToggle }) {
   if (!open)
     return (
       <button className={"ww-chat-fab" + (totalUnread ? " unread" : "")} onClick={onToggle}>
-        💬
+        <Icon name="text-bubble" />
       </button>
     );
   return (
@@ -64,12 +65,12 @@ export function Chat({ state, me, ctrl, open, onToggle }) {
         {msgs.map((m) =>
           m.sys ? (
             <div key={m.id} className={"ww-sys " + (m.tone || "") + (m.ch.startsWith("p:") ? " private" : "")}>
-              {m.ch.startsWith("p:") && <b>🔒 </b>}
-              {m.text}
+              {m.ch.startsWith("p:") && <b><Icon name="lock" /> </b>}
+              {rich(m.text)}
             </div>
           ) : (
             <div key={m.id} className={"ww-msg" + (m.from === me.id ? " mine" : "")}>
-              <b style={{ color: color(m.from) }}>{m.name}</b> {m.text}
+              <b style={{ color: color(m.from) }}>{m.name}</b> {rich(m.text)}
             </div>
           ),
         )}
@@ -91,7 +92,7 @@ export function Chat({ state, me, ctrl, open, onToggle }) {
           onChange={(e) => setText(e.target.value)}
         />
         <button className="btn primary" disabled={!current.write || !text.trim()}>
-          ➤
+          <Icon name="arrow-right" />
         </button>
       </form>
     </aside>

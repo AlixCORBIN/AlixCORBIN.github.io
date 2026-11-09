@@ -8,6 +8,7 @@ import { sound } from "../../../lib/sound.js";
 import "./buckshot.css";
 
 import { AdminName } from "../../../lib/admins.js";
+import Icon, { rich } from "../../../ui/Icon";
 const plural = (n, w) => `${n} ${w}${n > 1 ? "s" : ""}`;
 
 function useCountdown(deadline) {
@@ -119,7 +120,7 @@ function banner(state, meId, t) {
         const who = ev.by === meId ? "Tu vises" : `${nm(ev.by)} vise`;
         return { small: `${who} ${self ? (ev.by === meId ? "ta propre tête" : "sa propre tête") : name(ev.target)}${ev.saw ? " · canon scié" : ""}…`, cls: "aim" };
       }
-      return ev.live ? { big: ev.dmg > 1 ? "RÉELLE ! −2" : "RÉELLE !", cls: "hit" } : { big: "Clic. À blanc.", small: self ? `${ev.by === meId ? "Tu rejoues" : `${nm(ev.by)} rejoue`}` : null, cls: "blank" };
+      return ev.live ? { big: ev.dmg > 1 ? "RÉELLE −2" : "RÉELLE", cls: "hit" } : { big: "Clic. À blanc.", small: self ? `${ev.by === meId ? "Tu rejoues" : `${nm(ev.by)} rejoue`}` : null, cls: "blank" };
     }
     case "skip":
       return { small: `${ev.who === meId ? "Tu es menotté : tu passes ton tour" : `${nm(ev.who)} est menotté et passe son tour`}` };
@@ -158,10 +159,10 @@ function Header({ ctrl, state, onQuit, left, muted, setMuted }) {
   };
   return (
     <header className="topbar bs-top">
-      <div className="brand">☠ Buckshot</div>
+      <div className="brand"><Icon name="ghost" /> Buckshot</div>
       {ctrl.code && (
         <button className="pill" onClick={copy} title="Copier le lien d'invitation">
-          Salle <b>{ctrl.code}</b> · {copied ? "copié !" : "copier le lien"}
+          Salle <b>{ctrl.code}</b> · {copied ? "copié" : "copier le lien"}
         </button>
       )}
       <div className="grow" />
@@ -172,10 +173,10 @@ function Header({ ctrl, state, onQuit, left, muted, setMuted }) {
         </div>
       )}
       <button className="icon" onClick={() => setMuted(sound.toggle())} title="Son">
-        {muted ? "🔇" : "🔊"}
+        <Icon name={muted ? "volume-no" : "volume"} />
       </button>
       <button className="icon" onClick={onQuit} title="Quitter">
-        ✕
+        <Icon name="cross" />
       </button>
     </header>
   );
@@ -195,7 +196,7 @@ function Lobby({ ctrl, state, me }) {
         {state.players.map((p) => (
           <div key={p.id} className={"bs-pl" + (p.id === me.id ? " me" : "")}>
             <span>
-              {p.id === state.hostId ? "👑 " : ""}
+              {p.id === state.hostId ? <><Icon name="crown" />{" "}</> : ""}
               <AdminName name={p.name} id={p.id} />
             </span>
             <em>{p.bot ? "bot" : "prêt"}</em>
@@ -252,7 +253,7 @@ function EndPanel({ ctrl, state, me, left }) {
           .map((p) => (
             <div key={p.id} className={"bs-sc" + (p.id === w?.id ? " won" : "") + (p.id === me.id ? " me" : "")}>
               <span>
-                {p.bot ? "🤖 " : ""}
+                {p.bot ? <><Icon name="gears" />{" "}</> : ""}
                 <AdminName name={p.name} id={p.id} />
               </span>
               <b>{"★".repeat(p.wins) || "·"}</b>
@@ -308,7 +309,7 @@ function Picker({ state, me, pick, onDone, onCancel }) {
               {victim.items.map((it, k) =>
                 it === "adrenaline" ? null : (
                   <button key={k} className="btn bs-item" title={ITEMS[it].desc} onClick={() => onDone({ target: victim.id, steal: k })}>
-                    <span>{ITEMS[it].icon}</span>
+                    <span>{rich(ITEMS[it].icon)}</span>
                     {ITEMS[it].name}
                   </button>
                 ),
@@ -426,8 +427,8 @@ export function BuckshotScreen({ ctrl, state, me, onQuit }) {
                 ))}
               </span>
               <small>
-                {!me.alive ? "☠ hors jeu pour cette manche" : me.cut ? "câbles coupés : plus de soin" : ""}
-                {me.cuffed ? " ⛓ menotté" : ""}
+                {!me.alive ? <><Icon name="ghost" /> hors jeu pour cette manche</> : me.cut ? "câbles coupés : plus de soin" : ""}
+                {me.cuffed ? <>{" "}<Icon name="lock" /> menotté</> : ""}
                 {me.wins ? ` ${"★".repeat(me.wins)}` : ""}
               </small>
             </div>
@@ -454,7 +455,7 @@ export function BuckshotScreen({ ctrl, state, me, onQuit }) {
               <div className="bs-items">
                 {me.items.map((it, k) => (
                   <button key={k} className="bs-item" disabled={!myTurn || disabled(it)} onClick={() => useItem(k)} title={ITEMS[it].desc}>
-                    <span>{ITEMS[it].icon}</span>
+                    <span>{rich(ITEMS[it].icon)}</span>
                     <small>{ITEMS[it].name}</small>
                   </button>
                 ))}

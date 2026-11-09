@@ -187,7 +187,7 @@ export function startGame(g) {
       p.ready = true;
     }
   });
-  note(g, "Placez vos navires !", "info");
+  note(g, "Placez vos navires", "info");
   return ok();
 }
 
@@ -271,10 +271,10 @@ export function resolveShot(g) {
         if (s) s.sunk = true;
       });
       const name = FLEET.find((f) => f.k === ship.k).name;
-      note(g, `${p.name} → ${where} : ${name} de ${t.name} coulé !`, "sunk");
+      note(g, `${p.name} → ${where} : ${name} de ${t.name} coulé`, "sunk");
       if (t.ships.every((s) => s.hits >= s.len)) g.winner = p.id;
     } else {
-      note(g, `${p.name} → ${where} : touché !`, "hit");
+      note(g, `${p.name} → ${where} : touché`, "hit");
     }
   } else {
     note(g, `${p.name} → ${where} : à l'eau.`, "miss");
@@ -288,7 +288,7 @@ export function afterImpact(g) {
   if (g.winner) {
     g.phase = "end";
     g.endedAt = Date.now();
-    note(g, `${find(g, g.winner).name} remporte la bataille !`, "big");
+    note(g, `${find(g, g.winner).name} remporte la bataille`, "big");
     return;
   }
   if (!(g.settings.bonus && g.shot?.hit)) g.turn = (g.turn + 1) % g.players.length;

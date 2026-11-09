@@ -47,8 +47,8 @@ export function watchRooms(cb) {
 }
 
 export const GAME_INFO = {
-  blackjack: { title: "Blackjack", icon: "♠", max: 5 },
-  roulette: { title: "Roulette", icon: "◉", max: 8 },
-  werewolf: { title: "Loup-Garou", icon: "🐺", max: 16 },
-  monopoly: { title: "Monopoly 3D", icon: "🎩", max: 8 },
+  blackjack: { title: "Blackjack", icon: "card", max: 5 },
+  roulette: { title: "Roulette", icon: "pie", max: 8 },
+  werewolf: { title: "Loup-Garou", icon: "ghost", max: 16 },
+  monopoly: { title: "Monopoly 3D", icon: "crown", max: 8 },
 };

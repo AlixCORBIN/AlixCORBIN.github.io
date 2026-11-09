@@ -2,6 +2,7 @@ import React from "react";
 import { account } from "../lib/mii.js";
 import { db, myUid, rpc, session } from "../lib/identity.js";
 import { useAdmins } from "../lib/admins.js";
+import Icon from "./Icon";
 
 const TZ = "Europe/Paris";
 
@@ -90,7 +91,7 @@ export function TournoiBox() {
 
   return (
     <div className="c-box tournoi">
-      <h2>🏆 Tournoi</h2>
+      <h2><Icon name="star" /> Tournoi</h2>
       {t && (
         <>
           <p className="t-dates">{`Du ${fmt(t.starts_at)} au ${fmt(t.ends_at)}`}</p>

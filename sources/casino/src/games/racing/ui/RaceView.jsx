@@ -14,6 +14,7 @@ import { Board } from "./Board.jsx";
 import { Settings } from "./Settings.jsx";
 
 import { AdminName } from "../../../lib/admins.js";
+import Icon, { rich } from "../../../ui/Icon";
 const CAR_KEY = "racing-car";
 export const CAR_COLORS = ["#e63946", "#1f6fe0", "#ffb400", "#18a04a", "#9b4dff", "#f2f2f2", "#ff5fa2", "#202228"];
 export const loadCarColor = () => { try { return localStorage.getItem(CAR_KEY) || CAR_COLORS[0]; } catch { return CAR_COLORS[0]; } };
@@ -29,7 +30,7 @@ function EngineVolume() {
   return (
     <label className="rc-vol" title="Volume du moteur">
       <button type="button" className="rc-vol-btn" onClick={() => set(v ? 0 : last.current)} style={{ background: "none", border: 0, padding: 0, fontSize: 16 }}>
-        {v === 0 ? "🔇" : v < 0.4 ? "🔈" : "🔊"}
+        <Icon name={v === 0 ? "volume-no" : v < 0.4 ? "volume-half" : "volume"} />
       </button>
       Moteur
       <input type="range" min="0" max="100" value={Math.round(v * 100)} onChange={(e) => set(e.target.value / 100)} onKeyDown={(e) => e.stopPropagation()} onPointerUp={(e) => e.currentTarget.blur()} />
@@ -151,7 +152,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
     const id = ++flashMsg.current;
     setTimeout(() => flashMsg.current === id && setFlash(null), 2200);
   };
-  onLiveFinish.current = (name, ms) => showFlash({ text: `🏁 ${name}`, sub: formatTime(ms) });
+  onLiveFinish.current = (name, ms) => showFlash({ text: rich(`🏁 ${name}`), sub: formatTime(ms) });
 
   const session = React.useMemo(() => {
     const s = new RaceSession(track, world, {
@@ -162,7 +163,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
         if (e === "boost") { sfx.boost(); rumble(0.2, 0.6, 250); }
         if (e === "respawn") { sfx.respawn(); rumble(0.6, 0.3, 160); }
         if (e === "go") rumble(0.3, 0.3, 120);
-        if (e === "missing") { sfx.missing(); showFlash({ text: "Checkpoints manquants !", bad: true }); }
+        if (e === "missing") { sfx.missing(); showFlash({ text: "Checkpoints manquants", bad: true }); }
         if (e === "cp") {
           sfx.cp();
           rumble(0, 0.5, 90);
@@ -236,27 +237,27 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
       <RaceScene session={session} ghosts={showGhosts ? allGhosts : []} color={color} hudRef={hudRef} live={live} liveList={liveList} specRef={specRef} />
       <div className="rc-hud">
         <div className="rc-top">
-          <button className="icon" onClick={onExit} title="Menu (Échap)">✕</button>
+          <button className="icon" onClick={onExit} title="Menu (Échap)"><Icon name="cross" /></button>
           <div className="rc-title"><b>{map.name}</b><small>{mode === "test" ? "Test de la map" : map.official ? world.name : `par ${map.author}`}</small></div>
           <div className="grow" />
           <EngineVolume />
-          <button className="pill" onClick={() => setShowSettings(true)} title="Paramètres">⚙</button>
+          <button className="pill" onClick={() => setShowSettings(true)} title="Paramètres"><Icon name="gears" /></button>
           {mode === "play" && (
             <>
-              <button className={`pill ${liveOn ? "on" : ""}`} onClick={toggleLive} title="Joueurs en direct sur cette map">🟢 {liveOn ? liveList.length : "off"}</button>
-              <button className={`pill ${showGhosts ? "on" : ""}`} onClick={() => setShowGhosts((v) => !v)}>👻 {showGhosts ? allGhosts.length : "off"}</button>
-              <button className="pill" onClick={() => setBoard(true)}>🏆 Classement</button>
+              <button className={`pill ${liveOn ? "on" : ""}`} onClick={toggleLive} title="Joueurs en direct sur cette map"><Icon name="pie" /> {liveOn ? liveList.length : "off"}</button>
+              <button className={`pill ${showGhosts ? "on" : ""}`} onClick={() => setShowGhosts((v) => !v)}><Icon name="ghost" /> {showGhosts ? allGhosts.length : "off"}</button>
+              <button className="pill" onClick={() => setBoard(true)}><Icon name="star" /> Classement</button>
             </>
           )}
         </div>
         {mode === "play" && (
           <div className="rc-side">
-            <div className="rc-side-title">🏆 Records de la piste</div>
+            <div className="rc-side-title"><Icon name="star" /> Records de la piste</div>
             {top === null && <small className="rc-row">Chargement…</small>}
             {top && !top.length && <small className="rc-row">Aucun temps : le premier record est pour toi.</small>}
             {top && top.slice(0, 8).map((r) => (
               <div key={r.pseudo} className={`rc-row ${r.pseudo === pseudo ? "me" : ""}`}>
-                <span className="rk">{["🥇", "🥈", "🥉"][r.rank - 1] || r.rank}</span><small><AdminName name={r.pseudo} /></small><b>{formatTime(r.time_ms)}</b>
+                <span className="rk">{r.rank}</span><small><AdminName name={r.pseudo} /></small><b>{formatTime(r.time_ms)}</b>
               </div>
             ))}
             {top && myRow && myRow.rank > 8 && (
@@ -267,12 +268,12 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
         )}
         {live && (liveList.length > 0 || liveFull) && (
           <div className="rc-live">
-            <div className="rc-side-title">🟢 En direct</div>
+            <div className="rc-side-title"><Icon name="pie" /> En direct</div>
             {liveFull && <small className="rc-row">Salle pleine (8 max)</small>}
             {liveList.map((p) => (
               <button key={p.id} className={`rc-row ${spec === p.id ? "me" : ""}`} onClick={() => setSpec(spec === p.id ? null : p.id)} title="Suivre ce joueur">
                 <i style={{ background: p.color }} /><small>{p.pseudo}</small>
-                <b>{p.fin ? `🏁 ${formatTime(p.fin)}` : p.phase === "countdown" ? "départ" : `CP ${p.cps}/${track.cps.length}`}</b>
+                <b>{p.fin ? <><Icon name="check" /> {formatTime(p.fin)}</> : p.phase === "countdown" ? "départ" : `CP ${p.cps}/${track.cps.length}`}</b>
               </button>
             ))}
             <small className="rc-live-hint">Clique un nom pour le suivre</small>
@@ -281,7 +282,7 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
         {specName && (
           <div className="rc-spec">
             <button className="pill" onClick={() => cycleSpec(-1)}>◀</button>
-            <span>👁 {specName}</span>
+            <span><Icon name="search" /> {specName}</span>
             <button className="pill" onClick={() => cycleSpec(1)}>▶</button>
             <button className="pill" onClick={() => setSpec(null)}>Retour</button>
           </div>
@@ -296,9 +297,9 @@ function RaceViewInner({ map, pseudo, mode = "play", onExit, onNext, onTestDone 
           <div className="rc-speed"><b ref={speedEl}>0</b><small>km/h</small></div>
         </div>
         <p className="rc-keys">
-          {pad
+          {rich(pad
             ? `🎮 ${L.RT} / ${L.A} accélérer · ${L.LT} freiner · stick diriger · ${L.X} / ${L.RB} dérapage · ${L.B} checkpoint · ${L.Y} recommencer · ${L.START} menu`
-            : "↑↓←→ / ZQSD · Espace dérapage · Entrée checkpoint · R recommencer · Échap menu"}
+            : "↑↓←→ / ZQSD · Espace dérapage · Entrée checkpoint · R recommencer · Échap menu")}
         </p>
         {isTouch && !pad && !result && <TouchPad />}
       </div>

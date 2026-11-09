@@ -21,7 +21,7 @@
 html, body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--font-text);
     min-height: 100vh;
     position: relative;
 }
@@ -84,7 +84,7 @@ body > * {
 }
 
 .header-title h1 {
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-text);
     font-size: 1.5rem;
     color: var(--cyan);
     text-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
@@ -108,7 +108,7 @@ body > * {
 
 /* ─── Section title ─── */
 .section-title {
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-text);
     font-size: 0.9rem;
     font-weight: 500;
     color: var(--muted);
@@ -155,7 +155,7 @@ body > * {
 }
 
 .stat-card-value {
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-text);
     font-size: 2rem;
     font-weight: 700;
     line-height: 1;
@@ -192,7 +192,7 @@ body > * {
 
 .bar-fill {
     width: 100%;
-    background: linear-gradient(to top, var(--cyan), rgba(34, 211, 238, 0.3));
+    background: var(--cyan);
     border-radius: 4px 4px 0 0;
     min-height: 4px;
     transition: height 0.6s ease;
@@ -202,7 +202,7 @@ body > * {
 .bar-count {
     font-size: 0.65rem;
     color: var(--muted);
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-text);
 }
 
 .bar-label {
@@ -236,7 +236,7 @@ body > * {
 }
 
 .rank-num {
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-text);
     font-size: 0.75rem;
     color: var(--muted);
     min-width: 20px;
@@ -265,7 +265,7 @@ body > * {
 }
 
 .rank-count {
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-text);
     font-size: 0.7rem;
     color: var(--cyan);
     min-width: 28px;
@@ -292,7 +292,7 @@ body > * {
 }
 
 .pref-label { color: var(--text); }
-.pref-pct   { font-family: 'Orbitron', sans-serif; font-size: 0.75rem; }
+.pref-pct   { font-family: var(--font-text); font-size: 0.75rem; }
 
 .pref-track {
     height: 6px;
@@ -337,7 +337,7 @@ body > * {
     letter-spacing: 0.5px;
 }
 .bj-card-value {
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-text);
     font-size: 1.3rem;
     font-weight: 700;
     color: var(--gold);
@@ -420,7 +420,7 @@ body > * {
 .lb-rank   { font-size: 1.1rem; width: 40px; text-align: center; }
 .lb-pseudo { font-weight: 600; }
 .lb-pseudo.lb-admin { color: #ff3b3b; }
-.lb-bankroll { font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; }
+.lb-bankroll { font-family: var(--font-text); font-size: 0.8rem; font-weight: 700; }
 .lb-hands  { color: var(--muted); }
 .lb-date   { color: var(--muted); font-size: 0.75rem; }
 
@@ -443,7 +443,7 @@ body > * {
 
 /* Orbitron réservé aux titres et gros chiffres : lisibilité des petits textes */
 .section-title, .bar-count, .rank-num, .rank-count, .pref-pct, .lb-bankroll {
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--font-text);
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.04em;
 }

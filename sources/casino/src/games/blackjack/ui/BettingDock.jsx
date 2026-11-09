@@ -61,7 +61,7 @@ export function BettingDock({ ctrl, state, me }) {
   const waiting = state.players.filter((p) => !p.ready).map((p) => p.name);
   return broke ? (
     <div className="dock">
-      <p>Plus de jetons !</p>
+      <p>Plus de jetons</p>
       <button
         className="btn primary"
         onClick={() =>

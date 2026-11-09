@@ -23,7 +23,7 @@
 @keyframes nvin{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%)}}
 
 .nv-impact{position:absolute;z-index:36;left:50%;top:24%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;font:900 clamp(30px,7vw,64px)/1 var(--serif,serif);letter-spacing:1px;text-shadow:0 4px 24px #000c;pointer-events:none;animation:nvboom .6s cubic-bezier(.2,1.6,.4,1)}
-.nv-impact small{font:600 14px system-ui,sans-serif;opacity:.85;letter-spacing:0}
+.nv-impact small{font:600 14px var(--font-text);opacity:.85;letter-spacing:0}
 .nv-impact.hit{color:#ffb347}.nv-impact.sunk{color:#ff5a4a}.nv-impact.miss{color:#bfe6ff;font-size:clamp(24px,5vw,44px)}
 @keyframes nvboom{from{opacity:0;transform:translate(-50%,-50%) scale(.4)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 

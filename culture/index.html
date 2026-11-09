@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Culture Générale — Alix CORBIN</title>
+    <title>Culture Générale · Alix CORBIN</title>
     <meta name="description" content="Culture générale d&#x27;Alix Corbin : visionnage, psychologie humaine et veille technologique.">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Portfolio Alix Corbin">
-    <meta property="og:title" content="Culture Générale — Alix CORBIN">
+    <meta property="og:title" content="Culture Générale · Alix CORBIN">
     <meta property="og:description" content="Culture générale d&#x27;Alix Corbin : visionnage, psychologie humaine et veille technologique.">
     <meta property="og:url" content="https://alixcorbin.github.io/culture/">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/lang-switcher.css">
     <style>
         :root {
@@ -26,7 +25,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'DM Sans', sans-serif;
+            font-family: var(--font-text);
             background: var(--bg);
             color: var(--ink);
             min-height: 100vh;
@@ -40,7 +39,7 @@
             align-items: center;
             gap: 10px;
             padding: 28px 48px;
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.72rem;
             color: var(--muted);
             border-bottom: 1px solid var(--border);
@@ -59,7 +58,7 @@
         }
 
         .kicker {
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.68rem;
             letter-spacing: 3px;
             text-transform: uppercase;
@@ -68,7 +67,7 @@
         }
 
         h1 {
-            font-family: 'Playfair Display', serif;
+            font-family: var(--font-text);
             font-size: clamp(2.2rem, 5vw, 3.4rem);
             font-weight: 900;
             line-height: 1.1;
@@ -114,7 +113,7 @@
         .card-top.s4 { background: var(--s4); }
 
         .card-num {
-            font-family: 'Playfair Display', serif;
+            font-family: var(--font-text);
             font-size: 5rem;
             font-weight: 900;
             line-height: 1;
@@ -125,7 +124,7 @@
         }
 
         .card-semester {
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.65rem;
             letter-spacing: 3px;
             text-transform: uppercase;
@@ -134,7 +133,7 @@
         }
 
         .card-title {
-            font-family: 'Playfair Display', serif;
+            font-family: var(--font-text);
             font-size: 1.5rem;
             font-weight: 700;
             line-height: 1.25;
@@ -162,7 +161,7 @@
         .card-meta strong {
             display: block;
             font-size: 0.72rem;
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-data);
             letter-spacing: 1px;
             text-transform: uppercase;
             margin-bottom: 2px;
@@ -185,7 +184,7 @@
             display: inline-block;
             background: var(--gold);
             color: #1a1410;
-            font-family: 'DM Mono', monospace;
+            font-family: var(--font-data);
             font-size: 0.6rem;
             letter-spacing: 1px;
             text-transform: uppercase;
@@ -201,6 +200,7 @@
             .cards { grid-template-columns: 1fr; }
         }
     </style>
+    <link rel="stylesheet" href="../assets/da.css">
 </head>
 <body>
 
@@ -259,9 +259,9 @@
         <a class="card" href="veille.html" style="grid-column: 1 / -1;">
             <div class="card-top" style="background: #1a3a5c;">
                 <div class="card-num" style="opacity:0.1;">V</div>
-                <p class="card-semester" data-i18n="culture.veille.semester">Semestre 4 — Nouveau</p>
+                <p class="card-semester" data-i18n="culture.veille.semester">Semestre 4 · Nouveau</p>
                 <h2 class="card-title" data-i18n="culture.veille.title">Veille<br>Technologique</h2>
-                <p class="card-desc" data-i18n="culture.veille.desc">Agents IA, géopolitique des puces, énergie des data centers, cryptographie post-quantique — ce qui se passe vraiment en ce moment dans le monde de la tech.</p>
+                <p class="card-desc" data-i18n="culture.veille.desc">Agents IA, géopolitique des puces, énergie des data centers, cryptographie post-quantique · ce qui se passe vraiment en ce moment dans le monde de la tech.</p>
                 <span class="badge-new" data-i18n="culture.veille.badge">S4 · 2026</span>
             </div>
             <div class="card-bottom">
@@ -279,7 +279,7 @@
 <script>
 window.PAGE_TRANSLATIONS = {
     fr: {
-        'page.title': 'Culture Générale — Alix CORBIN',
+        'page.title': 'Culture Générale · Alix CORBIN',
         'culture.nav.portfolio': '← Portfolio',
         'culture.nav.title': 'Culture Générale',
         'culture.kicker': 'Culture Générale · Alix CORBIN',
@@ -295,14 +295,14 @@ window.PAGE_TRANSLATIONS = {
         'culture.s4.desc': 'TOC, TIC et mécanismes du cerveau. Une heure de recherche chaque dimanche depuis mi-janvier.',
         'culture.s4.badge': 'En cours',
         'culture.s4.format': '1h de recherche / dimanche · 11 séances',
-        'culture.veille.semester': 'Semestre 4 — Nouveau',
+        'culture.veille.semester': 'Semestre 4 · Nouveau',
         'culture.veille.title': 'Veille<br>Technologique',
-        'culture.veille.desc': 'Agents IA, géopolitique des puces, énergie des data centers, cryptographie post-quantique — ce qui se passe vraiment en ce moment dans le monde de la tech.',
+        'culture.veille.desc': 'Agents IA, géopolitique des puces, énergie des data centers, cryptographie post-quantique · ce qui se passe vraiment en ce moment dans le monde de la tech.',
         'culture.veille.badge': 'S4 · 2026',
         'culture.veille.format': '4 sujets de fond · ~15h de lecture'
     },
     en: {
-        'page.title': 'General Culture — Alix CORBIN',
+        'page.title': 'General Culture · Alix CORBIN',
         'culture.nav.portfolio': '← Portfolio',
         'culture.nav.title': 'General Culture',
         'culture.kicker': 'General Culture · Alix CORBIN',
@@ -318,9 +318,9 @@ window.PAGE_TRANSLATIONS = {
         'culture.s4.desc': 'OCD, tics and brain mechanisms. One hour of research every Sunday since mid-January.',
         'culture.s4.badge': 'In progress',
         'culture.s4.format': '1h of research / Sunday · 11 sessions',
-        'culture.veille.semester': 'Semester 4 — New',
+        'culture.veille.semester': 'Semester 4 · New',
         'culture.veille.title': 'Tech<br>Watch',
-        'culture.veille.desc': 'AI agents, chip geopolitics, data center energy, post-quantum cryptography — what is really happening right now in the tech world.',
+        'culture.veille.desc': 'AI agents, chip geopolitics, data center energy, post-quantum cryptography · what is really happening right now in the tech world.',
         'culture.veille.badge': 'S4 · 2026',
         'culture.veille.format': '4 in-depth topics · ~15h of reading'
     }

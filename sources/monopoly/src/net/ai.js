@@ -53,11 +53,11 @@ export async function aiPickTrade(s, botId, cands) {
 // Réplique d'un bot à un échange qu'on lui propose (décision déjà prise)
 export async function aiReply(s, botId, trade, accept) {
   const r = await call(s.id, { mode: 'reply', bot: botInfo(s, botId), context: context(s, botId), trade: describeTrade(s, trade), verdict: accept ? 'accept' : 'reject' })
-  return r?.message || (accept ? 'Marché conclu !' : 'Non merci, ça ne m’arrange pas. Ajoute un peu plus et on en reparle.')
+  return r?.message || (accept ? 'Marché conclu' : 'Non merci, ça ne m’arrange pas. Ajoute un peu plus et on en reparle.')
 }
 
 // Réponse d'un bot qu'on interpelle dans le chat (@bot)
-const FALLBACK = ['Hmm, on verra ça ! 😏', 'Joue ton tour au lieu de me parler 😄', 'Fais-moi une offre, je suis à l’écoute.', 'Je garde mes propriétés, désolé !', 'Tu crois que tu vas gagner ? On en reparle à la fin.']
+const FALLBACK = ['Hmm, on verra ça 😏', 'Joue ton tour au lieu de me parler 😄', 'Fais-moi une offre, je suis à l’écoute.', 'Je garde mes propriétés, désolé', 'Tu crois que tu vas gagner ? On en reparle à la fin.']
 export async function aiChat(s, botId, fromName, msg) {
   const r = await call(s.id, { mode: 'chat', bot: botInfo(s, botId), context: context(s, botId), from: fromName, message: msg })
   return r?.message || '@' + fromName + ' ' + FALLBACK[Math.floor(Math.random() * FALLBACK.length)]

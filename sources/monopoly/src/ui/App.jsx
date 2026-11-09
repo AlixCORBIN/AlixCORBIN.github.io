@@ -7,6 +7,7 @@ import { usePresented } from './present.js'
 import { parseChat, suggest, mentionedIds } from './mentions.js'
 import { sfx, getSfx, setSfx, onSfx, CATEGORIES } from './sfx.js'
 import { THEMES, setTheme, useTheme } from './themes.js'
+import Icon, { rich } from "./Icon";
 
 const back = () => (window.location.href = '../jeux/index.html')
 
@@ -25,7 +26,7 @@ function Toast({ toast }) {
     const t = setTimeout(() => setShow(false), 3200)
     return () => clearTimeout(t)
   }, [toast?.k])
-  return show ? <div className={`toast ${toast.kind || ''}`}>{toast.kind === 'mention' ? '📣 ' : ''}{toast.msg}</div> : null
+  return show ? <div className={`toast ${toast.kind || ''}`}>{toast.kind === 'mention' ? <><Icon name="bell" />{" "}</> : ''}{rich(toast.msg)}</div> : null
 }
 
 // ---------- Accueil ----------
@@ -61,7 +62,7 @@ function Home({ g }) {
     <div className="screen home">
       <button className="back" onClick={back}>← Casino</button>
       <div className="panel center-panel">
-        <div className="logo"><span>🎩</span><h1>Monopoly 3D</h1><p>Édition Paris · multijoueur en ligne</p></div>
+        <div className="logo"><span><Icon name="crown" /></span><h1>Monopoly 3D</h1><p>Édition Paris · multijoueur en ligne</p></div>
         {saved && (
           <div className="resume">
             <div>
@@ -69,13 +70,13 @@ function Home({ g }) {
               <small>{saved.role === 'solo' ? 'Solo contre des bots' : `Salle ${saved.code}${saved.role === 'host' ? ' · tu es l’hôte' : ''}`} · {saved.name}</small>
             </div>
             <button className="btn primary" onClick={() => g.resume()}>Reprendre</button>
-            <button className="x" title="Oublier cette partie" onClick={() => { clearSession(); setSaved(null) }}>✕</button>
+            <button className="x" title="Oublier cette partie" onClick={() => { clearSession(); setSaved(null) }}><Icon name="cross" /></button>
           </div>
         )}
         <label>Ton pseudo</label>
         <input value={name} maxLength={16} onChange={(e) => setName(e.target.value)} placeholder="Pseudo" />
         <PublicSwitch on={g.isPublic} set={g.setPublic} />
-        <button className="btn primary big" disabled={!ok} onClick={() => { save(); g.create(name.trim()) }}>{g.isPublic ? '🌐 Créer une salle publique' : '🔒 Créer une salle privée'}</button>
+        <button className="btn primary big" disabled={!ok} onClick={() => { save(); g.create(name.trim()) }}>{g.isPublic ? <><Icon name="globe" /> Créer une salle publique</> : <><Icon name="lock" /> Créer une salle privée</>}</button>
         <div className="sep"><span>ou rejoindre</span></div>
         <div className="row">
           <input className="code-in" value={code} maxLength={5} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="CODE" />
@@ -100,12 +101,12 @@ function Lobby({ g }) {
       <button className="back" onClick={back}>← Casino</button>
       <div className="panel center-panel wide">
         {s.lastResult?.winner && (
-          <div className="lastres">🏆 Dernière partie : <b>{s.lastResult.winner}</b> a gagné
+          <div className="lastres"><Icon name="star" /> Dernière partie : <b>{s.lastResult.winner}</b> a gagné
             <small>{s.lastResult.ranking.map((r, i) => `${i + 1}. ${r.name} (${fmt(r.worth)})`).join(' · ')}</small>
           </div>
         )}
         <p className="muted">Code de la salle</p>
-        <div className="room-code" onClick={() => navigator.clipboard?.writeText(link).then(() => g.notify('Lien copié !'))} title="Copier le lien">
+        <div className="room-code" onClick={() => navigator.clipboard?.writeText(link).then(() => g.notify('Lien copié'))} title="Copier le lien">
           {g.code}
         </div>
         <p className="muted small">Clique pour copier le lien d’invitation</p>
@@ -118,7 +119,7 @@ function Lobby({ g }) {
               {p.isBot && <span className="tag">BOT</span>}
               {p.id === s.hostId && <span className="tag gold">HÔTE</span>}
               {p.id === g.myId && <span className="tag">toi</span>}
-              {host && p.id !== g.myId && <button className="x" onClick={() => g.lobby.remove(p.id)}>✕</button>}
+              {host && p.id !== g.myId && <button className="x" onClick={() => g.lobby.remove(p.id)}><Icon name="cross" /></button>}
             </li>
           ))}
           {Array.from({ length: 8 - s.players.length }).map((_, i) => <li key={i} className="empty">Place libre</li>)}
@@ -242,7 +243,7 @@ function SoundMenu({ onClose }) {
         <div className="themes">
           {Object.entries(THEMES).map(([id, t]) => (
             <button key={id} className={`theme ${th.id === id ? 'on' : ''}`} onClick={() => setTheme(id)} style={{ '--bg': t.bg, '--fl': t.floor }}>
-              <span className="sw"><i /></span>{t.icon} {t.label}
+              <span className="sw"><i /></span><Icon name={t.icon} /> {t.label}
             </button>
           ))}
         </div>
@@ -251,7 +252,7 @@ function SoundMenu({ onClose }) {
           <button className={`switch ${st.muted ? '' : 'on'}`} onClick={() => setSfx({ muted: !st.muted })} title="Activer / couper le son"><i /></button>
         </div>
         <label className="sm-vol">
-          <span>{st.muted || st.volume === 0 ? '🔇' : st.volume < 0.4 ? '🔈' : '🔊'}</span>
+          <span><Icon name={st.muted || st.volume === 0 ? "volume-no" : st.volume < 0.4 ? "volume-half" : "volume"} /></span>
           <input type="range" min={0} max={1} step={0.05} value={st.volume} disabled={st.muted} onChange={(e) => setSfx({ volume: +e.target.value })} onPointerUp={() => sfx('land')} />
           <small>{Math.round(st.volume * 100)}%</small>
         </label>
@@ -280,12 +281,12 @@ function TopBar({ s, pub, code, notify, onRules, onSound, logOpen, toggleLog }) 
       <button className="ibtn" onClick={back} title="Retour au Casino">←</button>
       <button className="chip" onClick={copy} title="Copier le lien">Salle <b>{code}</b></button>
       <span className="chip">Tour <b>{Math.min(s.round, s.settings.maxRounds || s.round)}</b>{s.settings.maxRounds ? <span className="muted"> / {s.settings.maxRounds}</span> : null}</span>
-      <span className="chip hide-m" title="Bâtiments disponibles à la banque">🏠 {s.houses} · 🏨 {s.hotels}</span>
+      <span className="chip hide-m" title="Bâtiments disponibles à la banque"><Icon name="home" /> {s.houses} · <Icon name="home" /> {s.hotels}</span>
       {pub && <span className="hide-m"><PublicSwitch compact on={pub.isPublic} set={pub.setPublic} /></span>}
       <span className="grow" />
-      <button className="ibtn" onClick={() => setSfx({ muted: !st.muted })} title="Couper / remettre le son (M)">{st.muted ? '🔇' : '🔊'}</button>
-      <button className="ibtn" onClick={onSound} title="Thème et bruitages">⚙</button>
-      <button className={`ibtn ${logOpen ? 'on' : ''}`} onClick={toggleLog} title="Journal (J)">💬</button>
+      <button className="ibtn" onClick={() => setSfx({ muted: !st.muted })} title="Couper / remettre le son (M)"><Icon name={st.muted ? "volume-no" : "volume"} /></button>
+      <button className="ibtn" onClick={onSound} title="Thème et bruitages"><Icon name="gears" /></button>
+      <button className={`ibtn ${logOpen ? 'on' : ''}`} onClick={toggleLog} title="Journal (J)"><Icon name="text-bubble" /></button>
       <button className="ibtn" onClick={onRules} title="Règles et raccourcis">?</button>
     </div>
   )
@@ -316,8 +317,8 @@ function Players({ s, myId, onPick }) {
                 {p.name}{p.id === myId && <em> · toi</em>}
                 {p.isBot && <span className="tag">BOT</span>}
                 {!p.isBot && !p.connected && <span className="tag red">hors ligne</span>}
-                {p.inJail && <span className="tag" title="En prison">🔒</span>}
-                {p.jailCards.length > 0 && <span className="tag" title="Carte libéré de prison">🎟️{p.jailCards.length > 1 ? p.jailCards.length : ''}</span>}
+                {p.inJail && <span className="tag" title="En prison"><Icon name="lock" /></span>}
+                {p.jailCards.length > 0 && <span className="tag" title="Carte libéré de prison"><Icon name="card" />{p.jailCards.length > 1 ? p.jailCards.length : ''}</span>}
               </span>
               <span className="pl-money">{p.bankrupt ? 'Faillite' : fmt(p.money)}</span>
               {!p.bankrupt && <OwnedStrip s={s} id={p.id} />}
@@ -335,8 +336,8 @@ function useMainAction(s, me, a) {
   if (s.phase !== 'playing' || !me || me.bankrupt) return null
   const cur = s.players[s.turn]
   if (cur.id !== me.id || s.debts.length || s.auction || s.pending) return null
-  if (s.turnPhase === 'roll') return { label: me.inJail ? 'Tenter un double' : s.extraRoll ? 'Relancer (double)' : 'Lancer les dés', icon: '🎲', run: () => a({ type: 'ROLL' }) }
-  return { label: 'Fin du tour', icon: '➜', run: () => a({ type: 'END_TURN' }) }
+  if (s.turnPhase === 'roll') return { label: me.inJail ? 'Tenter un double' : s.extraRoll ? 'Relancer (double)' : 'Lancer les dés', icon: 'grid', run: () => a({ type: 'ROLL' }) }
+  return { label: 'Fin du tour', icon: 'arrow-right', run: () => a({ type: 'END_TURN' }) }
 }
 
 function DiceMini({ d }) {
@@ -348,7 +349,7 @@ function Dock({ s, me, act, main, anim, onManage, onTrade }) {
   const cur = s.players[s.turn]
   const myTurn = me && cur.id === me.id
   let status
-  if (anim) status = <>🎲 {cur.name} lance les dés…</>
+  if (anim) status = <><Icon name="grid" /> {cur.name} lance les dés…</>
   else if (!me || me.bankrupt) status = <>Spectateur · tour de <b style={{ color: cur.color }}>{cur.name}</b></>
   else if (s.auction) status = 'Enchères en cours'
   else if (s.debts.length && !s.debts.some((d) => d.player === me.id)) status = <>{s.players.find((p) => p.id === s.debts[0].player)?.name} règle une dette…</>
@@ -365,8 +366,8 @@ function Dock({ s, me, act, main, anim, onManage, onTrade }) {
           <JailOptions me={me} act={act} />
         )}
         {main ? (
-          <button className={`btn primary big ${main.icon === '🎲' ? 'roll' : ''}`} onClick={main.run}>
-            <span>{main.icon}</span> {main.label} <kbd>Espace</kbd>
+          <button className={`btn primary big ${main.icon === 'grid' ? 'roll' : ''}`} onClick={main.run}>
+            <Icon name={main.icon} /> {main.label} <kbd>Espace</kbd>
           </button>
         ) : (
           !myTurn && <span className="waiting"><span className="spinner" style={{ borderTopColor: cur.color }} /></span>
@@ -374,8 +375,8 @@ function Dock({ s, me, act, main, anim, onManage, onTrade }) {
       </div>
       {me && !me.bankrupt && (
         <div className="dock-side">
-          <button className="tool" onClick={onManage} title="Mes propriétés (P)"><span>🏘️</span><small>Propriétés</small></button>
-          <button className="tool" disabled={!!s.trade} onClick={onTrade} title="Échanger (E)"><span>🤝</span><small>Échanger</small></button>
+          <button className="tool" onClick={onManage} title="Mes propriétés (P)"><span><Icon name="home" /></span><small>Propriétés</small></button>
+          <button className="tool" disabled={!!s.trade} onClick={onTrade} title="Échanger (E)"><span><Icon name="user" /></span><small>Échanger</small></button>
         </div>
       )}
     </div>
@@ -386,7 +387,7 @@ function JailOptions({ me, act: g }) {
   return (
     <div className="jailopts">
       <button className="btn" disabled={me.money < JAIL_FINE} onClick={() => g({ type: 'PAY_JAIL' })}>Payer {JAIL_FINE} €</button>
-      {me.jailCards.length > 0 && <button className="btn" onClick={() => g({ type: 'USE_JAIL_CARD' })}>🎟️ Utiliser la carte</button>}
+      {me.jailCards.length > 0 && <button className="btn" onClick={() => g({ type: 'USE_JAIL_CARD' })}><Icon name="card" /> Utiliser la carte</button>}
     </div>
   )
 }
@@ -445,7 +446,7 @@ function SquareCard({ s, i, me, act, onClose, onTrade }) {
   const desc = { go: 'Recevez 200 € à chaque passage.', jail: 'Simple visite… ou séjour forcé.', parking: 'Case neutre, rien ne se passe.', gotojail: 'Direction la prison, sans passer par Départ.', chance: 'Tirez une carte Chance.', caisse: 'Tirez une carte Caisse de communauté.', tax: `Payez ${sq.amount} € à la banque.` }[sq.type]
   return (
     <div className="sqcard">
-      <button className="x" onClick={onClose}>✕</button>
+      <button className="x" onClick={onClose}><Icon name="cross" /></button>
       {sq.price ? <Deed s={s} i={i} /> : (
         <div className="deed"><div className="deed-head" style={{ background: '#24453a', color: '#fff' }}><small>Case</small><b>{sq.name}</b></div><p className="pad muted">{desc}</p></div>
       )}
@@ -454,11 +455,11 @@ function SquareCard({ s, i, me, act, onClose, onTrade }) {
       {pr && me && !me.bankrupt && s.phase === 'playing' && (() => {
         const owner = s.players.find((p) => p.id === pr.owner)
         const built = sq.group && groupMembers(sq.group).some((k) => s.props[k]?.houses)
-        const label = mine ? '🤝 Proposer cette case en échange' : `🤝 Demander cette case à ${owner?.name}`
+        const label = mine ? 'Proposer cette case en échange' : `Demander cette case à ${owner?.name}`
         return (
           <div className="pad sq-trade">
             <button className="btn" disabled={!!s.trade || built || owner?.bankrupt} title={built ? 'Groupe construit : vendre les maisons avant d’échanger' : ''}
-              onClick={() => onTrade(mine ? { give: [i] } : { to: pr.owner, get: [i] })}>{label}</button>
+              onClick={() => onTrade(mine ? { give: [i] } : { to: pr.owner, get: [i] })}><Icon name="user" /> {label}</button>
           </div>
         )
       })()}
@@ -504,7 +505,7 @@ function Auction({ s, me, act }) {
           <h3>Enchères</h3>
           <div className="bidbox" style={{ '--c': leader?.color || '#5d6b63' }}>
             <small>Meilleure offre</small>
-            <b>{A.bid ? fmt(A.bid) : '—'}</b>
+            <b>{A.bid ? fmt(A.bid) : '-'}</b>
             <span>{leader ? leader.name : 'Aucune offre'}</span>
           </div>
           <div className="timer"><i style={{ width: `${Math.min(100, (left / 15) * 100)}%` }} /></div>
@@ -535,7 +536,7 @@ function PlayerSheet({ s, id, me, onClose, onTrade, onPick }) {
         <div className="sheet-head">
           <span className="avatar lg" style={{ '--c': p.color }}>{p.name.replace('Bot ', '')[0]?.toUpperCase()}</span>
           <div><h2>{p.name}</h2><small className="muted">{p.bankrupt ? 'Faillite' : `${fmt(p.money)} en poche · patrimoine ${fmt(netWorth(s, p))}`}</small></div>
-          <button className="x" onClick={onClose}>✕</button>
+          <button className="x" onClick={onClose}><Icon name="cross" /></button>
         </div>
         <div className="groups">
           {!owned.length && <p className="muted">Aucune propriété.</p>}
@@ -549,7 +550,7 @@ function PlayerSheet({ s, id, me, onClose, onTrade, onPick }) {
           </div>
         </div>
         {me && !me.bankrupt && p.id !== me.id && !p.bankrupt && (
-          <div className="tfoot"><button className="btn primary" disabled={!!s.trade} onClick={onTrade}>🤝 Proposer un échange</button></div>
+          <div className="tfoot"><button className="btn primary" disabled={!!s.trade} onClick={onTrade}><Icon name="user" /> Proposer un échange</button></div>
         )}
       </div>
     </div>
@@ -560,7 +561,7 @@ function Rules({ onClose }) {
   return (
     <div className="modal-bg" onClick={onClose}>
       <div className="modal sheet" onClick={(e) => e.stopPropagation()}>
-        <div className="sheet-head"><h2>Aide</h2><button className="x" onClick={onClose}>✕</button></div>
+        <div className="sheet-head"><h2>Aide</h2><button className="x" onClick={onClose}><Icon name="cross" /></button></div>
         <div className="groups rules">
           <section><h4>Raccourcis</h4>
             <p><kbd>Espace</kbd> lancer les dés / fin du tour · <kbd>P</kbd> propriétés · <kbd>E</kbd> échange · <kbd>J</kbd> journal · <kbd>M</kbd> couper le son · <kbd>Échap</kbd> fermer</p></section>
@@ -641,11 +642,11 @@ function Log({ s, chats = [], chat, onClose, myId, onPick }) {
   const items = [...s.log.slice(-60).map((l) => ({ ...l, kind: 'log' })), ...chats.map((c) => ({ ...c, kind: 'chat' }))].sort((a, b) => a.t - b.t)
   return (
     <div className="log">
-      <div className="log-head"><b>Journal</b><button className="x" onClick={onClose}>✕</button></div>
+      <div className="log-head"><b>Journal</b><button className="x" onClick={onClose}><Icon name="cross" /></button></div>
       <div className="log-body" ref={ref}>
         {items.map((l, i) => l.kind === 'chat'
           ? <div key={i} className={`chatline ${mentionedIds(l.msg, s.players).includes(myId) ? 'tome' : ''}`}><b>{l.from}</b> <ChatText text={l.msg} s={s} myId={myId} onPick={onPick} /></div>
-          : <div key={i} className={l.msg.startsWith('—') ? 'sep' : ''}>{l.msg.replace(/^— | —$/g, '')}</div>)}
+          : <div key={i} className={l.msg.startsWith('-') ? 'sep' : ''}>{l.msg.replace(/^— | —$/g, '')}</div>)}
       </div>
       <ChatInput s={s} onSend={chat} />
     </div>
@@ -725,7 +726,7 @@ function Manage({ s, me, act, onClose }) {
         <div className="sheet-head">
           <h2>Mes propriétés</h2>
           <span className="cash">{fmt(me.money)}</span>
-          <button className="x" onClick={onClose}>✕</button>
+          <button className="x" onClick={onClose}><Icon name="cross" /></button>
         </div>
         {!mine.length && <p className="muted empty-msg">Aucune propriété pour l’instant.</p>}
         <div className="groups">
@@ -830,7 +831,7 @@ function TradeBuilder({ s, me, act, onClose, counter, preset }) {
         <div className="sheet-head">
           <h2>{counter ? 'Contre-proposition' : 'Échange'}</h2>
           {counter && <span className="muted small">Modifie l’offre puis renvoie-la</span>}
-          <button className="x" onClick={onClose}>✕</button>
+          <button className="x" onClick={onClose}><Icon name="cross" /></button>
         </div>
         <div className="partners">
           {others.map((p) => (
@@ -892,14 +893,14 @@ function TradeResult({ s, me }) {
   return (
     <div className="modal-bg soft" onClick={() => setShown(null)}>
       <div className={`tresult ${ok ? 'ok' : 'ko'}`} onClick={(e) => e.stopPropagation()}>
-        <div className="tr-icon">{ok ? '🤝' : '✋'}</div>
+        <div className="tr-icon"><Icon name={ok ? "user" : "user-cross"} /></div>
         <h3>{title}</h3>
         <div className="tcols">
           <div className="tside"><div className="tside-head"><b>{ok ? 'Tu as reçu' : 'Tu aurais reçu'}</b></div><TradeSummary s={s} side={iGet} /></div>
           <div className="tarrow">⇄</div>
           <div className="tside"><div className="tside-head"><b>{ok ? 'Tu as donné' : 'Tu aurais donné'}</b></div><TradeSummary s={s} side={iGive} /></div>
         </div>
-        <button className="btn primary" onClick={() => setShown(null)}>OK</button>
+        <button className="btn primary" onClick={() => setShown(null)}>Fermer le récapitulatif</button>
       </div>
     </div>
   )
@@ -927,7 +928,7 @@ function TradeIncoming({ s, me, act }) {
         </div>
         <div className="tfoot">
           <button className="btn" onClick={() => act({ type: 'REJECT_TRADE' })}>Refuser</button>
-          <button className="btn" disabled={(t.counters || 0) >= 6} onClick={() => setEditing(t)} title="Reprendre cette offre et la modifier">✏️ Contre-proposer</button>
+          <button className="btn" disabled={(t.counters || 0) >= 6} onClick={() => setEditing(t)} title="Reprendre cette offre et la modifier"><Icon name="pen" /> Contre-proposer</button>
           <button className="btn primary" onClick={() => act({ type: 'ACCEPT_TRADE' })}>Accepter</button>
         </div>
       </div>
@@ -962,7 +963,7 @@ function GameOver({ s, g }) {
   return (
     <div className="modal-bg">
       <div className="modal center">
-        <h2>🏆 Fin de partie</h2>
+        <h2><Icon name="star" /> Fin de partie</h2>
         <ol className="ranking">
           {s.ranking?.map((r) => {
             const p = s.players.find((x) => x.id === r.id)
@@ -971,7 +972,7 @@ function GameOver({ s, g }) {
         </ol>
         <div className="row">
           {host
-            ? <button className="btn primary" onClick={g.lobby.rematch}>🔁 Rejouer dans la salle</button>
+            ? <button className="btn primary" onClick={g.lobby.rematch}><Icon name="arrow-right" /> Rejouer dans la salle</button>
             : <span className="muted">En attente que l’hôte relance une partie…</span>}
           <button className="btn" onClick={back}>Quitter</button>
         </div>

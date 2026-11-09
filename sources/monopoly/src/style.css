@@ -1,4 +1,4 @@
-:root{--bg:#0b1d14;--panel:rgba(14,32,24,.82);--line:rgba(255,255,255,.12);--fg:#f2f6f1;--muted:#9fb3a6;--accent:#2fbf71;--gold:#e8c468;--red:#e5484d;font-family:"Nunito","Segoe UI",system-ui,sans-serif}
+:root{--bg:#0b1d14;--panel:rgba(14,32,24,.82);--line:rgba(255,255,255,.12);--fg:#f2f6f1;--muted:#9fb3a6;--accent:#2fbf71;--gold:#e8c468;--red:#e5484d;font-family:var(--font-text)}
 *{box-sizing:border-box}html,body,#root{margin:0;height:100%;background:var(--bg);color:var(--fg);overflow:hidden}
 button,input,select{font:inherit;color:inherit}
 .muted{color:var(--muted)}.small{font-size:.8rem}.pad{padding:8px 14px}
@@ -7,7 +7,7 @@ button,input,select{font:inherit;color:inherit}
 .tag.gold{background:var(--gold);color:#222}.tag.red{background:var(--red)}
 .btn{border:1px solid var(--line);background:rgba(255,255,255,.08);padding:9px 14px;border-radius:12px;cursor:pointer;transition:.15s;white-space:nowrap}
 .btn:hover:not(:disabled){background:rgba(255,255,255,.16)}.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn.primary{background:linear-gradient(#36d07f,#1f9a58);border-color:#5be39a;color:#04140b;font-weight:800}
+.btn.primary{background:#36d07f;border-color:#5be39a;color:#04140b;font-weight:800}
 .btn.danger{background:var(--red);border-color:#ff8a8d}.btn.ghost{background:transparent}
 .btn.big{padding:12px 22px;font-size:1.05rem}.btn.sm{padding:5px 9px;font-size:.8rem;border-radius:9px}
 input,select{background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:10px;padding:9px 12px;outline:none}
@@ -97,7 +97,7 @@ input:focus{border-color:var(--accent)}
 .tsum-item small{color:var(--muted)}
 @media (max-width:760px){.tcols{grid-template-columns:1fr}.tarrow{justify-self:center;transform:rotate(90deg)}.modal.sheet{max-height:92vh}}
 /* ================= HUD v2 ================= */
-kbd{font:600 .68rem/1 ui-monospace,monospace;padding:3px 5px;border-radius:5px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.2);margin-left:6px;opacity:.8}
+kbd{font:600 .68rem/1 var(--font-data);padding:3px 5px;border-radius:5px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.2);margin-left:6px;opacity:.8}
 .center{text-align:center}.neg{color:#ff9a9a}.grow{flex:1}
 .topbar{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:6px;align-items:center;z-index:6;pointer-events:none}
 .topbar>*{pointer-events:auto}
@@ -234,7 +234,7 @@ button.chip{cursor:pointer}button.chip:hover{border-color:var(--gold)}
 .resume .x{position:static}
 .netbanner{position:absolute;top:56px;left:50%;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:10px;background:#3d3214;border:1px solid var(--gold);border-radius:14px;padding:9px 14px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 .netbanner .spinner{width:16px;height:16px;border-width:2px}
-.chatline{background:rgba(232,196,104,.1);border-left:3px solid var(--gold);padding:3px 7px;border-radius:6px;color:#f2ead2}.chatline b{color:var(--gold);margin-right:4px}
+.chatline{background:rgba(232,196,104,.1);border:1px solid var(--gold);padding:3px 7px;border-radius:6px;color:#f2ead2}.chatline b{color:var(--gold);margin-right:4px}
 
 /* chat : mentions et suggestions */
 .ment{display:inline;padding:0 4px;border-radius:5px;font-weight:800;color:#fff;background:color-mix(in srgb,var(--c) 55%,transparent);border:none;font-size:inherit;line-height:1.5}

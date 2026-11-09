@@ -8,6 +8,7 @@ import { sound } from "../../../lib/sound.js";
 import "./mb.css";
 
 import { AdminName } from "../../../lib/admins.js";
+import Icon, { rich } from "../../../ui/Icon";
 const BATTLE_TXT = { acc: "💥 Accident", gas: "⛽ Panne", flat: "🛞 Crevaison", stop: "🔴 Feu rouge" };
 const statusOf = (p) => (p.rolling ? "🟢 Roule" : BATTLE_TXT[p.battle] || "🔴 À l'arrêt");
 
@@ -32,7 +33,7 @@ export function MbCard({ k, small, selected, dim, onClick, onDoubleClick }) {
       onDoubleClick={onDoubleClick}
       tabIndex={onClick ? 0 : -1}
     >
-      <span className={"mb-ic" + (k === "limit" ? " sign" : "")}>{ICON[k]}</span>
+      <span className={"mb-ic" + (k === "limit" ? " sign" : "")}>{rich(ICON[k])}</span>
       <span className="mb-lb">{LABEL[k]}</span>
     </button>
   );
@@ -50,10 +51,10 @@ function Header({ ctrl, state, onQuit, left }) {
   };
   return (
     <header className="topbar">
-      <div className="brand">🚗 Mille Bornes</div>
+      <div className="brand"><Icon name="car" /> Mille Bornes</div>
       {ctrl.code && (
         <button className="pill" onClick={copy} title="Copier le lien d'invitation">
-          Salle <b>{ctrl.code}</b> · {copied ? "copié !" : "copier le lien"}
+          Salle <b>{ctrl.code}</b> · {copied ? "copié" : "copier le lien"}
         </button>
       )}
       <div className="grow" />
@@ -64,10 +65,10 @@ function Header({ ctrl, state, onQuit, left }) {
         </div>
       )}
       <button className="icon" onClick={() => setMuted(sound.toggle())} title="Son">
-        {muted ? "🔇" : "🔊"}
+        <Icon name={muted ? "volume-no" : "volume"} />
       </button>
       <button className="icon" onClick={onQuit} title="Quitter">
-        ✕
+        <Icon name="cross" />
       </button>
     </header>
   );
@@ -89,7 +90,7 @@ function Lobby({ ctrl, state, me }) {
           <div key={p.id} className={"mb-pl" + (p.id === me.id ? " me" : "")} style={{ "--car": CAR_COLORS[i] }}>
             <span>
               <i />
-              {p.id === state.hostId ? "👑 " : ""}
+              {p.id === state.hostId ? <><Icon name="crown" />{" "}</> : ""}
               <AdminName name={p.name} id={p.id} />
             </span>
             <em>{p.bot ? "bot" : "prêt"}</em>
@@ -166,16 +167,16 @@ function Plate({ members, index, me, active, turn }) {
       <b>
         {members.map((m) => (
           <span key={m.id} className={m.id === turn ? "cur" : ""}>
-            {m.bot ? "🤖 " : ""}
+            {m.bot ? <><Icon name="gears" />{" "}</> : ""}
             {m.name}
           </span>
         ))}
       </b>
       <span>
-        {p.km} km · {statusOf(p)}
+        {p.km} km · {rich(statusOf(p))}
         {p.limit ? " · 50" : ""}
       </span>
-      {p.safeties.length > 0 && <span className="mb-saf">{p.safeties.map((s) => ICON[s]).join(" ")}</span>}
+      {p.safeties.length > 0 && <span className="mb-saf">{rich(p.safeties.map((s) => ICON[s]).join(" "))}</span>}
     </div>
   );
 }
@@ -189,8 +190,8 @@ function bannerText(state, meId) {
   const name = (id) => (id === meId ? "Tu" : state.players.find((p) => p.id === id)?.name);
   const by = name(e.by);
   const v = (verb) => (e.by === meId ? verb + "s" : verb);
-  if (e.coup) return `COUP FOURRÉ ! ${name(e.coupBy)} ${e.coupBy === meId ? "sors" : "sort"} ${LABEL[e.coupCard.k]}`;
-  if (e.finish) return `🏁 ${by} ${v("boucle")} le voyage !`;
+  if (e.coup) return `COUP FOURRÉ ${name(e.coupBy)} ${e.coupBy === meId ? "sors" : "sort"} ${LABEL[e.coupCard.k]}`;
+  if (e.finish) return `🏁 ${by} ${v("boucle")} le voyage`;
   switch (e.kind) {
     case "dist":
       return `${by} ${v("roule")} ${e.card.k} km`;
@@ -213,10 +214,10 @@ function Banner({ ctrl, state, me }) {
   return (
     <div key={e.id + (e.coup ? "c" : "")} className={`mb-banner ${e.kind} ${e.coup ? "coup" : ""}`}>
       {e.kind !== "discard" && <MbCard k={shown} />}
-      <p>{text}</p>
+      <p>{rich(text)}</p>
       {state.canCoup && (
         <button className="mb-coup" onClick={() => ctrl.act({ t: "coup" })}>
-          COUP FOURRÉ !
+          COUP FOURRÉ
           <small>pose ta botte {LABEL[SAFETY_OF[e.card.k]]}</small>
         </button>
       )}
@@ -250,7 +251,7 @@ function Hand({ ctrl, state, me }) {
               const p = others.find((o) => o.id === id);
               return (
                 <button key={id} className="btn mb-attack" onClick={() => play(card, id)}>
-                  {ICON[card.k] === "50" ? "⚠ 50" : ICON[card.k]} sur {teamName(state, p)} <small>{p?.km} km</small>
+                  {ICON[card.k] === "50" ? <><Icon name="alert-triangle" /> 50</> : rich(ICON[card.k])} sur {teamName(state, p)} <small>{p?.km} km</small>
                 </button>
               );
             })}
@@ -298,7 +299,7 @@ function Scoreboard({ ctrl, state, me }) {
   const champ = state.players.find((p) => p.id === (end ? state.winner : state.roundWinner));
   return (
     <div className="mb-panel panel mb-end">
-      <h2>{end ? `🏆 ${teamName(state, champ)} ${champ && state.players.filter((x) => x.team === champ.team).length > 1 ? "remportent" : "remporte"} la course !` : `Fin de la manche ${state.round}`}</h2>
+      <h2>{rich(end ? `🏆 ${teamName(state, champ)} ${champ && state.players.filter((x) => x.team === champ.team).length > 1 ? "remportent" : "remporte"} la course` : `Fin de la manche ${state.round}`)}</h2>
       <p className="sub">
         {state.endReason === "trip" ? "Voyage bouclé." : "Le talon est épuisé."}
         {!end ? ` Premier à ${state.settings.target} points.` : ""}

@@ -12,7 +12,7 @@
     --gold: #f2b52a;
     --radius: 22px;
     --shadow: 0 6px 22px rgba(40, 70, 95, .12);
-    --font: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+    --font: var(--font-text);
 }
 
 * { box-sizing: border-box; }
@@ -289,7 +289,7 @@ input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 
 .choice img { width: 76px; height: 76px; }
 .lookalikes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .lookalikes .opt { border-radius: 18px; }
-textarea.text { width: 100%; min-height: 96px; font-size: 13px; font-family: ui-monospace, Consolas, monospace; resize: vertical; word-break: break-all; }
+textarea.text { width: 100%; min-height: 96px; font-size: 13px; font-family: var(--font-data); resize: vertical; word-break: break-all; }
 
 .toast {
     position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 30px); opacity: 0; pointer-events: none;

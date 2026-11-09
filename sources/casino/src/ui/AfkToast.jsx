@@ -27,7 +27,7 @@ export function AfkToast({ afk, state, me }) {
     return (
       <div className={"toast afk" + (mine ? " mine" : "")}>
         {mine
-          ? `Mise maintenant ! Ton tour sera passé dans ${secs}s`
+          ? `Mise maintenant. Ton tour sera passé dans ${secs}s`
           : `La manche démarre dans ${secs}s (${names} n'a pas misé)`}
       </div>
     );

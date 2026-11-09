@@ -4,6 +4,7 @@ import { GUEST_MIIS, account, listSync, loadPlayMii, miiStore, savePlayMii } fro
 import { miiPortrait } from "./MiiAvatar.jsx";
 import { getThumb, peekThumb, putThumb, thumbKey } from "@mii/thumb-cache.js";
 import "../styles/mii.css";
+import Icon from "./Icon";
 
 const MII_URL = "../mii/index.html";
 
@@ -96,7 +97,7 @@ export function MiiPicker({ value, onChange }) {
       </button>
       <div className="mii-acc">
         {user ? (
-          <a href={MII_URL + "#account"} className="on">☁ {who || "Connecté"}</a>
+          <a href={MII_URL + "#account"} className="on"><Icon name="user" /> {who || "Connecté"}</a>
         ) : (
           <a href={MII_URL + "#account"}>Compte (facultatif)</a>
         )}

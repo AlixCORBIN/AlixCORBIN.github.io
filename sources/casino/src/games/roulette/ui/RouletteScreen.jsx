@@ -115,7 +115,7 @@ export function RouletteScreen({ ctrl, state, me, onQuit }) {
             {state.players.map((p) => (
               <div key={p.id} className={"rp" + (p.id === me.id ? " me" : "")}>
                 <b><AdminName name={p.name} id={p.id} /></b>
-                <span>{totalBet(p) > 0 ? `mise ${totalBet(p)}` : "—"}</span>
+                <span>{totalBet(p) > 0 ? `mise ${totalBet(p)}` : "-"}</span>
                 {state.phase === "settle" && p.net !== 0 && (
                   <em className={p.net > 0 ? "pos" : "neg"}>
                     {p.net > 0 ? "+" : ""}

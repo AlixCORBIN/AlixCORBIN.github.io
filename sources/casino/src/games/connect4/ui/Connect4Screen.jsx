@@ -6,6 +6,7 @@ import { sound } from "../../../lib/sound.js";
 import "./connect4.css";
 
 import { AdminName } from "../../../lib/admins.js";
+import Icon from "../../../ui/Icon";
 function useCountdown( deadline )
 {
 	const [left, setLeft] = React.useState( null );
@@ -40,7 +41,7 @@ function Header( { ctrl, state, onQuit, left } )
 			<div className="brand">Puissance 4</div>
 			{ctrl.code && (
 				<button className="pill" onClick={copy} title="Copier le lien d'invitation">
-					Salle <b>{ctrl.code}</b> · {copied ? "copié !" : "copier le lien"}
+					Salle <b>{ctrl.code}</b> · {copied ? "copié" : "copier le lien"}
 				</button>
 			)}
 			<div className="grow" />
@@ -50,10 +51,10 @@ function Header( { ctrl, state, onQuit, left } )
 				</div>
 			)}
 			<button className="icon" onClick={() => setMuted( sound.toggle() )} title="Son">
-				{muted ? "🔇" : "🔊"}
+				<Icon name={muted ? "volume-no" : "volume"} />
 			</button>
 			<button className="icon" onClick={onQuit} title="Quitter">
-				✕
+				<Icon name="cross" />
 			</button>
 		</header>
 	);
@@ -78,7 +79,7 @@ function Lobby( { ctrl, state, me } )
 					<div key={p.id} className={"c4-pl" + ( p.id === me.id ? " me" : "" )} style={{ "--c": COLORS[i].hex }}>
 						<i />
 						<span>
-							{p.id === state.hostId ? "👑 " : ""}
+							{p.id === state.hostId ? <><Icon name="crown" />{" "}</> : ""}
 							<AdminName name={p.name} id={p.id} />
 						</span>
 						<em>{p.bot ? "bot" : "prêt"}</em>
@@ -176,7 +177,7 @@ function Banner( { state, me } )
 		const w = state.players.find( ( x ) => x.id === state.roundWinner );
 		return (
 			<div key={"w" + state.set} className="c4-splash" style={{ "--c": COLORS[w?.seat ?? 0].hex }}>
-				Puissance 4 !<small>{w?.id === me.id ? "Bien joué" : `${w?.name} aligne 4 jetons`}</small>
+				Puissance 4<small>{w?.id === me.id ? "Bien joué" : `${w?.name} aligne 4 jetons`}</small>
 			</div>
 		);
 	}
@@ -193,7 +194,7 @@ function Banner( { state, me } )
 			{state.step === "drop"
 				? `${mine ? "Tu joues" : p.name + " joue"} en colonne ${state.drop.col + 1}`
 				: mine
-					? "À toi ! Choisis une colonne"
+					? "À toi. Choisis une colonne"
 					: `${p.name} réfléchit…`}
 		</div>
 	);
@@ -218,14 +219,14 @@ function EndPanel( { ctrl, state, me } )
 	const winner = state.players.find( ( p ) => p.id === state.winner );
 	return (
 		<div className="c4-panel panel c4-end">
-			<h2>{!winner ? "Égalité" : won ? "Victoire !" : `${winner.name} gagne`}</h2>
+			<h2>{!winner ? "Égalité" : won ? "Victoire" : `${winner.name} gagne`}</h2>
 			<p className="sub">{!winner ? "Personne ne l'emporte cette fois." : won ? "Quatre jetons bien alignés." : "Revanche ?"}</p>
 			<div className="c4-endstats">
 				{state.players.map( ( p ) => (
 					<div key={p.id} className={p.id === state.winner ? "won" : ""} style={{ "--c": COLORS[p.seat].hex }}>
 						<b>
 							<i />
-							{p.bot ? "🤖 " : ""}
+							{p.bot ? <><Icon name="gears" />{" "}</> : ""}
 							<AdminName name={p.name} id={p.id} />
 						</b>
 						<span>

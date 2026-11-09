@@ -9,6 +9,7 @@ import { sound } from "../../../lib/sound.js";
 import { AfkToast } from "../../../ui/AfkToast.jsx";
 import { Balance } from "../../../ui/Balance.jsx";
 import { RngModal } from "../../../ui/RngModal.jsx";
+import Icon from "../../../ui/Icon";
 
 export function BlackjackHud({ ctrl, state, me, onQuit }) {
   const [showBoard, setShowBoard] = React.useState(false);
@@ -29,7 +30,7 @@ export function BlackjackHud({ ctrl, state, me, onQuit }) {
     <div className="hud">
       <header>
         <div className="brand">
-          {"♠ Blackjack "}
+          <Icon name="card" />{" Blackjack "}
           <em>3D</em>
         </div>
         {ctrl.code && (
@@ -41,7 +42,7 @@ export function BlackjackHud({ ctrl, state, me, onQuit }) {
             {"Salle "}
             <b>{ctrl.code}</b>
             {" · "}
-            {copied ? "copie !" : "copier le lien"}
+            {copied ? "copie" : "copier le lien"}
           </button>
         )}
         <div className="grow" />
@@ -66,17 +67,17 @@ export function BlackjackHud({ ctrl, state, me, onQuit }) {
           onClick={() => setMuted(sound.toggle())}
           title="Son"
         >
-          {muted ? "🔇" : "🔊"}
+          <Icon name={muted ? "volume-no" : "volume"} />
         </button>
         <button
           className="icon"
           onClick={() => setShowBoard(true)}
           title="Classement général des jetons"
         >
-          🏆
+          <Icon name="star" />
         </button>
         <button className="icon" onClick={onQuit} title="Quitter">
-          ✕
+          <Icon name="cross" />
         </button>
       </header>
       {state.notice && state.notice !== "Sabot re-melange" && (

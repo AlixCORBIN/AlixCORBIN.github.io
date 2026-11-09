@@ -193,7 +193,7 @@ function dealHand(g) {
   });
   for (let i = 0; i < HAND_SIZE; i++) g.players.forEach((p) => refillDraw(g, p));
   g.turn = (g.dealer + 1) % g.players.length;
-  note(g, `Manche ${g.round} : objectif ${g.goal} km. Il faut un feu vert pour partir !`, "info");
+  note(g, `Manche ${g.round} : objectif ${g.goal} km. Il faut un feu vert pour partir`, "info");
   startTurn(g);
   return ok();
 }
@@ -357,7 +357,7 @@ function endHand(g, reason, finisherId = null) {
     p.score += p.handScore;
   }
   const fin = find(g, finisherId);
-  note(g, fin ? `${fin.name} boucle ses ${g.goal} km !` : "Plus de cartes : fin de la manche.", "info");
+  note(g, fin ? `${fin.name} boucle ses ${g.goal} km` : "Plus de cartes : fin de la manche.", "info");
   const best = [...g.players].sort((a, b) => b.score - a.score)[0];
   g.roundWinner = (fin || [...g.players].sort((a, b) => b.handScore - a.handScore)[0]).id;
   const over = g.settings.target === 0 || best.score >= g.settings.target;

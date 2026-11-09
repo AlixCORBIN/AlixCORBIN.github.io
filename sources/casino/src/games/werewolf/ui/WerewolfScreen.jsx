@@ -6,6 +6,7 @@ import { sound } from "../../../lib/sound.js";
 import "./werewolf.css";
 
 import { AdminName } from "../../../lib/admins.js";
+import Icon, { rich } from "../../../ui/Icon";
 function useCountdown(deadline) {
   const [left, setLeft] = React.useState(null);
   React.useEffect(() => {
@@ -41,15 +42,15 @@ function Header({ ctrl, state, onQuit, left }) {
             : "Fin de partie";
   return (
     <header className="topbar ww-top">
-      <div className="brand">🐺 Loup-Garou</div>
+      <div className="brand"><Icon name="ghost" /> Loup-Garou</div>
       {ctrl.code && (
         <button className="pill" onClick={copy} title="Copier le lien d'invitation">
-          Salle <b>{ctrl.code}</b> · {copied ? "copié !" : "copier le lien"}
+          Salle <b>{ctrl.code}</b> · {copied ? "copié" : "copier le lien"}
         </button>
       )}
       <div className="grow" />
       <div className={"pill ww-phase ph-" + state.phase}>
-        {phase}
+        {rich(phase)}
         {left !== null && <b className={left <= 10 ? "hurry" : ""}> {left}s</b>}
       </div>
       {state.phase !== "lobby" && (
@@ -58,10 +59,10 @@ function Header({ ctrl, state, onQuit, left }) {
         </span>
       )}
       <button className="icon" onClick={() => setMuted(sound.toggle())} title="Son">
-        {muted ? "🔇" : "🔊"}
+        <Icon name={muted ? "volume-no" : "volume"} />
       </button>
       <button className="icon" onClick={onQuit} title="Quitter">
-        ✕
+        <Icon name="cross" />
       </button>
     </header>
   );
@@ -84,9 +85,9 @@ function RoomPanel({ ctrl, state, me }) {
         {state.players.map((p) => (
           <div key={p.id} className={"ww-pl" + (p.id === me.id ? " me" : "")}>
             <span>
-              {p.id === state.hostId ? "👑 " : ""}
+              {p.id === state.hostId ? <><Icon name="crown" />{" "}</> : ""}
               <AdminName name={p.name} id={p.id} />
-              {p.bot ? " 🤖" : ""}
+              {p.bot ? <>{" "}<Icon name="gears" /></> : ""}
             </span>
             <em className={p.ready ? "pos" : ""}>{p.bot ? "bot" : p.ready ? "prêt" : "..."}</em>
           </div>
@@ -98,7 +99,7 @@ function RoomPanel({ ctrl, state, me }) {
             <div className="ww-roles">
               {SPECIALS.map((r) => (
                 <button key={r} className={"ww-role-tg" + (s[r] ? " on" : "")} onClick={() => set({ [r]: !s[r] })}>
-                  {ROLES[r].icon} {ROLES[r].name}
+                  {rich(ROLES[r].icon)} {ROLES[r].name}
                 </button>
               ))}
             </div>
@@ -122,7 +123,7 @@ function RoomPanel({ ctrl, state, me }) {
               </select>
             </div>
             <p className="hint">
-              Distribution : {deck.map((r) => ROLES[r].icon).join(" ")}
+              Distribution : {rich(deck.map((r) => ROLES[r].icon).join(" "))}
             </p>
           </div>
           <div className="row">
@@ -157,7 +158,7 @@ function RoleCard({ state, me }) {
   const mates = me.role === "wolf" ? state.players.filter((p) => p.role === "wolf" && p.id !== me.id) : [];
   return (
     <div className={"ww-card" + (open ? "" : " mini")} style={{ "--rc": r.color }} onClick={() => setOpen(!open)}>
-      <div className="ic">{r.icon}</div>
+      <div className="ic">{rich(r.icon)}</div>
       <div className="tx">
         <small>{me.alive ? "Ton rôle" : "Tu étais"}</small>
         <b>{r.name}</b>
@@ -165,10 +166,10 @@ function RoleCard({ state, me }) {
           <>
             <p>{r.desc}</p>
             {mates.length > 0 && <p className="extra">Meute : {mates.map((p) => p.name).join(", ")}</p>}
-            {lover && me.lover && <p className="extra">💘 Amoureux de {lover.name}</p>}
+            {lover && me.lover && <p className="extra"><Icon name="heart" /> Amoureux de {lover.name}</p>}
             {state.mine.potions && me.role === "witch" && (
               <p className="extra">
-                Potions : {state.mine.potions.life ? "❤️ vie" : "✗"} · {state.mine.potions.death ? "☠️ mort" : "✗"}
+                Potions : {state.mine.potions.life ? <><Icon name="heart" /> vie</> : <Icon name="cross" />} · {state.mine.potions.death ? <><Icon name="ghost" /> mort</> : <Icon name="cross" />}
               </p>
             )}
           </>
@@ -183,13 +184,13 @@ function ActionDock({ ctrl, state, me, sel, setSel, witch, setWitch }) {
   const host = state.hostId === me.id;
   if (state.phase === "night") {
     const myTurn = state.mine.myTurn;
-    if (!me.alive) return <div className="dock slim"><p>👻 Tu observes la nuit depuis le cimetière.</p></div>;
-    if (!myTurn) return <div className="dock slim"><p>😴 Tu dors... {STEP_LABEL[state.step]}.</p></div>;
+    if (!me.alive) return <div className="dock slim"><p><Icon name="ghost" /> Tu observes la nuit depuis le cimetière.</p></div>;
+    if (!myTurn) return <div className="dock slim"><p><Icon name="moon" /> Tu dors... {STEP_LABEL[state.step]}.</p></div>;
     switch (state.step) {
       case "cupid":
         return (
           <div className="dock">
-            <p>💘 Choisis deux amoureux ({sel.length}/2)</p>
+            <p><Icon name="heart" /> Choisis deux amoureux ({sel.length}/2)</p>
             <button className="btn primary" disabled={sel.length !== 2} onClick={() => ctrl.act({ t: "night", targets: sel })}>
               Unir {sel.map(nameOf).join(" et ")}
             </button>
@@ -199,7 +200,7 @@ function ActionDock({ ctrl, state, me, sel, setSel, witch, setWitch }) {
       case "seer":
         return (
           <div className="dock">
-            <p>{state.step === "guard" ? "🛡️ Qui protèges-tu cette nuit ?" : "🔮 Quel joueur veux-tu sonder ?"}</p>
+            <p>{state.step === "guard" ? <><Icon name="lock" /> Qui protèges-tu cette nuit ?</> : <><Icon name="sparkles" /> Quel joueur veux-tu sonder ?</>}</p>
             <button className="btn primary" disabled={sel.length !== 1} onClick={() => ctrl.act({ t: "night", target: sel[0] })}>
               {sel.length ? (state.step === "guard" ? "Protéger " : "Sonder ") + nameOf(sel[0]) : "Clique sur un joueur"}
             </button>
@@ -209,7 +210,7 @@ function ActionDock({ ctrl, state, me, sel, setSel, witch, setWitch }) {
         const mine = state.mine.wolfVotes?.[me.id];
         return (
           <div className="dock slim">
-            <p>🐺 {mine ? `Ta proie : ${nameOf(mine)}. La meute doit se décider.` : "Clique sur ta proie. Discute avec la meute dans le chat."}</p>
+            <p><Icon name="ghost" /> {mine ? `Ta proie : ${nameOf(mine)}. La meute doit se décider.` : "Clique sur ta proie. Discute avec la meute dans le chat."}</p>
           </div>
         );
       }
@@ -218,16 +219,16 @@ function ActionDock({ ctrl, state, me, sel, setSel, witch, setWitch }) {
         const p = state.mine.potions || {};
         return (
           <div className="dock">
-            <p>🧪 {v ? `Les loups ont attaqué ${nameOf(v)}.` : "Personne n'a été attaqué."}</p>
+            <p><Icon name="sparkles" /> {v ? `Les loups ont attaqué ${nameOf(v)}.` : "Personne n'a été attaqué."}</p>
             <div className="row">
               {v && p.life && (
                 <button className={"btn " + (witch.save ? "primary" : "ghost")} onClick={() => setWitch({ ...witch, save: !witch.save })}>
-                  ❤️ {witch.save ? "Sauvé" : "Sauver"}
+                  <Icon name="heart" /> {witch.save ? "Sauvé" : "Sauver"}
                 </button>
               )}
               {p.death && (
                 <button className={"btn " + (witch.kill ? "primary" : "ghost")} onClick={() => setWitch({ ...witch, kill: !witch.kill })}>
-                  ☠️ {witch.kill ? (sel[0] ? "Empoisonner " + nameOf(sel[0]) : "Choisis une cible") : "Empoisonner"}
+                  <Icon name="ghost" /> {witch.kill ? (sel[0] ? "Empoisonner " + nameOf(sel[0]) : "Choisis une cible") : "Empoisonner"}
                 </button>
               )}
               <button
@@ -235,7 +236,7 @@ function ActionDock({ ctrl, state, me, sel, setSel, witch, setWitch }) {
                 disabled={witch.kill && !sel[0]}
                 onClick={() => ctrl.act({ t: "night", save: witch.save, kill: witch.kill ? sel[0] : null })}
               >
-                {witch.save || witch.kill ? "Valider" : "Ne rien faire"}
+                {witch.save || witch.kill ? "Utiliser les potions" : "Ne rien faire"}
               </button>
             </div>
           </div>
@@ -252,9 +253,9 @@ function ActionDock({ ctrl, state, me, sel, setSel, witch, setWitch }) {
         <p>
           {me.alive
             ? mine
-              ? `🗳️ Tu votes contre ${nameOf(mine)}`
-              : "🗳️ Clique sur un joueur pour voter contre lui"
-            : "👻 Les morts ne votent pas."}{" "}
+              ? <><Icon name="tasks" /> Tu votes contre {nameOf(mine)}</>
+              : <><Icon name="tasks" /> Clique sur un joueur pour voter contre lui</>
+            : <><Icon name="ghost" /> Les morts ne votent pas.</>}{" "}
           <span className="hint">({voted}/{alive} votes)</span>
         </p>
         <div className="row">
@@ -274,10 +275,10 @@ function ActionDock({ ctrl, state, me, sel, setSel, witch, setWitch }) {
   }
   if (state.phase === "hunter") {
     if (state.hunter !== me.id)
-      return <div className="dock slim"><p>🏹 {nameOf(state.hunter)} choisit sa cible...</p></div>;
+      return <div className="dock slim"><p><Icon name="arrow-right-up" /> {nameOf(state.hunter)} choisit sa cible...</p></div>;
     return (
       <div className="dock">
-        <p>🏹 Tu meurs, mais tu peux emporter quelqu'un avec toi.</p>
+        <p><Icon name="arrow-right-up" /> Tu meurs, mais tu peux emporter quelqu'un avec toi.</p>
         <button className="btn primary" disabled={!sel[0]} onClick={() => ctrl.act({ t: "shoot", target: sel[0] })}>
           {sel[0] ? "Tirer sur " + nameOf(sel[0]) : "Clique sur ta cible"}
         </button>
@@ -297,18 +298,18 @@ function EndPanel({ ctrl, state, me }) {
   const mine = state.players.find((p) => p.id === me.id);
   return (
     <div className="ww-end panel">
-      <h2>{title}</h2>
-      <p className={"net " + (mine?.won ? "pos" : "neg")}>{mine?.won ? "Tu as gagné !" : "Tu as perdu"}</p>
+      <h2>{rich(title)}</h2>
+      <p className={"net " + (mine?.won ? "pos" : "neg")}>{mine?.won ? "Tu as gagné" : "Tu as perdu"}</p>
       <div className="ww-plist">
         {state.players.map((p) => (
           <div key={p.id} className={"ww-pl" + (p.won ? " won" : "")}>
             <span>
-              {p.alive ? "" : "💀 "}
-              {p.lover ? "💘 " : ""}
+              {p.alive ? "" : <><Icon name="ghost" />{" "}</>}
+              {p.lover ? <><Icon name="heart" />{" "}</> : ""}
               <AdminName name={p.name} id={p.id} />
             </span>
             <em style={{ color: ROLES[p.role]?.color }}>
-              {ROLES[p.role]?.icon} {ROLES[p.role]?.name}
+              {rich(ROLES[p.role]?.icon)} {ROLES[p.role]?.name}
             </em>
           </div>
         ))}

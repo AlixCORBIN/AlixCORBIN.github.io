@@ -4,6 +4,7 @@ import { medalFor } from "../maps.js";
 import { formatTime } from "../physics.js";
 
 import { AdminName } from "../../../lib/admins.js";
+import Icon from "../../../ui/Icon";
 export function Board({ map, pseudo, onClose }) {
   const [rows, setRows] = React.useState(null);
   const [err, setErr] = React.useState(null);
@@ -15,7 +16,7 @@ export function Board({ map, pseudo, onClose }) {
   return (
     <div className="modal" onClick={onClose}>
       <div className="panel rc-board" onClick={(e) => e.stopPropagation()}>
-        <h2>🏆 {map.name}</h2>
+        <h2><Icon name="star" /> {map.name}</h2>
         <p className="sub">{rows ? `${rows.length} joueur${rows.length > 1 ? "s" : ""} classé${rows.length > 1 ? "s" : ""}` : "Chargement…"}{mine ? ` · tu es ${mine.rank}${mine.rank === 1 ? "er" : "e"}` : ""}</p>
         {err && <p className="err">{err}</p>}
         {rows && !rows.length && <p className="hint">Aucun temps pour l’instant. Le premier record est pour toi.</p>}
@@ -31,7 +32,7 @@ export function Board({ map, pseudo, onClose }) {
                       <td>{r.rank}</td>
                       <td>{m && <i className="rc-dot" style={{ background: m.color }} title={m.label} />}<AdminName name={r.pseudo} /></td>
                       <td>{formatTime(r.time_ms)}</td>
-                      <td className="rc-gap">{r.time_ms === wr ? "—" : `+${((r.time_ms - wr) / 1000).toFixed(3)}`}</td>
+                      <td className="rc-gap">{r.time_ms === wr ? "-" : `+${((r.time_ms - wr) / 1000).toFixed(3)}`}</td>
                       <td className="hide-sm">{r.attempts}</td>
                       <td className="hide-sm">{new Date(r.updated_at).toLocaleDateString("fr-FR")}</td>
                     </tr>

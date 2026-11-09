@@ -85,7 +85,7 @@ export function say(g, id, ch, text) {
   if (!clean) return fail("message vide");
   if (!canWrite(g, p, ch)) return fail("tu ne peux pas parler ici");
   const now = Date.now();
-  if (p.lastMsg && now - p.lastMsg < 600) return fail("doucement !");
+  if (p.lastMsg && now - p.lastMsg < 600) return fail("doucement");
   p.lastMsg = now;
   push(g, { ch, from: id, name: p.name, text: clean });
   return ok();
@@ -198,7 +198,7 @@ export function startGame(g, keys, meta) {
   deck.forEach((r) => (counts[r] = (counts[r] || 0) + 1));
   sys(
     g,
-    "La partie commence ! Rôles en jeu : " +
+    "La partie commence. Rôles en jeu : " +
       Object.entries(counts)
         .map(([r, c]) => `${c > 1 ? c + " " : ""}${ROLES[r].icon} ${ROLES[r].name}`)
         .join(", "),
@@ -516,9 +516,9 @@ function checkWin(g) {
   sys(
     g,
     {
-      village: "🎉 Le village a éliminé tous les loups !",
+      village: "🎉 Le village a éliminé tous les loups",
       wolves: "🐺 Les loups-garous ont pris le contrôle du village.",
-      lovers: "💘 Les amoureux survivent seuls et gagnent ensemble !",
+      lovers: "💘 Les amoureux survivent seuls et gagnent ensemble",
       none: "Plus personne n'est en vie...",
     }[winner],
     "village",

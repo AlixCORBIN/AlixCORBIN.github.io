@@ -112,7 +112,7 @@ const LINES = {
     "Votons {x}, je le sens mal.",
   ],
   defend: [
-    "Pourquoi moi ?! Je suis innocent !",
+    "Pourquoi moi ? Je suis innocent",
     "Vous faites fausse route, ce n'est pas moi.",
     "Si vous m'éliminez, vous le regretterez.",
   ],
@@ -137,7 +137,7 @@ export function botChat(g, bot, ch) {
     const w = knownWolves(g, bot)[0];
     if (w && !g.claims.some((c) => c.by === bot.id && c.target === w.id) && chance(0.6)) {
       g.claims.push({ by: bot.id, target: w.id, day: g.day });
-      return `Je suis la Voyante : ${w.name} est un loup-garou !`;
+      return `Je suis la Voyante : ${w.name} est un loup-garou`;
     }
   }
   const counts = voteCounts(g);

@@ -1,5 +1,5 @@
 /* ============================================
-   LANG SWITCHER — Script partagé (sous-pages)
+   LANG SWITCHER · Script partagé (sous-pages)
    ============================================ */
 (function () {
     // Chemin vers assets/ selon la profondeur de l'URL

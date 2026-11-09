@@ -3,6 +3,7 @@ import { podium } from "../api.js";
 import { formatTime } from "../physics.js";
 
 import { AdminName } from "../../../lib/admins.js";
+import Icon from "../../../ui/Icon";
 const SCOPES = [["all", "Général"], ["s1", "Saison 1"], ["s2", "Saison 2"]];
 
 // Classement des pilotes : celui qui a le plus de 1res places est premier, puis 2es, puis 3es
@@ -18,7 +19,6 @@ export function Pilots({ pseudo, compact = false }) {
     return () => clearInterval(t);
   }, [scope]);
   const me = (p) => p && pseudo && p.toLowerCase() === pseudo.toLowerCase();
-  const icon = ["🥇", "🥈", "🥉"];
   return (
     <div className="rc-pilots">
       <nav className="rc-tabs">
@@ -33,12 +33,12 @@ export function Pilots({ pseudo, compact = false }) {
       {rows && rows.length > 0 && (
         <table className="lb rc-podium">
           <thead>
-            <tr><th>#</th><th>Pilote</th><th title="1res places">🥇</th><th title="2es places">🥈</th><th title="3es places">🥉</th>{!compact && <><th className="hide-sm" title="Top 10">Top 10</th><th className="hide-sm">Pistes</th></>}</tr>
+            <tr><th>#</th><th>Pilote</th><th title="1res places"><Icon name="star" /></th><th title="2es places"><Icon name="star" /></th><th title="3es places"><Icon name="star" /></th>{!compact && <><th className="hide-sm" title="Top 10">Top 10</th><th className="hide-sm">Pistes</th></>}</tr>
           </thead>
           <tbody>
             {rows.map((r, i) => (
               <tr key={r.pseudo} className={`${me(r.pseudo) ? "me" : ""} ${i < 3 ? "top" : ""}`}>
-                <td>{icon[i] || i + 1}</td>
+                <td>{i + 1}</td>
                 <td><AdminName name={r.pseudo} /></td>
                 <td className="p1">{r.p1}</td>
                 <td>{r.p2}</td>

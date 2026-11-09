@@ -5,6 +5,7 @@ import { WORLDS, formatTime } from "../physics.js";
 import { rumble } from "../gamepad.js";
 
 import { AdminName } from "../../../lib/admins.js";
+import Icon from "../../../ui/Icon";
 const SEEN_KEY = "racing-alerts-seen";
 const loadSeen = () => { try { return localStorage.getItem(SEEN_KEY); } catch { return null; } };
 const saveSeen = (iso) => { try { localStorage.setItem(SEEN_KEY, iso); } catch {} };
@@ -82,7 +83,7 @@ export function AlertToasts({ toasts, dismiss, onOpen }) {
     <div className="rc-alerts">
       {toasts.map((e) => (
         <button key={e.id} className="rc-alert" onClick={() => { dismiss(e.id); onOpen?.(); }}>
-          <b>🏁 Record perdu</b>
+          <b><Icon name="check" /> Record perdu</b>
           <span><em><AdminName name={e.new_pseudo} /></em> t'a pris le record sur <em>{e.info.name}</em></span>
           <small>{formatTime(e.old_time)} → {formatTime(e.new_time)}</small>
         </button>
@@ -111,18 +112,18 @@ export function Records({ pseudo, alerts, history, onPlay, onBoard }) {
     const m = medalFor(r.time_ms, info.author_time);
     return (
       <div className={`rc-rec ${r.rank === 1 ? "wr" : ""}`}>
-        <div className="rc-rec-rank">{r.rank === 1 ? "👑" : `${r.rank}e`}<small>/{r.players}</small></div>
+        <div className="rc-rec-rank">{r.rank === 1 ? <><Icon name="crown" /></> : `${r.rank}e`}<small>/{r.players}</small></div>
         <div className="rc-map-main">
           <b>{info.name}</b>
           <small>{info.world}</small>
         </div>
         <div className="rc-rec-time">
           <b>{m && <i className="rc-dot" style={{ background: m.color }} />}{formatTime(r.time_ms)}</b>
-          <small>{r.rank === 1 ? "record du monde" : `${gap(r.time_ms, r.wr_time)} · 🏆 ${r.wr_pseudo}`}</small>
+          <small>{r.rank === 1 ? "record du monde" : <>{gap(r.time_ms, r.wr_time)} · <Icon name="star" /> {r.wr_pseudo}</>}</small>
         </div>
         <div className="rc-map-btns">
           {info.map && <button className="btn primary" onClick={() => onPlay(info.map)}>Jouer</button>}
-          {info.map && <button className="btn ghost" title="Classement" onClick={() => onBoard(info.map)}>🏆</button>}
+          {info.map && <button className="btn ghost" title="Classement" onClick={() => onBoard(info.map)}><Icon name="star" /></button>}
         </div>
       </div>
     );
@@ -142,12 +143,12 @@ export function Records({ pseudo, alerts, history, onPlay, onBoard }) {
         </section>
       )}
       {perm === "default" && (
-        <button className="btn rc-notif" onClick={askPerm}>🔔 Me prévenir aussi quand l'onglet est en arrière-plan</button>
+        <button className="btn rc-notif" onClick={askPerm}><Icon name="bell" /> Me prévenir aussi quand l'onglet est en arrière-plan</button>
       )}
       <section>
         <h3>Records du monde détenus {rows && <span className="rc-badge gold">{held.length}</span>}</h3>
         {!rows && !err && <div className="spinner" />}
-        {rows && !held.length && <p className="hint">Aucun pour l'instant. À toi de jouer !</p>}
+        {rows && !held.length && <p className="hint">Aucun pour l'instant. À toi de jouer</p>}
         {held.map((r) => <Row key={r.map_id} r={r} />)}
       </section>
       <section>

@@ -5,6 +5,7 @@ import { sound } from "../../../lib/sound.js";
 import "./horses.css";
 
 import { AdminName } from "../../../lib/admins.js";
+import Icon, { rich } from "../../../ui/Icon";
 function useCountdown(deadline) {
   const [left, setLeft] = React.useState(null);
   React.useEffect(() => {
@@ -30,19 +31,19 @@ function Header({ ctrl, onQuit, left }) {
   };
   return (
     <header className="topbar">
-      <div className="brand">🐴 Petits Chevaux</div>
+      <div className="brand"><Icon name="walk" /> Petits Chevaux</div>
       {ctrl.code && (
         <button className="pill" onClick={copy} title="Copier le lien d'invitation">
-          Salle <b>{ctrl.code}</b> · {copied ? "copié !" : "copier le lien"}
+          Salle <b>{ctrl.code}</b> · {copied ? "copié" : "copier le lien"}
         </button>
       )}
       <div className="grow" />
       {left !== null && <div className={"pill" + (left <= 5 ? " hc-hurry" : "")}>{left}s</div>}
       <button className="icon" onClick={() => setMuted(sound.toggle())} title="Son">
-        {muted ? "🔇" : "🔊"}
+        <Icon name={muted ? "volume-no" : "volume"} />
       </button>
       <button className="icon" onClick={onQuit} title="Quitter">
-        ✕
+        <Icon name="cross" />
       </button>
     </header>
   );
@@ -63,7 +64,7 @@ function Lobby({ ctrl, state, me }) {
           <div key={p.id} className={"hc-pl" + (p.id === me.id ? " me" : "")} style={{ "--c": COLOR_HEX[p.color] }}>
             <i />
             <span>
-              {p.id === state.hostId ? "👑 " : ""}
+              {p.id === state.hostId ? <><Icon name="crown" />{" "}</> : ""}
               <AdminName name={p.name} id={p.id} />
             </span>
             <em>{p.bot ? "bot" : COLOR_NAME[p.color]}</em>
@@ -114,9 +115,9 @@ function Dock({ ctrl, state, me }) {
   if (state.stage === "roll" && mine) {
     body = (
       <div className="row">
-        <p className="grow">À toi ! Lance le dé.</p>
+        <p className="grow">À toi. Lance le dé.</p>
         <button className="btn act hit hc-roll" onClick={() => ctrl.act({ t: "roll" })}>
-          🎲 Lancer
+          <Icon name="grid" /> Lancer
         </button>
       </div>
     );
@@ -144,7 +145,7 @@ function End({ ctrl, state, me }) {
   const host = state.hostId === me.id;
   return (
     <div className="hc-panel panel hc-end">
-      <h2>🏆 {w?.name} gagne !</h2>
+      <h2><Icon name="star" /> {w?.name} gagne</h2>
       <div className="hc-plist">
         {state.ranking.map((id, i) => {
           const p = state.players.find((x) => x.id === id);
@@ -156,7 +157,7 @@ function End({ ctrl, state, me }) {
                 {i + 1}. <AdminName name={p.name} id={p.id} />
               </span>
               <em>
-                {p.horses.filter((x) => x === 56).length}/4 · {p.captures} 💥
+                {p.horses.filter((x) => x === 56).length}/4 · {p.captures} <Icon name="alert-triangle" />
               </em>
             </div>
           );
@@ -178,7 +179,7 @@ function Log({ log }) {
     <div className="hc-log">
       {log.slice(-8).map((l) => (
         <p key={l.id} className={l.tone}>
-          {l.text}
+          {rich(l.text)}
         </p>
       ))}
     </div>

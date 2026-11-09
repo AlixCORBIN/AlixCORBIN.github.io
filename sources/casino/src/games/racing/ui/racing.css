@@ -1,7 +1,7 @@
 /* TrackMerdia : menu, HUD de course, éditeur */
 .rc-menu{position:fixed;inset:0;display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% -10%,#1b3a6b,#0a1222 60%,#05080f);overflow:hidden}
 .rc-menu-head{display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 18px 10px}
-.rc-menu-head h1{margin:0;font:italic 900 30px/1 system-ui,sans-serif;letter-spacing:-.5px;text-transform:uppercase}
+.rc-menu-head h1{margin:0;font:italic 900 30px/1 var(--font-text);letter-spacing:-.5px;text-transform:uppercase}
 .rc-menu-head h1 em{color:#ffd23f;font-style:italic}
 .rc-menu-body{flex:1;min-height:0;overflow:auto;width:min(980px,100%);margin:0 auto;padding:0 16px 24px}
 .rc-medals{display:flex;align-items:center;gap:4px;padding:6px 12px;border-radius:999px;background:#0007;border:1px solid #ffffff22}
@@ -16,7 +16,7 @@
 .rc-colors button.on{border-color:#fff;box-shadow:0 0 0 2px #ffd23f}
 .rc-pilot{font-size:13px;opacity:.75;margin:0 0 14px}
 .rc-worlds{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
-.rc-world{text-align:left;padding:14px 12px 10px;border-radius:14px;border:2px solid transparent;background:linear-gradient(170deg,var(--sky) 0 45%,var(--gr) 46%);color:#fff;text-shadow:0 1px 3px #000a;min-height:86px;display:flex;flex-direction:column;justify-content:flex-end;opacity:.75;transition:transform .1s,opacity .1s}
+.rc-world{text-align:left;padding:14px 12px 10px;border-radius:14px;border:2px solid transparent;background:var(--sky);color:#fff;text-shadow:0 1px 3px #000a;min-height:86px;display:flex;flex-direction:column;justify-content:flex-end;opacity:.75;transition:transform .1s,opacity .1s}
 .rc-world b{font:italic 900 18px system-ui;text-transform:uppercase}
 .rc-world small{font-size:11px;opacity:.9}
 .rc-world.on{opacity:1;border-color:var(--acc);transform:translateY(-2px);box-shadow:0 8px 24px #0008}
@@ -34,7 +34,7 @@
 .rc-search{margin:0 0 12px}
 .rc-race{position:fixed;inset:0;background:#000}
 .rc-race canvas{position:absolute;inset:0}
-.rc-hud{position:absolute;inset:0;pointer-events:none;font-family:system-ui,sans-serif}
+.rc-hud{position:absolute;inset:0;pointer-events:none;font-family:var(--font-text)}
 .rc-hud button{pointer-events:auto}
 .rc-top{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;background:linear-gradient(180deg,#000a,transparent)}
 .rc-title{display:flex;flex-direction:column;line-height:1.15}
@@ -135,7 +135,7 @@
 .rc-rec-rank small{font-size:12px;opacity:.6;font-style:normal}
 .rc-rec-time{display:flex;flex-direction:column;align-items:flex-end;font-variant-numeric:tabular-nums}
 .rc-rec-time small{font-size:11px;opacity:.7}
-.rc-lost{display:flex;flex-direction:column;padding:8px 12px;border-left:3px solid #ff5a5a;background:#ff5a5a12;border-radius:8px;margin-bottom:6px}
+.rc-lost{display:flex;flex-direction:column;padding:8px 12px;border:1px solid #ff5a5a;background:#ff5a5a12;border-radius:8px;margin-bottom:6px}
 .rc-lost em,.rc-alert em{font-style:normal;font-weight:800;color:#ffd23f}
 .rc-lost small{opacity:.7;font-size:12px}
 .rc-notif{width:100%;margin-bottom:14px;font-size:14px}
