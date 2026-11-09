@@ -3,9 +3,13 @@
 import React from "react";
 import * as THREE from "three";
 import { createClient } from "@supabase/supabase-js";
+// aislop-ignore-next-line ai-slop/hallucinated-import -- alias Vite @mii -> mii/lib (vite.config.js)
 import { createMiiKit } from "@mii/mii-three.js";
+// aislop-ignore-next-line ai-slop/hallucinated-import -- alias Vite @mii -> mii/lib (vite.config.js)
 import { GUEST_MIIS, isGuestMii, miiForId, sanitizeMii, sanitizeOwnMii } from "@mii/mii-core.js";
+// aislop-ignore-next-line ai-slop/hallucinated-import -- alias Vite @mii -> mii/lib (vite.config.js)
 import { attachAccount, getMainSync, listSync, miiStore } from "@mii/mii-store.js";
+// aislop-ignore-next-line ai-slop/hallucinated-import -- alias Vite @mii -> mii/lib (vite.config.js)
 import { createAccount } from "@mii/account.js";
 
 export const miiKit = createMiiKit(THREE);

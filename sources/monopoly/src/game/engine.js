@@ -40,7 +40,7 @@ function makePlayer({ id, name, isBot = false }, i) {
   }
 }
 
-// ---------- Lobby ----------
+// Lobby
 // Fin de partie → retour au salon avec les mêmes joueurs (les absents sont retirés)
 export function backToLobby(s0) {
   const s = structuredClone(s0)
@@ -108,7 +108,7 @@ export function startGame(s) {
   return s
 }
 
-// ---------- Helpers ----------
+// Helpers
 export const cur = (s) => s.players[s.turn]
 function log(s, msg) {
   s.log.push({ t: Date.now(), msg })
@@ -401,7 +401,7 @@ function validateSide(s, pid, side) {
   if ((side.jailCards || 0) > pl.jailCards.length) throw new Error('Carte prison indisponible')
 }
 
-// ---------- Actions ----------
+// Actions
 export function applyAction(s0, actorId, a) {
   const s = structuredClone(s0)
   if (s.phase !== 'playing') throw new Error('Partie terminée')

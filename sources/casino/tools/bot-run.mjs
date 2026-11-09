@@ -2,6 +2,7 @@
 //   import { botRun } from "./bot-run.mjs"; const r = await botRun(track, world);  -> { finished, ms, steps, log, respawns }
 // Il suit l'axe de la piste (racing-line.mjs) : direction vers un point visé devant lui, vitesse limitée par la
 // courbure à venir (comme racing-check), entrées quantifiées et journalisées comme dans le navigateur.
+// aislop-ignore-file ai-slop/console-leftover -- script en ligne de commande : la console est sa sortie
 import * as P from "../src/games/racing/physics.js";
 import { BLOCKS, TILE, param } from "../src/games/racing/blocks.js";
 import { COUNTDOWN_STEPS, countdownStep, createLog, exportLog, logInput, quantize, startRace, toInput } from "../src/server/replay.js";

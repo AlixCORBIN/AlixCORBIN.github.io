@@ -2,6 +2,7 @@ import React from "react";
 import * as THREE from "three";
 import { GUEST_MIIS, account, listSync, loadPlayMii, miiStore, savePlayMii } from "../lib/mii.js";
 import { miiPortrait } from "./MiiAvatar.jsx";
+// aislop-ignore-next-line ai-slop/hallucinated-import -- alias Vite @mii -> mii/lib (vite.config.js)
 import { getThumb, peekThumb, putThumb, thumbKey } from "@mii/thumb-cache.js";
 import "../styles/mii.css";
 import Icon from "./Icon";

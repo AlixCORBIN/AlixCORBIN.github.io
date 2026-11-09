@@ -1,5 +1,6 @@
 // Copie le code de jeu partagé dans les Edge Functions (Supabase ne déploie que le dossier de la fonction).
 // node tools/sync-server.mjs  — à relancer après toute modification d'un moteur.
+// aislop-ignore-file ai-slop/console-leftover -- script en ligne de commande : la console est sa sortie
 import { cpSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";

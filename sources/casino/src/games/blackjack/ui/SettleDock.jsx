@@ -1,5 +1,3 @@
-import React from "react";
-
 export function SettleDock({ ctrl, me }) {
   const net = Math.round(me.net);
   if (!me.hands.length)

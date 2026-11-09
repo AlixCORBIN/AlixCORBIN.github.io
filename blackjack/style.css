@@ -91,14 +91,6 @@ body {
     text-align: center;
 }
 
-.score-badge {
-    background: rgba(0,0,0,0.4);
-    padding: 2px 10px;
-    border-radius: 12px;
-    font-size: 0.8em;
-    border: 1px solid var(--gold);
-}
-
 /* Conteneur des mains */
 .hand {
     display: flex;
@@ -199,26 +191,6 @@ body {
 @keyframes popIn { from { transform: scale(0.8); opacity: 0;} to { transform: scale(1); opacity: 1;}}
 .message.hidden { display: none; }
 
-.controls-area {
-    background: rgba(0,0,0,0.3);
-    border-radius: 15px;
-    padding: 15px;
-    margin-top: 10px;
-    min-height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.controls-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    width: 100%;
-}
-.controls-group.hidden { display: none; }
-
 /* Interface de Jeu (Hit/Stand...) alignement horizontal */
 #game-controls {
     flex-direction: row;
@@ -226,18 +198,6 @@ body {
 }
 
 /* --- DESIGN DES JETONS (CHIPS) --- */
-.bet-info {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--gold);
-    margin-bottom: 5px;
-}
-
-.chips-container {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 10px;
-}
 
 .chip {
     width: 60px;
@@ -274,11 +234,6 @@ body {
     padding: 10px 15px;
 }
 .btn-secondary:hover { background: #ff6b6b; }
-
-.bet-actions {
-    display: flex;
-    gap: 20px;
-}
 
 .bankroll-display {
     display: block;

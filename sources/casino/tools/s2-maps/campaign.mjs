@@ -4,7 +4,7 @@
 // ground = { relief } : map posée sur un sol (dunes de relief niveaux, 0 = plat) au lieu du vide ;
 // gates = true : le pilote auto règle sa vitesse sur les barrières cycliques (sinon il fonce dedans, comme en monde 1).
 export const MAPS = [
-  // ---------- Monde 1 · Atelier (tech) ----------
+  // Monde 1 · Atelier (tech)
   {
     name: "Établi", figure: "Escalier d'épingles",
     slow: { P: 14, M: 14 }, altSlow: { A: { P: 60, M: 60 } },
@@ -46,7 +46,7 @@ export const MAPS = [
       S hloop S Sn C turn Sb !cliff chicane S !bankx:angle=70,r=2 Sn slopeg whoops C !turn S !steep Sb F S
       =f {A Sb #K kicker2:angle=15 _ Y }`,
   },
-  // ---------- Monde 2 · Stratosphère (fullspeed) ----------
+  // Monde 2 · Stratosphère (fullspeed)
   {
     name: "Décollage", figure: "Long saut au turbo",
     slow: { P: 16, M: 16 }, altSlow: { A: { P: 70 } },
@@ -88,7 +88,7 @@ export const MAPS = [
       B cpfast:minSpeed=150 Sn B:level=3 kicker2:angle=16,len=2 _ _ _ Y Y !slopeg C bankx:angle=70,r=2 chicane Sn F S
       =f {A Sn bump:h=5 _ Y }`,
   },
-  // ---------- Monde 3 · Mesa rouge (dirt) ----------
+  // Monde 3 · Mesa rouge (dirt)
   {
     name: "Piste rouge", figure: "Bosses de terre",
     ground: { relief: 1 }, start: { x: 0, z: 0, d: 0, l: 0 },
@@ -122,7 +122,7 @@ export const MAPS = [
       B:level=2 kicker2:angle=16,len=2 _ _ _ Y Y Y !slopeg/d Sn/d !slopeg/d C !turnw:r=2/d bump:h=5/d Sb/d
       <A !turnw:r=2/d Sb/d bankx:r=2/d bankx:r=2/d Sb/d !turnw:r=2/d A> camber:angle=20/d C chicane/d F S`,
   },
-  // ---------- Monde 4 · Banquise (ice) ----------
+  // Monde 4 · Banquise (ice)
   {
     name: "Patinoire", figure: "Spirale de virages verglacés",
     ground: { relief: 1 }, start: { x: 0, z: 0, d: 0, l: 0 },
@@ -156,7 +156,7 @@ export const MAPS = [
       B:level=3 kicker2:angle=14,len=2 _ _ Y Y Y !slopeg/i W Sb W C
       <A turnw:r=2/i Sn/i !turnw:r=2/i !turnw:r=2/i Sn/i turnw:r=2/i A> revboost camber:angle=20,side=1/i !hairpin/i bump:h=3/i C Sn F S`,
   },
-  // ---------- Monde 5 · Archipel (mixte aérien) : maps courtes, une mécanique par map ----------
+  // Monde 5 · Archipel (mixte aérien) : maps courtes, une mécanique par map
   {
     name: "Passeur", figure: "Deux bacs mobiles au-dessus du vide", start: { x: 2, z: 16, d: 0, l: 6 },
     slow: { P: 14, M: 14, H: 12, H2: 12 }, altSlow: { A: { P: 70, M: 25 } },

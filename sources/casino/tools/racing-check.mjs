@@ -1,5 +1,6 @@
 // Vérifie les maps officielles (chevauchements, faisabilité) avec un pilote automatique sur la vraie physique,
 // et calcule les temps auteur. node tools/racing-check.mjs [--write] [--map v2-1-1] [--ascii] [--trace]
+// aislop-ignore-file ai-slop/console-leftover -- script en ligne de commande : la console est sa sortie
 import { writeFileSync } from "node:fs";
 import { OFFICIAL } from "../src/games/racing/maps.js";
 import { Track, overlaps, buildTrack, normalizeTiles } from "../src/games/racing/track.js";

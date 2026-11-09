@@ -443,16 +443,19 @@ async function init() {
 }
 
 /* ── Onglets jeux ── */
+// Onglet mémorisé ; stockage indisponible (navigation privée) : null, on garde l'onglet par défaut
+function rememberTab(g) {
+    try { if (g === undefined) return localStorage.getItem('statsGame'); localStorage.setItem('statsGame', g); } catch (e) { return null; }
+}
 function initGameTabs() {
     const tabs = document.querySelectorAll('.game-tab');
     const show = g => {
         tabs.forEach(t => t.classList.toggle('active', t.dataset.game === g));
         document.querySelectorAll('.game-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === g));
-        try { localStorage.setItem('statsGame', g); } catch (e) {}
+        rememberTab(g);
     };
     tabs.forEach(t => t.addEventListener('click', () => show(t.dataset.game)));
-    let saved = null;
-    try { saved = localStorage.getItem('statsGame'); } catch (e) {}
+    const saved = rememberTab();
     if (saved && document.querySelector(`.game-tab[data-game="${saved}"]`)) show(saved);
 }
 

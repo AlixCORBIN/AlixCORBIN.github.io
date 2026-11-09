@@ -1,5 +1,4 @@
 // Petits modèles en primitives : cartouches et objets.
-import React from "react";
 
 const metal = { color: "#9aa3ab", metalness: 0.85, roughness: 0.3 };
 

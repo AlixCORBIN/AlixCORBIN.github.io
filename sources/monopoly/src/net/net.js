@@ -32,7 +32,7 @@ function openChannel(code, onMsg) {
   return { ch, ready, send: (p) => ch.send({ type: 'broadcast', event: 'm', payload: p }), close: () => { try { supabase.removeChannel(ch) } catch {} } }
 }
 
-// ---------- Hôte ----------
+// Hôte
 export function hostRoom(code, { onOpen, onConn, onData, onClose, onError }) {
   const me = 'host-' + rid()
   const peers = new Map() // peerId -> { conn, seen }
@@ -90,7 +90,7 @@ export function hostRoom(code, { onOpen, onConn, onData, onClose, onError }) {
   }
 }
 
-// ---------- Client ----------
+// Client
 export function joinRoom(code, { onOpen, onData, onClose, onError, onLost }) {
   const me = 'c-' + rid()
   let alive = true, host = null, lastHost = 0, ping = null, hello = null, watchdog = null, lostAt = 0

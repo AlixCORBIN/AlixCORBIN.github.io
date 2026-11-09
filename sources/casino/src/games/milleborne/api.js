@@ -1,5 +1,4 @@
 import { reportResult } from "../../lib/report.js";
-import { supabase } from "../../lib/supabase.js";
 import { teamMode } from "./engine.js";
 
 // Appelé une seule fois par l'hôte en fin de partie (RPC save_milleborne_game, doublon ignoré côté base).

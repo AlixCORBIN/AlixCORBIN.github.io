@@ -2,6 +2,7 @@
 // et compare au résultat de référence (tools/v1-reference.json).
 //   node tools/v1-regression.mjs --record   enregistre la référence
 //   node tools/v1-regression.mjs            compare (code de sortie 1 si différent)
+// aislop-ignore-file ai-slop/console-leftover -- script en ligne de commande : la console est sa sortie
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { OFFICIAL } from "../src/games/racing/maps.js";

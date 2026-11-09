@@ -106,7 +106,7 @@ export async function publishMap(name, data, authorTime) {
   return map;
 }
 
-// ---------- Campagne par saison (voir supabase/racing-season2.sql) ----------
+// Campagne par saison (voir supabase/racing-season2.sql)
 // Maps visibles de la saison (la RLS cache celles qui ne sont pas encore ouvertes, sauf aux admins)
 export async function campaignList(season) {
   // client authentifié : sinon la RLS ne sait pas que le joueur est admin

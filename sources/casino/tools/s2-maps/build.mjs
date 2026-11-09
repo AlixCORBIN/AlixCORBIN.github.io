@@ -7,7 +7,8 @@
 // reprise d'une autre map, pilote auto à l'arrivée en 15 à 60 s sans chute, et chaque raccourci terminé par le pilote.
 // ground : { relief } pose la map sur un sol (dunes de relief niveaux, voir terrain.js) au lieu du vide.
 // Temps auteur = meilleur temps du pilote (ligne sûre ou raccourci).
-import { readFileSync, writeFileSync } from "node:fs";
+// aislop-ignore-file ai-slop/console-leftover -- script en ligne de commande : la console est sa sortie
+import { writeFileSync } from "node:fs";
 import * as P from "../../src/games/racing/physics.js";
 import { botRun } from "../bot-run.mjs";
 import { MAPS } from "./campaign.mjs";

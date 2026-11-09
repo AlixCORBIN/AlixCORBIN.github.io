@@ -4,6 +4,7 @@
 //   node tools/determinism-test.mjs            blocs de saison 2 validés
 //   node tools/determinism-test.mjs --all      aussi les blocs encore cachés (season: "off")
 //   node tools/determinism-test.mjs wind lift  seulement ces blocs
+// aislop-ignore-file ai-slop/console-leftover -- script en ligne de commande : la console est sa sortie
 import { createHash } from "node:crypto";
 import { BLOCKS, placeFrom } from "../src/games/racing/blocks.js";
 import { Track, normalizeTiles } from "../src/games/racing/track.js";

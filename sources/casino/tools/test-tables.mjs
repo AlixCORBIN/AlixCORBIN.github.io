@@ -1,4 +1,5 @@
 // Test rapide des tables serveur : node tools/test-tables.mjs
+// aislop-ignore-file ai-slop/console-leftover -- script en ligne de commande : la console est sa sortie
 import * as T from "../src/server/tables.js";
 let now = 1_000_000;
 const ok = (c, m) => { if (!c) { console.error("ECHEC:", m); process.exitCode = 1; } else console.log("ok -", m); };

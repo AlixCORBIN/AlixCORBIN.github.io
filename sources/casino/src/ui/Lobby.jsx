@@ -27,7 +27,9 @@ const GAMES = [
 ];
 
 const FRIENDS = [
+  // aislop-ignore-next-line ai-slop/hardcoded-url -- lien public vers le site d'un ami
   { title: "Jeton", author: "Antoine Rioul", url: "https://www.antlabs.fr/jeton", icon: "piggy-bank", hue: "#7a5a14", desc: "Clone de Stake jouable avec de faux jetons, aucun argent réel." },
+  // aislop-ignore-next-line ai-slop/hardcoded-url -- lien public vers le site d'un ami
   { title: "RNG World", author: "Alexandre Tricot", url: "https://rngworld.github.io/", icon: "globe", hue: "#1f4f7a", desc: "Chaque jour, drop une ville aléatoire. Plus elle est rare, plus elle rapporte." },
 ];
 

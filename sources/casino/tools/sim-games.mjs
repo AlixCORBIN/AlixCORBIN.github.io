@@ -1,6 +1,7 @@
 // Parties complètes jouées uniquement par des bots, en accéléré, pour chaque jeu de société.
 // Vérifie : pas d'exception, pas de blocage, fin de partie atteinte, résultat valide pour report_game.
 // Lancer : npx vite-node tools/sim-games.mjs [jeu] [nombre]
+// aislop-ignore-file ai-slop/console-leftover -- script en ligne de commande : la console est sa sortie
 import FakeTimers from "@sinonjs/fake-timers";
 
 const clock = FakeTimers.install({ toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval", "Date"] });

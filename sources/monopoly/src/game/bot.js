@@ -3,7 +3,7 @@
 import { SQUARES, GROUPS, groupMembers, STATIONS, UTILITIES, CHANCE, CAISSE } from './data.js'
 import { cur, ownsGroup } from './engine.js'
 
-// ---------- Probabilités d'arrêt sur chaque case (Monte-Carlo, calculé une fois) ----------
+// Probabilités d'arrêt sur chaque case (Monte-Carlo, calculé une fois)
 export const LAND = (() => {
   const hits = new Array(40).fill(0)
   let pos = 0, jail = 0, dbl = 0, seed = 12345
@@ -31,7 +31,7 @@ export const LAND = (() => {
   return hits.map((h) => h / tot)
 })()
 
-// ---------- Personnalités ----------
+// Personnalités
 const PERSONAS = {
   prudent: { label: 'prudent', reserve: 1.4, bid: 0.85, trade: 0.6, greed: 1.25 },
   agressif: { label: 'agressif', reserve: 0.7, bid: 1.15, trade: 1, greed: 1.1 },
@@ -43,7 +43,7 @@ export function persona(id) {
   return Object.values(PERSONAS)[h % 3]
 }
 
-// ---------- Évaluation d'une position ----------
+// Évaluation d'une position
 const mine = (s, id) => Object.keys(s.props).map(Number).filter((k) => s.props[k].owner === id)
 const opponents = (s, id) => s.players.filter((p) => !p.bankrupt && p.id !== id)
 const horizon = (s) => {
@@ -123,7 +123,7 @@ export function tradeDelta(s, t) {
   }
 }
 
-// ---------- Recherche d'échanges intéressants ----------
+// Recherche d'échanges intéressants
 const memory = new Map() // idPartie -> { tried: Set, lastRound: {botId: round} }
 function mem(s) {
   if (!memory.has(s.id)) memory.set(s.id, { tried: new Set(), last: {} })
@@ -178,7 +178,7 @@ export function tradeCandidates(s, id, max = 3) {
 }
 export function markTried(s, t) { mem(s).tried.add(tradeKey(t) + t.give.money) }
 
-// ---------- Finances ----------
+// Finances
 function raiseFunds(s, me) {
   const props = mine(s, me.id)
   // vendre d'abord les maisons les moins rentables
@@ -237,7 +237,7 @@ export function botFallback(s, id) {
   return null
 }
 
-// ---------- Décision ----------
+// Décision
 export function botDecide(s, id) {
   const me = s.players.find((p) => p.id === id)
   if (!me || me.bankrupt || s.phase !== 'playing') return null

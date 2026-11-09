@@ -1,5 +1,3 @@
-import React from "react";
-
 // Pastille hôte : rendre la salle visible (publique) ou non dans le hub
 export function PublicToggle({ ctrl }) {
   if (ctrl.role !== "host") return null;

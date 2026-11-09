@@ -1,12 +1,11 @@
-import { useMemo, useRef, useEffect, useState } from 'react'
+import { useMemo, useRef, useEffect } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrbitControls, ContactShadows, RoundedBox } from '@react-three/drei'
+import { OrbitControls, ContactShadows, RoundedBox, Stars, Sparkles } from '@react-three/drei'
 import * as THREE from 'three'
 import { SQUARES } from '../game/data.js'
 import { sfx } from '../ui/sfx.js'
 import Cards3D from './Cards3D.jsx'
 import { useTheme } from '../ui/themes.js'
-import { Stars, Sparkles } from '@react-three/drei'
 import { drawBoard, squareCenter, inward, isCorner, CORNER, HALF } from './layout.js'
 
 const Y = 0.12 // hauteur de la surface du plateau
@@ -167,7 +166,7 @@ function Pawn({ player, offset, active }) {
   )
 }
 
-// ----- Dés -----
+// Dés
 const PIPS = { 1: [[0.5, 0.5]], 2: [[0.25, 0.25], [0.75, 0.75]], 3: [[0.25, 0.25], [0.5, 0.5], [0.75, 0.75]], 4: [[0.25, 0.25], [0.75, 0.25], [0.25, 0.75], [0.75, 0.75]], 5: [[0.25, 0.25], [0.75, 0.25], [0.5, 0.5], [0.25, 0.75], [0.75, 0.75]], 6: [[0.25, 0.22], [0.75, 0.22], [0.25, 0.5], [0.75, 0.5], [0.25, 0.78], [0.75, 0.78]] }
 function faceTex(n) {
   const c = document.createElement('canvas'); c.width = c.height = 128

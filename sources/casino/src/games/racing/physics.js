@@ -84,7 +84,7 @@ const CAR = {
 let ready = null;
 export const initPhysics = () => (ready ||= RAPIER.init());
 
-// --------- Maillage de collision de la route (dessus de chaussée) ---------
+// Maillage de collision de la route (dessus de chaussée)
 export function roadTriangles(tile, thickness = 0.6) {
   const S = sampleBlock(tile.type);
   const top = [], bot = [];
@@ -252,7 +252,7 @@ function railStep(phys, run, car) {
   return true;
 }
 
-// --------- Monde ---------
+// Monde
 export function createWorld(track) {
   const world = new RAPIER.World({ x: 0, y: -GRAVITY, z: 0 });
   world.timestep = DT;
@@ -606,7 +606,7 @@ export function placeCar(car, spawn) {
   car.assistTile = null;
 }
 
-// --------- Une tentative ---------
+// Une tentative
 export function createRun(track) {
   return { flipped: 0, steps: 0, cps: new Set(), splits: [], finished: false, finishMs: null, ghost: [GHOST_TAG], events: [], lastSpawn: track.spawn(), missingCool: 0, flags: {}, tpCool: 0, railCool: 0 };
 }

@@ -452,60 +452,9 @@ body.dark-mode .visitor-count { color: #4a5568; }
 /* =========================================
    6. STYLE SPÉCIFIQUE PAGE "MOI"
    ========================================= */
-.tobias-layout {
-    text-align: center;
-    font-family: 'Georgia', 'Times New Roman', serif;
-    color: #333;
-    max-width: 900px;
-    padding: 20px;
-    animation: fadeIn 0.8s ease;
-}
-
-.tobias-avatar {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    border: 6px solid #fff;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-    object-fit: cover;
-    margin-bottom: 20px;
-}
-
-.tobias-intro {
-    font-size: 1.8rem;
-    margin-bottom: 15px;
-    line-height: 1.4;
-}
-
-.name-highlight {
-    color: #e67e22;
-    font-weight: bold;
-}
-
-.tobias-sub {
-    font-size: 1.3rem;
-    margin-bottom: 20px;
-    color: #555;
-    font-weight: bold;
-}
-
 .blue-highlight {
     color: #2980b9;
     font-weight: bold;
-}
-
-.tobias-desc {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-    color: #666;
-    font-style: italic;
-}
-
-.tobias-cta {
-    font-size: 1.5rem;
-    color: #95a5a6;
-    margin-top: 40px;
-    font-family: sans-serif;
 }
 
 @keyframes fadeIn {
@@ -513,17 +462,6 @@ body.dark-mode .visitor-count { color: #4a5568; }
     to { opacity: 1; transform: translateY(0); }
 }
 /* --- STYLE RUBANS DE CHANTIER (EN TRAVAUX) --- */
-
-.construction-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
 
 .tape-cross {
     position: absolute;
@@ -613,15 +551,6 @@ body.dark-mode .visitor-count { color: #4a5568; }
     z-index: 2;
     color: #333;
     text-shadow: 0 0 10px white;
-}
-
-.ttt-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
 }
 
 /* =========================================
@@ -840,51 +769,6 @@ body.dark-mode .visitor-count { color: #4a5568; }
     text-align: center;
     margin-top: 4px;
     font-style: italic;
-}
-
-/* =========================================
-   10. CARTE TICTACTOE — NOUVEAU DESIGN
-   ========================================= */
-.ttt-card {
-    background: linear-gradient(135deg, #1a1a2e, #0f3460) !important;
-}
-
-.ttt-board {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-    width: 80px;
-    height: 80px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 8px;
-    padding: 4px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-}
-
-.ttt-cell {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0,0,0,0.3);
-    border-radius: 4px;
-    font-size: 1rem;
-    font-weight: 900;
-    line-height: 1;
-}
-
-.ttt-x { color: var(--wii-blue); text-shadow: 0 0 8px var(--wii-blue); }
-.ttt-o { color: #e06060; text-shadow: 0 0 8px #e06060; }
-.ttt-win { background: rgba(74,192,224,0.25); }
-
-.ttt-label {
-    margin: 10px 0 0 0;
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.7);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    text-shadow: none;
-    position: relative;
-    z-index: 2;
 }
 
 /* =========================================
@@ -2376,7 +2260,7 @@ body.phone .grid-page {
     gap: 10px;
 }
 body.phone .grid-track { gap: 8vw; }
-body.phone .channel, body.phone.wii3d-on .channel { border-radius: 16px; }
+body.phone .channel { border-radius: 16px; }
 body.phone .wii-photo-band { font-size: 0.82rem; padding: 4px 8px 5px; }
 body.phone .wii-scene { bottom: 23px; height: calc(100% - 23px); }
 body.phone .wii-temp { font-size: 1.5rem; }

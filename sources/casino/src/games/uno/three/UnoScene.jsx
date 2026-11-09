@@ -4,7 +4,7 @@ import { useRoomMii } from "../../../lib/mii.js";
 import { MiiAvatar } from "../../../ui/MiiAvatar.jsx";
 import React from "react";
 import { ACESFilmicToneMapping, Color, MathUtils } from "three";
-import { COLORS, COLOR_HEX } from "../cards.js";
+import { COLOR_HEX } from "../cards.js";
 import { Card3D } from "./Card3D.jsx";
 import { feltTexture } from "./textures.js";
 

@@ -1,6 +1,7 @@
 // Vide de la saison 2 : sur une piste de test, compare un monde à sol (Stadium) et un monde suspendu (Atelier).
 // Vérifie : chute -> réapparition au dernier checkpoint, rejeu identique (2 fois), pilote auto à l'arrivée.
 //   node tools/void-test.mjs
+// aislop-ignore-file ai-slop/console-leftover -- script en ligne de commande : la console est sa sortie
 import { createHash } from "node:crypto";
 import { placeFrom } from "../src/games/racing/blocks.js";
 import { Track, normalizeTiles } from "../src/games/racing/track.js";

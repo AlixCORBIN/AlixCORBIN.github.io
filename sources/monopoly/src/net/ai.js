@@ -3,9 +3,9 @@
 import { SQUARES } from '../game/data.js'
 import { fmt } from '../game/engine.js'
 import { persona } from '../game/bot.js'
+import { SUPABASE_URL, SUPABASE_ANON } from './supabase.js'
 
-const URL = 'https://api.alixcorbin.com/functions/v1/monopoly-ai'
-const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qa2JoZ213eWxsZXRtZG1zbXlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzQ2MzYsImV4cCI6MjA5MjQ1MDYzNn0.Vp6CfEi3dtUL1Z1h8kYkrCAXBMlBuSogocffaKE_9tw'
+const AI_URL = `${SUPABASE_URL}/functions/v1/monopoly-ai`
 const MAX_CALLS = 30 // par partie, pour rester large dans le quota gratuit
 const used = new Map()
 let down = 0 // si la fonction ne répond pas, on arrête d'essayer quelques minutes
@@ -17,7 +17,7 @@ async function call(gameId, body) {
   const ctl = new AbortController()
   const t = setTimeout(() => ctl.abort(), 6000)
   try {
-    const r = await fetch(URL, { method: 'POST', signal: ctl.signal, headers: { apikey: ANON, Authorization: `Bearer ${ANON}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    const r = await fetch(AI_URL, { method: 'POST', signal: ctl.signal, headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
     if (!r.ok) { if (r.status >= 500) down = Date.now() + 3 * 60e3; return null }
     return await r.json()
   } catch { down = Date.now() + 60e3; return null } finally { clearTimeout(t) }

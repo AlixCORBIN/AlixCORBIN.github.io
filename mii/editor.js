@@ -1,7 +1,9 @@
+// aislop-ignore-next-line ai-slop/hallucinated-import -- résolu par l'importmap de mii/index.html (CDN)
 import * as THREE from 'three';
+// aislop-ignore-next-line ai-slop/hallucinated-import -- résolu par l'importmap de mii/index.html (CDN)
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import {
-    defaultMii, randomMii, sanitizeMii, cloneMii, isSelfAdmin, ADMIN_HATS, encodeMii, decodeMii, newId,
+    defaultMii, randomMii, cloneMii, isSelfAdmin, ADMIN_HATS, encodeMii, decodeMii, newId,
     COUNTS, RANGES, FAV_COLORS, SKIN_COLORS, HAIR_COLORS, EYE_COLORS, LIP_COLORS,
     GLASSES_COLORS, PANTS_COLORS, HAT_COLORS, GUEST_MIIS,
 } from './lib/mii-core.js';
@@ -831,6 +833,7 @@ function recoveryModal() {
     ]);
 }
 
+// aislop-ignore-next-line ai-slop/hallucinated-import -- résolu par l'importmap de mii/index.html (CDN)
 import('@supabase/supabase-js').then(({ createClient }) => {
     account = createAccount(createClient);
     attachAccount(account);

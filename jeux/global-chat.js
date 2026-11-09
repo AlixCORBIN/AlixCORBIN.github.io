@@ -8,16 +8,17 @@
   var MAX = 300
   var OPEN_KEY = 'gchat-open'
 
+  // Stockage indisponible (navigation privée, cookies bloqués) : null, le chat fonctionne sans mémoire
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v) } catch (e) { return null } }
+  function session(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v) } catch (e) { return null } }
+  function walletName() { try { return (JSON.parse(store('casino3d-wallet') || 'null') || {}).name || '' } catch (e) { return null } }
   function guestName() {
-    var n = null
-    try { n = sessionStorage.getItem('gchat-guest') } catch (e) {}
-    if (!n) { n = 'Invité ' + Math.floor(1000 + Math.random() * 9000); try { sessionStorage.setItem('gchat-guest', n) } catch (e) {} }
+    var n = session('gchat-guest')
+    if (!n) { n = 'Invité ' + Math.floor(1000 + Math.random() * 9000); session('gchat-guest', n) }
     return n
   }
   function myName() {
-    var n = ''
-    try { n = (JSON.parse(store('casino3d-wallet') || 'null') || {}).name || '' } catch (e) {}
+    var n = walletName() || ''
     if (!n) n = new URLSearchParams(location.search).get('name') || ''
     if (!n) n = store('mono-name') || ''
     var input = document.querySelector('.c-name input')
@@ -32,7 +33,7 @@
     try { return (window.__gchatGame && window.__gchatGame()) || null } catch (e) { return null }
   }
 
-  // ---------- interface ----------
+  // interface
   var css = document.createElement('style')
   css.textContent = [
     '.gchat{display:flex;flex-direction:column;min-height:0;font:14px var(--ui,system-ui,-apple-system,Segoe UI,Roboto,sans-serif);color:#f4efe2}',
@@ -119,7 +120,7 @@
   btn.onclick = function () { toggle(!open) }
   closeBtn.onclick = function () { toggle(false) }
 
-  // ---------- messages ----------
+  // messages
   var seen = {}
   // admins : liste publique servie par la base (pseudos réservés côté serveur)
   var adminNames = {}, amAdmin = false

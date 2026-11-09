@@ -1,4 +1,5 @@
 // Vérifie que le rejeu serveur redonne exactement la course pilotée : node tools/test-replay.mjs [map]
+// aislop-ignore-file ai-slop/console-leftover -- script en ligne de commande : la console est sa sortie
 import { OFFICIAL } from "../src/games/racing/maps.js";
 import { Track } from "../src/games/racing/track.js";
 import * as P from "../src/games/racing/physics.js";

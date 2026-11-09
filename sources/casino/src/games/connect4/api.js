@@ -1,5 +1,4 @@
 import { reportResult } from "../../lib/report.js";
-import { supabase } from "../../lib/supabase.js";
 
 // Appelé une seule fois par l'hôte en fin de partie (RPC save_connect4_game, doublon ignoré côté base).
 export async function saveConnect4Game( g )

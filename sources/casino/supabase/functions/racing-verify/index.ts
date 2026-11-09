@@ -33,9 +33,15 @@ async function rpcTrue(fn: string, args: Record<string, unknown>): Promise<boole
   return !error && data === true;
 }
 // La map utilise-t-elle un bloc ou un monde (sans sol) de la saison 2 ?
-const usesSeason2 = (data: any) =>
-  (WORLDS as any)[data?.world]?.season === 2 ||
-  (Array.isArray(data?.tiles) && data.tiles.some((t: any) => Array.isArray(t) && (BLOCKS as any)[t[2]]?.season === 2));
+type MapData = { world?: number | string; tiles?: unknown[] } | null | undefined;
+const blockSeason = (id: unknown) => {
+  if (typeof id !== "string" || !Object.hasOwn(BLOCKS, id)) return undefined;
+  const block = BLOCKS[id as keyof typeof BLOCKS];
+  return "season" in block ? block.season : undefined;
+};
+const usesSeason2 = (data: MapData) =>
+  WORLDS[Number(data?.world)]?.season === 2 ||
+  (Array.isArray(data?.tiles) && data.tiles.some((t) => Array.isArray(t) && blockSeason(t[2]) === 2));
 
 // Temps admin avant lancement : meilleur temps conservé par (map, pseudo), comme racing_records
 async function submitTest(mapId: string, pseudo: string, ms: number, ghost: unknown) {

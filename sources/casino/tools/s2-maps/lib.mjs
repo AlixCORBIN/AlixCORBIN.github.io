@@ -102,7 +102,7 @@ export function lines(info) {
   return { main, alts };
 }
 
-// ---------- validations ----------
+// validations
 const PLAIN = new Set(["road", "bare", "narrow", "platform", "cp", "start", "finish", "cpfast"]);
 
 export function checkMap(m, tiles, info) {

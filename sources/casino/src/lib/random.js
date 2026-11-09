@@ -51,6 +51,7 @@ async function fetchViaEdgeFunction(count, min, max, fetchImpl, signal) {
 }
 
 async function fetchFromRandomOrg(count, min, max, fetchImpl, signal) {
+  // aislop-ignore-next-line ai-slop/hardcoded-url -- API publique de random.org, pas une URL d'environnement
   const url = `https://www.random.org/integers/?num=${count}&min=${min}&max=${max}&col=1&base=10&format=plain&rnd=new`;
   const res = await fetchImpl(url, {
     signal,

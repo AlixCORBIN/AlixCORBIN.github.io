@@ -5,6 +5,9 @@ import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import * as T from "./_lib/server/tables.js";
 import { createRemoteJWKSet, jwtVerify } from "npm:jose@5.9.6";
 
+// Fourni par le runtime Supabase Edge (absent en local)
+declare const EdgeRuntime: { waitUntil(task: Promise<unknown>): void } | undefined;
+
 const URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const db = createClient(URL, SERVICE, { auth: { persistSession: false } });
@@ -66,7 +69,6 @@ function refillLater(code: string, need: { kind: string; n: number } | null) {
       }
     }
   })().catch(() => {});
-  // @ts-ignore EdgeRuntime existe dans le runtime Supabase
   if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(task);
 }
 
@@ -106,7 +108,7 @@ async function commit(room: any, version: number, before: Set<string>) {
   const wallets = [...(room.pending || []), ...T.walletUpdates(room)];
   delete room.pending;
   const miis: Record<string, unknown> = {};
-  for (const [u, m] of Object.entries(room.members) as any) if (m.mii) miis[u] = m.mii;
+  for (const [u, m] of Object.entries(room.members as Record<string, { mii?: unknown }>)) if (m.mii) miis[u] = m.mii;
   const { data, error } = await db.rpc("casino_commit", {
     p_code: room.code, p_version: version, p_game: room.game, p_room: room, p_view: T.view(room, now), p_miis: miis,
     p_public: room.isPublic, p_wallets: wallets, p_sessions: sessions, p_spins: spins.length ? spins : null,

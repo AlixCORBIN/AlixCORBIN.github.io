@@ -95,6 +95,7 @@ export function watchRooms(cb) {
   try {
     channel();
   } catch {
+    // aislop-ignore-next-line ai-slop/empty-function -- désabonnement sans effet : rien n'a été démarré
     return () => {};
   }
   watchers.add(cb);

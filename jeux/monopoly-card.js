@@ -1,10 +1,12 @@
 // Ajoute la carte Monopoly 3D au hub Casino, indépendamment du bundle React
 // (le bundle est recompilé régulièrement : ne pas patcher app.js).
 (function () {
+  // Stockage indisponible (navigation privée) : null, on retombe sur 'Joueur'
+  function savedName() { try { return (localStorage.getItem('mono-name') || '').trim() } catch (e) { return null } }
   function pseudo() {
     var inp = document.querySelector('.hub input:not([maxlength="5"])') || document.querySelector('.hub input')
     var v = inp && inp.value.trim()
-    if (!v) try { v = (localStorage.getItem('mono-name') || '').trim() } catch (e) {}
+    if (!v) v = savedName()
     return v && v.length >= 2 ? v : 'Joueur'
   }
   function go(mode) {

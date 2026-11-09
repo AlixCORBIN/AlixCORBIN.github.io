@@ -6,7 +6,7 @@
  * - Split & Double avec gestion financière
  */
 
-// --- Variables globales ---
+// Variables globales
 const VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 const SUITS_KEYS = ['H', 'D', 'C', 'S'];
 
@@ -17,12 +17,12 @@ let currentHandIndex = 0;
 let gameActive = false;
 let renderedCardsCount = { dealer: 0, player: [] };
 
-// --- Variables d'argent ---
+// Variables d'argent
 let bankroll = 1000;     // Portefeuille de départ
 let currentBetInput = 0; // Mise en cours de préparation
 let handBets = [];       // Tableau des mises par main (pour gérer le Split)
 
-// --- Supabase (tracking) ---
+// Supabase (tracking)
 // Session stats (cumulées sur toute la session : une seule ligne par session en base)
 const _bankrollStart = 1000;
 const CREDIT_AMOUNT = 500;
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// --- Éléments DOM ---
+// Éléments DOM
 const dealerHandEl = document.getElementById('dealer-hand');
 const dealerScoreEl = document.getElementById('dealer-score');
 const playerHandsContainer = document.getElementById('player-hands-container');
@@ -188,7 +188,7 @@ const btnClear = document.getElementById('btn-clear');
 const btnCredit = document.getElementById('btn-credit');
 const creditDisplayEl = document.getElementById('credit-display');
 
-// --- Initialisation ---
+// Initialisation
 window.onload = initGame;
 
 function initGame() {
@@ -222,7 +222,7 @@ function initVisualDeck() {
     }
 }
 
-// --- GESTION DES PARIS ---
+// Gestion des paris
 
 // Cette fonction est appelée directement depuis le HTML (onclick="addBet(5)")
 window.addBet = function(amount) {
@@ -276,7 +276,7 @@ function resetToBettingPhase() {
     updateBankrollUI();
 }
 
-// --- DÉMARRAGE DU JEU ---
+// Démarrage du jeu
 
 function startNewGame() {
     // Vérification finale
@@ -307,7 +307,7 @@ function startNewGame() {
     // On verrouille tout pendant l'animation de distribution
     toggleGameControls(false); 
 
-    // --- DISTRIBUTION (Type Français : 1 carte croupier) ---
+    // Distribution (type français : 1 carte croupier)
     
     // Carte Joueur 1 (t=0)
     setTimeout(() => { playerHands[0].push(drawCard()); updateUI(); }, 0);
@@ -326,7 +326,7 @@ function startNewGame() {
     }, 1300);
 }
 
-// --- Logique du Paquet ---
+// Logique du Paquet
 function createDeck() {
     let newDeck = [];
     for(let i=0; i<6; i++) { // 6 paquets
@@ -352,7 +352,7 @@ function drawCard() {
     return card;
 }
 
-// --- Règles et Calculs ---
+// Règles et Calculs
 function getCardWeight(value) {
     if (['J', 'Q', 'K'].includes(value)) return 10;
     if (value === 'A') return 11;
@@ -370,7 +370,7 @@ function calculateScore(hand) {
     return score;
 }
 
-// --- Actions du Joueur ---
+// Actions du Joueur
 
 function hit() {
     if (!gameActive) return;
@@ -444,7 +444,7 @@ function splitHand() {
     _sess.splits_used++;
     updateBankrollUI();
 
-    // --- LOGIQUE DONNÉES ---
+    // Logique données
     let handToSplit = playerHands[currentHandIndex];
     let card2 = handToSplit.pop(); 
     
@@ -457,7 +457,7 @@ function splitHand() {
     renderedCardsCount.player.splice(currentHandIndex + 1, 0, 1);
 
 
-    // --- LOGIQUE VISUELLE (DOM) ---
+    // Logique visuelle (DOM)
     
     // 1. DÉCALAGE DES IDS
     // Si on a déjà des mains après celle-ci, il faut décaler leurs IDs (ex: hand-1 devient hand-2)
@@ -491,7 +491,7 @@ function splitHand() {
     hand2Div.appendChild(card2Element);
 
 
-    // --- DISTRIBUTION ---
+    // Distribution
     setTimeout(() => {
         playerHands[currentHandIndex].push(drawCard());
         updateUI(); // Carte 2 sur la main actuelle
@@ -514,7 +514,7 @@ function splitHand() {
     }, 300);
 }
 
-// --- Gestion des tours ---
+// Gestion des tours
 function nextHandOrEnd() {
     if (currentHandIndex < playerHands.length - 1) {
         // Passage à la main suivante (cas du Split)
@@ -529,7 +529,7 @@ function nextHandOrEnd() {
     }
 }
 
-// --- Tour du Croupier ---
+// Tour du Croupier
 function dealerTurn() {
     gameActive = false;
     
@@ -556,7 +556,7 @@ function dealerTurn() {
     setTimeout(playDealer, 800);
 }
 
-// --- Fin de partie & Paiements ---
+// Fin de partie & Paiements
 function determineWinner() {
     let dealerScore = calculateScore(dealerHand);
     let resultText = "";
@@ -634,7 +634,7 @@ function checkForBlackjack() {
     }
 }
 
-// --- Gestion Interface (UI) ---
+// Gestion Interface (UI)
 
 // Convertit le string SVG en élément DOM avec animation optionnelle
 function renderCardToDOM(cardObj, isHidden = false, animate = false) {
@@ -719,16 +719,10 @@ function checkButtonsState() {
         btnDouble.disabled = true;
     }
     
-    // SPLIT : 2 cartes identiques
-    let val1 = getCardWeight(hand[0].value);
-    let val2 = getCardWeight(hand[1].value);
-
-    // CONDITIONS SPLIT :
-    // 1. Avoir 2 cartes
-    // 2. Même valeur
-    // 3. Ne pas dépasser 4 mains au total (CORRECTION ICI)
-    // 4. Avoir assez d'argent
-    if (hand.length !== 2 || val1 !== val2 || playerHands.length >= 4 || bankroll < currentBet) {
+    // SPLIT : 2 cartes de même valeur, 4 mains au plus, assez d'argent
+    const firstWeight = getCardWeight(hand[0].value);
+    const secondWeight = hand.length > 1 ? getCardWeight(hand[1].value) : null;
+    if (hand.length !== 2 || firstWeight !== secondWeight || playerHands.length >= 4 || bankroll < currentBet) {
         btnSplit.disabled = true;
     }
 }

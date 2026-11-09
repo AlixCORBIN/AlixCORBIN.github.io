@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useGame, loadSession, clearSession } from '../net/useGame.js'
 import Scene from '../three/Scene.jsx'
 import { SQUARES, GROUPS, groupMembers, JAIL_FINE } from '../game/data.js'
@@ -29,7 +29,7 @@ function Toast({ toast }) {
   return show ? <div className={`toast ${toast.kind || ''}`}>{toast.kind === 'mention' ? <><Icon name="bell" />{" "}</> : ''}{rich(toast.msg)}</div> : null
 }
 
-// ---------- Accueil ----------
+// Accueil
 function PublicSwitch({ on, set, compact }) {
   return (
     <div className={`pubbar ${compact ? 'compact' : ''}`}>
@@ -91,7 +91,7 @@ function Home({ g }) {
   )
 }
 
-// ---------- Salon ----------
+// Salon
 function Lobby({ g }) {
   const s = g.game
   const host = g.role === 'host'
@@ -149,7 +149,7 @@ function Lobby({ g }) {
 
 
 
-// ---------- Partie ----------
+// Partie
 const textOn = (g) => (['yellow', 'lightblue'].includes(g) ? '#111' : '#fff')
 const sqColor = (sq) => (sq.group ? GROUPS[sq.group].color : sq.type === 'station' ? '#3b4a42' : sq.type === 'utility' ? '#4a5a52' : '#24453a')
 
@@ -653,7 +653,7 @@ function Log({ s, chats = [], chat, onClose, myId, onPick }) {
   )
 }
 
-// ---------- Gestion des propriétés ----------
+// Gestion des propriétés
 const HOUSE_LABEL = (h) => (h === 5 ? 'Hôtel' : h ? `${h} maison${h > 1 ? 's' : ''}` : 'Terrain nu')
 const unmortgageCost = (sq) => Math.ceil((sq.price / 2) * 1.1)
 
@@ -765,7 +765,7 @@ function Manage({ s, me, act, onClose }) {
   )
 }
 
-// ---------- Échanges ----------
+// Échanges
 function Tiles({ s, owner, value, onChange }) {
   const list = Object.keys(s.props).map(Number).filter((k) => s.props[k].owner === owner).sort((a, b) => a - b)
   if (!list.length) return <p className="muted small">Aucune propriété</p>

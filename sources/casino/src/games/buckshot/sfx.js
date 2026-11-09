@@ -235,6 +235,7 @@ export const sfx = {
 /* ---------- ambiance : néon qui bourdonne + grésillements ---------- */
 export function startAmbience() {
   const c = audio();
+  // aislop-ignore-next-line ai-slop/empty-function -- désabonnement sans effet : rien n'a été démarré
   if (!c) return () => {};
   const out = c.createGain();
   out.gain.value = 0;

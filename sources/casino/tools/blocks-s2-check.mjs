@@ -2,9 +2,10 @@
 //   pilote auto jusqu'à l'arrivée (sans tomber), rejeu de son journal identique, fantôme accepté (ghost-check),
 //   20 journaux aléatoires rejoués 2 fois (déterminisme).
 //   node tools/blocks-s2-check.mjs [bloc…] [--dump dossier] [--trace]
+// aislop-ignore-file ai-slop/console-leftover -- script en ligne de commande : la console est sa sortie
 import { createHash } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
-import { BLOCKS, placeFrom } from "../src/games/racing/blocks.js";
+import { placeFrom } from "../src/games/racing/blocks.js";
 import { Track, normalizeTiles, overlaps } from "../src/games/racing/track.js";
 import { trackMeta } from "../src/games/racing/meta.js";
 import * as P from "../src/games/racing/physics.js";

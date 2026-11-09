@@ -5,6 +5,7 @@
 // Affiche, pour chaque map : temps, durée et coût CPU du rejeu, vitesse max entre deux points,
 // distance max à l'axe, et ce que la base refuserait.
 //   node tools/ghost-check-s2.mjs [--map s2-03] [--neg]
+// aislop-ignore-file ai-slop/console-leftover -- script en ligne de commande : la console est sa sortie
 import { readFileSync, readdirSync } from "node:fs";
 import { placeFrom } from "../src/games/racing/blocks.js";
 import { trackMeta } from "../src/games/racing/meta.js";

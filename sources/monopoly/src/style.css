@@ -32,9 +32,6 @@ input:focus{border-color:var(--accent)}
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);display:grid;place-items:center;z-index:30;padding:16px}
 .modal{position:relative;background:#132a1f;border:1px solid var(--line);border-radius:20px;padding:20px;width:min(560px,100%);max-height:90vh;overflow:auto}
 .modal h2{margin:0 0 12px}.modal h3{margin:6px 0;font-size:.95rem}.modal.center{text-align:center}
-.manage-list{display:flex;flex-direction:column;gap:6px}
-.mrow{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);border-radius:12px;padding:8px 10px}
-.mrow.mort{opacity:.6}.mname{flex:1;font-weight:700;font-size:.9rem}
 .band{width:8px;align-self:stretch;border-radius:4px;flex:none;min-height:14px}
 .trade-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:10px 0}
 .trade-cols>div{display:flex;flex-direction:column;gap:6px}

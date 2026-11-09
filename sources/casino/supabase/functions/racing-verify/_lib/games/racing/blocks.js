@@ -129,7 +129,7 @@ export const BLOCKS = {
   platform: { label: "Plateforme", path: straight, n: 2, width: TILE, cat: "Routes" },
 };
 
-// ---------- Blocs de la saison 2 ----------
+// Blocs de la saison 2
 // Réglages par tuile : tile.p = { clé: valeur }, valeurs par défaut dans params[clé].def (voir param()).
 // Tout ce qui est dynamique dépend uniquement du numéro de pas (run.steps) : voir physics.js.
 const S2 = { season: 2, cat: "S2 · Mécanismes" };
@@ -176,7 +176,7 @@ Object.assign(BLOCKS, {
   rail: { label: "Rail", path: railPath, n: 14, mech: "rail", ...OFF }, // retiré : la voiture ne doit pas être guidée
 });
 
-// ---------- Saison 2, lot 2 : géométries ----------
+// Saison 2, lot 2 : géométries
 const plateau = (s, r = 0.32) => (s < r ? smoother(s / r) : s > 1 - r ? smoother((1 - s) / r) : 1);
 // Miroir gauche/droite d'un chemin (réglage « côté »)
 function mirror(path) {
@@ -433,7 +433,7 @@ export const BLOCK_KEYS = Object.keys(BLOCKS);
 export const blockSeason = (type) => BLOCKS[type]?.season ?? 1;
 export const blockKeysForSeason = (maxSeason = 1) => BLOCK_KEYS.filter((k) => blockSeason(k) <= maxSeason);
 
-// ---------- échantillonnage ----------
+// échantillonnage
 const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
 const norm = (a) => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
@@ -475,7 +475,7 @@ export function sectionPoints(type, f) {
   return [-w, w].map((k) => [f.p[0] + f.r[0] * k, f.p[1] + f.r[1] * k, f.p[2] + f.r[2] * k]);
 }
 
-// ---------- placement (rotation par quarts horaires vu de dessus, nord -> est) ----------
+// placement (rotation par quarts horaires vu de dessus, nord -> est)
 export function rot2(x, z, r) {
   switch (r & 3) {
     case 1: return [-z, x];

@@ -1,6 +1,7 @@
 // Calcule pour chaque map officielle les points de contrôle anti-triche (départ, arrivée, checkpoints, axe de la piste)
 // et écrit le SQL qui remplit la table racing_official (à relancer si une map officielle change).
 // node tools/racing-meta.mjs > meta.sql puis exécuter meta.sql dans l'éditeur SQL de Supabase.
+// aislop-ignore-file ai-slop/console-leftover -- script en ligne de commande : la console est sa sortie
 import { OFFICIAL } from "../src/games/racing/maps.js";
 import { trackMeta } from "../src/games/racing/meta.js";
 

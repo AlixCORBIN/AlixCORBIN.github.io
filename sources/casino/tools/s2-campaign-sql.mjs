@@ -3,6 +3,7 @@
 // Passe par la RPC admin_campaign_upsert, exécutée au nom du premier compte de public.admins (la saison reste verrouillée :
 // rien ne change pour les joueurs tant que la saison n'est pas ouverte).
 //   node tools/s2-campaign-sql.mjs [s2-01 s2-02 …] > campagne.sql   puis exécuter campagne.sql dans l'éditeur SQL de Supabase
+// aislop-ignore-file ai-slop/console-leftover -- script en ligne de commande : la console est sa sortie
 import { readFileSync, readdirSync } from "node:fs";
 import { trackMeta } from "../src/games/racing/meta.js";
 

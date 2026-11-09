@@ -28,12 +28,11 @@ export const eventMs = (ev) => (ev.type === "item" ? itemMs(ev) : EVENT_MS[ev.ty
 
 const MAX_LOG = 50;
 const find = (g, id) => g.players.find((p) => p.id === id);
-const rand = (n) => secureRandomInt(n);
 
 export function shuffle(arr) {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
-    const j = rand(i + 1);
+    const j = secureRandomInt(i + 1);
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
@@ -190,8 +189,8 @@ function makeShells(g) {
   if (g.round === 1 && g.loadInRound === 1) [live, n] = [1, 3];
   else if (g.round === 1 && g.loadInRound === 2) [live, n] = [3, 5];
   else {
-    n = 2 + rand(g.round === 1 ? 5 : 7);
-    live = Math.floor(n / 2) + (n > 2 ? rand(2) : 0);
+    n = 2 + secureRandomInt(g.round === 1 ? 5 : 7);
+    live = Math.floor(n / 2) + (n > 2 ? secureRandomInt(2) : 0);
   }
   const list = [];
   for (let i = 0; i < n; i++) list.push({ id: ++g.shellSeq, live: i < live });
@@ -204,7 +203,7 @@ function makeShells(g) {
 function drawItem(g) {
   const pool = ITEM_IDS.filter((id) => id !== "telecommande" || alive(g).length >= 3);
   const total = pool.reduce((s, id) => s + ITEMS[id].w, 0);
-  let r = rand(total);
+  let r = secureRandomInt(total);
   for (const id of pool) {
     r -= ITEMS[id].w;
     if (r < 0) return id;
@@ -380,13 +379,13 @@ function buildItem(g, p, item, { target, steal } = {}, nested) {
     case "telephone":
       if (g.shells.length <= 1) ev.priv = { none: true };
       else {
-        const k = 1 + rand(g.shells.length - 1);
+        const k = 1 + secureRandomInt(g.shells.length - 1);
         ev.priv = { pos: k + 1, live: g.shells[k].live };
         ev.shell = g.shells[k].id;
       }
       break;
     case "medicament":
-      ev.lucky = rand(100) < 40;
+      ev.lucky = secureRandomInt(100) < 40;
       ev.gain = ev.lucky ? (p.cut ? 0 : Math.min(2, p.maxHp - p.hp)) : 0;
       break;
     case "adrenaline": {
@@ -544,7 +543,7 @@ export function timeoutTurn(g) {
   if (!p || p.bot) return;
   p.afk++;
   const others = alive(g).filter((x) => x !== p);
-  const t = others[rand(others.length)] || p;
+  const t = others[secureRandomInt(others.length)] || p;
   note(g, `Temps écoulé pour ${p.name}.`, "info");
   shoot(g, p.id, t.id);
 }
