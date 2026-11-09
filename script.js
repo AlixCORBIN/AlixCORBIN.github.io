@@ -1227,7 +1227,7 @@ sbPost('increment_views')
     .then(r => r && r.json())
     .then(count => {
         const el = document.getElementById('visitor-count');
-        if (el && count) el.textContent = ic('User') + ' ' + Number(count).toLocaleString('fr-FR') + ' visites';
+        if (el && count) el.innerHTML = ic('User') + ' ' + Number(count).toLocaleString('fr-FR') + ' visites';
     })
     .catch(() => {});
 
