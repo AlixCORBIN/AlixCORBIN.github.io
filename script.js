@@ -53,6 +53,7 @@ function setLanguage(lang) {
     currentLang = lang;
     localStorage.setItem('lang', lang);
     weatherCache = null;   // la description météo dépend de la langue
+    weatherError = false;
     forecastCache = null;
     applyTranslations(lang);
     renderGrid();
@@ -441,9 +442,9 @@ function createChannelEl(data, index) {
             <div class="channel-inner meteo-card-inner">
                 <img src="assets/meteo.webp" class="ch-bg meteo-card-bg" alt="">
                 <div class="meteo-card-overlay"></div>
-                <div class="meteo-card-icon">${ic('Sun')}</div>
+                <div class="meteo-card-icon" id="meteo-card-icon">${ic('Sun')}</div>
                 <h2 class="ch-label meteo-card-label">${label}</h2>
-                <div class="meteo-card-sub" id="meteo-card-sub">--°C</div>
+                <div class="meteo-card-sub" id="meteo-card-sub">--°</div>
             </div>`;
         return div;
     }
@@ -675,6 +676,7 @@ function startExperience() {
    6. CONTENU DE L'OVERLAY
    ========================================= */
 function renderOverlayContent(data) {
+    if (data.type !== 'meteo' && window.MeteoScene) MeteoScene.stop();
     overlayContentBox.style.padding = '';
     overlayContentBox.style.overflow = '';
     overlayContentBox.style.justifyContent = 'center';
@@ -1029,15 +1031,11 @@ function renderOverlayContent(data) {
         }
 
         case 'meteo': {
-            overlay.style.background = `url('assets/meteo.webp') center/cover no-repeat`;
+            overlay.style.background = '#2a3a4c';
+            overlayContentBox.style.alignItems = 'stretch';
             if (startBtn) startBtn.style.display = 'none';
-
-            if (weatherCache) {
-                renderWeatherOverlay(weatherCache, isEn);
-            } else {
-                overlayContentBox.innerHTML = `<div class="meteo-loading">${isEn ? 'Locating...' : 'Localisation...'}</div>`;
-                loadWeather();
-            }
+            renderWeatherOverlay();
+            if (!weatherCache) loadWeather();
             break;
         }
 
@@ -1102,6 +1100,8 @@ function closeZoom() {
     if (mainFooter) mainFooter.classList.remove('footer-hidden');
     setTimeout(() => {
         overlay.style.display = 'none';
+        if (window.MeteoScene) MeteoScene.stop();
+        meteoView = null;
         activeCard.classList.remove('hidden');
         activeCard = null;
     }, 600);
@@ -1236,59 +1236,118 @@ sbPost('increment_daily_visit').catch(() => {});
 
 /* =========================================
    12. MÉTÉO
+   Scène animée : meteo-scene.js (window.MeteoScene). Ici : données, panneau, choix d'ambiance.
    ========================================= */
 const WEATHER_API_KEY = 'd9409f721206c46f1b0cda57aa74d801';
 
-const WEATHER_ICONS = {
-    Thunderstorm: 'AlertTriangle', Drizzle: 'Sunrise', Rain: 'Sunrise',
-        Snow: 'Sunrise', Mist: 'Sunrise', Smoke: 'Sunrise', Haze: 'Sunrise',
-        Dust: 'Sunrise', Fog: 'Sunrise', Sand: 'Sunrise', Ash: 'Sunrise',
-        Squall: 'AlertTriangle', Tornado: 'AlertTriangle', Clear: 'Sun', Clouds: 'Sunrise'
+const METEO_KINDS = ['clear', 'clouds', 'rain', 'storm', 'snow', 'fog', 'wind'];
+const METEO_TXT = {
+    fr: { clear: 'Dégagé', clouds: 'Nuages', rain: 'Pluie', drizzle: 'Bruine', storm: 'Orage', snow: 'Neige', fog: 'Brouillard', wind: 'Vent' },
+    en: { clear: 'Clear', clouds: 'Clouds', rain: 'Rain', drizzle: 'Drizzle', storm: 'Storm', snow: 'Snow', fog: 'Fog', wind: 'Wind' }
+};
+const METEO_HINTS = {
+    fr: {
+        clearDay: 'Clique dans le ciel : les oiseaux s’envolent.',
+        clearNight: 'Clique dans le ciel pour une étoile filante.',
+        clouds: 'Bouge la souris : les nuages suivent en profondeur.',
+        rain: 'Bouge la souris : la pluie glisse autour du curseur.',
+        storm: 'Clique dans le ciel pour déclencher un éclair.',
+        snow: 'Bouge la souris pour écarter les flocons. La neige s’accumule au sol.',
+        fog: 'Passe la souris pour dissiper le brouillard.',
+        wind: 'Bouge la souris : les feuilles l’évitent. Clique pour une rafale.'
+    },
+    en: {
+        clearDay: 'Click the sky: the birds fly off.',
+        clearNight: 'Click the sky for a shooting star.',
+        clouds: 'Move the mouse: the clouds follow in depth.',
+        rain: 'Move the mouse: the rain slides around the cursor.',
+        storm: 'Click the sky to trigger a lightning strike.',
+        snow: 'Move the mouse to push the flakes away. Snow builds up on the ground.',
+        fog: 'Hover to clear the fog.',
+        wind: 'Move the mouse: the leaves dodge it. Click for a gust.'
+    }
 };
 
 let weatherCache   = null;
 let forecastCache  = null;
+let weatherLoading = false;
+let weatherError   = false;
+let meteoView      = null;   // null = météo réelle, sinon { kind, night } choisi dans « Autres ambiances »
 
-function buildForecastHTML(forecastData, isEn) {
+const meteoLang = () => (currentLang === 'en' ? 'en' : 'fr');
+
+function meteoRealCfg() {
+    return weatherCache ? MeteoScene.fromWeather(weatherCache) : null;
+}
+
+function meteoCfg() {
+    if (meteoView) return MeteoScene.preset(meteoView.kind, meteoView.night);
+    const h = new Date().getHours();
+    return meteoRealCfg() || MeteoScene.preset('clouds', h < 7 || h >= 20);
+}
+
+function meteoHint(cfg) {
+    const lang = meteoLang();
+    const key = cfg.kind === 'clear' ? (cfg.night ? 'clearNight' : 'clearDay')
+              : cfg.kind === 'drizzle' ? 'rain' : cfg.kind;
+    let txt = METEO_HINTS[lang][key];
+    const touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    if (touch) {
+        txt = lang === 'en'
+            ? txt.replace('Move the mouse', 'Drag your finger').replace('Hover', 'Drag your finger').replace('Click the sky', 'Tap the sky').replace('Click', 'Tap').replace('cursor', 'finger')
+            : txt.replace('Bouge la souris', 'Glisse le doigt').replace('Passe la souris', 'Glisse le doigt').replace('Clique dans le ciel', 'Touche le ciel').replace('Clique', 'Touche').replace('du curseur', 'du doigt');
+    }
+    return txt;
+}
+
+function meteoIconFor(kind, night) {
+    if (kind === 'clear') return night ? 'Moon' : 'Sun';
+    if (kind === 'storm') return 'AlertTriangle';
+    return '';
+}
+
+function buildForecastHTML(forecastData) {
     if (!forecastData || !forecastData.list) return '';
-
-    const daysFr = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
-    const daysEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const dayNames = isEn ? daysEn : daysFr;
-
-    const todayStr = new Date().toISOString().slice(0, 10);
+    const lang = meteoLang();
+    const dayNames = lang === 'en' ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] : ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+    const d0 = new Date();
+    const todayStr = `${d0.getFullYear()}-${String(d0.getMonth() + 1).padStart(2, '0')}-${String(d0.getDate()).padStart(2, '0')}`;
     const byDay = {};
-
     forecastData.list.forEach(entry => {
         const day = entry.dt_txt.slice(0, 10);
         if (day === todayStr) return;
-        if (!byDay[day]) byDay[day] = [];
-        byDay[day].push(entry);
+        (byDay[day] = byDay[day] || []).push(entry);
     });
-
     const days = Object.keys(byDay).slice(0, 5);
     if (!days.length) return '';
 
     const items = days.map(day => {
-        const entries  = byDay[day];
-        const midday   = entries.find(e => e.dt_txt.includes('12:00:00')) || entries[Math.floor(entries.length / 2)];
-        const icon     = WEATHER_ICONS[midday.weather[0].main] || 'Sunrise';
-        const tMin     = Math.round(Math.min(...entries.map(e => e.main.temp_min)));
-        const tMax     = Math.round(Math.max(...entries.map(e => e.main.temp_max)));
-        const dow      = dayNames[new Date(day).getDay()];
+        const entries = byDay[day];
+        const midday  = entries.find(e => e.dt_txt.includes('12:00:00')) || entries[Math.floor(entries.length / 2)];
+        const kind    = MeteoScene.kindFromId(midday.weather[0].id);
+        const tMin    = Math.round(Math.min(...entries.map(e => e.main.temp_min)));
+        const tMax    = Math.round(Math.max(...entries.map(e => e.main.temp_max)));
+        const dow     = dayNames[new Date(day + 'T12:00:00').getDay()];
         return `
-            <div class="meteo-forecast-day">
-                <div class="meteo-fc-name">${dow}</div>
-                <div class="meteo-fc-icon">${ic(icon)}</div>
-                <div class="meteo-fc-temps"><span class="meteo-fc-max">${tMax}°</span><span class="meteo-fc-min">${tMin}°</span></div>
-            </div>`;
+            <li class="meteo-day">
+                <span class="meteo-label">${dow}</span>
+                <span class="meteo-day-kind">${METEO_TXT[lang][kind]}</span>
+                <span class="meteo-day-temps"><b>${tMax}°</b> ${tMin}°</span>
+            </li>`;
     }).join('');
-
-    return `<div class="meteo-forecast">${items}</div>`;
+    return `<ul class="meteo-forecast">${items}</ul>`;
 }
 
-function renderWeatherOverlay(d, isEn) {
-    const icon     = WEATHER_ICONS[d.weather[0].main] || 'Sunrise';
+function meteoBodyHTML() {
+    const en = meteoLang() === 'en';
+    if (!weatherCache) {
+        const msg = weatherError
+            ? (en ? 'Location unavailable or denied. You can still browse the conditions below.' : 'Localisation refusée ou indisponible. Tu peux quand même parcourir les ambiances ci-dessous.')
+            : (en ? 'Locating…' : 'Localisation…');
+        return `<p class="meteo-status">${msg}</p>`;
+    }
+    const d        = weatherCache;
+    const nbsp     = ' ';
     const temp     = Math.round(d.main.temp);
     const feels    = Math.round(d.main.feels_like);
     const tMin     = Math.round(d.main.temp_min);
@@ -1296,59 +1355,108 @@ function renderWeatherOverlay(d, isEn) {
     const humidity = d.main.humidity;
     const wind     = Math.round(d.wind.speed * 3.6);
     const desc     = d.weather[0].description.charAt(0).toUpperCase() + d.weather[0].description.slice(1);
-    const city     = d.name;
-    const country  = d.sys.country;
-
-    const cardSub = document.getElementById('meteo-card-sub');
-    if (cardSub) cardSub.textContent = `${temp}°C`;
-
-    overlayContentBox.innerHTML = `
-        <div class="meteo-overlay">
-            <div class="meteo-header">
-                <div class="meteo-icon-big">${ic(icon)}</div>
-                <div class="meteo-temp-big">${temp}°C</div>
-                <div class="meteo-desc">${desc}</div>
-                <div class="meteo-city">${ic('MapPin')} ${city}, ${country}</div>
+    const place    = [d.name, d.sys && d.sys.country].filter(Boolean).join(', ');
+    return `
+        <div class="meteo-place">${ic('MapPin')}<span>${place}</span><span class="meteo-badge">${en ? 'Preview' : 'Aperçu'}</span></div>
+        <div class="meteo-now">
+            <div class="meteo-temp">${temp}°</div>
+            <div class="meteo-now-text">
+                <div class="meteo-cond">${desc}</div>
+                <div class="meteo-feels">${en ? 'Feels like' : 'Ressenti'} ${feels}°</div>
             </div>
-            <div class="meteo-grid">
-                <div class="meteo-stat">
-                    <div class="meteo-stat-label">${isEn ? 'Feels like' : 'Ressenti'}</div>
-                    <div class="meteo-stat-value">${feels}°C</div>
-                </div>
-                <div class="meteo-stat">
-                    <div class="meteo-stat-label">Min / Max</div>
-                    <div class="meteo-stat-value">${tMin}° / ${tMax}°</div>
-                </div>
-                <div class="meteo-stat">
-                    <div class="meteo-stat-label">${isEn ? 'Humidity' : 'Humidité'}</div>
-                    <div class="meteo-stat-value">${humidity}%</div>
-                </div>
-                <div class="meteo-stat">
-                    <div class="meteo-stat-label">${isEn ? 'Wind' : 'Vent'}</div>
-                    <div class="meteo-stat-value">${wind} km/h</div>
-                </div>
-            </div>
-            ${buildForecastHTML(forecastCache, isEn)}
-        </div>`;
+        </div>
+        <dl class="meteo-stats">
+            <div><dt class="meteo-label">Min / Max</dt><dd>${tMin}° / ${tMax}°</dd></div>
+            <div><dt class="meteo-label">${en ? 'Humidity' : 'Humidité'}</dt><dd>${humidity}${en ? '' : nbsp}%</dd></div>
+            <div><dt class="meteo-label">${en ? 'Wind' : 'Vent'}</dt><dd>${wind}${nbsp}km/h</dd></div>
+        </dl>
+        ${buildForecastHTML(forecastCache)}`;
 }
 
-// La géolocalisation n'est demandée qu'à l'ouverture de la chaîne Météo (pas au chargement)
-let weatherLoading = false;
+function meteoChipsHTML() {
+    const lang = meteoLang(), en = lang === 'en';
+    const cfg = meteoCfg();
+    const chip = (attr, label, on) => `<button type="button" class="meteo-chip" ${attr} aria-pressed="${on}">${label}</button>`;
+    const live = weatherCache ? chip('data-live', en ? 'Live' : 'Actuelle', !meteoView) : '';
+    const kinds = METEO_KINDS.map(k => chip(`data-kind="${k}"`, METEO_TXT[lang][k], !!meteoView && meteoView.kind === k)).join('');
+    return `${live}${kinds}${chip('data-night', ic('Moon') + (en ? ' Night' : ' Nuit'), cfg.night)}`;
+}
 
+function updateMeteoCard() {
+    const sub = document.getElementById('meteo-card-sub');
+    const icon = document.getElementById('meteo-card-icon');
+    if (!weatherCache) return;
+    const real = meteoRealCfg();
+    const name = METEO_TXT[meteoLang()][real.kind];
+    if (sub) sub.textContent = `${Math.round(weatherCache.main.temp)}° · ${name}`;
+    if (icon) {
+        const n = meteoIconFor(real.kind, real.night);
+        icon.innerHTML = n ? ic(n) : '';
+    }
+}
+
+function renderWeatherOverlay() {
+    const en = meteoLang() === 'en';
+    const cfg = meteoCfg();
+    overlayContentBox.innerHTML = `
+        <div class="meteo-wrap">
+            <section class="meteo-panel${MeteoScene.isLight(cfg) ? '' : ' is-dark'}${meteoView ? ' is-preview' : ''}" aria-label="${en ? 'Weather' : 'Météo'}">
+                <div class="meteo-body" aria-live="polite">${meteoBodyHTML()}</div>
+                <div class="meteo-ambiance">
+                    <div class="meteo-label">${en ? 'Other conditions' : 'Autres ambiances'}</div>
+                    <div class="meteo-chips" role="group" aria-label="${en ? 'Other conditions' : 'Autres ambiances'}">${meteoChipsHTML()}</div>
+                    <p class="meteo-hint">${meteoHint(cfg)}</p>
+                </div>
+            </section>
+        </div>`;
+    overlayContentBox.querySelector('.meteo-chips').addEventListener('click', onMeteoChip);
+    MeteoScene.start(overlay, cfg);
+    updateMeteoCard();
+}
+
+// Changer d'ambiance sans reconstruire le panneau : la scène fait un fondu
+function syncMeteoUI() {
+    const cfg = meteoCfg();
+    MeteoScene.set(cfg);
+    const panel = overlayContentBox.querySelector('.meteo-panel');
+    if (!panel) return;
+    panel.classList.toggle('is-dark', !MeteoScene.isLight(cfg));
+    panel.classList.toggle('is-preview', !!meteoView);
+    panel.querySelector('.meteo-chips').innerHTML = meteoChipsHTML();
+    panel.querySelector('.meteo-hint').textContent = meteoHint(cfg);
+}
+
+function onMeteoChip(e) {
+    const btn = e.target.closest('.meteo-chip');
+    if (!btn) return;
+    const cur = meteoCfg();
+    if (btn.hasAttribute('data-live')) {
+        meteoView = null;
+    } else if (btn.hasAttribute('data-night')) {
+        meteoView = { kind: cur.kind, night: !cur.night };
+        const real = meteoRealCfg();
+        if (real && real.kind === meteoView.kind && real.night === meteoView.night) meteoView = null;
+    } else {
+        meteoView = { kind: btn.dataset.kind, night: cur.night };
+    }
+    sfxClick1.currentTime = 0;
+    sfxClick1.play().catch(() => {});
+    syncMeteoUI();
+    const again = overlayContentBox.querySelector(btn.hasAttribute('data-kind') ? `[data-kind="${btn.dataset.kind}"]` : btn.hasAttribute('data-night') ? '[data-night]' : '[data-live]');
+    if (again) again.focus();
+}
+
+
+// La géolocalisation n'est demandée qu'à l'ouverture de la chaîne Météo (pas au chargement)
 function isMeteoOpen() {
     return !!(activeCard && activeCard._channelData && activeCard._channelData.type === 'meteo');
 }
 
-function showWeatherError() {
-    if (!isMeteoOpen()) return;
-    const en = currentLang === 'en';
-    overlayContentBox.innerHTML = `<div class="meteo-loading">${en ? 'Location unavailable or denied.' : 'Localisation refusée ou indisponible.'}</div>`;
-}
-
 function loadWeather() {
     if (weatherLoading || weatherCache) return;
-    if (!navigator.geolocation) { showWeatherError(); return; }
+    if (!navigator.geolocation) { weatherError = true; if (isMeteoOpen()) renderWeatherOverlay(); return; }
     weatherLoading = true;
+    weatherError = false;
     navigator.geolocation.getCurrentPosition(pos => {
         const { latitude: lat, longitude: lon } = pos.coords;
         const base = 'https://api.openweathermap.org/data/2.5';
@@ -1360,10 +1468,16 @@ function loadWeather() {
             if (!w || !w.main) throw new Error('weather');
             weatherCache = w;
             if (f && f.list) forecastCache = f;
-            if (isMeteoOpen()) renderWeatherOverlay(weatherCache, currentLang === 'en');
-        }).catch(() => showWeatherError())
-          .finally(() => { weatherLoading = false; });
-    }, () => { weatherLoading = false; showWeatherError(); });
+        }).catch(() => { weatherError = true; })
+          .finally(() => {
+              weatherLoading = false;
+              if (isMeteoOpen()) renderWeatherOverlay();
+          });
+    }, () => {
+        weatherLoading = false;
+        weatherError = true;
+        if (isMeteoOpen()) renderWeatherOverlay();
+    }, { timeout: 12000, maximumAge: 600000 });
 }
 
 /* =========================================
