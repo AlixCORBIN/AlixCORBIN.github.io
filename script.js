@@ -740,17 +740,17 @@ function renderOverlayContent(data) {
                     </div>
                     <div class="moi-right">
                         <div class="moi-card moi-card--highlight">
-                            <div class="moi-card-icon">🔍</div>
+                            <div class="moi-card-icon">💼</div>
                             <div class="moi-card-body">
-                                <div class="moi-card-title">${isEn ? 'Looking for' : 'Je cherche'}</div>
-                                <div class="moi-card-value">${isEn ? 'An <strong>apprenticeship</strong> for <strong>2026–2027</strong>' : 'Une <strong>alternance</strong> pour <strong>2026–2027</strong>'}</div>
+                                <div class="moi-card-title">${isEn ? 'Currently' : 'Actuellement'}</div>
+                                <div class="moi-card-value">${isEn ? '<strong>Apprentice</strong> at <strong>Faure Herman</strong> — not looking for an apprenticeship' : '<strong>Alternant</strong> chez <strong>Faure Herman</strong> — pas en recherche d\'alternance'}</div>
                             </div>
                         </div>
                         <div class="moi-card">
                             <div class="moi-card-icon">🎓</div>
                             <div class="moi-card-body">
                                 <div class="moi-card-title">${isEn ? 'Education' : 'Formation'}</div>
-                                <div class="moi-card-value">${isEn ? '2nd year of <strong>CS Bachelor\'s Degree</strong>' : '2e année de <strong>BUT Informatique</strong>'}</div>
+                                <div class="moi-card-value">${isEn ? '3rd year of <strong>CS Bachelor\'s Degree</strong>' : '3e année de <strong>BUT Informatique</strong>'}</div>
                             </div>
                         </div>
                         <div class="moi-card">
