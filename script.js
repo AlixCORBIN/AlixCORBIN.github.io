@@ -7,12 +7,12 @@ const T = {
     fr: {
         'intro.hello':    'BONJOUR, JE SUIS <span class="highlight">ALIX CORBIN</span>, APPRENTI DÉVELOPPEUR.',
         'intro.inspired': 'CE PORTFOLIO EST UNE RÉINTERPRÉTATION DU MENU DE LA WII, GRANDEMENT INSPIRÉE PAR LE TRAVAIL DE <span class="highlight">TOBIAS ECHENIQUE</span>.',
-        'intro.wip':      '⚠️ VEUILLEZ NOTER QUE CE SITE EST ACTUELLEMENT <span class="highlight" style="text-decoration: underline;">EN COURS DE CONSTRUCTION</span>.<br>IL ÉVOLUE CONSTAMMENT, ALORS N\'HÉSITEZ PAS À REVENIR RÉGULIÈREMENT POUR DÉCOUVRIR LES NOUVEAUTÉS\u00a0!',
+        'intro.wip':      ic('AlertTriangle') + ' VEUILLEZ NOTER QUE CE SITE EST ACTUELLEMENT <span class="highlight" style="text-decoration: underline;">EN COURS DE CONSTRUCTION</span>.<br>IL ÉVOLUE CONSTAMMENT, ALORS N\'HÉSITEZ PAS À REVENIR RÉGULIÈREMENT POUR DÉCOUVRIR LES NOUVEAUTÉS\u00a0!',
         'intro.click':    'Cliquer pour continuer',
         'footer.title':   'Portfolio Alix CORBIN',
         'overlay.menu':   'Menu Wii',
         'contact.role':   'Étudiant BUT Informatique — Laval',
-        'dm.hint':        '🌙 Dark Mode — NOUVEAU\u00a0!',
+        'dm.hint':        ic('Moon') + ' Dark Mode — NOUVEAU\u00a0!',
         'overlay.start':  'Démarrer',
         'overlay.soon':   'Bientôt\u2026',
         'overlay.cv':     'Voir mon CV',
@@ -20,12 +20,12 @@ const T = {
     en: {
         'intro.hello':    'HELLO, I AM <span class="highlight">ALIX CORBIN</span>, APPRENTICE DEVELOPER.',
         'intro.inspired': 'THIS PORTFOLIO IS A REINTERPRETATION OF THE WII MENU, GREATLY INSPIRED BY THE WORK OF <span class="highlight">TOBIAS ECHENIQUE</span>.',
-        'intro.wip':      '⚠️ PLEASE NOTE THAT THIS SITE IS CURRENTLY <span class="highlight" style="text-decoration: underline;">UNDER CONSTRUCTION</span>.<br>IT IS CONSTANTLY EVOLVING, SO FEEL FREE TO COME BACK REGULARLY TO DISCOVER NEW FEATURES!',
+        'intro.wip':      ic('AlertTriangle') + ' PLEASE NOTE THAT THIS SITE IS CURRENTLY <span class="highlight" style="text-decoration: underline;">UNDER CONSTRUCTION</span>.<br>IT IS CONSTANTLY EVOLVING, SO FEEL FREE TO COME BACK REGULARLY TO DISCOVER NEW FEATURES!',
         'intro.click':    'Click to continue',
         'footer.title':   "Alix CORBIN\u2019s Portfolio",
         'overlay.menu':   'Wii Menu',
         'contact.role':   'Computer Science Student — Laval',
-        'dm.hint':        '🌙 Dark Mode — NEW!',
+        'dm.hint':        ic('Moon') + ' Dark Mode — NEW!',
         'overlay.start':  'Start',
         'overlay.soon':   'Coming soon\u2026',
         'overlay.cv':     'View my CV',
@@ -66,18 +66,17 @@ function setLanguage(lang) {
 const CHANNELS = [
     {
         title: "Moi", titleEn: "Me",
-        emoji: "👤",
+        icon: "User",
         cardLabel: "Moi", cardLabelEn: "Me",
         link: "https://cvdesignr.com/p/69ac5851a54b9",
         type: "moi"
     },
     {
         title: "Profil Pro", titleEn: "Pro Profile",
-        emoji: "💼",
+        icon: "Card",
         cardLabel: "Profil Pro", cardLabelEn: "Pro Profile",
         cardBgColor: "#0d0f1a",
         cardGradient: "linear-gradient(135deg, rgba(13,15,26,0.6), rgba(108,92,231,0.12))",
-        cardEmojiShadow: "0 2px 10px rgba(108,92,231,0.8)",
         cardLabelColor: "#a78bfa",
         cardLabelShadow: "0 0 12px rgba(108,92,231,0.6)",
         desc: "Mon profil professionnel S4 — missions souhaitées, compétences tracées, parcours argumenté.",
@@ -89,12 +88,11 @@ const CHANNELS = [
         overlayTitleLetterSpacing: "2px",
         overlayColor: "#a78bfa",
         overlayTitleShadow: "0 0 20px rgba(108,92,231,0.6)",
-        overlayEmojiShadow: "0 4px 15px rgba(108,92,231,0.7)",
         overlayBgOpacity: 0.15
     },
     {
         title: "BUT Informatique", titleEn: "CS Bachelor",
-        emoji: "🎓",
+        icon: "GraduationHat",
         cardLabel: "BUT Info", cardLabelEn: "CS Degree",
         bg: "assets/but_bg.webp",
         cardBgOpacity: 0.7,
@@ -116,14 +114,14 @@ const CHANNELS = [
     },
     {
         title: "Mii", titleEn: "Mii",
-        emoji: "🙂",
+        icon: "Emoji",
         cardLabel: "Mii", cardLabelEn: "Mii",
         link: "mii/index.html",
         type: "mii"
     },
     {
         title: "Culture",
-        emoji: "🎬",
+        icon: "Play",
         cardLabel: "Culture", cardLabelEn: "Culture",
         bg: "assets/culture_bg.webp",
         cardBgOpacity: 0.6,
@@ -139,7 +137,7 @@ const CHANNELS = [
     },
     {
         title: "Arduino",
-        emoji: "🤖",
+        icon: "Code",
         cardLabel: "Arduino", cardLabelEn: "Arduino",
         bg: "assets/arduino_bg.webp",
         cardBgOpacity: 0.7,
@@ -152,18 +150,16 @@ const CHANNELS = [
         overlayTitleLetterSpacing: "2px",
         overlayColor: "white",
         overlayTitleShadow: "0 0 10px #00979d",
-        overlayEmojiShadow: "0 4px 15px rgba(0,255,255,0.6)",
         overlayBgOpacity: 0.5
     },
     {
         title: "Projets IHM", titleEn: "HMI Projects",
-        emoji: "🖥️",
+        icon: "Palette",
         cardLabel: "IHM", cardLabelEn: "HMI",
         bg: "assets/IHMHome.png",
         cardBgOpacity: 0.45,
         cardBgColor: "#080d1a",
         cardGradient: "linear-gradient(135deg, rgba(8,13,26,0.5), rgba(0,168,204,0.1))",
-        cardEmojiShadow: "0 2px 10px rgba(0,212,255,0.7)",
         cardLabelColor: "#00d4ff",
         cardLabelShadow: "0 0 12px rgba(0,212,255,0.6)",
         desc: "Travaux sur les Interfaces Homme-Machine, notamment le contrôle complet du robot Roomba via une tablette.",
@@ -175,13 +171,12 @@ const CHANNELS = [
         overlayTitleLetterSpacing: "2px",
         overlayColor: "#00d4ff",
         overlayTitleShadow: "0 0 20px rgba(0,212,255,0.5)",
-        overlayEmojiShadow: "0 4px 15px rgba(0,212,255,0.6)",
         overlayGradient: "linear-gradient(135deg, rgba(8,13,26,0.85), rgba(0,168,204,0.15))",
         overlayBgOpacity: 0.25
     },
     {
         title: "Projet Jeu", titleEn: "Game Project",
-        emoji: "🍻",
+        icon: "Ghost",
         cardLabel: "GlouGlou", cardLabelEn: "GlouGlou",
         bg: "assets/jeu_bg.webp",
         cardBgOpacity: 0.6,
@@ -196,17 +191,16 @@ const CHANNELS = [
     },
     {
         title: "Récompenses", titleEn: "Awards",
-        emoji: "🏆",
+        icon: "Crown",
         cardLabel: "Récompenses", cardLabelEn: "Awards",
         type: "awards"
     },
     {
         title: "Stage", titleEn: "Internship",
-        emoji: "🎓",
+        icon: "GraduationHat",
         cardLabel: "Stage", cardLabelEn: "Internship",
         cardBgColor: "#080c14",
         cardGradient: "linear-gradient(135deg, rgba(8,12,20,0.6), rgba(251,191,36,0.08))",
-        cardEmojiShadow: "0 2px 10px rgba(251,191,36,0.7)",
         cardLabelColor: "#fbbf24",
         cardLabelShadow: "0 0 12px rgba(251,191,36,0.5)",
         desc: "26 candidatures, 15 refus, 1 obtenu — la démarche complète de recherche de stage chez Faure Herman.",
@@ -216,16 +210,14 @@ const CHANNELS = [
         overlayTitle: "STAGE", overlayTitleEn: "INTERNSHIP",
         overlayColor: "#fbbf24",
         overlayTitleShadow: "0 0 20px rgba(251,191,36,0.5)",
-        overlayEmojiShadow: "0 4px 15px rgba(251,191,36,0.6)",
         overlayBgOpacity: 0.18
     },
     {
         title: "Alternance", titleEn: "Apprenticeship",
-        emoji: "🏭",
+        icon: "Gears",
         cardLabel: "Alternance", cardLabelEn: "Apprenticeship",
         cardBgColor: "#0A2540",
         cardGradient: "linear-gradient(135deg, rgba(10,37,64,0.55), rgba(0,145,213,0.14))",
-        cardEmojiShadow: "0 2px 10px rgba(0,145,213,0.8)",
         cardLabelColor: "#0091D5",
         cardLabelShadow: "0 0 12px rgba(0,145,213,0.6)",
         desc: "Alternant développeur chez Faure Herman — IHM industrielle full-stack pour un banc de mesure de turbine.",
@@ -235,16 +227,14 @@ const CHANNELS = [
         overlayTitle: "ALTERNANCE — FAURE HERMAN", overlayTitleEn: "APPRENTICESHIP — FAURE HERMAN",
         overlayColor: "#0091D5",
         overlayTitleShadow: "0 0 20px rgba(0,145,213,0.5)",
-        overlayEmojiShadow: "0 4px 15px rgba(0,145,213,0.6)",
         overlayBgOpacity: 0.18
     },
     {
         title: "Écri+", titleEn: "Écri+",
-        emoji: "✍️",
+        icon: "Pen",
         cardLabel: "Écri+", cardLabelEn: "Écri+",
         cardBgColor: "#0a1a0f",
         cardGradient: "linear-gradient(135deg, rgba(10,26,15,0.5), rgba(34,197,94,0.1))",
-        cardEmojiShadow: "0 2px 10px rgba(34,197,94,0.8)",
         cardLabelColor: "#4ade80",
         cardLabelShadow: "0 0 12px rgba(34,197,94,0.5)",
         cardScore: 670,
@@ -254,23 +244,21 @@ const CHANNELS = [
         overlayTitle: "ÉCRI+", overlayTitleEn: "ÉCRI+",
         overlayColor: "#4ade80",
         overlayTitleShadow: "0 0 20px rgba(34,197,94,0.6)",
-        overlayEmojiShadow: "0 4px 15px rgba(34,197,94,0.7)",
         overlayBgOpacity: 0.12
     },
     {
         title: "Météo", titleEn: "Weather",
-        emoji: "🌤️",
+        icon: "Sun",
         cardLabel: "Météo", cardLabelEn: "Weather",
         type: "meteo"
     },
     {
         title: "Statistiques", titleEn: "Statistics",
-        emoji: "📊",
+        icon: "Pie",
         cardLabel: "Stats", cardLabelEn: "Stats",
         bg: null,
         cardBgColor: "#080c14",
         cardGradient: "linear-gradient(135deg, rgba(8,12,20,0.6), rgba(34,211,238,0.08))",
-        cardEmojiShadow: "0 2px 10px rgba(34,211,238,0.7)",
         cardLabelColor: "#22d3ee",
         cardLabelShadow: "0 0 12px rgba(34,211,238,0.5)",
         desc: "Visites, chaînes les plus ouvertes, préférences, sessions de blackjack — toutes les données en temps réel.",
@@ -282,12 +270,11 @@ const CHANNELS = [
         overlayTitleLetterSpacing: "3px",
         overlayColor: "#22d3ee",
         overlayTitleShadow: "0 0 20px rgba(34,211,238,0.5)",
-        overlayEmojiShadow: "0 4px 15px rgba(34,211,238,0.6)",
         overlayBgOpacity: 0.15
     },
     {
         title: "Groupe Générator", titleEn: "Group Generator",
-        emoji: "🎲",
+        icon: "Grid",
         cardLabel: "Groupe Générator", cardLabelEn: "Group Generator",
         link: "groupes/index.html",
         type: "groupes"
@@ -411,7 +398,7 @@ function createChannelEl(data, index) {
                 <div class="ch-gradient" style="background:linear-gradient(to top, rgba(10,10,30,0.85) 0%, rgba(10,10,30,0.2) 60%, transparent 100%)"></div>
                 <div class="moi-card-info">
                     <div class="moi-card-name">Alix Corbin</div>
-                    <div class="moi-card-tag">👨‍💻 Développeur</div>
+                    <div class="moi-card-tag">${ic('Code')} Développeur</div>
                 </div>
             </div>`;
         return div;
@@ -441,7 +428,7 @@ function createChannelEl(data, index) {
             <div class="channel-inner awards-card-inner">
                 <img src="assets/recompense.webp" class="ch-bg awards-card-bg" alt="">
                 <div class="awards-card-overlay"></div>
-                <div class="awards-trophy">🏆</div>
+                <div class="awards-trophy">${ic('Crown')}</div>
                 <h2 class="ch-label awards-card-label">${label}</h2>
                 <div class="awards-count">${sub}</div>
             </div>`;
@@ -454,7 +441,7 @@ function createChannelEl(data, index) {
             <div class="channel-inner meteo-card-inner">
                 <img src="assets/meteo.webp" class="ch-bg meteo-card-bg" alt="">
                 <div class="meteo-card-overlay"></div>
-                <div class="meteo-card-icon">🌤️</div>
+                <div class="meteo-card-icon">${ic('Sun')}</div>
                 <h2 class="ch-label meteo-card-label">${label}</h2>
                 <div class="meteo-card-sub" id="meteo-card-sub">--°C</div>
             </div>`;
@@ -467,7 +454,7 @@ function createChannelEl(data, index) {
             <div class="channel-inner stats-card-inner" style="background:#080c14">
                 <img src="assets/stats_bg.webp" class="ch-bg" style="opacity:0.25;object-fit:cover;">
                 <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(8,12,20,0.5),rgba(34,211,238,0.08))"></div>
-                <span class="ch-emoji" style="text-shadow:0 2px 10px rgba(34,211,238,0.7)">📊</span>
+                <span class="ch-emoji">${ic('Pie')}</span>
                 <h2 class="ch-label" style="color:#22d3ee;text-shadow:0 0 12px rgba(34,211,238,0.5)">${label}</h2>
                 <div class="stats-card-bars">
                     <div class="stats-bar" style="height:60%"></div>
@@ -487,7 +474,7 @@ function createChannelEl(data, index) {
         div.innerHTML = `
             <div class="channel-inner" style="background:#0d0f1a">
                 <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(13,15,26,0.4),rgba(108,92,231,0.18))"></div>
-                <span class="ch-emoji" style="text-shadow:0 2px 10px rgba(108,92,231,0.8)">💼</span>
+                <span class="ch-emoji">${ic('Card')}</span>
                 <h2 class="ch-label" style="color:#a78bfa;text-shadow:0 0 12px rgba(108,92,231,0.6)">${label}</h2>
                 <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:4px;white-space:nowrap">
                     <span style="font-size:0.6rem;font-weight:700;padding:2px 7px;border-radius:8px;background:rgba(108,92,231,0.18);color:#a78bfa">S4</span>
@@ -503,10 +490,10 @@ function createChannelEl(data, index) {
         div.innerHTML = `
             <div class="channel-inner" style="background:#0a1a0f">
                 <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(10,26,15,0.4),rgba(34,197,94,0.14))"></div>
-                <span class="ch-emoji" style="text-shadow:0 2px 10px rgba(34,197,94,0.8)">✍️</span>
+                <span class="ch-emoji">${ic('Pen')}</span>
                 <h2 class="ch-label" style="color:#4ade80;text-shadow:0 0 12px rgba(34,197,94,0.5)">${label}</h2>
                 <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);white-space:nowrap">
-                    <span style="font-size:0.65rem;font-weight:700;padding:2px 9px;border-radius:8px;background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.3)">⭐ ${data.cardScore} ${scoreLbl}</span>
+                    <span style="font-size:0.65rem;font-weight:700;padding:2px 9px;border-radius:8px;background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.3)">${ic('Star')} ${data.cardScore} ${scoreLbl}</span>
                 </div>
             </div>`;
         return div;
@@ -518,12 +505,12 @@ function createChannelEl(data, index) {
             <div class="channel-inner" style="background:#080c14">
                 <img src="assets/stage_bg.webp" class="ch-bg" style="opacity:0.22;object-fit:cover;">
                 <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(8,12,20,0.55),rgba(251,191,36,0.08))"></div>
-                <span class="ch-emoji" style="text-shadow:0 2px 10px rgba(251,191,36,0.7)">🎓</span>
+                <span class="ch-emoji">${ic('GraduationHat')}</span>
                 <h2 class="ch-label" style="color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.5)">${label}</h2>
                 <div class="stage-card-pills">
-                    <span class="scp refused">15 ✕</span>
+                    <span class="scp refused">15 ${ic('Cross')}</span>
                     <span class="scp pending">10 ○</span>
-                    <span class="scp accepted">1 ✓</span>
+                    <span class="scp accepted">1 ${ic('Check')}</span>
                 </div>
             </div>`;
         return div;
@@ -535,7 +522,7 @@ function createChannelEl(data, index) {
             <div class="channel-inner" style="background:#0A2540">
                 <img src="assets/alternance_bg.webp" class="ch-bg" style="opacity:0.55;object-fit:cover;">
                 <div class="ch-gradient" style="background:linear-gradient(135deg,rgba(10,37,64,0.6),rgba(0,145,213,0.16))"></div>
-                <span class="ch-emoji" style="text-shadow:0 2px 10px rgba(0,145,213,0.8)">🏭</span>
+                <span class="ch-emoji">${ic('Gears')}</span>
                 <h2 class="ch-label" style="color:#0091D5;text-shadow:0 0 12px rgba(0,145,213,0.6)">${label}</h2>
             </div>`;
         return div;
@@ -561,11 +548,10 @@ function createChannelEl(data, index) {
         inner.appendChild(grad);
     }
 
-    if (data.emoji) {
+    if (data.icon) {
         const em = document.createElement('span');
         em.className = 'ch-emoji';
-        em.textContent = data.emoji;
-        if (data.cardEmojiShadow) em.style.textShadow = data.cardEmojiShadow;
+        em.innerHTML = ic(data.icon);
         inner.appendChild(em);
     }
 
@@ -728,7 +714,7 @@ function renderOverlayContent(data) {
                         </div>
                         <div class="moi-name">Alix Corbin</div>
                         <div class="moi-role">${isEn ? 'Developer in training' : 'Développeur en formation'}</div>
-                        <div class="moi-location">📍 Mayenne &amp; Sarthe</div>
+                        <div class="moi-location">${ic('MapPin')} Mayenne &amp; Sarthe</div>
                         <div class="moi-socials">
                             <a href="https://github.com/AlixCORBIN" target="_blank" rel="noopener" class="moi-social-btn" title="GitHub">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
@@ -740,21 +726,21 @@ function renderOverlayContent(data) {
                     </div>
                     <div class="moi-right">
                         <div class="moi-card moi-card--highlight">
-                            <div class="moi-card-icon">💼</div>
+                            <div class="moi-card-icon">${ic('Card')}</div>
                             <div class="moi-card-body">
                                 <div class="moi-card-title">${isEn ? 'Currently' : 'Actuellement'}</div>
                                 <div class="moi-card-value">${isEn ? '<strong>Apprentice</strong> at <strong>Faure Herman</strong>' : '<strong>Alternant</strong> chez <strong>Faure Herman</strong>'}</div>
                             </div>
                         </div>
                         <div class="moi-card">
-                            <div class="moi-card-icon">🎓</div>
+                            <div class="moi-card-icon">${ic('GraduationHat')}</div>
                             <div class="moi-card-body">
                                 <div class="moi-card-title">${isEn ? 'Education' : 'Formation'}</div>
                                 <div class="moi-card-value">${isEn ? '3rd year of <strong>CS Bachelor\'s Degree</strong>' : '3e année de <strong>BUT Informatique</strong>'}</div>
                             </div>
                         </div>
                         <div class="moi-card">
-                            <div class="moi-card-icon">💻</div>
+                            <div class="moi-card-icon">${ic('Code')}</div>
                             <div class="moi-card-body">
                                 <div class="moi-card-title">${isEn ? 'Skills' : 'Compétences'}</div>
                                 <div class="moi-skills">
@@ -766,7 +752,7 @@ function renderOverlayContent(data) {
                             </div>
                         </div>
                         <div class="moi-card">
-                            <div class="moi-card-icon">✨</div>
+                            <div class="moi-card-icon">${ic('Sparkles')}</div>
                             <div class="moi-card-body">
                                 <div class="moi-card-title">${isEn ? 'Soft skills' : 'Qualités'}</div>
                                 <div class="moi-skills">
@@ -777,7 +763,7 @@ function renderOverlayContent(data) {
                                 </div>
                             </div>
                         </div>
-                        <div class="moi-cta">${isEn ? 'Press "View my CV" 👇' : 'Appuyez sur "Voir mon CV" 👇'}</div>
+                        <div class="moi-cta">${isEn ? 'Press "View my CV" ' + ic('ArrowDown') : 'Appuyez sur "Voir mon CV" ' + ic('ArrowDown')}</div>
                     </div>
                 </div>`;
             break;
@@ -798,7 +784,7 @@ function renderOverlayContent(data) {
                     <img class="overlay-bg-img" src="assets/tictactoe.webp" style="opacity:0.35;object-fit:cover;">
                     <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(10,10,30,0.7),rgba(0,80,120,0.4))"></div>
                     <div class="overlay-text-block">
-                        <div class="ov-emoji" style="text-shadow:0 0 20px #4ac0e0">⭕❌</div>
+                        <div class="ov-emoji">${ic('Grid')}</div>
                         <h1 class="ov-title" style="color:#4ac0e0;text-shadow:0 0 15px rgba(74,192,224,0.6)">${isEn ? 'TIC-TAC-TOE' : 'MORPION'}</h1>
                         <p class="ov-desc">${isEn ? 'A Java classic.<br>Play against a friend locally.' : 'Un classique en Java.<br>Jouez contre un ami en local.'}</p>
                     </div>
@@ -820,7 +806,7 @@ function renderOverlayContent(data) {
                     <img class="overlay-bg-img" src="${data.bg}" style="opacity:${data.overlayBgOpacity ?? 0.5}">
                     ${gradHtml}
                     <div class="overlay-text-block">
-                        <div class="ov-emoji" style="text-shadow:${data.overlayEmojiShadow || '0 4px 15px rgba(0,0,0,0.8)'}">${data.emoji}</div>
+                        <div class="ov-emoji">${ic(data.icon)}</div>
                         <h1 class="ov-title" style="font-size:${data.overlayTitleSize || '3rem'};letter-spacing:${data.overlayTitleLetterSpacing || '2px'};color:${data.overlayColor};${data.overlayTitleShadow ? `text-shadow:${data.overlayTitleShadow}` : ''}">${title}</h1>
                         <p class="ov-desc">${desc}</p>
                     </div>
@@ -845,7 +831,7 @@ function renderOverlayContent(data) {
                     <div class="tape-cross tape-1" style="opacity:0.8;">${isEn ? 'IN DEVELOPMENT' : 'EN DÉVELOPPEMENT'}</div>
                     <div class="tape-cross tape-2" style="opacity:0.8;">${isEn ? 'ONGOING PROJECT' : 'PROJET EN COURS'}</div>
                     <div class="overlay-text-block">
-                        <div class="ov-emoji">${data.emoji}</div>
+                        <div class="ov-emoji">${ic(data.icon)}</div>
                         <h1 class="ov-title" style="color:${data.overlayColor}">${title}</h1>
                         <p class="ov-desc">${desc}</p>
                     </div>
@@ -862,7 +848,7 @@ function renderOverlayContent(data) {
                 <div class="awards-page">
 
                     <div class="awards-hero-header">
-                        <div class="awards-hero-trophy-wrap">🏆</div>
+                        <div class="awards-hero-trophy-wrap">${ic('Crown')}</div>
                         <h1 class="awards-hero-title">${isEn ? 'AWARDS' : 'RÉCOMPENSES'}</h1>
                         <p class="awards-hero-sub">${isEn ? 'Contests & Distinctions' : 'Concours & Distinctions'}</p>
                         <div class="awards-divider"></div>
@@ -877,12 +863,12 @@ function renderOverlayContent(data) {
                         <div class="award-hero-content">
                             <div class="award-hero-year-ghost">2026</div>
                             <div class="award-hero-left">
-                                <span class="award-rank-pill pill-gold">🥇 ${isEn ? '1st Prize' : '1er Prix'}</span>
+                                <span class="award-rank-pill pill-gold">${ic('Crown')} ${isEn ? '1st Prize' : '1er Prix'}</span>
                                 <h2 class="award-hero-name">${isEn ? 'Best Portfolio Award' : 'Prix du Meilleur Portfolio'}</h2>
                                 <p class="award-hero-event">${isEn ? 'Walides Ceremony — Université du Mans' : 'Cérémonie des Walides — Université du Mans'}</p>
-                                <span class="award-self-tag">✨ ${isEn ? 'This very portfolio!' : 'Ce portfolio lui-même\u00a0!'}</span>
+                                <span class="award-self-tag">${ic('Sparkles')} ${isEn ? 'This very portfolio!' : 'Ce portfolio lui-même\u00a0!'}</span>
                             </div>
-                            <span class="award-hero-arrow">→</span>
+                            <span class="award-hero-arrow">${ic('ArrowRight')}</span>
                         </div>
                     </a>
 
@@ -895,7 +881,7 @@ function renderOverlayContent(data) {
                             <div class="award-small-fade"></div>
                             <div class="award-small-content">
                                 <div class="award-small-year">2023</div>
-                                <span class="award-rank-pill pill-silver">🥇 ${isEn ? '1st Place' : '1er Prix'}</span>
+                                <span class="award-rank-pill pill-silver">${ic('Crown')} ${isEn ? '1st Place' : '1er Prix'}</span>
                                 <div class="award-small-name">${isEn ? 'Public Speaking Contest' : "Concours d'Éloquence"}</div>
                                 <div class="award-small-event">${isEn ? 'St Joseph La Salle High School' : 'Lycée St Joseph La Salle'}</div>
                             </div>
@@ -907,7 +893,7 @@ function renderOverlayContent(data) {
                             <div class="award-small-fade"></div>
                             <div class="award-small-content">
                                 <div class="award-small-year">2021</div>
-                                <span class="award-rank-pill pill-bronze">🏅 Top 0,14%</span>
+                                <span class="award-rank-pill pill-bronze">${ic('Star')} Top 0,14%</span>
                                 <div class="award-small-name">${isEn ? 'Castor Contest' : 'Concours Castor'}</div>
                                 <div class="award-small-stat">${isEn ? '64th / 45,281 students' : '64ème / 45\u202f281 participants'}</div>
                                 <div class="award-small-event">${isEn ? 'Informatics Competition' : 'Concours Informatique'}</div>
@@ -929,7 +915,7 @@ function renderOverlayContent(data) {
                     <img class="overlay-bg-img" src="assets/stats_bg.webp" style="opacity:0.2;object-fit:cover;">
                     <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(8,12,20,0.75),rgba(34,211,238,0.05))"></div>
                     <div class="overlay-text-block">
-                        <div class="ov-emoji" style="text-shadow:0 0 30px rgba(34,211,238,0.8)">📊</div>
+                        <div class="ov-emoji">${ic('Pie')}</div>
                         <h1 class="ov-title" style="font-size:3rem;letter-spacing:3px;color:#22d3ee;text-shadow:0 0 20px rgba(34,211,238,0.5)">${isEn ? 'STATISTICS' : 'STATISTIQUES'}</h1>
                         <p class="ov-desc">${statsDesc}</p>
                         <div class="stats-preview-bars">
@@ -956,13 +942,13 @@ function renderOverlayContent(data) {
                     <img class="overlay-bg-img" src="assets/stage_bg.webp" style="opacity:0.2;object-fit:cover;">
                     <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(8,12,20,0.75),rgba(251,191,36,0.05))"></div>
                     <div class="overlay-text-block">
-                        <div class="ov-emoji" style="text-shadow:0 0 30px rgba(251,191,36,0.8)">🎓</div>
+                        <div class="ov-emoji">${ic('GraduationHat')}</div>
                         <h1 class="ov-title" style="font-size:3rem;letter-spacing:3px;color:#fbbf24;text-shadow:0 0 20px rgba(251,191,36,0.5)">${isEn ? 'INTERNSHIP' : 'STAGE'}</h1>
                         <p class="ov-desc">${stageDesc}</p>
                         <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
                             <span style="background:rgba(248,113,113,0.15);border:1px solid rgba(248,113,113,0.3);color:#f87171;padding:4px 12px;border-radius:12px;font-size:0.75rem">15 ${isEn ? 'rejected' : 'refus'}</span>
                             <span style="background:rgba(251,146,60,0.15);border:1px solid rgba(251,146,60,0.3);color:#fb923c;padding:4px 12px;border-radius:12px;font-size:0.75rem">10 ${isEn ? 'pending' : 'en attente'}</span>
-                            <span style="background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.3);color:#4ade80;padding:4px 12px;border-radius:12px;font-size:0.75rem">✅ Faure Herman</span>
+                            <span style="background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.3);color:#4ade80;padding:4px 12px;border-radius:12px;font-size:0.75rem">${ic('Check')} Faure Herman</span>
                         </div>
                     </div>
                 </div>`;
@@ -979,13 +965,13 @@ function renderOverlayContent(data) {
                     <img class="overlay-bg-img" src="assets/alternance_bg.webp" style="opacity:0.3;object-fit:cover;">
                     <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(10,37,64,0.75),rgba(0,145,213,0.08))"></div>
                     <div class="overlay-text-block">
-                        <div class="ov-emoji" style="text-shadow:0 0 30px rgba(0,145,213,0.8)">🏭</div>
+                        <div class="ov-emoji">${ic('Gears')}</div>
                         <h1 class="ov-title" style="font-size:2.1rem;letter-spacing:1px;color:#0091D5;text-shadow:0 0 20px rgba(0,145,213,0.5)">${isEn ? data.overlayTitleEn : data.overlayTitle}</h1>
                         <p class="ov-desc">${altDesc}</p>
                         <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap">
-                            <span style="background:rgba(0,145,213,0.15);border:1px solid rgba(0,145,213,0.35);color:#0091D5;padding:4px 12px;border-radius:12px;font-size:0.75rem">🔧 Embarqué</span>
-                            <span style="background:rgba(0,145,213,0.15);border:1px solid rgba(0,145,213,0.35);color:#0091D5;padding:4px 12px;border-radius:12px;font-size:0.75rem">⚙️ Backend</span>
-                            <span style="background:rgba(0,145,213,0.15);border:1px solid rgba(0,145,213,0.35);color:#0091D5;padding:4px 12px;border-radius:12px;font-size:0.75rem">🖥️ Frontend</span>
+                            <span style="background:rgba(0,145,213,0.15);border:1px solid rgba(0,145,213,0.35);color:#0091D5;padding:4px 12px;border-radius:12px;font-size:0.75rem">${ic('Gears')} Embarqué</span>
+                            <span style="background:rgba(0,145,213,0.15);border:1px solid rgba(0,145,213,0.35);color:#0091D5;padding:4px 12px;border-radius:12px;font-size:0.75rem">${ic('Code')} Backend</span>
+                            <span style="background:rgba(0,145,213,0.15);border:1px solid rgba(0,145,213,0.35);color:#0091D5;padding:4px 12px;border-radius:12px;font-size:0.75rem">${ic('Palette')} Frontend</span>
                         </div>
                     </div>
                 </div>`;
@@ -1001,14 +987,14 @@ function renderOverlayContent(data) {
                 <div class="overlay-image-bg">
                     <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(13,15,26,0.6),rgba(108,92,231,0.12))"></div>
                     <div class="overlay-text-block">
-                        <div class="ov-emoji" style="text-shadow:0 0 30px rgba(108,92,231,0.9)">💼</div>
+                        <div class="ov-emoji">${ic('Card')}</div>
                         <h1 class="ov-title" style="font-size:2.2rem;letter-spacing:2px;color:#a78bfa;text-shadow:0 0 20px rgba(108,92,231,0.6)">${isEn ? 'MY PRO PROFILE' : 'MON PROFIL PRO'}</h1>
                         <p class="ov-desc">${profilDesc}</p>
                         <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap">
-                            <span style="background:rgba(108,92,231,0.15);border:1px solid rgba(108,92,231,0.35);color:#a78bfa;padding:4px 12px;border-radius:12px;font-size:0.75rem">💻 Full-Stack</span>
-                            <span style="background:rgba(74,192,224,0.12);border:1px solid rgba(74,192,224,0.3);color:#4ac0e0;padding:4px 12px;border-radius:12px;font-size:0.75rem">☕ Java</span>
-                            <span style="background:rgba(74,192,224,0.12);border:1px solid rgba(74,192,224,0.3);color:#4ac0e0;padding:4px 12px;border-radius:12px;font-size:0.75rem">🌐 Web</span>
-                            <span style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);color:#4ade80;padding:4px 12px;border-radius:12px;font-size:0.75rem">🤖 IoT</span>
+                            <span style="background:rgba(108,92,231,0.15);border:1px solid rgba(108,92,231,0.35);color:#a78bfa;padding:4px 12px;border-radius:12px;font-size:0.75rem">${ic('Code')} Full-Stack</span>
+                            <span style="background:rgba(74,192,224,0.12);border:1px solid rgba(74,192,224,0.3);color:#4ac0e0;padding:4px 12px;border-radius:12px;font-size:0.75rem">Java</span>
+                            <span style="background:rgba(74,192,224,0.12);border:1px solid rgba(74,192,224,0.3);color:#4ac0e0;padding:4px 12px;border-radius:12px;font-size:0.75rem">${ic('Globe')} Web</span>
+                            <span style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);color:#4ade80;padding:4px 12px;border-radius:12px;font-size:0.75rem">${ic('Gears')} IoT</span>
                         </div>
                     </div>
                 </div>`;
@@ -1029,7 +1015,7 @@ function renderOverlayContent(data) {
                 <div class="overlay-image-bg">
                     <div class="overlay-gradient" style="background:linear-gradient(135deg,rgba(10,26,15,0.5),rgba(34,197,94,0.08))"></div>
                     <div class="overlay-text-block">
-                        <div class="ov-emoji" style="text-shadow:0 0 30px rgba(34,197,94,0.9)">✍️</div>
+                        <div class="ov-emoji">${ic('Pen')}</div>
                         <h1 class="ov-title" style="font-size:3rem;letter-spacing:4px;color:#4ade80;text-shadow:0 0 20px rgba(34,197,94,0.6)">ÉCRI+</h1>
                         <p class="ov-desc">${ecripDesc}</p>
                         <div style="margin-top:22px;display:flex;flex-direction:column;align-items:center;gap:6px">
@@ -1049,7 +1035,7 @@ function renderOverlayContent(data) {
             if (weatherCache) {
                 renderWeatherOverlay(weatherCache, isEn);
             } else {
-                overlayContentBox.innerHTML = `<div class="meteo-loading">${isEn ? 'Locating...' : 'Localisation...'} 📡</div>`;
+                overlayContentBox.innerHTML = `<div class="meteo-loading">${isEn ? 'Locating...' : 'Localisation...'}</div>`;
                 loadWeather();
             }
             break;
@@ -1058,7 +1044,7 @@ function renderOverlayContent(data) {
         default:
             overlay.style.background = "white";
             overlayContentBox.innerHTML = `
-                <div class="start-icon">${data.emoji || ''}</div>
+                <div class="start-icon">${data.icon ? ic(data.icon) : ''}</div>
                 <div class="start-title">${isEn ? (data.titleEn || data.title) : data.title}</div>
                 <div class="start-subtitle">${isEn ? 'Start this channel?' : 'Démarrer cette chaîne\u00a0?'}</div>`;
     }
@@ -1241,7 +1227,7 @@ sbPost('increment_views')
     .then(r => r && r.json())
     .then(count => {
         const el = document.getElementById('visitor-count');
-        if (el && count) el.textContent = '👁 ' + Number(count).toLocaleString('fr-FR') + ' visites';
+        if (el && count) el.textContent = ic('User') + ' ' + Number(count).toLocaleString('fr-FR') + ' visites';
     })
     .catch(() => {});
 
@@ -1254,10 +1240,10 @@ sbPost('increment_daily_visit').catch(() => {});
 const WEATHER_API_KEY = 'd9409f721206c46f1b0cda57aa74d801';
 
 const WEATHER_ICONS = {
-    Thunderstorm: '⛈️', Drizzle: '🌦️', Rain: '🌧️',
-    Snow: '❄️', Mist: '🌫️', Smoke: '🌫️', Haze: '🌫️',
-    Dust: '🌫️', Fog: '🌫️', Sand: '🌫️', Ash: '🌫️',
-    Squall: '💨', Tornado: '🌪️', Clear: '☀️', Clouds: '☁️'
+    Thunderstorm: 'AlertTriangle', Drizzle: 'Sunrise', Rain: 'Sunrise',
+        Snow: 'Sunrise', Mist: 'Sunrise', Smoke: 'Sunrise', Haze: 'Sunrise',
+        Dust: 'Sunrise', Fog: 'Sunrise', Sand: 'Sunrise', Ash: 'Sunrise',
+        Squall: 'AlertTriangle', Tornado: 'AlertTriangle', Clear: 'Sun', Clouds: 'Sunrise'
 };
 
 let weatherCache   = null;
@@ -1286,14 +1272,14 @@ function buildForecastHTML(forecastData, isEn) {
     const items = days.map(day => {
         const entries  = byDay[day];
         const midday   = entries.find(e => e.dt_txt.includes('12:00:00')) || entries[Math.floor(entries.length / 2)];
-        const icon     = WEATHER_ICONS[midday.weather[0].main] || '🌡️';
+        const icon     = WEATHER_ICONS[midday.weather[0].main] || 'Sunrise';
         const tMin     = Math.round(Math.min(...entries.map(e => e.main.temp_min)));
         const tMax     = Math.round(Math.max(...entries.map(e => e.main.temp_max)));
         const dow      = dayNames[new Date(day).getDay()];
         return `
             <div class="meteo-forecast-day">
                 <div class="meteo-fc-name">${dow}</div>
-                <div class="meteo-fc-icon">${icon}</div>
+                <div class="meteo-fc-icon">${ic(icon)}</div>
                 <div class="meteo-fc-temps"><span class="meteo-fc-max">${tMax}°</span><span class="meteo-fc-min">${tMin}°</span></div>
             </div>`;
     }).join('');
@@ -1302,7 +1288,7 @@ function buildForecastHTML(forecastData, isEn) {
 }
 
 function renderWeatherOverlay(d, isEn) {
-    const icon     = WEATHER_ICONS[d.weather[0].main] || '🌡️';
+    const icon     = WEATHER_ICONS[d.weather[0].main] || 'Sunrise';
     const temp     = Math.round(d.main.temp);
     const feels    = Math.round(d.main.feels_like);
     const tMin     = Math.round(d.main.temp_min);
@@ -1319,10 +1305,10 @@ function renderWeatherOverlay(d, isEn) {
     overlayContentBox.innerHTML = `
         <div class="meteo-overlay">
             <div class="meteo-header">
-                <div class="meteo-icon-big">${icon}</div>
+                <div class="meteo-icon-big">${ic(icon)}</div>
                 <div class="meteo-temp-big">${temp}°C</div>
                 <div class="meteo-desc">${desc}</div>
-                <div class="meteo-city">📍 ${city}, ${country}</div>
+                <div class="meteo-city">${ic('MapPin')} ${city}, ${country}</div>
             </div>
             <div class="meteo-grid">
                 <div class="meteo-stat">
@@ -1356,7 +1342,7 @@ function isMeteoOpen() {
 function showWeatherError() {
     if (!isMeteoOpen()) return;
     const en = currentLang === 'en';
-    overlayContentBox.innerHTML = `<div class="meteo-loading">${en ? 'Location unavailable or denied.' : 'Localisation refusée ou indisponible.'} 📍</div>`;
+    overlayContentBox.innerHTML = `<div class="meteo-loading">${en ? 'Location unavailable or denied.' : 'Localisation refusée ou indisponible.'}</div>`;
 }
 
 function loadWeather() {

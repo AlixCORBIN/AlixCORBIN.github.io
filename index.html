@@ -29,7 +29,7 @@
     </div>
 
     <!-- HINT DARK MODE (rebondit au-dessus du bouton Wii) -->
-    <div class="dm-hint" id="dm-hint" data-i18n="dm.hint">🌙 Dark Mode — NOUVEAU&nbsp;!</div>
+    <div class="dm-hint" id="dm-hint" data-i18n="dm.hint"><span class="ic" data-ic="Moon"></span> Dark Mode — NOUVEAU&nbsp;!</div>
 
     <audio id="bg-music" loop preload="none">
         <source src="assets/WiiMenuMusic.mp3" type="audio/mp3">
@@ -50,7 +50,7 @@
             <p data-i18n="intro.inspired">CE PORTFOLIO EST UNE RÉINTERPRÉTATION DU MENU DE LA WII, GRANDEMENT INSPIRÉE PAR LE TRAVAIL DE <span class="highlight">TOBIAS ECHENIQUE</span>.</p>
 
             <p data-i18n="intro.wip" style="margin-top: 20px; font-size: 0.9em; color: #ddd; line-height: 1.5;">
-                ⚠️ VEUILLEZ NOTER QUE CE SITE EST ACTUELLEMENT <span class="highlight" style="text-decoration: underline;">EN COURS DE CONSTRUCTION</span>.
+                <span class="ic" data-ic="AlertTriangle"></span> VEUILLEZ NOTER QUE CE SITE EST ACTUELLEMENT <span class="highlight" style="text-decoration: underline;">EN COURS DE CONSTRUCTION</span>.
                 <br>
                 IL ÉVOLUE CONSTAMMENT, ALORS N'HÉSITEZ PAS À REVENIR RÉGULIÈREMENT POUR DÉCOUVRIR LES NOUVEAUTÉS !
             </p>
@@ -128,7 +128,7 @@
                 <span id="h">12</span><span style="animation:blink 1s infinite">:</span><span id="m">00</span><span class="ampm" id="ampm"></span>
             </div>
             <div class="date-text" id="date">--/--</div>
-            <div class="visitor-count" id="visitor-count">👁 ...</div>
+            <div class="visitor-count" id="visitor-count">...</div>
         </div>
         <div class="wii-btn-wrapper right-btn" onclick="openContact()" role="button" tabindex="0" aria-label="Contact">
             <div class="glass-btn">
@@ -142,7 +142,7 @@
     <!-- MODAL CONTACT -->
     <div id="contact-modal" onclick="closeContact()">
         <div class="contact-card" onclick="event.stopPropagation()">
-            <button class="contact-close" onclick="closeContact()">✕</button>
+            <button class="contact-close" onclick="closeContact()" aria-label="Fermer"><span class="ic" data-ic="Cross"></span></button>
             <div class="contact-header">
                 <img src="assets/maphoto.png" class="contact-avatar" alt="Alix Corbin">
                 <div>
@@ -152,19 +152,19 @@
             </div>
             <div class="contact-items">
                 <a class="contact-item" href="mailto:alix.corbin.pro@gmail.com">
-                    <span class="contact-item-icon">✉️</span>
+                    <span class="contact-item-icon"><span class="ic" data-ic="Mail"></span></span>
                     <span>alix.corbin.pro@gmail.com</span>
                 </a>
                 <a class="contact-item" href="tel:+33768658968">
-                    <span class="contact-item-icon">📱</span>
+                    <span class="contact-item-icon"><span class="ic" data-ic="Phone"></span></span>
                     <span>07 68 65 89 68</span>
                 </a>
                 <div class="contact-item">
-                    <span class="contact-item-icon">📍</span>
+                    <span class="contact-item-icon"><span class="ic" data-ic="MapPin"></span></span>
                     <span>Laval &mdash; Le Mans / Sablé / La Flèche</span>
                 </div>
                 <a class="contact-item" href="https://alixcorbin.github.io/" target="_blank" rel="noopener noreferrer">
-                    <span class="contact-item-icon">🔗</span>
+                    <span class="contact-item-icon"><span class="ic" data-ic="Link"></span></span>
                     <span>alixcorbin.github.io</span>
                 </a>
             </div>
@@ -172,8 +172,9 @@
     </div>
 
     <script src="assets/supabase.js"></script>
+    <script src="assets/papicons.js"></script>
     <script src="channels-wii.js"></script>
-    <script src="script.js?v=2"></script>
+    <script src="script.js?v=3"></script>
     <script src="mobile.js"></script>
 
     <script type="module" src="assets/account.js"></script>

@@ -601,9 +601,10 @@ body.dark-mode .visitor-count { color: #4a5568; }
 
 .ch-emoji {
     font-size: 3rem;
+    line-height: 1;
+    display: inline-flex;
     position: relative;
     z-index: 2;
-    text-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
 
 .ch-label {
@@ -768,6 +769,8 @@ body.dark-mode .visitor-count { color: #4a5568; }
 .moi-card-icon {
     font-size: 1.8rem;
     flex-shrink: 0;
+    color: #4ac0e0;
+    display: inline-flex;
 }
 
 .moi-card-title {
@@ -2740,3 +2743,13 @@ body.phone .footer-container .visitor-count { top: 76%; font-size: .62rem; }
 .footer-container .date-text { font-family: 'Roboto', 'Nunito', sans-serif; font-weight: 400; letter-spacing: .01em; color: #7d8085; }
 .footer-container .digital-time > span:nth-child(2) { color: #8a8d91; font-weight: 700; }
 body.dark-mode .seg path { fill: #2a2f44; stroke: #6a7090; }
+
+/* Icônes Papicons (assets/papicons.js) */
+.ic {
+    display: inline-flex;
+    width: 1em;
+    height: 1em;
+    flex: none;
+    vertical-align: -0.125em;
+}
+.ic svg { width: 100%; height: 100%; }
