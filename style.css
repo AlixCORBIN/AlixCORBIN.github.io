@@ -2753,3 +2753,17 @@ body.dark-mode .seg path { fill: #2a2f44; stroke: #6a7090; }
     vertical-align: -0.125em;
 }
 .ic svg { width: 100%; height: 100%; }
+
+/* Échelle des Papicons : une icône pleine pèse plus qu'un emoji à taille égale */
+.ov-emoji .ic { font-size: 60px; opacity: .92; }
+.start-icon .ic { font-size: 72px; color: #34bbe6; }
+.moi-card-icon .ic { font-size: 26px; }
+.awards-hero-trophy-wrap .ic { font-size: 40px; }
+.contact-item-icon .ic { font-size: 18px; color: #34bbe6; }
+.ch-emoji .ic { font-size: 36px; }
+span[style*="border-radius:12px"] .ic,
+.award-rank-pill .ic, .award-self-tag .ic { font-size: 1.05em; vertical-align: -0.18em; }
+@media (max-width: 700px) {
+    .ov-emoji .ic { font-size: 44px; }
+    .start-icon .ic { font-size: 56px; }
+}
