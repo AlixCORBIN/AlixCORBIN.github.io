@@ -743,7 +743,7 @@ function renderOverlayContent(data) {
                             <div class="moi-card-icon">💼</div>
                             <div class="moi-card-body">
                                 <div class="moi-card-title">${isEn ? 'Currently' : 'Actuellement'}</div>
-                                <div class="moi-card-value">${isEn ? '<strong>Apprentice</strong> at <strong>Faure Herman</strong> — not looking for an apprenticeship' : '<strong>Alternant</strong> chez <strong>Faure Herman</strong> — pas en recherche d\'alternance'}</div>
+                                <div class="moi-card-value">${isEn ? '<strong>Apprentice</strong> at <strong>Faure Herman</strong>' : '<strong>Alternant</strong> chez <strong>Faure Herman</strong>'}</div>
                             </div>
                         </div>
                         <div class="moi-card">
